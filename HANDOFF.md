@@ -34,8 +34,8 @@ Sentinel architecture map (built iteratively with the operator, 2026-08-19..22).
 - Root `odin/ODIN-ARCHITECTURE-MAP.html` is a GENERATED artifact:
   `node ../../../isoscope/build.mjs odin.spec.json ../../ODIN-ARCHITECTURE-MAP.html`
 - ODIN-side files are **uncommitted** in odin (its governance requires slices);
-  also legacy `odin/ODIN-ARCHITECTURE-MAP-3D.html` (pre-restyle backup) can be
-  retired once the operator agrees.
+  legacy `ODIN-ARCHITECTURE-MAP-3D.html` retired 2026-08-22 (operator order;
+  quarantined at /tmp/retired-ODIN-ARCHITECTURE-MAP-3D-20260822.html, evaporates on reboot).
 
 ## Near-term roadmap (operator-aligned)
 1. R31 junction grammar (dot=connected; bare/hop=crossing) — cheap, high value.

@@ -565,5 +565,97 @@
   "title": "A rulebook your agent teams cannot quietly break",
   "sub": "what this project is, what state it&rsquo;s in, and what happened to your feedback",
   "proseHTML": "<p class=\"t-label\" style=\"color:var(--okoa-semantic-fg3);margin-bottom:var(--okoa-space-2)\">What this is</p>\n      <p class=\"t-body-sm\">When you run several AI coding agents at once, three things go wrong: they do <em>hidden</em> work you can&rsquo;t see, they <em>claim</em> things are done that aren&rsquo;t, and they quietly step on each other&rsquo;s files. ODIN Sentinel is the fix: a written <span class=\"mark\">rulebook</span> (the SCP protocol) plus a small local <span class=\"mark\">referee program</span> (an MCP server) that any AI agent can load. No cloud service, no AI of its own &mdash; just rules and a referee.</p>\n      <p class=\"t-body-sm\">Fly the map the standard way: <strong>drag to orbit</strong> (one finger on a phone or iPad), <strong>scroll or pinch to zoom</strong>, <strong>right-drag or two-finger drag to pan</strong>. The city is a loop &mdash; rulebook district (north), the referee (center), where it runs (east), and the feedback loop (south) that turns field failures into the next improvement.</p>\n      <p class=\"t-label\" style=\"color:var(--okoa-semantic-fg3);margin:var(--okoa-space-4) 0 var(--okoa-space-2)\">Was your feedback wasted? No.</p>\n      <p class=\"t-body-sm\">Seven field reports: <span class=\"pip shipped\"></span><strong>3 fully shipped</strong>, <span class=\"pip shipped\"></span><strong>1 mostly shipped</strong>, <span class=\"pip built\"></span><strong>1 in build now</strong>, <span class=\"pip planned\"></span><strong>2 planned</strong>. Click <span class=\"mark\">FB</span> for the report-by-report accounting.</p>\n      <p class=\"t-label\" style=\"color:var(--okoa-semantic-fg3);margin:var(--okoa-space-4) 0 var(--okoa-space-2)\">Reading the roofs</p>\n      <p class=\"t-body-sm\">Color is attention debt: paper is healthy, amber owes work, blue is being built, red is broken. A number painted on a roof counts its open items (red glyph = a blocker is among them); a slate diamond on a roof means a decision of <em>yours</em> is inside. Click any marked block: the camera flies to it and the panel lists its items.</p>"
+ },
+ "edgeDocs": {
+  "RO-BC": {
+   "title": "Roles feed boot contracts",
+   "carries": "Seat definitions and role cards \u2014 who may occupy which seat, and the receipt fields every occupant must file to claim one.",
+   "refs": "protocol/role-cards/ \u00b7 protocol/receipts/"
+  },
+  "BC-DL": {
+   "title": "Receipts gate delegation",
+   "carries": "Verified agent identity. Only booted, receipt-bearing seats can receive work \u2014 delegation refuses anonymous agents.",
+   "refs": "protocol/receipts/ \u00b7 odin_validate_boot_receipt"
+  },
+  "DL-GA": {
+   "title": "Delivery proof meets the gates",
+   "carries": "Confirmed-delivery records \u2014 proof the assignment actually landed \u2014 which the gates then hold to read-proof, location-proof, and readiness.",
+   "refs": "odin_validate_cmux_delivery_proof \u00b7 odin_get_activation_gates"
+  },
+  "GA-CL": {
+   "title": "Gate verdicts flow to closeout",
+   "carries": "Pass/fail gate states and bounded status vocabulary, composed by closeout into honest terminal outcomes and session metrics.",
+   "refs": "odin_get_closeout_checklist"
+  },
+  "RO-PB": {
+   "title": "Role authority compiles into the bundle",
+   "carries": "The rulebook's role system, compiled: startup packets sized per role, role cards, and receipt templates served to any agent that connects.",
+   "refs": "odin_get_startup_packet \u00b7 odin_get_role_profile"
+  },
+  "PB-VD": {
+   "title": "Every artifact hits validation",
+   "carries": "Receipts, delegation packets, delivery proofs, manifests, read-proofs \u2014 each routed through deterministic validators: same input, same verdict.",
+   "refs": "src/protocol/service.ts \u00b7 tests/protocol/"
+  },
+  "VD-SL": {
+   "title": "Validated surface math",
+   "carries": "Certified CMUX layout computations \u2014 canonical packing, layout gates, and topology transitions the validators guarantee.",
+   "refs": "odin_compute_surface_layout"
+  },
+  "VD-HP": {
+   "title": "Validated harness probes",
+   "carries": "Readiness-probe results and per-harness submit profiles \u2014 which terminal needs double-enter, which flattens newlines \u2014 certified before dispatch relies on them.",
+   "refs": "odin_get_harness_probe_matrix"
+  },
+  "PB-TL": {
+   "title": "Sessions emit telemetry",
+   "carries": "Scrubbed session events \u2014 who did what, what was accepted, where tokens went \u2014 with secrets removed before anything is stored.",
+   "refs": "odin_get_telemetry_config \u00b7 odin_preview_telemetry_redaction"
+  },
+  "PB-OW": {
+   "title": "Liveness duties to odin-watch",
+   "carries": "Watch packets and heartbeat contracts \u2014 the standing duties odin-watch polls against to catch stalled or silent agents.",
+   "refs": "odin_get_active_watch_packet"
+  },
+  "PB-CC": {
+   "title": "The install channel",
+   "carries": "The referee itself, delivered to this machine: the Claude Code plugin and native skills for the other CLIs. Currently degraded \u2014 installed plugin (0.4.13) trails repo canon (0.5.0).",
+   "refs": "plugins/odin-scp/ \u00b7 sync-installations.sh"
+  },
+  "CC-DS": {
+   "title": "Installs govern downstream",
+   "carries": "Installed governance propagating outward \u2014 downstream projects consume the published package and run governed sessions.",
+   "refs": "@bradheitmann/odin-sentinel (npm)"
+  },
+  "DS-FB": {
+   "title": "Field failures come home",
+   "carries": "Incident reports from governed downstream runs \u2014 written failure evidence, not vibes \u2014 arriving at the intake for judgment.",
+   "refs": ".edge-agentic/local/intelligence/inbox/"
+  },
+  "CL-FB": {
+   "title": "Closeout lessons feed intake",
+   "carries": "Session metrics, meta-analysis, and process lessons from every closeout, recycled as intake for the next improvement.",
+   "refs": ".odin/audit/*/SESSION-CLOSEOUT.md"
+  },
+  "FB-CB": {
+   "title": "Failure evidence drives the breakers",
+   "carries": "The accepted Aug-8 governance-displacement report: its fingerprints (GD-FP-001..013) and required negative controls are the circuit breakers' specification.",
+   "refs": "GDR-20260808-001 \u00b7 EPIC-052"
+  },
+  "FB-DA": {
+   "title": "Process lessons drive amendments",
+   "carries": "The same report's doctrine items \u2014 admission criteria, evidence economy, audit bounds \u2014 becoming seven surgical rulebook amendments.",
+   "refs": "PROCESS-LESSONS-20260808-001 \u00b7 EPIC-053"
+  },
+  "CB-PB": {
+   "title": "Planned: breakers ship into the referee",
+   "carries": "Wave-1 mechanisms \u2014 event registry, attempt ceilings, depth caps, budgets \u2014 landing in the bundle service at v0.6.0.",
+   "refs": "STORY-GOVDISP-002..005"
+  },
+  "DA-RO": {
+   "title": "Planned: amendments rewrite the rulebook",
+   "carries": "Ratified doctrine changes flowing back into the role system \u2014 the loop closes and the rulebook that governs agents is itself governed.",
+   "refs": "STORY-AMEND-001 \u00b7 protocol/SCP.md"
+  }
  }
 }

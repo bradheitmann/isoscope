@@ -1674,7 +1674,7 @@ const RM=window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 /* ————— Isoscope spec: everything project-specific lives in this JSON ————— */
 const SPEC=JSON.parse(document.getElementById("isospec").textContent);
 document.title=SPEC.title||"Isoscope";
-const GROUPS=SPEC.groups,NODES=SPEC.nodes,STATUS=SPEC.status,EDGES=SPEC.edges,
+const GROUPS=SPEC.groups,NODES=SPEC.nodes,STATUS=SPEC.status,EDGES=SPEC.edges,EDGEDOCS=SPEC.edgeDocs||{},
       TRACE=SPEC.trace||[],TRACETEXT=SPEC.traceText||{};
 NODES.forEach(n=>{const s2=STATUS[n.id]||{state:"ok",items:[]};n.st=s2.state;n.items=s2.items;if(s2.items.some(i=>i.c==="red"))n.st="blocked";});
 const byId={};NODES.forEach(n=>byId[n.id]=n);
@@ -1980,6 +1980,7 @@ EDGES.forEach(e=>{
  else if(e[2]==="intended"){mat=edgeMat(()=>mix(COL.fg1,COL.paper,0.45),0.4);speed=0.35;}
  else{mat=edgeMat(()=>COL.fg2,0.75);}
  const line=new Line2(new LineGeometry(),mat);
+ line.userData.edgeKey=key;
  scene.add(line);
  edgeLinesById[key]={key,line,type:e[2],health,basePts,a:e[0],b:e[1],dotted,speed,t:0,dots:[],pts:[],L:[0],total:1};
 });
@@ -2047,13 +2048,14 @@ function placeCamera(az,pol,r,tx,ty,tz,zoom){
 placeCamera(HOME.az,HOME.pol,HOME.r,HOME.tx,HOME.ty,HOME.tz,HOME.zoom);
 let flyGoal=null;
 controls.addEventListener("start",()=>{flyGoal=null;}); /* user input cancels autopilot */
-function resetView(){flowing=false;btnFlow.setAttribute("aria-pressed","false");btnFlow.textContent="Flow";exitCordon();flyGoal={tx:HOME.tx,ty:HOME.ty,tz:HOME.tz,zoom:HOME.zoom,az:HOME.az,pol:HOME.pol};clearTrace();}
+function resetView(){clearEdgeSel();flowing=false;btnFlow.setAttribute("aria-pressed","false");btnFlow.textContent="Flow";exitCordon();flyGoal={tx:HOME.tx,ty:HOME.ty,tz:HOME.tz,zoom:HOME.zoom,az:HOME.az,pol:HOME.pol};clearTrace();}
 document.getElementById("btnReset").addEventListener("click",resetView);
 document.addEventListener("keydown",ev=>{if(ev.key==="r"||ev.key==="R")resetView();});
 document.getElementById("zin").addEventListener("click",()=>{
  camera.zoom=Math.min(6,camera.zoom*1.25);camera.updateProjectionMatrix();});
 document.getElementById("zout").addEventListener("click",()=>{
  camera.zoom=Math.max(0.35,camera.zoom/1.25);camera.updateProjectionMatrix();});
+window.__isoEdgeMid=key=>{const o=edgeLinesById[key];if(!o||!o.pts.length)return null;const p=o.pts[Math.floor(o.pts.length/2)-0]||o.pts[0];const q=o.pts.length>1?o.pts[Math.floor(o.pts.length/2)]:p;const m=p.clone().add(q).multiplyScalar(0.5);const v=m.project(camera);const r=canvas.getBoundingClientRect();return {x:r.left+(v.x*0.5+0.5)*r.width,y:r.top+(-v.y*0.5+0.5)*r.height};};
 window.odinView={set(az,pol,r,zoom){placeCamera(az??HOME.az,pol??HOME.pol,r??HOME.r,controls.target.x,controls.target.y,controls.target.z,zoom);},
  state:()=>({zoom:camera.zoom})};
 function flyTo(n){flyGoal={tx:n.x+n.w/2,ty:(n._lyT||0)+0.5,tz:n.y+n.d/2,
@@ -2071,27 +2073,57 @@ canvas.addEventListener("pointerup",ev=>{
 const ray=new THREE.Raycaster(),ptr=new THREE.Vector2();
 let hoverId=null,pinned=null;
 function castAt(cx,cy){
- const rect=canvas.getBoundingClientRect();
- ptr.x=((cx-rect.left)/rect.width)*2-1;ptr.y=-((cy-rect.top)/rect.height)*2+1;
+ const r=canvas.getBoundingClientRect();
+ ptr.x=((cx-r.left)/r.width)*2-1;ptr.y=-((cy-r.top)/r.height)*2+1;
  ray.setFromCamera(ptr,camera);
- const hit=ray.intersectObjects(pickables,false)[0];
- return hit?hit.object.userData.id:null;
+ ray.camera=camera; /* required for fat-line (Line2) raycast */
+ const hit=ray.intersectObjects(pickables,false);
+ if(hit.length)return {kind:"node",id:hit[0].object.userData.id};
+ const lines=Object.values(edgeLinesById).map(o=>o.line);
+ const lh=ray.intersectObjects(lines,false);
+ if(lh.length&&lh[0].object.userData.edgeKey)return {kind:"edge",key:lh[0].object.userData.edgeKey};
+ return null;
 }
 canvas.addEventListener("pointermove",ev=>{
  if(downPt)return; /* mid-gesture: let OrbitControls own it */
- const id=castAt(ev.clientX,ev.clientY);
- if(id!==hoverId){hoverId=id;
-   if(!pinned&&!cordon.size){NODES.forEach(n=>mark(n.id,n.id===id));renderPanel(id);}
-   canvas.style.cursor=id?"pointer":"grab";}
+ const hit=castAt(ev.clientX,ev.clientY);
+ const hid=hit?(hit.kind==="node"?hit.id:"E:"+hit.key):null;
+ if(hid!==hoverId){hoverId=hid;
+   if(!pinned&&!cordon.size&&!selEdge){
+     if(hit&&hit.kind==="node"){NODES.forEach(n=>mark(n.id,n.id===hit.id));renderPanel(hit.id);}
+     else if(hit&&hit.kind==="edge"){NODES.forEach(n=>mark(n.id,false));renderEdgePanel(hit.key);}
+     else{NODES.forEach(n=>mark(n.id,false));renderPanel(null);}
+   }
+   canvas.style.cursor=hit?"pointer":"grab";}
 });
+let selEdge=null;
+function clearEdgeSel(){
+ if(!selEdge)return;
+ const o=edgeLinesById[selEdge];
+ if(o)o.line.material.linewidth=LINEW[lineSet].w;
+ selEdge=null;
+}
+function selectEdge(key){
+ clearEdgeSel();
+ selEdge=key;
+ const o=edgeLinesById[key];
+ o.line.material.opacity=baseOp(o);
+ o.line.material.linewidth=LINEW[lineSet].w+1.4; /* selected link reads heavier */
+ const e=key.split("-");
+ NODES.forEach(n=>mark(n.id,e.indexOf(n.id)>=0));
+ renderEdgePanel(key);
+}
 function pickAt(cx,cy,shift,meta){
- const id=castAt(cx,cy);
- if(id){
-  if(cordon.has(id))cordon.delete(id);       /* cut the breaker */
-  else{cordon.add(id);flyTo(byId[id]);}      /* energize */
+ const hit=castAt(cx,cy);
+ if(hit&&hit.kind==="node"){
+  clearEdgeSel();
+  if(cordon.has(hit.id))cordon.delete(hit.id);   /* cut the breaker */
+  else{cordon.add(hit.id);flyTo(byId[hit.id]);}  /* energize */
   applyCircuit();return;
  }
- cordon.clear();                              /* empty ground: whole board back to live */
+ if(hit&&hit.kind==="edge"){selectEdge(hit.key);return;}
+ clearEdgeSel();
+ cordon.clear();                                  /* empty ground: board back to live */
  pinned=null;NODES.forEach(n=>mark(n.id,false));
  applyCircuit();
 }
@@ -2192,6 +2224,23 @@ const pE=document.getElementById("pEyebrow"),pT=document.getElementById("pTitle"
       pS=document.getElementById("pSub"),pP=document.getElementById("pProse");
 setSafe(pP,(SPEC.intro||{}).proseHTML||"");
 const DEF={e:pE.textContent,t:pT.textContent,s:pS.textContent,node:pP.cloneNode(true)};
+function edgeTypeLabel(o){return o.type==="auth"?"installs / authority":o.type==="intended"?"planned":"data flow";}
+function renderEdgePanel(key){
+ const o=edgeLinesById[key],e=key.split("-");
+ const d=EDGEDOCS[key]||{};
+ pE.textContent="LINK · "+edgeTypeLabel(o)+(o.health?" · "+o.health.toUpperCase():"");
+ pT.textContent=d.title||(byId[e[0]].name+" → "+byId[e[1]].name);
+ pS.textContent=byId[e[0]].id+" → "+byId[e[1]].id;
+ let h="";
+ if(d.carries)h+="<p class='t-label' style='color:var(--okoa-semantic-fg3);margin-bottom:var(--okoa-space-2)'>What flows here</p><p class='t-body-sm'>"+d.carries+"</p>";
+ if(TRACETEXT[key])h+="<p class='t-label' style='color:var(--okoa-semantic-fg3);margin:var(--okoa-space-4) 0 var(--okoa-space-2)'>In the loop</p><p class='t-body-sm'>"+TRACETEXT[key]+"</p>";
+ if(o.health==="degraded")h+="<p class='t-body-sm' style='color:var(--okoa-signal-caution)'>Degraded: this link is live but impaired — flow runs slow.</p>";
+ if(o.health==="broken")h+="<p class='t-body-sm' style='color:var(--okoa-signal-risk)'>Broken: nothing crosses this link until it is repaired.</p>";
+ if(o.type==="intended")h+="<p class='t-body-sm' style='opacity:.75'>Planned: this connection does not exist yet — it lands with the work in flight.</p>";
+ if(d.refs)h+="<p class='refs'>"+d.refs+"</p>";
+ if(!h)h="<p class='t-body-sm'>"+byId[e[0]].name+" connects to "+byId[e[1]].name+".</p>";
+ setSafe(pP,h);
+}
 function renderPanel(id){
  if(!id){
   /* overview: what this is + the whole board's state, one scroll — no hidden mode */

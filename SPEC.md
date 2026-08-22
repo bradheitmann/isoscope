@@ -17,6 +17,7 @@ One JSON object drives the whole visualization. All keys top-level.
 | `levels` | `{id:-1\|0\|1}` | stratum per module for Stack mode (max 3 levels) |
 | `edges` | `[[from,to,type]]` | type `data\|auth\|intended` |
 | `edgeStatus` | `{"A-B":"degraded"\|"broken"}` | link health overrides |
+| `edgeDocs` | `{"A-B":{title?,carries?,refs?}}` | links are entities: click/hover a link for its inspector — `carries` explains what data flows over it |
 | `trace` | `["A-B",…]` | ordered story steps (edge keys) |
 | `traceText` | `{"A-B":text}` | narration per step |
 

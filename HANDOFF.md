@@ -38,6 +38,11 @@ Sentinel architecture map (built iteratively with the operator, 2026-08-19..22).
   quarantined at /tmp/retired-ODIN-ARCHITECTURE-MAP-3D-20260822.html, evaporates on reboot).
 
 ## Near-term roadmap (operator-aligned)
+0. DONE 2026-08-22: LINKS ARE ENTITIES — edges clickable/hoverable (Line2 raycast,
+   ray.camera required), edge inspector (LINK · type · health / title / What flows
+   here / loop narration / health notes / refs), spec key `edgeDocs`
+   {"A-B":{title,carries,refs}}; ODIN spec carries all 18 descriptions; QC hook
+   window.__isoEdgeMid(key) returns screen coords for testing.
 1. R31 junction grammar (dot=connected; bare/hop=crossing) — cheap, high value.
 2. R10 lane assignment in shared corridors; R13 hub escape routing (kills the
    PB residue); R16 shove-before-rip-up.

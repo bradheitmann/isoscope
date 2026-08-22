@@ -1,0 +1,569 @@
+{
+ "groups": [
+  {
+   "id": "rules",
+   "label": "The rulebook (SCP) \u00b7 shipped"
+  },
+  {
+   "id": "server",
+   "label": "The referee (MCP server) \u00b7 shipped"
+  },
+  {
+   "id": "runs",
+   "label": "Where it runs"
+  },
+  {
+   "id": "loop",
+   "label": "The improvement loop"
+  },
+  {
+   "id": "build",
+   "label": "Being built now"
+  }
+ ],
+ "nodes": [
+  {
+   "id": "RO",
+   "tag": "ROLES",
+   "g": "rules",
+   "name": "Role system",
+   "x": 0,
+   "y": 3,
+   "w": 1,
+   "d": 1,
+   "h": 1,
+   "does": "Gives every agent a named seat with defined powers: an executive office (a lead, a watchdog, an assistant, a researcher, an auditor) plus development pods, each with a builder, an independent reviewer, and a sealed final examiner. Seats are permanent; the AI occupying a seat is replaceable.",
+   "built": "<span class='pip shipped'></span>Shipped in v0.5.0. Role cards, fallback ladders, and the rule that no agent may review its own work are in the published protocol text.",
+   "refs": "protocol/SCP.md \u00b7 protocol/role-cards/"
+  },
+  {
+   "id": "BC",
+   "tag": "BOOT CONTRACTS",
+   "g": "rules",
+   "name": "Boot contracts and receipts",
+   "x": 3,
+   "y": 2,
+   "w": 1,
+   "d": 1,
+   "h": 1,
+   "does": "No agent works anonymously. Before doing anything, each agent must file a receipt stating who it is, what seat it holds, which folder and code version it&rsquo;s on, and what it may touch. A missing or false receipt stops the agent.",
+   "built": "<span class='pip shipped'></span>Shipped; the referee validates receipts mechanically. The Aug-14 run showed receipt wording needs verbatim templates &mdash; that fix rides the next release.",
+   "refs": "protocol/receipts/ \u00b7 odin_get_boot_receipt_schema"
+  },
+  {
+   "id": "DL",
+   "tag": "DELIVERY PROOF",
+   "g": "rules",
+   "name": "Delegation and delivery proof",
+   "x": 6,
+   "y": 2,
+   "w": 1,
+   "d": 1,
+   "h": 1,
+   "does": "An assignment isn&rsquo;t &ldquo;sent&rdquo; until it&rsquo;s proven to have arrived: typed into the right terminal, actually submitted (Enter really pressed), and seen on screen. Kills the classic failure of instructions sitting unsent in an input box.",
+   "built": "<span class='pip shipped'></span>Shipped &mdash; and this one is YOUR bug: the June-13 send-vs-submit report became the delivery-verdict system and per-harness submit profiles.",
+   "refs": "odin_validate_cmux_delivery_proof \u00b7 harness-control-matrix.yaml",
+   "good": "Direct product of field feedback 2026-06-13."
+  },
+  {
+   "id": "GA",
+   "tag": "GATES",
+   "g": "rules",
+   "name": "Gates and bounded states",
+   "x": 9,
+   "y": 2,
+   "w": 1,
+   "d": 1,
+   "h": 1,
+   "does": "Checkpoints an agent cannot talk its way past: prove you read your instructions (file fingerprints), prove your location, pass readiness probes. Plus a fixed status vocabulary &mdash; BLOCKED or QA_PENDING exist; an unqualified &ldquo;done&rdquo; does not.",
+   "built": "<span class='pip shipped'></span>Shipped: activation gates, instruction-read proof, layout gate, ~20 deterministic validators. Field-tested Aug 14: caught all 7 incidents before corruption.",
+   "refs": "odin_get_activation_gates \u00b7 verify-instruction-read.mjs"
+  },
+  {
+   "id": "CL",
+   "tag": "CLOSEOUT",
+   "g": "rules",
+   "name": "Closeout and audit trail",
+   "x": 12,
+   "y": 3,
+   "w": 1,
+   "d": 1,
+   "h": 1,
+   "does": "How a session ends honestly: final states, metrics, an evidence ledger, and a handoff the next session can resume from. Finished teams are parked, not vaporized.",
+   "built": "<span class='pip shipped'></span>Shipped. The Aug-14 session produced a complete worked example: a fingerprint-chained 31-ruling record and a verified closeout bundle.",
+   "refs": "odin_compile_session_report \u00b7 .odin/audit/"
+  },
+  {
+   "id": "PB",
+   "tag": "PROTOCOL BUNDLE",
+   "g": "server",
+   "name": "Protocol bundle service",
+   "x": 6,
+   "y": 6.6,
+   "w": 1.4,
+   "d": 1.4,
+   "h": 2,
+   "stack": 5,
+   "does": "The heart of the referee: serves the versioned rulebook to any AI agent &mdash; startup packets sized to each role, role cards, receipt templates &mdash; so a fresh agent is governed in seconds, not after 100KB of pasted rules.",
+   "built": "<span class='pip shipped'></span>Shipped as npm @bradheitmann/odin-sentinel v0.5.0 (published = repo). ~48 tools and resources. This surface grew from your June-20 RFC sweep.",
+   "refs": "src/mcp/server.ts \u00b7 npm @bradheitmann/odin-sentinel",
+   "good": "Direct product of field feedback 2026-06-20."
+  },
+  {
+   "id": "VD",
+   "tag": "VALIDATORS",
+   "g": "server",
+   "name": "Deterministic validators",
+   "x": 9.4,
+   "y": 6.6,
+   "w": 1.2,
+   "d": 1.2,
+   "h": 1.6,
+   "does": "The referee&rsquo;s whistle: mechanical checkers for receipts, delegations, delivery proofs, manifests, read-proofs. Deterministic = same input, same verdict &mdash; agents can&rsquo;t argue.",
+   "built": "<span class='pip shipped'></span>Shipped; ~20 validators. 0.6.0 adds the truth-label check &mdash; built and reviewed, awaiting its sealed exam.",
+   "refs": "odin_validate_* \u00b7 src/protocol/schemas.ts"
+  },
+  {
+   "id": "SL",
+   "tag": "LAYOUT",
+   "g": "server",
+   "name": "Surface layout and topology",
+   "x": 6,
+   "y": 10,
+   "w": 1.2,
+   "d": 1.2,
+   "h": 1.2,
+   "does": "Computes the canonical on-screen seating of a governed team and gates team growth behind a checklist. If work isn&rsquo;t on a visible surface, it isn&rsquo;t governed work.",
+   "built": "<span class='pip shipped'></span>Shipped. Used live Aug 14 to bootstrap a 16-seat organization from one pane.",
+   "refs": "odin_compute_surface_layout"
+  },
+  {
+   "id": "HP",
+   "tag": "HARNESS INTEL",
+   "g": "server",
+   "name": "Harness probes and pacing",
+   "x": 9.4,
+   "y": 10,
+   "w": 1,
+   "d": 1,
+   "h": 1,
+   "does": "Knows each agent CLI&rsquo;s quirks (Claude Code, Codex, Droid, Pi, Crush&hellip;): installed, logged in, actually ready &mdash; and how fast you can type at it. &ldquo;Installed&rdquo; is not &ldquo;provisioned.&rdquo;",
+   "built": "<span class='pip shipped'></span>Shipped &mdash; your June-27 Pi rapid-fire report is why pacing exists. Aug-14 discoveries (Pi /clear trap, Droid double-Enter) queued for the matrix.",
+   "refs": "odin_get_harness_probe_matrix \u00b7 src/harness-pacing/",
+   "good": "Direct product of field feedback 2026-06-27."
+  },
+  {
+   "id": "TL",
+   "tag": "TELEMETRY",
+   "g": "server",
+   "name": "Telemetry and session reports",
+   "x": 11.6,
+   "y": 8.8,
+   "w": 0.9,
+   "d": 0.9,
+   "h": 0.8,
+   "does": "Collects what happened in a run &mdash; who did what, what was accepted, where tokens went &mdash; with secrets scrubbed before anything is stored or shared.",
+   "built": "<span class='pip shipped'></span>Shipped (session reports, redaction preview, telemetry config).",
+   "refs": "odin_compile_session_report"
+  },
+  {
+   "id": "OW",
+   "tag": "ODIN-WATCH",
+   "g": "server",
+   "name": "odin-watch liveness",
+   "x": 3.6,
+   "y": 8.6,
+   "w": 0.9,
+   "d": 0.9,
+   "h": 0.8,
+   "does": "A watcher that reads agent panes and classifies them: working, waiting, stuck, or dead &mdash; so nobody reads sixteen terminals by hand.",
+   "built": "<span class='pip shipped'></span>Shipped for cmux; tmux backend is a planned epic. The ownership rule wires in here during the circuit-breaker work.",
+   "refs": "src/odin-watch/ \u00b7 EPIC-005 (planned)"
+  },
+  {
+   "id": "CC",
+   "tag": "THIS MACHINE",
+   "g": "runs",
+   "name": "Installs on this machine",
+   "x": 13.6,
+   "y": 7,
+   "w": 1.6,
+   "d": 1,
+   "h": 1,
+   "does": "Where governed sessions happen here: the Claude Code plugin, skill copies for other CLIs, and the cmux workspaces where teams get visible seats.",
+   "built": "<span class='pip shipped'></span>Working, two drift findings (Aug 19): plugin at 0.4.13 vs canon 0.5.0, and the master skill folder went missing in the Aug-8 recovery &mdash; installed copies have no source of truth to sync against.",
+   "refs": "plugin cache 0.4.13 \u00b7 sync-installations.sh (master absent)",
+   "cond": "Restore the master skill dir, then update the plugin. The master matters more."
+  },
+  {
+   "id": "DS",
+   "tag": "DOWNSTREAM",
+   "g": "runs",
+   "name": "Downstream projects",
+   "x": 16.6,
+   "y": 8.2,
+   "w": 1,
+   "d": 1,
+   "h": 0.8,
+   "does": "Other repos running under this protocol: edge-agentic (planning law), llm-serve (local models), the migration-lab (whose failure report started the current build), and Deck &mdash; consuming odin-sentinel as a library for its cockpit.",
+   "built": "<span class='pip shipped'></span>Live consumers via npm 0.5.0. Two hand-offs are written and waiting for your paste: the edge-agentic assignment and the migration-lab reply.",
+   "refs": "audit outbound/ (2 ready-to-paste notes)",
+   "cond": "Two outbound notes drafted Aug 14, still undelivered."
+  },
+  {
+   "id": "FB",
+   "tag": "FIELD FEEDBACK",
+   "g": "loop",
+   "name": "Field feedback intake",
+   "x": 0,
+   "y": 11.4,
+   "w": 1.2,
+   "d": 1.2,
+   "h": 1.1,
+   "does": "Where your other projects&rsquo; pain becomes this project&rsquo;s roadmap. Reports arrive, get fingerprint-verified, judged item by item, and accepted items become planned work. Nothing is silently dropped.",
+   "built": "<span class='pip shipped'></span>All 7 reports accounted, none wasted:<br>&bull; 06-13 Enter-key bug &rarr; <span class='pip shipped'></span>shipped<br>&bull; 06-20 RFC sweep &rarr; <span class='pip shipped'></span>shipped (seeded 0.5.0)<br>&bull; 06-27 Pi rapid-fire &rarr; <span class='pip shipped'></span>shipped<br>&bull; 06-28 provider outage &rarr; <span class='pip shipped'></span>mostly shipped<br>&bull; 07-08 stale-address &rarr; <span class='pip planned'></span>planned (EPIC-040)<br>&bull; 07-08 roster/PO mandate &rarr; <span class='pip planned'></span>planned (EPIC-039&ndash;045)<br>&bull; 08-08 governance displacement &rarr; <span class='pip built'></span>in build<br>An independent audit confirmed this accounting; 3 sentence-sized omissions found and pinned.",
+   "refs": "intelligence inbox \u00b7 disposition-ledger.json",
+   "good": "Verdict: 3 shipped \u00b7 1 mostly \u00b7 1 in build \u00b7 2 planned \u00b7 0 lost."
+  },
+  {
+   "id": "CB",
+   "tag": "CIRCUIT BREAKERS",
+   "g": "build",
+   "name": "Governance circuit breakers",
+   "x": 3.6,
+   "y": 12.6,
+   "w": 2,
+   "d": 1.2,
+   "h": 1,
+   "does": "The flagship build (EPIC-052), born from the Aug-8 failure report: a tamper-proof event logbook, a three-strikes retry limit that can&rsquo;t be laundered, a ban on audits-of-audits without your sign-off, paperwork budgets that stop instead of spiral, and problems that don&rsquo;t count as handled until someone owns them.",
+   "built": "<span class='pip built'></span>Wave-0 slice 1 BUILT and review-passed (570 tests green, fingerprint-protected). <span class='pip blocked'></span>Slice 2 blocked after 3 attempts &mdash; every failure was procedure, never code &mdash; awaiting a machine-friendlier re-planned contract.",
+   "refs": "EPIC-052 \u00b7 candidate a95d6ebb \u00b7 worktree odin-wt-b",
+   "cond": "Slice W0B needs its re-plan. Nothing ships without the full review chain and your commit approval."
+  },
+  {
+   "id": "DA",
+   "tag": "AMENDMENTS",
+   "g": "build",
+   "name": "Rulebook amendments",
+   "x": 8,
+   "y": 13.4,
+   "w": 1.4,
+   "d": 1,
+   "h": 1,
+   "does": "Seven precise rulebook edits (EPIC-053) closing the loopholes the failure report exposed, plus one code change: every serious claim carries a truth label (observed / derived / claimed&hellip;) so &ldquo;claimed&rdquo; can never again pass as &ldquo;done.&rdquo;",
+   "built": "<span class='pip built'></span>Amendments BUILT, review-passed 16/16. Final gate &mdash; the sealed exam &mdash; parked on your decision after five examiner seats fell to procedure. Becomes v0.6.0.",
+   "refs": "EPIC-053 \u00b7 candidate c74983cd \u00b7 worktree odin-wt-c",
+   "cond": "Sealed exam awaits your go; then commit approval; then 0.6.0."
+  }
+ ],
+ "status": {
+  "RO": {
+   "state": "ok",
+   "items": []
+  },
+  "BC": {
+   "state": "ok",
+   "items": [
+    {
+     "c": "amber",
+     "l": "verbatim receipt templates queued for 0.6.0"
+    }
+   ]
+  },
+  "DL": {
+   "state": "ok",
+   "items": []
+  },
+  "GA": {
+   "state": "ok",
+   "items": []
+  },
+  "CL": {
+   "state": "ok",
+   "items": []
+  },
+  "PB": {
+   "state": "ok",
+   "items": []
+  },
+  "VD": {
+   "state": "ok",
+   "items": []
+  },
+  "SL": {
+   "state": "ok",
+   "items": []
+  },
+  "HP": {
+   "state": "ok",
+   "items": [
+    {
+     "c": "amber",
+     "l": "Aug-14 harness quirks queued for the matrix"
+    }
+   ]
+  },
+  "TL": {
+   "state": "ok",
+   "items": []
+  },
+  "OW": {
+   "state": "ok",
+   "items": [
+    {
+     "c": "amber",
+     "l": "tmux backend is a planned epic"
+    }
+   ]
+  },
+  "CC": {
+   "state": "attn",
+   "items": [
+    {
+     "c": "amber",
+     "l": "master skill dir missing \u2014 restore + resync"
+    },
+    {
+     "c": "amber",
+     "l": "plugin at 0.4.13, canon 0.5.0"
+    }
+   ]
+  },
+  "DS": {
+   "state": "attn",
+   "items": [
+    {
+     "c": "you",
+     "l": "paste edge-agentic work assignment"
+    },
+    {
+     "c": "you",
+     "l": "paste migration-lab reply"
+    }
+   ]
+  },
+  "FB": {
+   "state": "ok",
+   "items": [
+    {
+     "c": "you",
+     "l": "confirm EPIC-039 mandate ratification"
+    }
+   ]
+  },
+  "CB": {
+   "state": "build",
+   "items": [
+    {
+     "c": "red",
+     "l": "slice W0B blocked \u2014 re-plan owed"
+    },
+    {
+     "c": "amber",
+     "l": "wave-1 slices author after W0 closes"
+    }
+   ]
+  },
+  "DA": {
+   "state": "build",
+   "items": [
+    {
+     "c": "you",
+     "l": "sealed-exam go/no-go is your call"
+    },
+    {
+     "c": "amber",
+     "l": "truth-label slice queued behind"
+    }
+   ]
+  }
+ },
+ "edges": [
+  [
+   "RO",
+   "BC",
+   "data"
+  ],
+  [
+   "BC",
+   "DL",
+   "data"
+  ],
+  [
+   "DL",
+   "GA",
+   "data"
+  ],
+  [
+   "GA",
+   "CL",
+   "data"
+  ],
+  [
+   "RO",
+   "PB",
+   "auth"
+  ],
+  [
+   "PB",
+   "VD",
+   "data"
+  ],
+  [
+   "VD",
+   "SL",
+   "data"
+  ],
+  [
+   "VD",
+   "HP",
+   "data"
+  ],
+  [
+   "PB",
+   "TL",
+   "data"
+  ],
+  [
+   "PB",
+   "OW",
+   "data"
+  ],
+  [
+   "PB",
+   "CC",
+   "auth"
+  ],
+  [
+   "CC",
+   "DS",
+   "auth"
+  ],
+  [
+   "DS",
+   "FB",
+   "data"
+  ],
+  [
+   "CL",
+   "FB",
+   "data"
+  ],
+  [
+   "FB",
+   "CB",
+   "data"
+  ],
+  [
+   "FB",
+   "DA",
+   "data"
+  ],
+  [
+   "CB",
+   "PB",
+   "intended"
+  ],
+  [
+   "DA",
+   "RO",
+   "intended"
+  ]
+ ],
+ "trace": [
+  "RO-BC",
+  "BC-DL",
+  "DL-GA",
+  "GA-CL",
+  "RO-PB",
+  "PB-VD",
+  "PB-CC",
+  "CC-DS",
+  "DS-FB",
+  "FB-CB",
+  "FB-DA",
+  "DA-RO",
+  "CB-PB"
+ ],
+ "traceText": {
+  "RO-BC": "Seats are defined; every occupant must file a receipt to claim one.",
+  "BC-DL": "A seated agent may receive work &mdash; but only through proven delivery.",
+  "DL-GA": "Delivered work can&rsquo;t start until the gates pass: read-proof, location-proof, readiness.",
+  "GA-CL": "Work that passes its gates flows to honest closeout: evidence, metrics, handoff.",
+  "RO-PB": "The rulebook is compiled into the bundle the referee serves to agents.",
+  "PB-VD": "Every receipt and proof an agent files hits a deterministic validator.",
+  "PB-CC": "The referee installs locally: a plugin for Claude Code, skills for the other CLIs.",
+  "CC-DS": "Governed sessions run in downstream projects, consuming the published package.",
+  "DS-FB": "When something breaks in the field, it comes back as a written report.",
+  "FB-CB": "The Aug-8 failure report was judged, accepted, and became the circuit-breaker build.",
+  "FB-DA": "The same report&rsquo;s process lessons became seven rulebook amendments.",
+  "DA-RO": "Amendments, once past their sealed exam and your approval, change the rulebook.",
+  "CB-PB": "The breakers ship into the referee as v0.6.0 &mdash; and the loop continues."
+ },
+ "short": {
+  "RO": "Roles",
+  "BC": "Boot receipts",
+  "DL": "Delivery proof",
+  "GA": "Gates",
+  "CL": "Closeout",
+  "PB": "Protocol bundle",
+  "VD": "Validators",
+  "SL": "Surface layout",
+  "HP": "Harness pacing",
+  "TL": "Telemetry",
+  "OW": "odin-watch",
+  "CC": "Local installs",
+  "DS": "Downstream",
+  "FB": "Field feedback",
+  "CB": "Circuit breakers",
+  "DA": "Amendments"
+ },
+ "edgeStatus": {
+  "PB-CC": "degraded"
+ },
+ "levels": {
+  "RO": 1,
+  "BC": 1,
+  "DL": 1,
+  "GA": 1,
+  "CL": 1,
+  "PB": 0,
+  "VD": 0,
+  "SL": 0,
+  "HP": 0,
+  "TL": 0,
+  "OW": 0,
+  "CC": -1,
+  "DS": -1,
+  "FB": -1,
+  "CB": -1,
+  "DA": -1
+ },
+ "title": "ODIN SENTINEL \u2014 Governance Protocol \u00b7 Architecture Map",
+ "brand": {
+  "k": "Package",
+  "v": "odin-sentinel \u00b7 governance protocol"
+ },
+ "metrics": [
+  {
+   "k": "Shipped \u00b7 npm",
+   "v": "v0.5.0 = repo"
+  },
+  {
+   "k": "Your field reports",
+   "v": "7 filed \u00b7 0 wasted"
+  },
+  {
+   "k": "Next release",
+   "v": "0.6.0 \u00b7 2 QA-passed"
+  }
+ ],
+ "wordmark": "ODIN SENTINEL",
+ "asOf": "As of 2026-08-19 \u00b7 hand-audited",
+ "intro": {
+  "eyebrow": "ODIN Sentinel",
+  "title": "A rulebook your agent teams cannot quietly break",
+  "sub": "what this project is, what state it&rsquo;s in, and what happened to your feedback",
+  "proseHTML": "<p class=\"t-label\" style=\"color:var(--okoa-semantic-fg3);margin-bottom:var(--okoa-space-2)\">What this is</p>\n      <p class=\"t-body-sm\">When you run several AI coding agents at once, three things go wrong: they do <em>hidden</em> work you can&rsquo;t see, they <em>claim</em> things are done that aren&rsquo;t, and they quietly step on each other&rsquo;s files. ODIN Sentinel is the fix: a written <span class=\"mark\">rulebook</span> (the SCP protocol) plus a small local <span class=\"mark\">referee program</span> (an MCP server) that any AI agent can load. No cloud service, no AI of its own &mdash; just rules and a referee.</p>\n      <p class=\"t-body-sm\">Fly the map the standard way: <strong>drag to orbit</strong> (one finger on a phone or iPad), <strong>scroll or pinch to zoom</strong>, <strong>right-drag or two-finger drag to pan</strong>. The city is a loop &mdash; rulebook district (north), the referee (center), where it runs (east), and the feedback loop (south) that turns field failures into the next improvement.</p>\n      <p class=\"t-label\" style=\"color:var(--okoa-semantic-fg3);margin:var(--okoa-space-4) 0 var(--okoa-space-2)\">Was your feedback wasted? No.</p>\n      <p class=\"t-body-sm\">Seven field reports: <span class=\"pip shipped\"></span><strong>3 fully shipped</strong>, <span class=\"pip shipped\"></span><strong>1 mostly shipped</strong>, <span class=\"pip built\"></span><strong>1 in build now</strong>, <span class=\"pip planned\"></span><strong>2 planned</strong>. Click <span class=\"mark\">FB</span> for the report-by-report accounting.</p>\n      <p class=\"t-label\" style=\"color:var(--okoa-semantic-fg3);margin:var(--okoa-space-4) 0 var(--okoa-space-2)\">Reading the roofs</p>\n      <p class=\"t-body-sm\">Color is attention debt: paper is healthy, amber owes work, blue is being built, red is broken. A number painted on a roof counts its open items (red glyph = a blocker is among them); a slate diamond on a roof means a decision of <em>yours</em> is inside. Click any marked block: the camera flies to it and the panel lists its items.</p>"
+ }
+}

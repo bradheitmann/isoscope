@@ -1654,6 +1654,13 @@ body{display:grid;overflow:hidden;
 {"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"}}
 </script>
 <script type="application/json" id="isospec">__ISOSCOPE_SPEC__</script>
+<script>
+/* live mode: present only when served by `isoscope serve` — the map follows the graph store */
+if (typeof window.__ISOSCOPE_LIVE !== "undefined") {
+  const es = new EventSource("/events");
+  es.addEventListener("update", () => location.reload());
+}
+</script>
 <script type="module">
 import * as THREE from "three";
 import {OrbitControls} from "three/addons/controls/OrbitControls.js";

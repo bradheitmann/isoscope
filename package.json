@@ -1,0 +1,11 @@
+{
+  "name": "isoscope",
+  "version": "0.1.0",
+  "description": "Schematic observability: your system as an inspectable isometric city, driven by one JSON spec or a SQLite graph store.",
+  "type": "module",
+  "license": "MIT",
+  "scripts": {
+    "build:self": "bun cli.ts import examples/isoscope.spec.json /tmp/isoscope-self.db && bun cli.ts build /tmp/isoscope-self.db out/isoscope.html",
+    "build:odin": "node build.mjs examples/odin.spec.json out/odin.html"
+  }
+}

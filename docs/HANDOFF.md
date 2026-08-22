@@ -38,6 +38,14 @@ Sentinel architecture map (built iteratively with the operator, 2026-08-19..22).
   quarantined at /tmp/retired-ODIN-ARCHITECTURE-MAP-3D-20260822.html, evaporates on reboot).
 
 ## Near-term roadmap (operator-aligned)
+0b. DONE 2026-08-22 (productization): Bun+TS, ZERO deps — lib.ts (SQLite graph
+   store ⇄ spec, bun:sqlite) · cli.ts (init/import/export/build/serve; serve =
+   Bun.serve + fs.watch + SSE, template live client reloads on store change —
+   THE LOOP: agent writes store → browser repaints) · mcp.ts (hand-rolled stdio
+   JSON-RPC, 7 tools) · adapters/DEEPSEEK.md (non-MCP contract) · db/schema.sql
+   (edges-as-entities: docs+health ON the edge row) · examples/isoscope.spec.json
+   (self-portrait, PRIMARY example) · README leads with operator mission verbatim.
+   Round-trip + SSE + browser all verified. Bun local = 1.3.9.
 0. DONE 2026-08-22: LINKS ARE ENTITIES — edges clickable/hoverable (Line2 raycast,
    ray.camera required), edge inspector (LINK · type · health / title / What flows
    here / loop narration / health notes / refs), spec key `edgeDocs`

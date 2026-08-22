@@ -1,38 +1,67 @@
 # Isoscope
 
-**A schematic observability visualization — a codebase (or any system) as an
-inspectable isometric city.**
+**So you always know what your codebase does, how it is architected, and if
+something is broken and what you need to work on next.**
 
-Orthographic 3D you can orbit from any angle · etched paper-and-ink buildings ·
-PCB-routed connection pipes · circuit-breaker interaction (click modules to
-energize a live sub-circuit; flow runs only where both ends are live) · optional
-three-level stacking (governance above, runtime at ground, field below — or
-whatever your strata are) · guided trace narration · single sectioned inspector
-(identity → state → evidence) · 18 classic IDE themes (Kanagawa, Dracula,
-Gruvbox, Catppuccin, …) · label/body font pickers · everything driven by one
-JSON spec.
+Isoscope renders a system as an inspectable isometric city: modules are
+buildings, connections are pipes that know *what flows* through them, and
+status is painted on the architecture itself. Open the map in a browser on day
+one of a project; as the codebase grows, your agents mirror every module,
+link, and blocker into a graph store — and the map repaints live with every
+change. The map never trails reality.
 
-## Use
+Zero dependencies. TypeScript on [Bun](https://bun.sh) (`bun:sqlite` built in).
+Ships as one self-contained HTML file that works from disk.
+
+## Quickstart
 
 ```bash
-node build.mjs examples/odin.spec.json out/my-map.html
-open out/my-map.html     # fully self-contained, works over file://
+bun cli.ts import examples/isoscope.spec.json my.db   # seed a graph store
+bun cli.ts serve my.db                                # live map at :4177
+bun cli.ts build my.db out/map.html                   # shippable artifact
 ```
 
-Write your own spec (see `SPEC.md`); the engine renders everything else.
+The primary example is isoscope describing itself (`examples/isoscope.spec.json`);
+`examples/odin.spec.json` is the first real consumer (ODIN Sentinel, 16 modules).
 
-## Why a builder instead of `fetch()`?
+## The loop
 
-Self-contained output runs from disk with zero servers — `file://` blocks module
-imports and fetches (CORS), so the spec is injected at build time. Hosted use
-can trivially wrap the same template.
+1. **Day one**: seed a store with a handful of modules; open `serve` in a tab.
+2. **While building**: agents maintain the map — via the **MCP server**
+   (`mcp.ts`, 7 tools, works in Claude Code/Codex/any MCP harness) or via the
+   **CLI contract** for non-MCP harnesses (`adapters/DEEPSEEK.md`).
+3. **Every commit**: a post-commit hook keeps it honest —
+   ```bash
+   # .git/hooks/post-commit
+   bun /path/to/isoscope/cli.ts export my.db --out docs/architecture.spec.json
+   ```
+   (any store write repaints every open browser via SSE).
+4. **Every release**: `build` emits the artifact to ship with your docs.
 
-## Origin & roadmap
+## What the map gives you
 
-Extracted from the ODIN Sentinel architecture map (first consumer,
-`examples/odin.spec.json`). Status objects are deliberately trace-shaped so live
-telemetry can stream into the same slots — the roadmap is: spec → static map →
-live production observability. Rendering: Three.js (orthographic camera, fat
-lines). Design language: OKOA + classic IDE palettes.
+- **What it does** — click any building: identity, state, evidence, in one column.
+- **How it's architected** — orbit freely (orthographic: flat-iso at rest, 3D
+  in motion); press **Stack** for semantic levels; links are entities — click a
+  pipe to read what data flows over it.
+- **What's broken, what's next** — status classes (`red` blocker / `amber`
+  queued / `you` decision) paint whole buildings; the overview panel lists every
+  open item worst-first; circuit mode isolates any subsystem's live flow.
+
+## Layout
+
+```
+template.html   the engine (one file: scene, router, inspector, themes, live client)
+build.mjs       spec + template → self-contained HTML
+lib.ts          SQLite graph store ⇄ spec (core, shared)
+cli.ts          init · import · export · build · serve
+mcp.ts          MCP server (agents maintain the map)
+db/schema.sql   the graph shape: nodes, edges-as-entities, status, trace
+adapters/       contracts for non-MCP harnesses (DeepSeek first)
+examples/       isoscope-by-isoscope (primary) · ODIN Sentinel
+docs/           design rules (routing doctrine + sources) · dev handoff
+```
+
+Spec schema: [SPEC.md](SPEC.md) · Routing laws & roadmap: [docs/DESIGN-RULES.md](docs/DESIGN-RULES.md)
 
 MIT.

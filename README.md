@@ -38,6 +38,19 @@ The primary example is isoscope describing itself (`examples/isoscope.spec.json`
    (any store write repaints every open browser via SSE).
 4. **Every release**: `build` emits the artifact to ship with your docs.
 
+## Controls
+
+| gesture | trackpad | mouse | touch |
+|---|---|---|---|
+| **Orbit** (rotate) | one-finger click + drag | left-drag | one finger |
+| **Pan** (reposition) | **two-finger click + drag** | right-drag | two-finger drag |
+| **Zoom** (magnify) | two-finger scroll / pinch | wheel | pinch |
+| Inspect / circuit | click a building (again = cut) · click a pipe = what flows · empty ground = restore · **R** = home |||
+
+The camera is orthographic: nothing shrinks with distance — the city opens flat-isometric,
+goes 3D the moment you grab it, and **R** glides back to the flat start. Home view and
+scale auto-fit whatever spec is loaded.
+
 ## What the map gives you
 
 - **What it does** — click any building: identity, state, evidence, in one column.

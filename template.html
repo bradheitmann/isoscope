@@ -1577,6 +1577,19 @@ body{display:grid;overflow:hidden;
 .seg button{flex:1;padding:8px 6px;background:none;border:0;cursor:pointer;font-family:var(--okoa-mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--okoa-semantic-fg1);}
 .seg button.on{background:var(--okoa-semantic-entity-primary,var(--okoa-semantic-fg1));color:var(--okoa-semantic-fg-on-dark,#fff);}
 #btnRandomTheme{width:100%;margin-bottom:4px;}
+.introveil{position:fixed;inset:0;z-index:80;background:color-mix(in srgb,var(--okoa-semantic-fg1) 42%,transparent);
+ display:flex;align-items:center;justify-content:center;padding:20px;}
+.introveil[hidden]{display:none;}
+.introcard{background:var(--okoa-semantic-surface-default);border:1px solid var(--okoa-semantic-border-strong);
+ max-width:520px;width:100%;max-height:86vh;overflow-y:auto;padding:26px 28px;box-shadow:0 24px 80px rgba(0,0,0,.3);}
+.introcard h2{font-family:var(--okoa-serif);font-size:26px;line-height:1.15;margin:0 0 6px;color:var(--okoa-semantic-fg1);}
+.introcard .sub{font-family:var(--okoa-sans);font-size:13px;color:var(--okoa-semantic-fg2);margin:0 0 16px;}
+.introcard h3{font-family:var(--okoa-mono);font-size:10px;letter-spacing:.16em;text-transform:uppercase;
+ color:var(--okoa-semantic-fg2);margin:18px 0 8px;}
+.introcard p{font-family:var(--okoa-sans);font-size:13px;line-height:1.55;color:var(--okoa-semantic-fg1);margin:0 0 10px;}
+.ctl{display:grid;grid-template-columns:96px 1fr;gap:4px 14px;font-family:var(--okoa-sans);font-size:12.5px;color:var(--okoa-semantic-fg1);}
+.ctl b{font-family:var(--okoa-mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--okoa-semantic-fg2);}
+.introcard .okoa-btn{width:100%;margin-top:18px;}
 </style>
 </head>
 <body>
@@ -1628,9 +1641,33 @@ body{display:grid;overflow:hidden;
   </div>
 </aside>
 
+<aside class="introveil" id="introVeil" hidden aria-modal="true" role="dialog">
+ <div class="introcard">
+  <h2>This is your codebase, as a city</h2>
+  <p class="sub">so you always know what it does, how it&rsquo;s architected, and what needs work next</p>
+  <p>Buildings are modules &mdash; <strong>color is status</strong>: paper is healthy, amber owes work, blue is being built, red is broken. Pipes are connections that know <em>what flows</em> through them.</p>
+  <h3>Moving around</h3>
+  <div class="ctl">
+   <b>Orbit</b><span>drag &middot; trackpad: one-finger click&#8202;+&#8202;drag</span>
+   <b>Pan</b><span>trackpad: <strong>two-finger click&#8202;+&#8202;drag</strong> &middot; mouse: right-drag &middot; touch: two fingers</span>
+   <b>Zoom</b><span>scroll or pinch (nothing shrinks with distance &mdash; it magnifies)</span>
+   <b>Home</b><span>R or Reset &mdash; glides back to the flat view</span>
+  </div>
+  <h3>Interrogating</h3>
+  <div class="ctl">
+   <b>A building</b><span>click to energize it &mdash; add more and only the live circuit flows; click again to cut</span>
+   <b>A pipe</b><span>click to read what data flows across it</span>
+   <b>Ground</b><span>click to restore the whole board</span>
+   <b>Topbar</b><span>Flow animates the data &middot; Trace tells the story &middot; Stack lifts the levels</span>
+  </div>
+  <button class="okoa-btn" id="introDismiss">Got it — show me the city</button>
+ </div>
+</aside>
+
 <aside class="drawer" id="drawer" aria-label="Settings">
  <header><h3>Settings</h3><button class="okoa-btn" id="drawerClose" aria-label="Close settings">&times;</button></header>
  <div class="dbody">
+  <button class="okoa-btn" id="btnGuide" style="width:100%;margin-bottom:2px">Show the intro guide</button>
   <div class="dsec">Theme</div>
   <button class="okoa-btn" id="btnRandomTheme" title="Surprise me">Random theme</button>
   <div id="themeList"></div>
@@ -1646,7 +1683,7 @@ body{display:grid;overflow:hidden;
 </aside>
 
 <footer class="hint">
-  <span class="t-label-sm keys">Drag to orbit (one finger on touch) &middot; Scroll / pinch to zoom &middot; Right-drag or two-finger drag to pan &middot; Click modules to build a live circuit &middot; click again to cut &middot; empty ground restores the board &middot; R resets</span>
+  <span class="t-label-sm keys">Orbit: drag (one finger) &middot; Pan: two-finger click+drag on trackpad / right-drag mouse / two-finger drag touch &middot; Zoom: scroll or pinch &middot; Click a building: circuit &middot; a pipe: what flows &middot; ground: restore &middot; R: home</span>
   <span class="t-label-sm wordmark" id="wordmark"></span>
 </footer>
 
@@ -1685,6 +1722,12 @@ const GROUPS=SPEC.groups,NODES=SPEC.nodes,STATUS=SPEC.status,EDGES=SPEC.edges,ED
       TRACE=SPEC.trace||[],TRACETEXT=SPEC.traceText||{};
 NODES.forEach(n=>{const s2=STATUS[n.id]||{state:"ok",items:[]};n.st=s2.state;n.items=s2.items;if(s2.items.some(i=>i.c==="red"))n.st="blocked";});
 const byId={};NODES.forEach(n=>byId[n.id]=n);
+/* auto-fit: every spec gets a centered home and a view scaled to its extents */
+const _bb=(()=>{let x0=1e9,x1=-1e9,z0=1e9,z1=-1e9;
+ NODES.forEach(n=>{x0=Math.min(x0,n.x);x1=Math.max(x1,n.x+n.w);z0=Math.min(z0,n.y);z1=Math.max(z1,n.y+n.d);});
+ return {x0,x1,z0,z1};})();
+const CENTER={x:(_bb.x0+_bb.x1)/2,z:(_bb.z0+_bb.z1)/2};
+const FITSPAN=Math.max(_bb.x1-_bb.x0,_bb.z1-_bb.z0);
 /* chrome from spec */
 document.getElementById("brandK").textContent=(SPEC.brand||{}).k||"";
 document.getElementById("brandV").textContent=(SPEC.brand||{}).v||"";
@@ -1757,7 +1800,7 @@ const scene=new THREE.Scene();
 scene.background=COL.paper.clone();
 /* orthographic projection: no vanishing point — a building is the same size on
    screen near or far; orbiting slides things behind/above each other (flat iso) */
-const VIEW=21; /* world units visible vertically at zoom 1 */
+const VIEW=Math.max(16,FITSPAN*1.25+3); /* auto-fit: world units visible at zoom 1 */
 const camera=new THREE.OrthographicCamera(-VIEW/2,VIEW/2,VIEW/2,-VIEW/2,-200,500);
 scene.add(new THREE.AmbientLight(0xffffff,0.85));
 const sun=new THREE.DirectionalLight(0xffffff,0.9);sun.position.set(18,30,10);scene.add(sun);
@@ -1779,7 +1822,7 @@ function makeGrid(){
  defs.forEach(d=>{
   const g=new THREE.GridHelper(80,40,d.c,d.c);
   g.material.transparent=true;g.material.opacity=d.op;
-  g.position.set(9,d.y-0.01,7.5);scene.add(g);grids.push(g);
+  g.position.set(CENTER.x,d.y-0.01,CENTER.z);scene.add(g);grids.push(g);
  });
 }
 makeGrid();
@@ -2040,7 +2083,7 @@ rebuildAllEdges();
 /* ————— navigation: standard OrbitControls (industry-standard, multi-device) —————
    Mouse: drag = orbit · wheel = zoom · right-drag = pan
    Touch: one finger = orbit · pinch = zoom · two-finger drag = pan */
-const HOME={tx:8.6,ty:1.4,tz:8.2,r:40,az:-Math.PI/4,pol:0.9553,zoom:1.16};
+const HOME={tx:CENTER.x,ty:1.0,tz:CENTER.z,r:40,az:-Math.PI/4,pol:0.9553,zoom:1.12};
 const controls=new OrbitControls(camera,canvas);
 controls.enableDamping=true;controls.dampingFactor=0.08;
 controls.minZoom=0.35;controls.maxZoom=6;
@@ -2447,6 +2490,18 @@ function fontRows(el,fonts,cssVar){
 fontRows(document.getElementById("monoList"),MONOFONTS,"--okoa-mono");
 fontRows(document.getElementById("sansList"),SANSFONTS,"--okoa-sans");
 paintThemeRows();
+/* first-run intro: shown once, reopenable from Settings */
+const introVeil=document.getElementById("introVeil");
+try{ if(!localStorage.getItem("isoscope.introSeen")) introVeil.hidden=false; }catch(e){ introVeil.hidden=false; }
+document.getElementById("introDismiss").addEventListener("click",()=>{
+ introVeil.hidden=true;
+ try{ localStorage.setItem("isoscope.introSeen","1"); }catch(e){}
+});
+document.getElementById("btnGuide").addEventListener("click",()=>{
+ drawer.classList.remove("open");
+ introVeil.hidden=false;
+});
+introVeil.addEventListener("click",ev=>{ if(ev.target===introVeil) document.getElementById("introDismiss").click(); });
 
 /* ————— frame loop ————— */
 function resize(){

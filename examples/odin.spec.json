@@ -657,5 +657,9 @@
    "carries": "Ratified doctrine changes flowing back into the role system \u2014 the loop closes and the rulebook that governs agents is itself governed.",
    "refs": "STORY-AMEND-001 \u00b7 protocol/SCP.md"
   }
+ },
+ "drcBudget": {
+  "maxWeightedCrossings": 11,
+  "acknowledged": "corridor shares forced by architecture; reduction tracked (R13 hub escape, R16 shove)"
  }
 }

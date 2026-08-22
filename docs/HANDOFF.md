@@ -38,6 +38,16 @@ Sentinel architecture map (built iteratively with the operator, 2026-08-19..22).
   quarantined at /tmp/retired-ODIN-ARCHITECTURE-MAP-3D-20260822.html, evaporates on reboot).
 
 ## Near-term roadmap (operator-aligned)
+0c. DONE 2026-08-22 (DRC + CI loop): router.mjs = SINGLE SOURCE (injected into
+   template at build via /*__ISOSCOPE_ROUTER__*/ slot; imported by drc.ts) —
+   never two router implementations. drc.ts = collision LINT (weighted crossings
+   vs spec drcBudget.maxWeightedCrossings; exit 1 over budget; offender list).
+   Self-map layout re-placed via lint iteration 5→2 (budget 2 acknowledged);
+   ODIN budget 11 acknowledged (R13/R16 will reduce). CI loop: `cli.ts mark` +
+   `POST /mark` on serve (ISOSCOPE_TOKEN Bearer optional) + `install-hook`
+   (post-commit) — VERIFIED: POST simulating pipeline failure → SSE fired →
+   building rendered RED. Operator lifecycle thesis (README): understandability
+   layer while building → graduates to observability layer in production.
 0b. DONE 2026-08-22 (productization): Bun+TS, ZERO deps — lib.ts (SQLite graph
    store ⇄ spec, bun:sqlite) · cli.ts (init/import/export/build/serve; serve =
    Bun.serve + fs.watch + SSE, template live client reloads on store change —

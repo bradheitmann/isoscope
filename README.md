@@ -10,6 +10,11 @@ one of a project; as the codebase grows, your agents mirror every module,
 link, and blocker into a graph store — and the map repaints live with every
 change. The map never trails reality.
 
+**The lifecycle**: use it as an *understandability layer* while you build and
+develop — then graduate it to an *observability visualization layer* as you roll
+into production. Same map, same store; only the writers change (you and your
+agents first, then your pipelines and telemetry).
+
 Zero dependencies. TypeScript on [Bun](https://bun.sh) (`bun:sqlite` built in).
 Ships as one self-contained HTML file that works from disk.
 
@@ -30,12 +35,27 @@ The primary example is isoscope describing itself (`examples/isoscope.spec.json`
 2. **While building**: agents maintain the map — via the **MCP server**
    (`mcp.ts`, 7 tools, works in Claude Code/Codex/any MCP harness) or via the
    **CLI contract** for non-MCP harnesses (`adapters/DEEPSEEK.md`).
-3. **Every commit**: a post-commit hook keeps it honest —
+3. **Every commit**: install the shipped hook —
    ```bash
-   # .git/hooks/post-commit
-   bun /path/to/isoscope/cli.ts export my.db --out docs/architecture.spec.json
+   bun cli.ts install-hook /path/to/your/repo /path/to/my.db
    ```
    (any store write repaints every open browser via SSE).
+3b. **When CI breaks, the map turns red where it broke**:
+   ```bash
+   # from any pipeline, against wherever `serve` runs:
+   curl -X POST $MAP_HOST/mark -H 'content-type: application/json' \
+     -d '{"id":"API","state":"attn","items":[{"c":"red","l":"CI: tests failing on main (#123)"}]}'
+   # or locally / from a runner with repo access:
+   bun cli.ts mark my.db API --red "CI: tests failing on main (#123)"
+   ```
+   Optional `ISOSCOPE_TOKEN` env guards the endpoint (Bearer auth).
+3c. **Keep the wiring lawful**: the collision lint fails your build when routes
+   cross beyond the acknowledged budget —
+   ```bash
+   bun drc.ts my-spec.json        # or point it at the .db
+   ```
+   Budget lives in the spec (`drcBudget.maxWeightedCrossings`) — the L2 law's
+   own "unless the architecture forces it" clause, made machine-checkable.
 4. **Every release**: `build` emits the artifact to ship with your docs.
 
 ## Controls
@@ -76,5 +96,13 @@ docs/           design rules (routing doctrine + sources) · dev handoff
 ```
 
 Spec schema: [SPEC.md](SPEC.md) · Routing laws & roadmap: [docs/DESIGN-RULES.md](docs/DESIGN-RULES.md)
+
+## Roadmap
+
+CI/CD provider integrations (GitHub Actions / GitLab / Buildkite adapters that
+map failing jobs → modules automatically) · test-runner adapters
+(failure→module attribution) · live telemetry streaming into the trace-shaped
+status slots · R13 hub-escape + R16 shove routing (crossing reduction) ·
+R30 mental-map-stable hot-swap for `serve`.
 
 MIT.

@@ -42,6 +42,41 @@ switch (cmd) {
     console.log(`isoscope: built ${outPath} from ${dbPath} · ${spec.nodes.length} modules · ${spec.edges.length} links`);
     break;
   }
+  case "mark": {
+    /* CI/agents: set a module's status — the live map repaints, red shows where it broke.
+       bun cli.ts mark <db> <nodeId> [--state ok|attn|build] [--red msg] [--amber msg] [--you msg] [--clear] */
+    const [dbPath, nodeId] = args;
+    if (!dbPath || !nodeId) { console.error("usage: cli.ts mark <db> <nodeId> [--state s] [--red m] [--amber m] [--you m] [--clear]"); process.exit(2); }
+    const db = open(dbPath);
+    const exists = db.query("SELECT 1 FROM nodes WHERE id=?").get(nodeId);
+    if (!exists) { console.error(`no such module: ${nodeId}`); process.exit(2); }
+    const sIdx = args.indexOf("--state");
+    if (sIdx >= 0) db.prepare("UPDATE nodes SET state=? WHERE id=?").run(args[sIdx+1], nodeId);
+    if (args.includes("--clear")) db.prepare("DELETE FROM status_items WHERE node_id=?").run(nodeId);
+    for (const cls of ["red","amber","you"] as const) {
+      let i = -1;
+      while ((i = args.indexOf(`--${cls}`, i+1)) >= 0) {
+        const ord = (db.query("SELECT COALESCE(MAX(ord)+1,0) o FROM status_items WHERE node_id=?").get(nodeId) as any).o;
+        db.prepare("INSERT INTO status_items(node_id,ord,class,label) VALUES(?,?,?,?)").run(nodeId, ord, cls, args[i+1]);
+      }
+    }
+    db.close();
+    console.log(`isoscope: marked ${nodeId} — every live map repaints`);
+    break;
+  }
+  case "install-hook": {
+    /* bun cli.ts install-hook <target-repo> <db-path> [--spec-out path] — post-commit keeps the map true */
+    const [repo, dbPath] = args;
+    if (!repo || !dbPath) { console.error("usage: cli.ts install-hook <target-repo> <db-path> [--spec-out path]"); process.exit(2); }
+    const specIdx = args.indexOf("--spec-out");
+    const here = new URL(".", import.meta.url).pathname;
+    const specLine = specIdx >= 0 ? `bun ${here}cli.ts export ${dbPath} --out ${args[specIdx+1]}\n` : "";
+    const hook = `#!/bin/sh\n# isoscope post-commit — the map never trails reality\n${specLine}touch ${dbPath}\n`;
+    const path = `${repo}/.git/hooks/post-commit`;
+    writeFileSync(path, hook, { mode: 0o755 });
+    console.log(`isoscope: hook installed at ${path}`);
+    break;
+  }
   case "serve": {
     const dbPath = args.find(a => !a.startsWith("--")) ?? DB_DEFAULT;
     const portIdx = args.indexOf("--port");
@@ -62,6 +97,24 @@ switch (cmd) {
         const url = new URL(req.url);
         if (url.pathname === "/spec.json")
           return Response.json(exportSpec(open(dbPath)));
+        if (url.pathname === "/mark" && req.method === "POST") {
+          /* CI/CD → red building: POST {id,state?,items?:[{c,l}]}; optional ISOSCOPE_TOKEN auth */
+          const token = Bun.env.ISOSCOPE_TOKEN;
+          if (token && req.headers.get("authorization") !== `Bearer ${token}`)
+            return new Response("unauthorized", { status: 401 });
+          return req.json().then((b: any) => {
+            const d = open(dbPath);
+            if (!d.query("SELECT 1 FROM nodes WHERE id=?").get(b.id)) { d.close(); return new Response("no such module", { status: 404 }); }
+            if (b.state) d.prepare("UPDATE nodes SET state=? WHERE id=?").run(b.state, b.id);
+            if (Array.isArray(b.items)) {
+              d.prepare("DELETE FROM status_items WHERE node_id=?").run(b.id);
+              const si = d.prepare("INSERT INTO status_items(node_id,ord,class,label) VALUES(?,?,?,?)");
+              b.items.forEach((it: any, i: number) => si.run(b.id, i, it.c, it.l));
+            }
+            d.close();
+            return Response.json({ marked: b.id });
+          });
+        }
         if (url.pathname === "/events") {
           let ctrl: ReadableStreamDefaultController;
           const stream = new ReadableStream({
@@ -79,5 +132,5 @@ switch (cmd) {
     break;
   }
   default:
-    console.log("isoscope · graph store CLI\n  init [db] · import <spec.json> [db] · export [db] [--out spec.json] · build [db] <out.html> · serve [db] [--port 4177]");
+    console.log("isoscope · graph store CLI\n  init [db] · import <spec.json> [db] · export [db] [--out spec.json] · build [db] <out.html> · serve [db] [--port 4177]\n  lint: bun drc.ts <spec.json|db> [--budget N]");
 }

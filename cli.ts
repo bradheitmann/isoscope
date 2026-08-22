@@ -42,6 +42,51 @@ switch (cmd) {
     console.log(`isoscope: built ${outPath} from ${dbPath} · ${spec.nodes.length} modules · ${spec.edges.length} links`);
     break;
   }
+  case "ingest": {
+    /* Review/scan reports → the map (Greptile, CodeRabbit, CodeQL, semgrep, …).
+       bun cli.ts ingest <db> <findings.json> [--sarif] [--source name] [--replace]
+       Normalized findings: [{path, severity: "error"|"warn"|"note", message, source?}]
+       --sarif reads a SARIF 2.x log instead. Attribution: longest node_paths prefix match. */
+    const [dbPath, file] = args;
+    if (!dbPath || !file) { console.error("usage: cli.ts ingest <db> <findings.json> [--sarif] [--source name] [--replace]"); process.exit(2); }
+    const srcIdx = args.indexOf("--source");
+    const defSource = srcIdx >= 0 ? args[srcIdx + 1] : "review";
+    const raw = JSON.parse(readFileSync(file, "utf8"));
+    let findings: { path: string; severity: string; message: string; source?: string }[];
+    if (args.includes("--sarif")) {
+      findings = (raw.runs ?? []).flatMap((run: any) => {
+        const tool = run.tool?.driver?.name ?? defSource;
+        return (run.results ?? []).map((r: any) => ({
+          path: r.locations?.[0]?.physicalLocation?.artifactLocation?.uri ?? "",
+          severity: r.level === "error" ? "error" : r.level === "warning" ? "warn" : "note",
+          message: r.message?.text ?? "", source: tool,
+        }));
+      });
+    } else findings = raw;
+    const db = open(dbPath);
+    const prefixes = db.query("SELECT node_id,prefix FROM node_paths").all() as any[];
+    const attribute = (p: string) => {
+      let best: any = null;
+      for (const row of prefixes)
+        if (p.startsWith(row.prefix) && (!best || row.prefix.length > best.prefix.length)) best = row;
+      return best?.node_id ?? null;
+    };
+    if (args.includes("--replace"))
+      db.prepare("DELETE FROM status_items WHERE label LIKE ?").run(`[${defSource}]%`);
+    let placed = 0, orphans = 0;
+    for (const f of findings) {
+      const id = attribute(f.path);
+      if (!id) { orphans++; continue; }
+      const cls = f.severity === "error" ? "red" : "amber";
+      const ord = (db.query("SELECT COALESCE(MAX(ord)+1,0) o FROM status_items WHERE node_id=?").get(id) as any).o;
+      db.prepare("INSERT INTO status_items(node_id,ord,class,label) VALUES(?,?,?,?)")
+        .run(id, ord, cls, `[${f.source ?? defSource}] ${f.message} (${f.path})`);
+      placed++;
+    }
+    db.close();
+    console.log(`isoscope: ingested ${placed} finding(s) onto the map` + (orphans ? ` · ${orphans} unattributed (no owning module — extend paths in the spec)` : ""));
+    break;
+  }
   case "mark": {
     /* CI/agents: set a module's status — the live map repaints, red shows where it broke.
        bun cli.ts mark <db> <nodeId> [--state ok|attn|build] [--red msg] [--amber msg] [--you msg] [--clear] */

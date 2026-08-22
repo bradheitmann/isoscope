@@ -38,6 +38,14 @@ Sentinel architecture map (built iteratively with the operator, 2026-08-19..22).
   quarantined at /tmp/retired-ODIN-ARCHITECTURE-MAP-3D-20260822.html, evaporates on reboot).
 
 ## Near-term roadmap (operator-aligned)
+0d. DONE 2026-08-22 (review ingestion + blast radius): node_paths table + spec
+   `paths` key (modules own path prefixes; longest match wins) · `cli.ts ingest`
+   (normalized findings JSON or --sarif; Greptile/CodeRabbit → jq → ingest;
+   orphans reported) · BLAST-RADIUS AUTO-SCOPE in engine: any red item on load →
+   red modules + 1-hop neighbors circuit-energized, camera flies to worst,
+   panel = incident readout (verified: coderabbit error on lib.ts opened the map
+   scoped to Store+Spec+MCP+CLI+Serve with the finding on top). Provider webhook
+   adapters = roadmap.
 0c. DONE 2026-08-22 (DRC + CI loop): router.mjs = SINGLE SOURCE (injected into
    template at build via /*__ISOSCOPE_ROUTER__*/ slot; imported by drc.ts) —
    never two router implementations. drc.ts = collision LINT (weighted crossings

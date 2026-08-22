@@ -15,7 +15,7 @@ export function open(path: string): Database {
 
 export function importSpec(db: Database, spec: Spec): void {
   const tx = db.transaction(() => {
-    for (const t of ["trace_steps", "edges", "status_items", "nodes", "groups", "meta"])
+    for (const t of ["trace_steps", "edges", "status_items", "node_paths", "nodes", "groups", "meta"])
       db.exec(`DELETE FROM ${t};`);
     const meta = db.prepare("INSERT INTO meta(key,value) VALUES(?,?)");
     const flat: Record<string, string> = {
@@ -38,6 +38,8 @@ export function importSpec(db: Database, spec: Spec): void {
             x.does ?? null, x.built ?? null, x.refs ?? null, x.good ?? null, x.cond ?? null);
       (spec.status?.[x.id]?.items ?? []).forEach((it: any, i: number) =>
         si.run(x.id, i, it.c === "you" ? "you" : it.c, it.l));
+      for (const p of spec.paths?.[x.id] ?? [])
+        db.prepare("INSERT INTO node_paths(node_id,prefix) VALUES(?,?)").run(x.id, p);
     }
     const e = db.prepare("INSERT INTO edges(src,dst,type,health,title,carries,refs) VALUES(?,?,?,?,?,?,?)");
     for (const [src, dst, type] of spec.edges ?? []) {
@@ -64,7 +66,7 @@ export function exportSpec(db: Database): Spec {
     intro: { eyebrow: meta["intro.eyebrow"], title: meta["intro.title"],
              sub: meta["intro.sub"], proseHTML: meta["intro.proseHTML"] },
     groups: (db.query("SELECT id,label FROM groups ORDER BY ord").all() as any[]),
-    nodes: [], short: {}, status: {}, levels: {},
+    nodes: [], short: {}, status: {}, levels: {}, paths: {},
     edges: [], edgeStatus: {}, edgeDocs: {}, trace: [], traceText: {},
   };
   for (const r of db.query("SELECT * FROM nodes").all() as any[]) {
@@ -80,6 +82,8 @@ export function exportSpec(db: Database): Spec {
     const items = (db.query("SELECT class,label FROM status_items WHERE node_id=? ORDER BY ord")
       .all(r.id) as any[]).map(i => ({ c: i.class, l: i.label }));
     spec.status[r.id] = { state: r.state, items };
+    const pp = (db.query("SELECT prefix FROM node_paths WHERE node_id=?").all(r.id) as any[]).map(p => p.prefix);
+    if (pp.length) spec.paths[r.id] = pp;
   }
   for (const r of db.query("SELECT * FROM edges").all() as any[]) {
     spec.edges.push([r.src, r.dst, r.type]);

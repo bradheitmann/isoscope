@@ -2396,6 +2396,18 @@ document.getElementById("btnGuide").addEventListener("click",()=>{
 });
 introVeil.addEventListener("click",ev=>{ if(ev.target===introVeil) document.getElementById("introDismiss").click(); });
 
+/* blast radius: if anything is RED, open already scoped to the problem area —
+   the failing module(s) plus direct neighbors, circuit-energized, camera on the worst.
+   Ground-click restores the whole board as always. */
+(function(){
+ const reds=NODES.filter(n=>n.items&&n.items.some(i=>i.c==="red"));
+ if(!reds.length)return;
+ const adj={};EDGES.forEach(e=>{(adj[e[0]]=adj[e[0]]||[]).push(e[1]);(adj[e[1]]=adj[e[1]]||[]).push(e[0]);});
+ reds.forEach(r=>{cordon.add(r.id);(adj[r.id]||[]).forEach(nb=>cordon.add(nb));});
+ applyCircuit();
+ setTimeout(()=>flyTo(byId[reds[0].id]),400);
+})();
+
 /* ————— frame loop ————— */
 function resize(){
  const w=wrap.clientWidth,h=wrap.clientHeight;

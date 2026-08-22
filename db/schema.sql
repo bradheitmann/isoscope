@@ -55,3 +55,9 @@ CREATE TABLE IF NOT EXISTS trace_steps (     -- the guided story, in order
   narration TEXT NOT NULL,
   FOREIGN KEY (src, dst) REFERENCES edges(src, dst)
 );
+
+CREATE TABLE IF NOT EXISTS node_paths (      -- path ownership: findings attribute here
+  node_id TEXT NOT NULL REFERENCES nodes(id) ON DELETE CASCADE,
+  prefix  TEXT NOT NULL,                     -- longest-prefix match wins
+  PRIMARY KEY (node_id, prefix)
+);

@@ -458,5 +458,43 @@
  "drcBudget": {
   "maxWeightedCrossings": 2,
   "acknowledged": "corridor shares forced by architecture; reduction tracked (R13 hub escape, R16 shove)"
+ },
+ "paths": {
+  "SP": [
+   "SPEC.md"
+  ],
+  "DB": [
+   "db/",
+   "lib.ts"
+  ],
+  "CL": [
+   "cli.ts"
+  ],
+  "MC": [
+   "mcp.ts"
+  ],
+  "AD": [
+   "adapters/"
+  ],
+  "TP": [
+   "template.html",
+   "router.mjs",
+   "docs/DESIGN-RULES.md"
+  ],
+  "BU": [
+   "build.mjs"
+  ],
+  "SV": [
+   "cli.ts:serve"
+  ],
+  "AR": [
+   "out/"
+  ],
+  "EX": [
+   "examples/"
+  ],
+  "CO": [
+   "README.md"
+  ]
  }
 }

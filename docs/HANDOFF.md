@@ -37,6 +37,47 @@ Sentinel architecture map (built iteratively with the operator, 2026-08-19..22).
   legacy `ODIN-ARCHITECTURE-MAP-3D.html` retired 2026-08-22 (operator order;
   quarantined at /tmp/retired-ODIN-ARCHITECTURE-MAP-3D-20260822.html, evaporates on reboot).
 
+## STRATEGY & DIRECTION — crash-proof snapshot (2026-08-22, operator-ratified)
+
+**Mission (verbatim, README headline):** so a person always knows what their
+codebase does, how it is architected, and if something is broken and what they
+need to work on next.
+**Lifecycle thesis:** understandability layer while building → graduates to
+observability visualization layer in production. Same map/store; writers change
+(humans+agents → pipelines+telemetry).
+**Product shape:** zero-dep Bun/TS; SQLite graph store is the living source;
+spec.json is interchange; one self-contained HTML is the artifact; serve = the
+day-one live browser tab; MCP + CLI + adapters are how agents keep it true;
+DRC lint enforces routing law; ingest + mark + blast-radius = the incident loop.
+**Dogfood rule:** examples/isoscope.spec.json (self-portrait) is the primary
+example and must stay current with the repo.
+
+**Priority order (next work, in sequence):**
+1. OPERATOR: name decision + `gh repo create` (starts the open-source clock).
+2. Dark-theme font contrast audit/fix (KNOWN BUG below).
+3. R31 junction grammar — crossing ≠ connection glyphs (dot = joined).
+4. R13 hub-escape routing (targets ODIN's 11 acknowledged crossings) + R16 shove.
+5. `iso_propose_sensor` MCP tool — first rung of docs/INSTRUMENTATION.md
+   (seam→sensor offer loop; telemetry spec key design is in that doc).
+6. Lumbr bridge (lumbr instrumentation → mark/status; lumbr mcp-worker executes
+   remediation ladder against blast-radius scope).
+7. CI provider adapters (Actions/GitLab/Buildkite auto-attribution) +
+   Greptile/CodeRabbit webhook transforms.
+8. R30 mental-map-stable hot-swap for serve (replaces reload).
+9. Second real consumer spec (proves generality).
+10. R12 PathFinder negotiation when consumer specs exceed ~50 edges.
+
+**KNOWN BUGS:**
+- Dark themes: insufficient font contrast in parts of the UI (operator report
+  2026-08-22). Audit all 12 dark themes across: panel sub/dimmed text, sidebar
+  count colors (signal colors on dark surfaces), hint bar, drawer section
+  headers, label muted ink (color-mix vs dark surface), intro modal grid text.
+  Likely class: color-mix() percentages and signal tokens tuned on light
+  surfaces; fix = per-mode mix ratios or dedicated muted tokens for dark.
+- Lumbr repo has 3 uncommitted modified files (execution/audit.ts,
+  execution/index.ts, policy/evaluation-store.ts) — land or classify (not
+  isoscope's repo, tracked here so it isn't lost).
+
 ## Near-term roadmap (operator-aligned)
 0d. DONE 2026-08-22 (review ingestion + blast radius): node_paths table + spec
    `paths` key (modules own path prefixes; longest match wins) · `cli.ts ingest`

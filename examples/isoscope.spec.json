@@ -1,13 +1,15 @@
 {
- "title": "Isoscope \u2014 the map that maps itself",
+ "title": "Isoscope — the map that maps itself",
+ "wordmark": "ISOSCOPE",
+ "asOf": "As of 2026-08-22 · maintained by its own MCP server",
  "brand": {
   "k": "Project",
-  "v": "isoscope \u00b7 schematic observability"
+  "v": "isoscope · schematic observability"
  },
  "metrics": [
   {
    "k": "Runtime",
-   "v": "Bun 1.3.9 \u00b7 0 deps"
+   "v": "Bun 1.3.9 · 0 deps"
   },
   {
    "k": "Ships as",
@@ -15,11 +17,9 @@
   },
   {
    "k": "Consumers",
-   "v": "1 (ODIN) \u00b7 yours next"
+   "v": "1 (ODIN) · yours next"
   }
  ],
- "wordmark": "ISOSCOPE",
- "asOf": "As of 2026-08-22 \u00b7 maintained by its own MCP server",
  "intro": {
   "eyebrow": "Isoscope",
   "title": "So you always know what your codebase does",
@@ -29,7 +29,7 @@
  "groups": [
   {
    "id": "authoring",
-   "label": "Authoring \u00b7 the graph store"
+   "label": "Authoring · the graph store"
   },
   {
    "id": "engine",
@@ -52,8 +52,8 @@
    "d": 1,
    "h": 1,
    "does": "One JSON object that describes an entire system: modules, connections, status, levels, and the guided story. Hand-editable, diffable, and the interchange format between every other part.",
-   "built": "Schema documented in SPEC.md \u2014 16 keys, all optional except nodes and edges. Two examples ship: this map, and ODIN Sentinel (the first consumer).",
-   "refs": "SPEC.md \u00b7 examples/"
+   "built": "Schema documented in SPEC.md — 16 keys, all optional except nodes and edges. Two examples ship: this map, and ODIN Sentinel (the first consumer).",
+   "refs": "SPEC.md · examples/"
   },
   {
    "id": "DB",
@@ -65,9 +65,9 @@
    "w": 1.2,
    "d": 1,
    "h": 1,
-   "does": "Plain SQLite shaped as a graph: one row per node, one row per edge \u2014 edge attributes live on the edge. The living source of truth agents write to while they work.",
+   "does": "Plain SQLite shaped as a graph: one row per node, one row per edge — edge attributes live on the edge. The living source of truth agents write to while they work.",
    "built": "bun:sqlite, zero dependencies. Six tables mirror the spec one-to-one; import/export round-trips losslessly.",
-   "refs": "db/schema.sql \u00b7 lib.ts"
+   "refs": "db/schema.sql · lib.ts"
   },
   {
    "id": "CL",
@@ -94,8 +94,8 @@
    "d": 1,
    "h": 1,
    "does": "Seven tools that let any MCP-capable agent maintain the living map as it builds: upsert modules and links, set status, read the spec, build the artifact.",
-   "built": "Hand-rolled stdio JSON-RPC \u2014 the zero-dependency promise holds even here.",
-   "refs": "mcp.ts"
+   "built": "Hand-rolled stdio JSON-RPC — the zero-dependency promise holds even here. Proven end-to-end from the DeepSeek Harness: dsh called iso_overview through its MCP client and got live store data back. Runs under bun only (bun:sqlite), so registrations spawn bun directly rather than npx.",
+   "refs": "mcp.ts · adapters/mcp.json"
   },
   {
    "id": "AD",
@@ -107,8 +107,8 @@
    "w": 1,
    "d": 1,
    "h": 1,
-   "does": "Paste-in contracts for harnesses without MCP support (DeepSeek first): the same operations, taught through the CLI, with style rules for honest descriptions.",
-   "built": "adapters/DEEPSEEK.md is the template; more harnesses follow the same pattern.",
+   "does": "How each harness is taught to keep the map honest. MCP-capable harnesses (Claude Code, Codex, the DeepSeek Harness) register the server and get the seven tools; harnesses with no MCP client get the same operations as a paste-in CLI contract. Every adapter carries the same working agreement: mirror the codebase in the same session, record what flows, never leave a broken thing unmarked.",
+   "built": "DSH.md + dsh.cordis.patch.yml ship the DeepSeek Harness route (cordis insert layer, verified end-to-end against dsh 0.1.1-rc.2). mcp.json is the generic registration. DEEPSEEK.md remains the no-MCP fallback.",
    "refs": "adapters/"
   },
   {
@@ -121,10 +121,10 @@
    "w": 1.4,
    "d": 1.2,
    "h": 2,
-   "stack": 5,
    "does": "The rendered experience: orthographic Three.js city, etched buildings, PCB-routed pipes with crossing minimization, circuit-breaker interaction, three-level stacking, guided trace, single inspector, 18 IDE themes, live-reload client.",
-   "built": "One self-contained template.html. Routing obeys the two laws (no transit under strangers; no avoidable same-plane crossings) \u2014 doctrine and sources in docs/DESIGN-RULES.md.",
-   "refs": "template.html \u00b7 docs/DESIGN-RULES.md"
+   "built": "One self-contained template.html. Routing obeys the two laws (no transit under strangers; no avoidable same-plane crossings) — doctrine and sources in docs/DESIGN-RULES.md.",
+   "refs": "template.html · docs/DESIGN-RULES.md",
+   "stack": 5
   },
   {
    "id": "BU",
@@ -136,7 +136,7 @@
    "w": 1,
    "d": 1,
    "h": 1,
-   "does": "Injects a spec into the engine template and emits one self-contained HTML file that works from disk \u2014 no server, no CORS, nothing to install.",
+   "does": "Injects a spec into the engine template and emits one self-contained HTML file that works from disk — no server, no CORS, nothing to install.",
    "built": "build.mjs: importable function + runnable command, ~40 lines.",
    "refs": "build.mjs"
   },
@@ -150,9 +150,9 @@
    "w": 1,
    "d": 1,
    "h": 1,
-   "does": "Runs the map in a browser from day one of a project: watches the graph store and repaints on every change \u2014 every commit, every agent edit, live.",
+   "does": "Runs the map in a browser from day one of a project: watches the graph store and repaints on every change — every commit, every agent edit, live.",
    "built": "Bun.serve + SSE + a three-line client in the template. Reload-based today; stateful hot-swap is on the roadmap (mental-map stability, R30).",
-   "refs": "cli.ts (serve) \u00b7 template.html (live client)"
+   "refs": "cli.ts (serve) · template.html (live client)"
   },
   {
    "id": "AR",
@@ -164,7 +164,7 @@
    "w": 1,
    "d": 1,
    "h": 0.8,
-   "does": "The shippable output: one HTML file anyone can open, orbit, and interrogate \u2014 email it, commit it, host it.",
+   "does": "The shippable output: one HTML file anyone can open, orbit, and interrogate — email it, commit it, host it.",
    "built": "Banner-marked GENERATED; rebuilt from the store in one command.",
    "refs": "out/ (gitignored)"
   },
@@ -179,8 +179,8 @@
    "d": 1,
    "h": 0.8,
    "does": "Reference specs proving the schema: this self-portrait, and ODIN Sentinel's 16-module governance map.",
-   "built": "This map IS examples/isoscope.spec.json \u2014 the tool eats its own cooking.",
-   "refs": "examples/isoscope.spec.json \u00b7 examples/odin.spec.json"
+   "built": "This map IS examples/isoscope.spec.json — the tool eats its own cooking.",
+   "refs": "examples/isoscope.spec.json · examples/odin.spec.json"
   },
   {
    "id": "CO",
@@ -210,19 +210,6 @@
   "EX": "Examples",
   "CO": "Consumers"
  },
- "levels": {
-  "SP": 1,
-  "DB": 1,
-  "CL": 1,
-  "MC": 1,
-  "AD": 1,
-  "TP": 0,
-  "BU": 0,
-  "SV": 0,
-  "AR": -1,
-  "EX": -1,
-  "CO": -1
- },
  "status": {
   "SP": {
    "state": "ok",
@@ -242,22 +229,12 @@
    "items": []
   },
   "MC": {
-   "state": "build",
-   "items": [
-    {
-     "c": "amber",
-     "l": "loads clean; needs a real harness session end-to-end"
-    }
-   ]
+   "state": "ok",
+   "items": []
   },
   "AD": {
-   "state": "build",
-   "items": [
-    {
-     "c": "you",
-     "l": "DeepSeek contract untested in the field \u2014 first run is yours"
-    }
-   ]
+   "state": "ok",
+   "items": []
   },
   "TP": {
    "state": "ok",
@@ -303,6 +280,54 @@
     }
    ]
   }
+ },
+ "levels": {
+  "SP": 1,
+  "DB": 1,
+  "CL": 1,
+  "MC": 1,
+  "AD": 1,
+  "AR": -1,
+  "EX": -1,
+  "CO": -1
+ },
+ "paths": {
+  "SP": [
+   "SPEC.md"
+  ],
+  "DB": [
+   "db/",
+   "lib.ts"
+  ],
+  "CL": [
+   "cli.ts"
+  ],
+  "MC": [
+   "mcp.ts"
+  ],
+  "AD": [
+   "adapters/"
+  ],
+  "TP": [
+   "docs/DESIGN-RULES.md",
+   "router.mjs",
+   "template.html"
+  ],
+  "BU": [
+   "build.mjs"
+  ],
+  "SV": [
+   "cli.ts:serve"
+  ],
+  "AR": [
+   "out/"
+  ],
+  "EX": [
+   "examples/"
+  ],
+  "CO": [
+   "README.md"
+  ]
  },
  "edges": [
   [
@@ -370,27 +395,27 @@
  "edgeDocs": {
   "EX-SP": {
    "title": "Examples prove the schema",
-   "carries": "Reference specs \u2014 living documentation of every key, kept honest because the tool renders them.",
+   "carries": "Reference specs — living documentation of every key, kept honest because the tool renders them.",
    "refs": "examples/"
   },
   "SP-DB": {
    "title": "Spec seeds the store",
-   "carries": "A full graph import: nodes, edges, status, docs, trace \u2014 the JSON decomposed into six tables, losslessly.",
+   "carries": "A full graph import: nodes, edges, status, docs, trace — the JSON decomposed into six tables, losslessly.",
    "refs": "cli.ts import"
   },
   "MC-DB": {
    "title": "Agents write the truth",
-   "carries": "Tool calls from working agents: upserted modules, documented links, status changes \u2014 the map staying current with the codebase it describes.",
+   "carries": "Tool calls from working agents: upserted modules, documented links, status changes — the map staying current with the codebase it describes.",
    "refs": "mcp.ts"
   },
   "AD-CL": {
    "title": "Adapters drive the CLI",
-   "carries": "The same maintenance operations for non-MCP harnesses, expressed as shell commands with an export\u2192edit\u2192import discipline.",
+   "carries": "The same maintenance operations for non-MCP harnesses, expressed as shell commands with an export→edit→import discipline.",
    "refs": "adapters/DEEPSEEK.md"
   },
   "DB-CL": {
    "title": "The store answers the shell",
-   "carries": "The current graph, exported as spec JSON \u2014 for humans, scripts, and diffs.",
+   "carries": "The current graph, exported as spec JSON — for humans, scripts, and diffs.",
    "refs": "cli.ts export"
   },
   "CL-BU": {
@@ -400,7 +425,7 @@
   },
   "TP-BU": {
    "title": "The engine is the template",
-   "carries": "The entire rendered experience \u2014 scene, router, inspector, themes \u2014 with one slot where the spec lands.",
+   "carries": "The entire rendered experience — scene, router, inspector, themes — with one slot where the spec lands.",
    "refs": "template.html"
   },
   "BU-AR": {
@@ -410,22 +435,22 @@
   },
   "DB-SV": {
    "title": "The store is watched",
-   "carries": "File-change events, debounced into SSE pushes \u2014 any write to the graph reaches every open browser within a beat.",
+   "carries": "File-change events, debounced into SSE pushes — any write to the graph reaches every open browser within a beat.",
    "refs": "cli.ts serve"
   },
   "SV-CO": {
    "title": "The living map",
-   "carries": "The freshly-rebuilt map plus a live-reload event stream \u2014 the browser tab that stays true all project long.",
+   "carries": "The freshly-rebuilt map plus a live-reload event stream — the browser tab that stays true all project long.",
    "refs": "http://localhost:4177"
   },
   "AR-CO": {
    "title": "The shipped map",
-   "carries": "The static artifact for releases, docs, and sharing \u2014 same experience, no server.",
+   "carries": "The static artifact for releases, docs, and sharing — same experience, no server.",
    "refs": "out/"
   },
   "CO-MC": {
    "title": "Planned: the loop closes",
-   "carries": "Consumer projects' agents adopting the contract \u2014 every build session ends with the map already updated.",
+   "carries": "Consumer projects' agents adopting the contract — every build session ends with the map already updated.",
    "refs": "adapters/README.md"
   }
  },
@@ -443,58 +468,20 @@
   "CO-MC"
  ],
  "traceText": {
-  "EX-SP": "A spec exists \u2014 maybe written by hand on day one, maybe this very file.",
+  "EX-SP": "A spec exists — maybe written by hand on day one, maybe this very file.",
   "SP-DB": "It seeds the graph store: six tables, one truth.",
-  "MC-DB": "From here on, agents maintain it as they build \u2014 via MCP tools, mid-session.",
+  "MC-DB": "From here on, agents maintain it as they build — via MCP tools, mid-session.",
   "DB-SV": "The store is watched; every change becomes an event.",
   "SV-CO": "A browser tab, open from day one, repaints live. You always know.",
-  "DB-CL": "The shell can always ask for the current graph\u2026",
-  "CL-BU": "\u2026and hand it to the builder\u2026",
-  "TP-BU": "\u2026which fuses it with the engine\u2026",
-  "BU-AR": "\u2026into one file that works anywhere.",
+  "DB-CL": "The shell can always ask for the current graph…",
+  "CL-BU": "…and hand it to the builder…",
+  "TP-BU": "…which fuses it with the engine…",
+  "BU-AR": "…into one file that works anywhere.",
   "AR-CO": "That artifact ships with the release.",
   "CO-MC": "And the loop closes: the next session's agents keep the map true."
  },
  "drcBudget": {
   "maxWeightedCrossings": 2,
   "acknowledged": "corridor shares forced by architecture; reduction tracked (R13 hub escape, R16 shove)"
- },
- "paths": {
-  "SP": [
-   "SPEC.md"
-  ],
-  "DB": [
-   "db/",
-   "lib.ts"
-  ],
-  "CL": [
-   "cli.ts"
-  ],
-  "MC": [
-   "mcp.ts"
-  ],
-  "AD": [
-   "adapters/"
-  ],
-  "TP": [
-   "template.html",
-   "router.mjs",
-   "docs/DESIGN-RULES.md"
-  ],
-  "BU": [
-   "build.mjs"
-  ],
-  "SV": [
-   "cli.ts:serve"
-  ],
-  "AR": [
-   "out/"
-  ],
-  "EX": [
-   "examples/"
-  ],
-  "CO": [
-   "README.md"
-  ]
  }
 }

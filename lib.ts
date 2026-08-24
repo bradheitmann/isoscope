@@ -24,6 +24,7 @@ export function importSpec(db: Database, spec: Spec): void {
       "intro.eyebrow": spec.intro?.eyebrow ?? "", "intro.title": spec.intro?.title ?? "",
       "intro.sub": spec.intro?.sub ?? "", "intro.proseHTML": spec.intro?.proseHTML ?? "",
       metrics: JSON.stringify(spec.metrics ?? []),
+      drcBudget: JSON.stringify(spec.drcBudget ?? null),
     };
     for (const [k, v] of Object.entries(flat)) meta.run(k, v);
     const g = db.prepare("INSERT INTO groups(id,label,ord) VALUES(?,?,?)");
@@ -69,6 +70,10 @@ export function exportSpec(db: Database): Spec {
     nodes: [], short: {}, status: {}, levels: {}, paths: {},
     edges: [], edgeStatus: {}, edgeDocs: {}, trace: [], traceText: {},
   };
+  // The routing budget is authored, not derived — it must survive a round trip
+  // or export→edit→import silently disarms the DRC lint.
+  const budget = JSON.parse(meta.drcBudget || "null");
+  if (budget) spec.drcBudget = budget;
   for (const r of db.query("SELECT * FROM nodes").all() as any[]) {
     const node: Spec = { id: r.id, tag: r.tag, g: r.grp, name: r.name,
       x: r.x, y: r.y, w: r.w, d: r.d, h: r.h,

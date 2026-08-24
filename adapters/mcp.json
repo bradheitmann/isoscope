@@ -1,0 +1,11 @@
+{
+  "mcpServers": {
+    "isoscope": {
+      "command": "bun",
+      "args": ["/absolute/path/to/isoscope/mcp.ts"],
+      "env": {
+        "ISOSCOPE_DB": "/absolute/path/to/your-project/isoscope.db"
+      }
+    }
+  }
+}

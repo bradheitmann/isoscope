@@ -4,8 +4,17 @@
   "description": "Schematic observability: your system as an inspectable isometric city, driven by one JSON spec or a SQLite graph store.",
   "type": "module",
   "license": "MIT",
+  "engines": {
+    "bun": ">=1.1.0"
+  },
+  "bin": {
+    "isoscope": "./cli.ts",
+    "isoscope-mcp": "./mcp.ts"
+  },
   "scripts": {
     "build:self": "bun cli.ts import examples/isoscope.spec.json /tmp/isoscope-self.db && bun cli.ts build /tmp/isoscope-self.db out/isoscope.html",
-    "build:odin": "node build.mjs examples/odin.spec.json out/odin.html"
+    "build:odin": "node build.mjs examples/odin.spec.json out/odin.html",
+    "mcp": "bun mcp.ts",
+    "drc": "bun drc.ts"
   }
 }

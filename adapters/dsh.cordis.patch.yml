@@ -1,0 +1,12 @@
+# Isoscope for the DeepSeek Harness — copy this entry into the patch layer of
+# the profile you boot: ~/.dsh/profiles/<profile>/cordis.patch.yml
+# Replace both absolute paths. See adapters/DSH.md.
+- id: mcp-isoscope
+  name: '@deepseek-ai/dsh-mcp-client'
+  config:
+    serverName: isoscope
+    transport: stdio
+    command: bun
+    args: ['/absolute/path/to/isoscope/mcp.ts']
+    env:
+      ISOSCOPE_DB: /absolute/path/to/your-project/isoscope.db

@@ -121,8 +121,8 @@
    "w": 1.4,
    "d": 1.2,
    "h": 2,
-   "does": "The rendered experience: orthographic Three.js city, etched buildings, PCB-routed pipes with crossing minimization, circuit-breaker interaction, three-level stacking, guided trace, single inspector, 18 IDE themes, live-reload client.",
-   "built": "One self-contained template.html. Routing obeys the two laws (no transit under strangers; no avoidable same-plane crossings) — doctrine and sources in docs/DESIGN-RULES.md.",
+   "does": "The rendered experience: orthographic Three.js city, etched buildings, PCB-routed pipes with escape pins at hubs and schematic junction grammar (dot = joined, arc = crossing), circuit-breaker interaction, three-level stacking, guided trace, single inspector, 18 themes with a runtime contrast floor, live-reload client.",
+   "built": "One self-contained template.html. Routing obeys the laws in docs/DESIGN-RULES.md: no transit under strangers, no avoidable same-plane crossings, level-honest risers, R13 escape pins, R16 joint shove, R31 junction grammar.",
    "refs": "template.html · docs/DESIGN-RULES.md",
    "stack": 5
   },
@@ -261,7 +261,7 @@
    "items": [
     {
      "c": "amber",
-     "l": "junction grammar (R31) is the next engine rule"
+     "l": "R30 mental-map-stable hot-swap for serve is the next engine rule"
     }
    ]
   },
@@ -524,7 +524,7 @@
   "CO-MC": "And the loop closes: the next session's agents keep the map true."
  },
  "drcBudget": {
-  "maxWeightedCrossings": 2,
+  "maxWeightedCrossings": 1,
   "acknowledged": "corridor shares forced by architecture; reduction tracked (R13 hub escape, R16 shove)"
  }
 }

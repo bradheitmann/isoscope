@@ -29,7 +29,28 @@ Sentinel architecture map (built iteratively with the operator, 2026-08-19..22).
 - `SPEC.md` — schema. `DESIGN-RULES.md` — doctrine + scale roadmap + sources.
 - `examples/odin.spec.json` — reference spec (16 modules / 18 links).
 
-## 2026-09-02 — landing the Sep 1 advisory session (this commit)
+## 2026-09-02 — routing laws R13 / R16 / R31 landed
+- `router.mjs` (single source, unchanged contract + new outputs): R13 escape
+  pins for degree≥3 modules (per-wall even spacing, perpendicular stub, a
+  backtrack penalty keeps routes from doubling back under their own module);
+  R16 joint-shove pass over surviving crossing pairs (top-14 × top-14 joint
+  re-solve, 2 rounds); R31 hop extraction — returns `hops:{key:[[x,z]]}` and
+  `qc.{crossings,shares,hops,hubs}` beside the old `weighted/offenders`.
+- `template.html`: `insertHops()` splices a 7-point arc (r 0.15, h 0.13) into
+  the carrying pipe at each hop — flow dots ride over it for free; junction
+  discs (flat cylinders, r 0.075 × line-weight) at both wall entries of every
+  pipe, colour+opacity copied from the pipe's material each frame so ghosted
+  pipes have ghosted joins; legend rows "Dot at the wall" / "Arc over a line".
+  `window.odinView.look()/restore()` test hooks (module scope is closed).
+- `drc.ts` prints crossings-as-hops, shares, hubs. Budgets ratcheted in both
+  example specs (self 2→1, ODIN 11→5) — the lint now fails if a change
+  regresses to the old numbers.
+- `scripts/shot.ts` — one-line headless screenshot of any built map with an
+  optional JS expression (uses the hooks above); fails on JS errors.
+- Verified: DRC PASS both examples; contrast proof 18/18 + 0 JS errors on the
+  new build; hop arcs and wall dots eyeballed on self-map and ODIN.
+
+## 2026-09-02 — landing the Sep 1 advisory session
 - **Theme store relocation** (template.html): the 18 IDE palettes moved from a
   static `<style id="ide-themes">` block into a runtime `IDE_THEMES` map;
   `setTheme()` applies them as inline custom properties on `<html>`, canon
@@ -90,8 +111,8 @@ example and must stay current with the repo.
 **Priority order (next work, in sequence):**
 1. ~~`gh repo create`~~ DONE 2026-09-02 as a PRIVATE repo (bradheitmann/isoscope). Name still a working title; flipping to public is the operator's call.
 2. ~~Dark-theme font contrast audit/fix~~ DONE 2026-09-02 (see KNOWN BUGS).
-3. R31 junction grammar — crossing ≠ connection glyphs (dot = joined).
-4. R13 hub-escape routing (targets ODIN's 11 acknowledged crossings) + R16 shove.
+3. ~~R31 junction grammar~~ DONE 2026-09-02 (wall dots + hop arcs; router emits hops).
+4. ~~R13 hub-escape + R16 shove~~ DONE 2026-09-02 (ODIN 11→5, budgets ratcheted: self 1, ODIN 5).
 5. `iso_propose_sensor` MCP tool — first rung of docs/INSTRUMENTATION.md
    (seam→sensor offer loop; telemetry spec key design is in that doc).
 6. Lumbr bridge (lumbr instrumentation → mark/status; lumbr mcp-worker executes

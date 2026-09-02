@@ -145,6 +145,11 @@ body{display:grid;overflow:hidden;
 .sidekey .base.red{background:var(--okoa-signal-risk);}
 .sidekey .base.you{background:var(--okoa-semantic-fg-accent);}
 .sidekey .base.amber{background:var(--okoa-signal-caution);}
+.sidekey .jn{width:14px;height:4px;flex:0 0 auto;position:relative;background:var(--okoa-semantic-fg2);}
+.sidekey .jn::after{content:'';position:absolute;left:-1px;top:-2px;width:8px;height:8px;border-radius:50%;background:var(--okoa-semantic-fg2);}
+.sidekey .hop{width:14px;height:8px;flex:0 0 auto;position:relative;}
+.sidekey .hop::before{content:'';position:absolute;left:0;right:0;top:6px;height:2px;background:var(--okoa-semantic-fg2);}
+.sidekey .hop::after{content:'';position:absolute;left:3px;top:0;width:8px;height:8px;border:2px solid var(--okoa-semantic-fg2);border-bottom:0;border-radius:8px 8px 0 0;background:var(--okoa-semantic-surface-default);box-sizing:border-box;}
 .panel{grid-area:panel;display:flex;flex-direction:column;min-height:0;
   background:var(--okoa-semantic-surface-default);
   border-left:var(--okoa-border-hair) solid var(--okoa-semantic-border-strong);}
@@ -1477,6 +1482,8 @@ body{display:grid;overflow:hidden;
     <div class="row"><span class="base amber"></span>Amber base — items queued</div>
     <div class="row"><span class="base amber" style="height:2px"></span>Amber line, slow flow — degraded link</div>
     <div class="row"><span class="base red" style="height:2px"></span>Red line, never flows — broken link</div>
+    <div class="row"><span class="jn"></span>Dot at the wall — the link joins here</div>
+    <div class="row"><span class="hop"></span>Arc over a line — a crossing, not a join</div>
     <div class="row" style="color:var(--okoa-semantic-fg3)">Fly closer: labels gain their counts</div>
     <div class="row" style="color:var(--okoa-semantic-fg3)" id="asOf"></div>
   </div>
@@ -1786,6 +1793,33 @@ const EDGESTATUS=SPEC.edgeStatus||{};
 const __ROUTED=isoRouteAll(NODES,EDGES);
 window.__isoRouteQC=__ROUTED.qc;
 function edgePath(e){return __ROUTED.routes[e[0]+"-"+e[1]].map(p=>new THREE.Vector3(p[0],0.03,p[1]));}
+/* ————— R31 junction grammar —————
+   A link JOINS a module: a dot sits where the pipe meets the wall (electrical convention).
+   A link CROSSES another: the crossing pipe hops it with a small arc — never a dot.
+   Hops come from the shared router (same source DRC lints), so the drawing and the lint agree. */
+const HOP={r:0.15,h:0.13,n:7};
+function insertHops(pts,key){
+ const hs=__ROUTED.hops[key];if(!hs||!hs.length)return pts;
+ hs.forEach(([hx,hz])=>{
+  for(let i=1;i<pts.length;i++){
+   const a=pts[i-1],b=pts[i];
+   if(Math.abs(a.y-b.y)>1e-6)continue;                    /* risers never carry hops */
+   const horiz=Math.abs(a.z-b.z)<1e-6,vert=Math.abs(a.x-b.x)<1e-6;
+   if(!horiz&&!vert)continue;
+   const on=horiz?(Math.abs(a.z-hz)<1e-3&&hx>Math.min(a.x,b.x)+HOP.r&&hx<Math.max(a.x,b.x)-HOP.r)
+                 :(Math.abs(a.x-hx)<1e-3&&hz>Math.min(a.z,b.z)+HOP.r&&hz<Math.max(a.z,b.z)-HOP.r);
+   if(!on)continue;
+   const u=new THREE.Vector3().subVectors(b,a).normalize(),c=new THREE.Vector3(hx,a.y,hz),arc=[];
+   for(let k=0;k<=HOP.n;k++){const t=-1+2*k/HOP.n;const q=c.clone().addScaledVector(u,t*HOP.r);q.y=a.y+HOP.h*Math.sqrt(Math.max(0,1-t*t));arc.push(q);}
+   pts.splice(i,0,...arc);
+   break;
+  }
+ });
+ return pts;
+}
+const junctionGeo=new THREE.CylinderGeometry(1,1,0.018,18);
+function junctionMesh(){const m=new THREE.Mesh(junctionGeo,new THREE.MeshBasicMaterial({transparent:true,depthWrite:false}));m.renderOrder=2;scene.add(m);return m;}
+function junctionScale(){return 0.075*LINEW[lineSet].dot;}
 /* connections: dashed lines that TRACE THE PATH (they bend with corners).
    Flow = the dash pattern itself marching along the line via a shader offset. */
 /* ————— levels: the architecture's honest strata —————
@@ -1822,7 +1856,7 @@ EDGES.forEach(e=>{
  const line=new Line2(new LineGeometry(),mat);
  line.userData.edgeKey=key;
  scene.add(line);
- edgeLinesById[key]={key,line,type:e[2],health,basePts,a:e[0],b:e[1],dotted,speed,t:0,dots:[],pts:[],L:[0],total:1};
+ edgeLinesById[key]={key,line,type:e[2],health,basePts,a:e[0],b:e[1],dotted,speed,t:0,dots:[],pts:[],L:[0],total:1,jn:[junctionMesh(),junctionMesh()]};
 });
 const dotMatN=new THREE.MeshBasicMaterial({color:COL.accent});themed.push({m:dotMatN,get:()=>COL.accent});
 const dotMatW=new THREE.MeshBasicMaterial({color:COL.caution});themed.push({m:dotMatW,get:()=>COL.caution});
@@ -1844,10 +1878,13 @@ function edgePts3D(o){
    pts.push(new THREE.Vector3(last.x,yb,last.z));
   }
  }
- return pts;
+ return insertHops(pts,o.key);
 }
 function rebuildEdge(o){
  o.pts=edgePts3D(o);
+ const sc=junctionScale();
+ o.jn[0].position.copy(o.pts[0]);o.jn[1].position.copy(o.pts[o.pts.length-1]);
+ o.jn.forEach(j=>j.scale.set(sc,1,sc));
  o.line.geometry.dispose();
  const flat=[];o.pts.forEach(p=>flat.push(p.x,p.y,p.z));
  o.line.geometry=new LineGeometry();
@@ -1897,7 +1934,10 @@ document.getElementById("zout").addEventListener("click",()=>{
  camera.zoom=Math.max(0.35,camera.zoom/1.25);camera.updateProjectionMatrix();});
 window.__isoEdgeMid=key=>{const o=edgeLinesById[key];if(!o||!o.pts.length)return null;const p=o.pts[Math.floor(o.pts.length/2)-0]||o.pts[0];const q=o.pts.length>1?o.pts[Math.floor(o.pts.length/2)]:p;const m=p.clone().add(q).multiplyScalar(0.5);const v=m.project(camera);const r=canvas.getBoundingClientRect();return {x:r.left+(v.x*0.5+0.5)*r.width,y:r.top+(-v.y*0.5+0.5)*r.height};};
 window.odinView={set(az,pol,r,zoom){placeCamera(az??HOME.az,pol??HOME.pol,r??HOME.r,controls.target.x,controls.target.y,controls.target.z,zoom);},
- state:()=>({zoom:camera.zoom})};
+ /* test hooks (module scope is closed): look = cancel autopilot + aim; restore = leave any circuit/blast scope */
+ look(tx,tz,zoom,az,pol){flyGoal=null;placeCamera(az??HOME.az,pol??HOME.pol,HOME.r,tx,0,tz,zoom??camera.zoom);},
+ restore(){flyGoal=null;exitCordon();paintCircuit();renderPanel(null);},
+ state:()=>({zoom:camera.zoom,cordon:[...cordon]})};
 function flyTo(n){flyGoal={tx:n.x+n.w/2,ty:(n._lyT||0)+0.5,tz:n.y+n.d/2,
  zoom:Math.max(camera.zoom,2.1)};}
 /* click-vs-drag disambiguation (no pointer capture — OrbitControls owns the gestures) */
@@ -2254,7 +2294,8 @@ LINEW.forEach((p,i)=>{
  b.addEventListener("click",()=>{
   lineSet=i;
   edgeMats.forEach(m=>{m.linewidth=p.w;});
-  Object.values(edgeLinesById).forEach(o=>buildDots(o));
+  const sc=junctionScale();
+  Object.values(edgeLinesById).forEach(o=>{buildDots(o);o.jn.forEach(j=>j.scale.set(sc,1,sc));});
   weightSeg.querySelectorAll("button").forEach((x,xi)=>x.classList.toggle("on",xi===i));
  });
  weightSeg.appendChild(b);
@@ -2351,6 +2392,8 @@ function tick(){
   meshById[n.id].position.y=n._ly;
  });
  if(lvlMoving)Object.values(edgeLinesById).forEach(o=>rebuildEdge(o));
+ /* junction dots read exactly as their pipe: same ink, same opacity — ghosted pipe, ghosted join */
+ Object.values(edgeLinesById).forEach(o=>{const lm=o.line.material;o.jn.forEach(j=>{j.material.color.copy(lm.color);j.material.opacity=lm.opacity;j.visible=lm.opacity>0.02;});});
  /* flow dots exist only where flow is on AND the line is lit */
  Object.values(edgeLinesById).forEach(o=>{
   if(!o.dots.length)return;

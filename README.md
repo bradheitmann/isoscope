@@ -76,7 +76,8 @@ scale auto-fit whatever spec is loaded.
 - **What it does** — click any building: identity, state, evidence, in one column.
 - **How it's architected** — orbit freely (orthographic: flat-iso at rest, 3D
   in motion); press **Stack** for semantic levels; links are entities — click a
-  pipe to read what data flows over it.
+  pipe to read what data flows over it. Wiring follows schematic grammar: a dot
+  where a pipe joins a wall, an arc where it merely crosses another.
 - **What's broken, what's next** — status classes (`red` blocker / `amber`
   queued / `you` decision) paint whole buildings; the overview panel lists every
   open item worst-first; circuit mode isolates any subsystem's live flow.
@@ -102,7 +103,7 @@ Spec schema: [SPEC.md](SPEC.md) · Routing laws & roadmap: [docs/DESIGN-RULES.md
 CI/CD provider integrations (GitHub Actions / GitLab / Buildkite adapters that
 map failing jobs → modules automatically) · test-runner adapters
 (failure→module attribution) · live telemetry streaming into the trace-shaped
-status slots · R13 hub-escape + R16 shove routing (crossing reduction) ·
-R30 mental-map-stable hot-swap for `serve`.
+status slots · R30 mental-map-stable hot-swap for `serve` · R10 lane
+assignment in shared corridors · R12 PathFinder negotiation past ~50 links.
 
 MIT.

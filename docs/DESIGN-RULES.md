@@ -16,6 +16,22 @@ code and QC output.
 - **L3 — Level honesty.** Cross-level connections descend/climb via an outside
   riser and enter the destination wall *at the destination's level* — true from
   every camera angle.
+- **R13 — Escape pins (in force 2026-09-02).** Modules with degree ≥ 3 fan
+  their links out through assigned wall pins: each link end picks the wall
+  facing its partner, pins on a shared wall are spread evenly and ordered by
+  the partner's position, and every pin leaves the wall with a perpendicular
+  stub. Same-side links no longer share a channel. Lower-degree modules keep
+  centre attachment, so existing layouts do not move.
+- **R16 — Joint shove (in force 2026-09-02).** After the rip-up passes, every
+  surviving crossing pair is re-solved jointly: the top-14 candidates of both
+  routes are tried together and the pair is accepted only when total weighted
+  cost falls. Crossings neither route could fix alone vanish here.
+- **R31 — Junction grammar (in force 2026-09-02).** A link *joins* its module
+  with a dot at the wall (the pipe's own ink and lit state); a link *crosses*
+  another with a hop arc on the constant-z segment, never a dot. Hop points
+  come from the shared router, so the drawing and the DRC lint agree.
+  Results at adoption (weighted crossings, before → after): self-map 2→1,
+  ODIN 11→5, advisory codebase map 42→25, advisory topology lab 87→64.
 
 ## Rule catalog (adopt as scale demands)
 
@@ -32,16 +48,16 @@ code and QC output.
   greedy routing with iterative negotiation: route all edges, price overused
   channels up, rip up the worst offenders, converge. The standard modern
   autorouter core (used by e.g. OrthoRoute for KiCad).
-- **R13 Escape routing.** High-degree modules (hubs) get an ordered fanout
-  pattern — pins escape the hub's perimeter in assigned directions before
-  general routing (BGA escape-routing analogy). Directly targets our PB-hub
-  residual crossings.
+- **R13 Escape routing.** *In force — see Laws.* High-degree modules (hubs) get
+  an ordered fanout pattern — pins escape the hub's perimeter in assigned
+  directions before general routing (BGA escape-routing analogy).
 - **R14 Riser (via) minimization.** Every level change costs; prefer routes that
   change levels once, near the destination. Vias are the PCB analogue.
 - **R15 Keepouts.** Reserved regions no trace may enter (label zones, legend
   space, future annotation areas).
-- **R16 Shove before rip-up.** Try nudging an existing trace's segment to an
-  adjacent lane ("weak modification", Mighty router) before full rip-up.
+- **R16 Shove before rip-up.** *In force as joint shove — see Laws.* Try
+  nudging an existing trace's segment ("weak modification", Mighty router)
+  before full rip-up; here realised as a pairwise joint re-solve.
 - **R17 DRC as a product feature.** Every rule machine-checkable; every build
   emits a DRC report (violations, waivers, unavoidables). Observability of the
   drawing itself.
@@ -66,9 +82,9 @@ code and QC output.
   scramble the layout — persist/seed positions so diffs read as diffs (metro-map
   rule R1: preserve topology; force-directed variants exist with explicit
   mental-map preservation). Critical for observability over time.
-- **R31 Junction grammar.** Adopt electrical convention: connected joins get an
-  explicit junction dot; unavoidable crossings get *no* dot (optionally a hop
-  arc) — crossing ≠ connection becomes visually unambiguous.
+- **R31 Junction grammar.** *In force — see Laws.* Electrical convention:
+  connected joins get an explicit junction dot; unavoidable crossings get a hop
+  arc and never a dot — crossing ≠ connection is visually unambiguous.
 - **R32 Bus bundling.** At codebase scale, bundle same-class parallel edges into
   a bus trunk with breakouts (schematic bus notation; edge-bundling literature —
   trade clutter for overdraw, keep faithfulness at breakouts).
@@ -85,7 +101,7 @@ code and QC output.
 | modules | posture |
 |---|---|
 | ≤ 30 (today) | current sequential router + L1–L3; hand-authored placement |
-| 30–150 | R10 lanes, R11 netclasses, R12 PathFinder, R13 hub escape, R31 junction grammar, R30 stability seeds |
+| 30–150 | R10 lanes, R11 netclasses, R12 PathFinder, R30 stability seeds (R13 escape pins + R31 junction grammar already in force) |
 | 150+ | hierarchy: **drill-down sub-specs** (a module opens into its own board — "go inside"), R32 buses, R20/R21 auto-placement, LOD rendering |
 
 ## DRC checklist (grow `__isoRouteQC` into this)

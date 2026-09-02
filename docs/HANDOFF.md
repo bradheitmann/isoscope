@@ -1,6 +1,6 @@
 # Isoscope — development handoff
 
-**As of 2026-09-02 · no remote yet · name "isoscope" is a working title**
+**As of 2026-09-02 · remote: github.com/bradheitmann/isoscope (private) · name "isoscope" is a working title**
 
 ## What this is
 Schematic observability engine: a system rendered as an inspectable isometric
@@ -88,7 +88,7 @@ DRC lint enforces routing law; ingest + mark + blast-radius = the incident loop.
 example and must stay current with the repo.
 
 **Priority order (next work, in sequence):**
-1. OPERATOR: name decision + `gh repo create` (starts the open-source clock).
+1. ~~`gh repo create`~~ DONE 2026-09-02 as a PRIVATE repo (bradheitmann/isoscope). Name still a working title; flipping to public is the operator's call.
 2. ~~Dark-theme font contrast audit/fix~~ DONE 2026-09-02 (see KNOWN BUGS).
 3. R31 junction grammar — crossing ≠ connection glyphs (dot = joined).
 4. R13 hub-escape routing (targets ODIN's 11 acknowledged crossings) + R16 shove.

@@ -29,6 +29,32 @@ Sentinel architecture map (built iteratively with the operator, 2026-08-19..22).
 - `SPEC.md` — schema. `DESIGN-RULES.md` — doctrine + scale roadmap + sources.
 - `examples/odin.spec.json` — reference spec (16 modules / 18 links).
 
+## 2026-09-02 — seams → sensors: the offer loop is live
+- `db/schema.sql` `telemetry` table (one binding per module: trace_boundary
+  proposed|offered|installed|verified|declined, event_stream, wide_event_keys
+  JSON, installed_by, offered_at, verified_at, rationale). Spec key
+  `telemetry` round-trips (lib.ts import/export; SPEC.md row).
+- `lib.ts` `proposeSensor()` / `setSensor()` — shared by MCP and CLI. An offer
+  = telemetry row (offered, dated) + a YOUR-CALL status item prefixed
+  "Sensor offered — " on the building (existing decision vocabulary: slate
+  base, listed worst-first in the overview). install/verify/decline removes
+  the item. Re-proposing an installed sensor returns already-installed; a
+  declined one returns declined-earlier unless force:true.
+- `mcp.ts` tools 8+9: `iso_propose_sensor {id,rationale,event_stream?,
+  wide_event_keys?,force?}` · `iso_set_sensor {id,trace_boundary,…}`.
+  `cli.ts sensor <db> <id> --offer "why" | --state s [--stream] [--keys a,b]
+  [--by who] [--force]` for non-MCP harnesses; DEEPSEEK.md carries the
+  offer-never-install-unasked language. Tool count mentions → nine.
+- `template.html`: `sensorBlock()` in the module inspector (pass-styled for
+  installed/verified, caution for proposed/offered, quiet for declined; stream,
+  keys, rationale, provenance line); link inspector lists "Sensors at the
+  ends" (links inherit sensors from endpoints, per INSTRUMENTATION.md).
+- Dogfood: self-portrait carries a live offer on SV (Live serve) — the
+  store→browser seam — so the primary example shows the loop.
+- Verified: import→export telemetry equality; MCP stdio: tools/list = 9,
+  propose→installed→already-installed; CLI decline→declined-earlier; DRC
+  PASS; build + inspector screenshot, 0 JS errors.
+
 ## 2026-09-02 — routing laws R13 / R16 / R31 landed
 - `router.mjs` (single source, unchanged contract + new outputs): R13 escape
   pins for degree≥3 modules (per-wall even spacing, perpendicular stub, a
@@ -113,8 +139,9 @@ example and must stay current with the repo.
 2. ~~Dark-theme font contrast audit/fix~~ DONE 2026-09-02 (see KNOWN BUGS).
 3. ~~R31 junction grammar~~ DONE 2026-09-02 (wall dots + hop arcs; router emits hops).
 4. ~~R13 hub-escape + R16 shove~~ DONE 2026-09-02 (ODIN 11→5, budgets ratcheted: self 1, ODIN 5).
-5. `iso_propose_sensor` MCP tool — first rung of docs/INSTRUMENTATION.md
-   (seam→sensor offer loop; telemetry spec key design is in that doc).
+5. ~~`iso_propose_sensor` MCP tool~~ DONE 2026-09-02 (+ `iso_set_sensor`, CLI
+   `sensor`, `telemetry` table/spec key, inspector sensor block). Open: the
+   "N sessions unchanged" trigger needs a change log the store does not keep.
 6. Lumbr bridge (lumbr instrumentation → mark/status; lumbr mcp-worker executes
    remediation ladder against blast-radius scope).
 7. CI provider adapters (Actions/GitLab/Buildkite auto-attribution) +

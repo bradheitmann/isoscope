@@ -1,6 +1,6 @@
 # Harness adapters
 
-Isoscope ships an MCP server (`mcp.ts`, seven tools, zero dependencies). Every
+Isoscope ships an MCP server (`mcp.ts`, nine tools, zero dependencies). Every
 tool call repaints any browser running `isoscope serve`.
 
 - **MCP-capable harness** (Claude Code, Codex, Cursor, Zed, …): register

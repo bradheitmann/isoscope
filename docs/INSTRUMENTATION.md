@@ -43,7 +43,7 @@ YOLO patching.
 | Governed multi-agent fix discipline | **ODIN / SCP** | shipping (0.6.0 in flight) |
 | Wide-event logging research | operator's research projects | in process — fold findings here |
 
-## Spec extension (design, not yet implemented)
+## Spec extension (implemented 2026-09-02 — `telemetry` table, spec key, tools)
 
 ```jsonc
 "telemetry": {
@@ -62,9 +62,13 @@ events into the trace-shaped status slots (the original design intent).
 
 ## Roadmap ordering
 
-1. **Seam-offer protocol** for map-maintaining agents (MCP tool `iso_propose_sensor`
-   + adapter language): when a module or link stabilizes (N sessions unchanged),
-   offer the trace boundary; record `telemetry.*.trace_boundary: offered`.
+1. **Seam-offer protocol** — DONE 2026-09-02. MCP `iso_propose_sensor` /
+   `iso_set_sensor`, CLI `sensor`, adapter language in DEEPSEEK.md. An offer is
+   a YOUR-CALL item on the building (existing decision vocabulary) plus a
+   telemetry row; install/verify/decline clears it. The inspector shows the
+   sensor block; links list the sensors at their ends. Still open: the
+   "N sessions unchanged" trigger needs a change log the store does not keep
+   yet — agents supply the rationale by hand for now.
 2. **Lumbr bridge**: lumbr's instrumentation package emits → isoscope `mark`/
    status slots consume; lumbr's mcp-worker executes the remediation ladder
    against blast-radius scope from the map.

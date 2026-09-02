@@ -33,7 +33,7 @@ The primary example is isoscope describing itself (`examples/isoscope.spec.json`
 
 1. **Day one**: seed a store with a handful of modules; open `serve` in a tab.
 2. **While building**: agents maintain the map — via the **MCP server**
-   (`mcp.ts`, 7 tools, works in Claude Code/Codex/any MCP harness) or via the
+   (`mcp.ts`, 9 tools, works in Claude Code/Codex/any MCP harness) or via the
    **CLI contract** for non-MCP harnesses (`adapters/DEEPSEEK.md`).
 3. **Every commit**: install the shipped hook —
    ```bash

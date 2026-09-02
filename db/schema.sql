@@ -56,6 +56,17 @@ CREATE TABLE IF NOT EXISTS trace_steps (     -- the guided story, in order
   FOREIGN KEY (src, dst) REFERENCES edges(src, dst)
 );
 
+CREATE TABLE IF NOT EXISTS telemetry (       -- seams → sensors: one sensor binding per module
+  node_id        TEXT PRIMARY KEY REFERENCES nodes(id) ON DELETE CASCADE,
+  trace_boundary TEXT NOT NULL               -- proposed | offered | installed | verified | declined
+    CHECK (trace_boundary IN ('proposed','offered','installed','verified','declined')),
+  event_stream    TEXT,                      -- e.g. lumbr://billing/*
+  wide_event_keys TEXT,                      -- JSON array of key names
+  installed_by    TEXT,                      -- provenance: agent | human | pipeline
+  offered_at      TEXT, verified_at TEXT,
+  rationale       TEXT                       -- why this seam earned a sensor
+);
+
 CREATE TABLE IF NOT EXISTS node_paths (      -- path ownership: findings attribute here
   node_id TEXT NOT NULL REFERENCES nodes(id) ON DELETE CASCADE,
   prefix  TEXT NOT NULL,                     -- longest-prefix match wins

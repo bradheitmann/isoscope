@@ -34,7 +34,7 @@ dsh --profile web --dump-config | grep -A6 mcp-isoscope
 ```
 
 The model then sees `mcp__isoscope__iso_overview`,
-`mcp__isoscope__iso_upsert_node`, and the rest of the seven tools. Editing the
+`mcp__isoscope__iso_upsert_node`, and the rest of the nine tools. Editing the
 entry hot-swaps the connection; an unchanged `serverName` reproduces identical
 tool names.
 

@@ -6,7 +6,7 @@
      bun cli.ts build  [db] <out.html>         db → spec → self-contained map      */
 import { readFileSync, writeFileSync } from "fs";
 import { buildHtml } from "./build.mjs";
-import { DB_DEFAULT, open, importSpec, exportSpec } from "./lib.ts";
+import { DB_DEFAULT, open, importSpec, exportSpec, proposeSensor, setSensor } from "./lib.ts";
 
 const [cmd, ...args] = Bun.argv.slice(2);
 switch (cmd) {
@@ -107,6 +107,23 @@ switch (cmd) {
     }
     db.close();
     console.log(`isoscope: marked ${nodeId} — every live map repaints`);
+    break;
+  }
+  case "sensor": {
+    /* seams → sensors for non-MCP harnesses.
+       bun cli.ts sensor <db> <nodeId> --offer "why" [--stream s] [--keys a,b] [--force]
+       bun cli.ts sensor <db> <nodeId> --state installed|verified|declined|proposed [--stream s] [--keys a,b] [--by who] */
+    const [dbPath, nodeId] = args;
+    if (!dbPath || !nodeId) { console.error("usage: cli.ts sensor <db> <nodeId> (--offer why | --state s) [--stream s] [--keys a,b] [--by who] [--force]"); process.exit(2); }
+    const opt = (k: string) => { const i = args.indexOf(k); return i >= 0 ? args[i+1] : undefined; };
+    const keys = opt("--keys")?.split(",").map(s => s.trim()).filter(Boolean);
+    const db = open(dbPath);
+    let r: any;
+    if (opt("--offer")) r = proposeSensor(db, { id: nodeId, rationale: opt("--offer")!, event_stream: opt("--stream"), wide_event_keys: keys, force: args.includes("--force") });
+    else if (opt("--state")) r = setSensor(db, { id: nodeId, trace_boundary: opt("--state")!, event_stream: opt("--stream"), wide_event_keys: keys, installed_by: opt("--by"), rationale: opt("--why") });
+    else { console.error("sensor: need --offer <why> or --state <s>"); process.exit(2); }
+    db.close();
+    console.log(`isoscope: sensor ${nodeId} → ${r.outcome}`);
     break;
   }
   case "install-hook": {

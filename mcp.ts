@@ -3,7 +3,7 @@
    Hand-rolled stdio JSON-RPC (newline-delimited); zero dependencies.
    DB path: ISOSCOPE_DB env or first arg (default ./isoscope.db).
    Pair with `bun cli.ts serve` in another pane: every tool call repaints the browser. */
-import { open, importSpec, exportSpec, DB_DEFAULT, type Spec } from "./lib.ts";
+import { open, importSpec, exportSpec, proposeSensor, setSensor, DB_DEFAULT, type Spec } from "./lib.ts";
 import { buildHtml } from "./build.mjs";
 import { writeFileSync } from "fs";
 
@@ -36,6 +36,16 @@ const TOOLS = [
       node:{type:"string"}, src:{type:"string"}, dst:{type:"string"} } } },
   { name: "iso_build", description: "Build the self-contained HTML map to a path.",
     inputSchema: { type: "object", required: ["out"], properties: { out:{type:"string"} } } },
+  { name: "iso_propose_sensor", description: "Seam→sensor offer (docs/INSTRUMENTATION.md): when a module's boundary has stabilised, offer a trace boundary there. Records telemetry.trace_boundary=offered and puts a YOUR-CALL item on the building so the operator decides on the map. Returns already-installed / declined-earlier without changes (force:true re-offers a declined one).",
+    inputSchema: { type: "object", required: ["id","rationale"], properties: {
+      id:{type:"string"}, rationale:{type:"string",description:"why this seam earned a sensor now (e.g. 'unchanged for 6 sessions; 3 links cross it')"},
+      event_stream:{type:"string",description:"where wide events would go, e.g. lumbr://billing/*"},
+      wide_event_keys:{type:"array",items:{type:"string"}}, force:{type:"boolean"} } } },
+  { name: "iso_set_sensor", description: "Move a module's sensor binding: proposed|offered|installed|verified|declined. installed/verified/declined clear the offer item. installed_by defaults to 'agent'; verified_at defaults to today.",
+    inputSchema: { type: "object", required: ["id","trace_boundary"], properties: {
+      id:{type:"string"}, trace_boundary:{type:"string",enum:["proposed","offered","installed","verified","declined"]},
+      event_stream:{type:"string"}, wide_event_keys:{type:"array",items:{type:"string"}},
+      installed_by:{type:"string"}, verified_at:{type:"string"}, rationale:{type:"string"} } } },
 ];
 
 function call(name: string, a: any): string {
@@ -90,6 +100,8 @@ function call(name: string, a: any): string {
         writeFileSync(a.out, buildHtml(exportSpec(d), { specLabel: DB }));
         return `built ${a.out}`;
       }
+      case "iso_propose_sensor": return JSON.stringify(proposeSensor(d, a));
+      case "iso_set_sensor": return JSON.stringify(setSensor(d, a));
       default: throw new Error(`unknown tool ${name}`);
     }
   } finally { d.close(); }

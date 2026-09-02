@@ -23,6 +23,14 @@ To change one node/edge/status: export → edit the JSON precisely → import.
 Schema of the JSON: see SPEC.md. Keep edits minimal and valid; never invent
 fields. Grid positions x,y are floats; levels are -1|0|1.
 
+## Seams → sensors (offer, never install unasked)
+When a module's boundary has stopped moving for several sessions and links
+cross it, offer a trace boundary there — on the map, not in chat:
+`bun cli.ts sensor <db> <ID> --offer "unchanged 6 sessions; 3 links cross it" [--stream lumbr://<id>/*] [--keys req_id,actor,outcome]`
+The building shows a YOUR-CALL item. Only after the operator accepts:
+`bun cli.ts sensor <db> <ID> --state installed --by agent` · later `--state verified`.
+Declined: `--state declined` (do not re-offer without `--force`).
+
 ## Style rules for descriptions
 Plain language a newcomer understands. `does` = what it is FOR. `carries` =
 what data actually moves. One honest sentence beats three vague ones.

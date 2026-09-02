@@ -1789,6 +1789,22 @@ NODES.forEach(n=>meshById[n.id].traverse(o=>{if(o.material){
 /* connection health: a link can be broken/degraded independent of its modules.
    broken = risk red, gapped, and flow refuses to cross. degraded = amber, slow flow. */
 const EDGESTATUS=SPEC.edgeStatus||{};
+/* seams → sensors: per-module telemetry binding (docs/INSTRUMENTATION.md) */
+const TELEMETRY=SPEC.telemetry||{};
+function sensorBlock(id){
+ const t=TELEMETRY[id];if(!t)return "";
+ const st=t.trace_boundary||"proposed";
+ const cls=st==="installed"||st==="verified"?"good":st==="declined"?"":"cond";
+ const col=st==="installed"||st==="verified"?"var(--okoa-signal-pass)":st==="declined"?"var(--okoa-semantic-fg3)":"var(--okoa-signal-caution)";
+ let h="<div class='"+(cls||"t-fine")+" t-fine'"+(cls?"":" style='margin-top:var(--okoa-space-3)'")+"><span class='t-label-sm' style='color:"+col+"'>Sensor &middot; "+st.toUpperCase()+"</span><br>";
+ h+="trace boundary on every crossing of this seam";
+ if(t.event_stream)h+=" &middot; events &rarr; <code>"+t.event_stream+"</code>";
+ if(t.wide_event_keys&&t.wide_event_keys.length)h+="<br>wide-event keys: "+t.wide_event_keys.join(", ");
+ if(t.rationale)h+="<br><span style='opacity:.8'>"+t.rationale+"</span>";
+ const prov=[];if(t.installed_by)prov.push("installed by "+t.installed_by);if(t.offered_at)prov.push("offered "+t.offered_at);if(t.verified_at)prov.push("verified "+t.verified_at);
+ if(prov.length)h+="<br><span style='opacity:.7'>"+prov.join(" &middot; ")+"</span>";
+ return h+"</div>";
+}
 /*__ISOSCOPE_ROUTER__*/
 const __ROUTED=isoRouteAll(NODES,EDGES);
 window.__isoRouteQC=__ROUTED.qc;
@@ -1937,6 +1953,7 @@ window.odinView={set(az,pol,r,zoom){placeCamera(az??HOME.az,pol??HOME.pol,r??HOM
  /* test hooks (module scope is closed): look = cancel autopilot + aim; restore = leave any circuit/blast scope */
  look(tx,tz,zoom,az,pol){flyGoal=null;placeCamera(az??HOME.az,pol??HOME.pol,HOME.r,tx,0,tz,zoom??camera.zoom);},
  restore(){flyGoal=null;exitCordon();paintCircuit();renderPanel(null);},
+ inspect(id){renderPanel(id);},
  state:()=>({zoom:camera.zoom,cordon:[...cordon]})};
 function flyTo(n){flyGoal={tx:n.x+n.w/2,ty:(n._lyT||0)+0.5,tz:n.y+n.d/2,
  zoom:Math.max(camera.zoom,2.1)};}
@@ -2117,6 +2134,9 @@ function renderEdgePanel(key){
  if(o.health==="degraded")h+="<p class='t-body-sm' style='color:var(--okoa-signal-caution)'>Degraded: this link is live but impaired — flow runs slow.</p>";
  if(o.health==="broken")h+="<p class='t-body-sm' style='color:var(--okoa-signal-risk)'>Broken: nothing crosses this link until it is repaired.</p>";
  if(o.type==="intended")h+="<p class='t-body-sm' style='opacity:.75'>Planned: this connection does not exist yet — it lands with the work in flight.</p>";
+ /* links inherit sensors from their endpoints: a crossing is observed when either end is instrumented */
+ const sens=e.filter(id=>TELEMETRY[id]).map(id=>id+" &middot; "+TELEMETRY[id].trace_boundary);
+ if(sens.length)h+="<p class='t-label' style='color:var(--okoa-semantic-fg3);margin:var(--okoa-space-4) 0 var(--okoa-space-2)'>Sensors at the ends</p><p class='t-body-sm'>"+sens.join("<br>")+"</p>";
  if(d.refs)h+="<p class='refs'>"+d.refs+"</p>";
  if(!h)h="<p class='t-body-sm'>"+byId[e[0]].name+" connects to "+byId[e[1]].name+".</p>";
  setSafe(pP,h);
@@ -2156,6 +2176,7 @@ function renderPanel(id){
   h+="</div>";}
  if(n.good)h+="<div class='good t-fine'><span class='t-label-sm' style='color:var(--okoa-signal-pass)'>Feedback credit</span><br>"+n.good+"</div>";
  if(n.cond)h+="<div class='cond t-fine'><span class='t-label-sm' style='color:var(--okoa-signal-caution)'>Open condition</span><br>"+n.cond+"</div>";
+ h+=sensorBlock(n.id);
  h+="<p class='t-label-sm' style='margin-top:16px;opacity:.7'>EVIDENCE</p>";
  h+="<p class='refs'>"+n.refs+"</p>";
  setSafe(pP,h);

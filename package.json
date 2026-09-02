@@ -15,6 +15,7 @@
     "build:self": "bun cli.ts import examples/isoscope.spec.json /tmp/isoscope-self.db && bun cli.ts build /tmp/isoscope-self.db out/isoscope.html",
     "build:odin": "node build.mjs examples/odin.spec.json out/odin.html",
     "mcp": "bun mcp.ts",
-    "drc": "bun drc.ts"
+    "drc": "bun drc.ts",
+    "proof:contrast": "bun cli.ts import examples/isoscope.spec.json /tmp/isoscope-self.db && bun cli.ts build /tmp/isoscope-self.db /tmp/isoscope-self.html && bun scripts/contrast-proof.ts /tmp/isoscope-self.html"
   }
 }

@@ -206,8 +206,8 @@
    "w": 1,
    "d": 1,
    "h": 1,
-   "does": "Keeps the wiring lawful and the render honest. The collision lint scores weighted crossings against the spec's acknowledged budget and fails the build over it; the render proof drives headless Chrome across six viewports and asserts no overflow, a sized canvas, and a dismissible intro.",
-   "built": "drc.ts imports the same router.mjs the template is built from — one router, never two. scripts/render-proof.ts and overflow-diagnose.ts speak CDP over a Bun WebSocket, zero deps.",
+   "does": "Keeps the wiring lawful and the render honest. The collision lint scores weighted crossings against the spec's acknowledged budget and fails the build over it; the render proof drives headless Chrome across six viewports; the contrast proof clicks every theme and measures real text/background pairs against WCAG AA, and fails on any JS error.",
+   "built": "drc.ts imports the same router.mjs the template is built from — one router, never two. scripts/render-proof.ts, overflow-diagnose.ts and contrast-proof.ts speak CDP over a Bun WebSocket, zero deps.",
    "refs": "drc.ts · scripts/"
   }
  ],
@@ -262,10 +262,6 @@
     {
      "c": "amber",
      "l": "junction grammar (R31) is the next engine rule"
-    },
-    {
-     "c": "red",
-     "l": "dark themes: muted text fails contrast in places (audit in progress)"
     }
    ]
   },
@@ -306,12 +302,7 @@
   },
   "DR": {
    "state": "ok",
-   "items": [
-    {
-     "c": "amber",
-     "l": "render proof asserts layout only; zero-JS-error check is still manual"
-    }
-   ]
+   "items": []
   }
  },
  "levels": {

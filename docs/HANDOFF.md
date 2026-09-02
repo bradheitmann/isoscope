@@ -61,7 +61,8 @@ Sentinel architecture map (built iteratively with the operator, 2026-08-19..22).
   does not exist. `adapters/DSH.md` already gets isoscope into dsh via its MCP
   client, so this native-plugin route may be redundant — operator: keep or rm.
 - Verified this session: `import`+`build` of the self-map and `drc` on both
-  examples pass from the working tree. Browser zero-JS-error check NOT re-run.
+  examples pass from the working tree; contrast proof = zero JS errors across
+  boot + 18 theme switches (headless Chrome).
 
 ## ODIN integration contract (consumer #1)
 - ODIN owns `odin/product-research/architecture-map/odin.spec.json` (+README).
@@ -88,7 +89,7 @@ example and must stay current with the repo.
 
 **Priority order (next work, in sequence):**
 1. OPERATOR: name decision + `gh repo create` (starts the open-source clock).
-2. Dark-theme font contrast audit/fix (KNOWN BUG below).
+2. ~~Dark-theme font contrast audit/fix~~ DONE 2026-09-02 (see KNOWN BUGS).
 3. R31 junction grammar — crossing ≠ connection glyphs (dot = joined).
 4. R13 hub-escape routing (targets ODIN's 11 acknowledged crossings) + R16 shove.
 5. `iso_propose_sensor` MCP tool — first rung of docs/INSTRUMENTATION.md
@@ -102,12 +103,22 @@ example and must stay current with the repo.
 10. R12 PathFinder negotiation when consumer specs exceed ~50 edges.
 
 **KNOWN BUGS:**
-- Dark themes: insufficient font contrast in parts of the UI (operator report
-  2026-08-22). Audit all 12 dark themes across: panel sub/dimmed text, sidebar
-  count colors (signal colors on dark surfaces), hint bar, drawer section
-  headers, label muted ink (color-mix vs dark surface), intro modal grid text.
-  Likely class: color-mix() percentages and signal tokens tuned on light
-  surfaces; fix = per-mode mix ratios or dedicated muted tokens for dark.
+- ~~Dark themes: insufficient font contrast~~ FIXED 2026-09-02. Measured cause:
+  7 IDE dark palettes ship fg3/metric-label at 2.3–4.1:1; 3 IDE light palettes
+  (latte, solarized-light, dawn) at 2.5–2.8:1; the abbreviated canon `-dark`
+  CSS variants define only surfaces+fg and inherit LIGHT-tuned signal /
+  metric-label / callout-surface tokens from :root (signal-risk 1.9:1, fg1 on
+  callout surface 1.0:1). Fix = runtime **contrast floor** in template.html
+  (`enforceContrast()`, runs before every computePalette): lifts any failing
+  token toward the theme's fg1 until ≥4.5:1 (+0.06 hex-rounding margin),
+  derives `--iso-ink-muted` / `--iso-ink-dim` (3.0 floor, label id tier) /
+  `--iso-hint-keys` from the old color-mix recipes with the same guarantee,
+  and re-tints callout surfaces at ≤16% signal while fg1 stays legible.
+  PROOF: `bun run proof:contrast` (scripts/contrast-proof.ts) clicks all 18
+  drawer themes in headless Chrome, measures 16–18 real computed pairs each →
+  18/18 PASS, 0 JS errors. Before the fix: 11/18 failed.
+  Note: the canon `*-dark` CSS variants are NOT in the drawer's THEMES list
+  (only shibuya-light, stillness + 16 IDE palettes are selectable).
 - Lumbr repo has 3 uncommitted modified files (execution/audit.ts,
   execution/index.ts, policy/evaluation-store.ts) — land or classify (not
   isoscope's repo, tracked here so it isn't lost).

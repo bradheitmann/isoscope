@@ -1,0 +1,435 @@
+<!doctype html>
+<html lang="en" data-style="ridgeline">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ISOSCOPE · ODIN advisory visuals</title>
+<style>
+/* canonical design tokens — emitted stylesheet v3, embedded (font-faces dropped; local stacks used) */
+:root{
+  /* page / print / presentation layer — promoted from assets/okoa-page.css (Fix 1) */
+  --okoa-border-hair: 1px;
+  --okoa-border-thick: 2px;
+  --okoa-border-emphasis: 3px;
+  --okoa-page-letter-w: 216mm;
+  --okoa-page-letter-h: 279mm;
+  --okoa-page-legal-w: 216mm;
+  --okoa-page-legal-h: 356mm;
+  --okoa-page-tabloid-w: 279mm;
+  --okoa-page-tabloid-h: 432mm;
+  --okoa-page-a4-w: 210mm;
+  --okoa-page-a4-h: 297mm;
+  --okoa-page-arch-d-w: 610mm;
+  --okoa-page-arch-d-h: 914mm;
+  --okoa-page-margin-letter: 20mm;
+  --okoa-page-margin-legal: 20mm;
+  --okoa-page-margin-tabloid: 24mm;
+  --okoa-page-margin-a4: 20mm;
+  --okoa-page-margin-arch-d: 32mm;
+  --okoa-page-margin: var(--okoa-page-margin-letter);
+  --okoa-page-bleed: 3mm;
+  --okoa-page-safe: 5mm;
+  --okoa-page-crop-length: 4mm;
+  --okoa-page-crop-offset: 3mm;
+  --okoa-page-crop-weight: var(--okoa-rules-hairline);
+  --okoa-page-crop-color: var(--okoa-semantic-fg1);
+  --okoa-page-gutter: var(--okoa-grid-letter-gutter);
+  --okoa-page-columns-letter: 12;
+  --okoa-page-columns-legal: 12;
+  --okoa-page-columns-tabloid: 16;
+  --okoa-page-columns-a4: 12;
+  --okoa-page-columns-arch-d: 24;
+  --okoa-page-paper: color-mix(in srgb, var(--okoa-semantic-surface-default) 93%, var(--okoa-semantic-fg1) 7%);
+  --okoa-page-edge-shadow: 0 1px 3px rgba(0,0,0,.10), 0 6px 22px rgba(0,0,0,.10);
+  --okoa-pt-display-xl: 40pt;
+  --okoa-pt-display-l: 28pt;
+  --okoa-pt-display-m: 20pt;
+  --okoa-pt-title: 14pt;
+  --okoa-pt-subhead: 11.5pt;
+  --okoa-pt-lead: 11pt;
+  --okoa-pt-body: 9.5pt;
+  --okoa-pt-body-sm: 8.5pt;
+  --okoa-pt-caption: 7.5pt;
+  --okoa-pt-label: 7pt;
+  --okoa-pt-micro: 6pt;
+  --okoa-pt-table: 8pt;
+  --okoa-pt-table-header: 7pt;
+  --okoa-pt-data: 9pt;
+  --okoa-pt-data-lg: 18pt;
+  --okoa-pt-leading-body: 1.42;
+  --okoa-pt-leading-tight: 1.18;
+  --okoa-slide-16x9-w: 1920px;
+  --okoa-slide-16x9-h: 1080px;
+  --okoa-slide-4x3-w: 1024px;
+  --okoa-slide-4x3-h: 768px;
+  --okoa-slide-title: 48px;
+  --okoa-slide-display: 88px;
+  --okoa-slide-subhead: 28px;
+  --okoa-slide-body: 22px;
+  --okoa-slide-label: 16px;
+  --okoa-slide-data-lg: 96px;
+  --okoa-canvas-surface: var(--okoa-semantic-surface-default);
+  --okoa-canvas-grid-minor: color-mix(in srgb, var(--okoa-semantic-fg1) 7%, transparent);
+  --okoa-canvas-grid-minor-size: 48px;
+  --okoa-canvas-grid-major: color-mix(in srgb, var(--okoa-semantic-fg1) 7%, transparent);
+  --okoa-canvas-grid-major-size: 240px;
+  --okoa-canvas-dot: color-mix(in srgb, var(--okoa-semantic-fg1) 9%, transparent);
+  --okoa-canvas-dot-size: 1.3px;
+  --okoa-zoom-min: 0.1;
+  --okoa-zoom-max: 2.6;
+  --okoa-zoom-step: 1.15;
+  --okoa-zoom-wheel-sensitivity: 0.0012;
+  --okoa-zoom-wheel-clamp: 0.06;
+  --okoa-pan-click-threshold: 4px;
+  --okoa-node-surface: color-mix(in srgb, var(--okoa-semantic-surface-alt) 90%, transparent);
+  --okoa-node-border: var(--okoa-semantic-border-default);
+  --okoa-node-border-hot: var(--okoa-semantic-fg-accent);
+  --okoa-node-radius: var(--okoa-radii-none);
+  --okoa-node-pad: var(--okoa-space-3);
+  --okoa-node-gap: var(--okoa-space-1);
+  --okoa-node-dim-opacity: 0.22;
+  --okoa-node-intended-opacity: 0.66;
+  --okoa-edge-data: color-mix(in srgb, var(--okoa-semantic-fg2) 80%, transparent);
+  --okoa-edge-auth: var(--okoa-semantic-fg-accent);
+  --okoa-edge-intended: color-mix(in srgb, var(--okoa-semantic-fg1) 34%, transparent);
+  --okoa-edge-muted: color-mix(in srgb, var(--okoa-semantic-fg1) 26%, transparent);
+  --okoa-edge-width: 1.6px;
+  --okoa-edge-width-lit: 2.6px;
+  --okoa-edge-dash: 1.5px 7px;
+  --okoa-edge-dash-intended: 7px 7px;
+  --okoa-motion-flow-duration: 1000ms;
+  --okoa-motion-flow-distance: 17px;
+  --okoa-motion-canvas-stagger: 9ms;
+
+  --okoa-backdrop-blur: saturate(180%) blur(8px);
+  --okoa-bp-lg: 1024px;
+  --okoa-bp-md: 768px;
+  --okoa-bp-sm: 640px;
+  --okoa-bp-xl: 1280px;
+  --okoa-bp-xs: 0px;
+  --okoa-bp-xxl: 1536px;
+  --okoa-button-padding-x: 16px;
+  --okoa-z-base: 0;
+  --okoa-z-modal: 1100;
+  --okoa-z-overlay: 1000;
+  --okoa-z-raised: 10;
+  --okoa-z-sticky: 100;
+  --okoa-z-toast: 1200;
+  --okoa-z-tooltip: 1300;
+  --okoa-container-lg: 1024px;
+  --okoa-container-md: 768px;
+  --okoa-container-prose: 680px;
+  --okoa-container-sm: 640px;
+  --okoa-container-xl: 1200px;
+  --okoa-control-height: 40px;
+  --okoa-control-radius: 2px;
+  --okoa-cursor-lerp: 0.22;
+  --okoa-cursor-ring-active: 46px;
+  --okoa-cursor-ring-blend: difference;
+  --okoa-cursor-ring-rest: 28px;
+  --okoa-cursor-ring-stroke: 1.5px;
+  --okoa-dataviz-axis-stroke: 0.5pt;
+  --okoa-dataviz-count-duration: 560ms;
+  --okoa-dataviz-draw-duration: 380ms;
+  --okoa-dataviz-line-stroke: 2.5px;
+  --okoa-dataviz-odometer-duration: 640ms;
+  --okoa-dataviz-odometer-stagger: 55ms;
+  --okoa-density-comfortable-control-height: 40px;
+  --okoa-density-comfortable-gap: 12px;
+  --okoa-density-comfortable-row-height: 44px;
+  --okoa-density-compact-control-height: 32px;
+  --okoa-density-compact-gap: 8px;
+  --okoa-density-compact-row-height: 32px;
+  --okoa-disabled-opacity: 0.4;
+  --okoa-press-scale: 0.98;
+  --okoa-ease-in: cubic-bezier(0.4, 0, 1, 1);
+  --okoa-ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+  --okoa-ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --okoa-ease-standard: cubic-bezier(0.2, 0, 0, 1);
+  --okoa-elevation-hover: 0 4px 12px rgba(0, 0, 0, 0.08);
+  --okoa-elevation-overlay: 0 12px 32px rgba(0, 0, 0, 0.12);
+  --okoa-focus-ring-offset: 2px;
+  --okoa-focus-ring-width: 2px;
+  --okoa-grid-hairline-color: color-mix(in srgb, var(--okoa-semantic-fg1) 12%, transparent);
+  --okoa-grid-hairline-weight: 1px;
+  --okoa-grid-letter-columns: 16;
+  --okoa-grid-letter-gutter: 8mm;
+  --okoa-grid-letter-margin: 20mm;
+  --okoa-grid-letter-page-height: 279mm;
+  --okoa-grid-letter-page-width: 216mm;
+  --okoa-grid-slide-columns: 12;
+  --okoa-grid-slide-gutter: 4mm;
+  --okoa-grid-slide-margin: 15mm;
+  --okoa-grid-slide-page-height: 143mm;
+  --okoa-grid-slide-page-width: 254mm;
+  --okoa-hit-slop: 8px;
+  --okoa-touch-target-comfortable: 48px;
+  --okoa-touch-target-min: 44px;
+  --okoa-index-column: clamp(7rem, 14vw, 12rem);
+  --okoa-index-label-size: 0.66rem;
+  --okoa-index-label-tracking: 0.16em;
+  --okoa-index-number-size: clamp(1.6rem, 1rem + 1.4vw, 2.4rem);
+  --okoa-index-number-weight: 500;
+  --okoa-index-sticky-offset: 108px;
+  --okoa-motion-default: 220ms;
+  --okoa-motion-deliberate: 560ms;
+  --okoa-motion-fast: 120ms;
+  --okoa-motion-instant: 0ms;
+  --okoa-motion-slow: 380ms;
+  --okoa-motion-stagger: 40ms;
+  --okoa-transition-curtain-duration: 380ms;
+  --okoa-transition-headline-duration: 700ms;
+  --okoa-transition-headline-stagger: 90ms;
+  --okoa-radii-md: 4px;
+  --okoa-radii-none: 0;
+  --okoa-radii-pill: 9999px;
+  --okoa-radii-sm: 2px;
+  --okoa-rules-default: 1pt;
+  --okoa-rules-emphasis: 1.2pt;
+  --okoa-rules-hairline: 0.5pt;
+  --okoa-scrim: rgba(0, 0, 0, 0.40);
+  --okoa-scroll-distance: 16px;
+  --okoa-scroll-duration: 700ms;
+  --okoa-scroll-progress-after: 320px;
+  --okoa-scroll-stagger: 60ms;
+  --okoa-sp-0: 0mm;
+  --okoa-sp-1: 1mm;
+  --okoa-sp-2: 2mm;
+  --okoa-sp-3: 3mm;
+  --okoa-sp-5: 5mm;
+  --okoa-sp-8: 8mm;
+  --okoa-sp-13: 13mm;
+  --okoa-sp-21: 21mm;
+  --okoa-space-0: 0;
+  --okoa-space-1: 4px;
+  --okoa-space-2: 8px;
+  --okoa-space-3: 12px;
+  --okoa-space-4: 16px;
+  --okoa-space-5: 24px;
+  --okoa-space-6: 32px;
+  --okoa-space-8: 48px;
+  --okoa-space-10: 64px;
+  --okoa-space-section: clamp(5rem, 11vh, 11rem);
+  --okoa-texture-grain-blend: multiply;
+  --okoa-texture-grain-opacity: 0.04;
+  --okoa-texture-grain-scale: 160px;
+  --okoa-type-body-leading: 12pt;
+  --okoa-type-body-size: 9pt;
+  --okoa-type-body-strong-leading: 12pt;
+  --okoa-type-body-strong-size: 9pt;
+  --okoa-type-body-strong-tracking: 0;
+  --okoa-type-body-strong-weight: 650;
+  --okoa-type-body-tracking: 0;
+  --okoa-type-body-weight: 425;
+  --okoa-type-caption-leading: 9pt;
+  --okoa-type-caption-size: 7pt;
+  --okoa-type-caption-tracking: 0.01em;
+  --okoa-type-caption-weight: 450;
+  --okoa-type-display-l-leading: 1;
+  --okoa-type-display-l-size: clamp(2rem, 1.35rem + 2.3vw, 3.5rem);
+  --okoa-type-display-l-tracking: -0.016em;
+  --okoa-type-display-l-weight: 500;
+  --okoa-type-display-lg-leading: 72pt;
+  --okoa-type-display-lg-size: 64pt;
+  --okoa-type-display-lg-tracking: -0.04em;
+  --okoa-type-display-lg-weight: 220;
+  --okoa-type-display-md-leading: 54pt;
+  --okoa-type-display-md-size: 48pt;
+  --okoa-type-display-md-tracking: -0.03em;
+  --okoa-type-display-md-weight: 250;
+  --okoa-type-display-sm-leading: 36pt;
+  --okoa-type-display-sm-size: 32pt;
+  --okoa-type-display-sm-tracking: -0.03em;
+  --okoa-type-display-sm-weight: 250;
+  --okoa-type-display-xl-leading: 0.94;
+  --okoa-type-display-xl-size: clamp(3.1rem, 1.4rem + 7.4vw, 7.5rem);
+  --okoa-type-display-xl-tracking: -0.022em;
+  --okoa-type-display-xl-weight: 500;
+  --okoa-type-label-leading: 9pt;
+  --okoa-type-label-size: 8pt;
+  --okoa-type-label-tracking: 0.03em;
+  --okoa-type-label-weight: 600;
+  --okoa-type-subhead-leading: 15pt;
+  --okoa-type-subhead-size: 12pt;
+  --okoa-type-subhead-tracking: -0.01em;
+  --okoa-type-subhead-weight: 650;
+  --okoa-type-table-cell-leading: 9pt;
+  --okoa-type-table-cell-size: 8pt;
+  --okoa-type-table-cell-tracking: 0;
+  --okoa-type-table-cell-weight: 425;
+  --okoa-type-table-header-leading: 9pt;
+  --okoa-type-table-header-size: 8pt;
+  --okoa-type-table-header-tracking: 0;
+  --okoa-type-table-header-weight: 650;
+  --okoa-type-title-leading: 24pt;
+  --okoa-type-title-size: 20pt;
+  --okoa-type-title-tracking: -0.02em;
+  --okoa-type-title-weight: 350;
+  --okoa-serif: Cormorant Garamond, Georgia, serif;
+  --okoa-sans: Inter, Helvetica Neue, Arial, sans-serif;
+  --okoa-disp: Inter Display, Inter, sans-serif;
+  --okoa-mono: JetBrains Mono, ui-monospace, monospace;
+  --t-display-xl: clamp(2.6rem, 1.6rem + 3.6vw, 5rem);
+  --t-display-l: clamp(2rem,   1.4rem + 2.6vw, 3.4rem);
+  --t-display-m: clamp(1.6rem, 1.2rem + 1.6vw, 2.4rem);
+  --t-title: clamp(1.3rem, 1.05rem + 1vw, 1.9rem);
+  --t-lead: clamp(1.1rem, 1rem + 0.6vw, 1.4rem);
+  --t-body: 1.0625rem;
+  --t-body-sm: 0.9375rem;
+  --t-fine: 0.8125rem;
+  --t-label: 0.72rem;
+  --t-label-sm: 0.66rem;
+  --t-micro: 0.6rem;
+  --w-light: 300;
+  --w-regular: 400;
+  --w-medium: 500;
+  --w-semibold: 600;
+  --tr-tight: -0.02em;
+  --tr-snug: -0.01em;
+  --tr-normal: 0;
+  --tr-wide: 0.06em;
+  --tr-caps: 0.12em;
+  --tr-caps-wide: 0.18em;
+}
+:root, [data-style="ridgeline"]{
+  --okoa-accent-fill-surface: #A8492F;
+  --okoa-accent-fill-text: #FBF6EE;
+  --okoa-component-chrome-accent-rule: #FF795E;
+  --okoa-component-chrome-breadcrumb: #6B6B6B;
+  --okoa-component-chrome-footer-bg: #465D53;
+  --okoa-component-chrome-footer-text: #FEFEFE;
+  --okoa-component-chrome-page-number: #FEFEFE;
+  --okoa-component-metric-label: #6B6B6B;
+  --okoa-component-metric-rule: #D4D4D4;
+  --okoa-component-metric-value: #3C3C3C;
+  --okoa-component-table-header-bg: #465D53;
+  --okoa-component-table-header-text: #FEFEFE;
+  --okoa-component-table-rule: #D4D4D4;
+  --okoa-component-table-total-rule: #3C3C3C;
+  --okoa-cursor-tag-surface: #3C3C3C;
+  --okoa-cursor-tag-text: #FEFEFE;
+  --okoa-dataviz-axis: #D4D4D4;
+  --okoa-dataviz-grid: #F0ECE9;
+  --okoa-dataviz-point-color: #FF795E;
+  --okoa-dataviz-series: #FF795E;
+  --okoa-focus-ring-color: #465D53;
+  --okoa-index-label-color: #6B6B6B;
+  --okoa-index-number-color: #FF795E;
+  --okoa-scroll-progress-stroke: #FF795E;
+  --okoa-semantic-border-accent: #FF795E;
+  --okoa-semantic-border-default: #D4D4D4;
+  --okoa-semantic-border-strong: #3C3C3C;
+  --okoa-semantic-entity-primary: #465D53;
+  --okoa-semantic-entity-secondary-a: #678CA7;
+  --okoa-semantic-entity-secondary-b: #104473;
+  --okoa-semantic-fg-accent: #FF795E;
+  --okoa-semantic-fg-on-dark: #FEFEFE;
+  --okoa-semantic-fg1: #3C3C3C;
+  --okoa-semantic-fg2: #6B6B6B;
+  --okoa-semantic-fg3: #757575;
+  --okoa-semantic-surface-alt: #F0ECE9;
+  --okoa-semantic-surface-chrome: #465D53;
+  --okoa-semantic-surface-default: #FEFEFE;
+  --okoa-semantic-surface-warm: #F5EEE4;
+  --okoa-signal-caution: #8A6B22;
+  --okoa-signal-caution-surface: #FDF8EF;
+  --okoa-signal-info: #3A6480;
+  --okoa-signal-info-surface: #EFF5FA;
+  --okoa-signal-pass: #2D5E33;
+  --okoa-signal-pass-surface: #F0FAF2;
+  --okoa-signal-risk: #7A2E26;
+  --okoa-signal-risk-surface: #FAF0F0;
+  --okoa-transition-curtain-surface: #465D53;
+}
+:root{
+  --serif:'Cormorant Garamond', Georgia, 'Times New Roman', serif;
+  --sans:'Inter', -apple-system, 'Helvetica Neue', Arial, sans-serif;
+  --mono:'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+html{height:100%;}
+body{
+  min-height:100%;
+  background:var(--okoa-semantic-surface-default);
+  color:var(--okoa-semantic-fg1);
+  font-family:var(--sans);
+  font-size:15px;
+  line-height:1.6;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:var(--okoa-space-6,32px);
+  padding:var(--okoa-space-7,48px) var(--okoa-space-4,16px);
+}
+:focus-visible{outline:2px solid var(--okoa-focus-ring-color);outline-offset:2px;}
+.wrap{max-width:var(--okoa-container-lg,1024px);width:100%;display:flex;flex-direction:column;gap:var(--okoa-space-6,32px);}
+.eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.25em;text-transform:uppercase;color:var(--okoa-semantic-fg3);}
+h1{font-family:var(--serif);font-weight:500;font-size:clamp(28px,5vw,44px);line-height:1.15;color:var(--okoa-semantic-fg1);margin-top:var(--okoa-space-2,8px);}
+.sub{color:var(--okoa-semantic-fg2);font-size:14px;max-width:62ch;}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,320px),1fr));gap:var(--okoa-space-5,24px);}
+a.card{
+  display:block;
+  padding:var(--okoa-space-5,24px);
+  border:1px solid var(--okoa-semantic-border-default);
+  border-radius:var(--okoa-radii-md,4px);
+  background:var(--okoa-semantic-surface-warm);
+  text-decoration:none;
+  color:inherit;
+  transition:border-color var(--okoa-motion-fast,120ms) var(--okoa-ease-out,ease),
+             box-shadow var(--okoa-motion-fast,120ms) var(--okoa-ease-out,ease),
+             transform var(--okoa-motion-fast,120ms) var(--okoa-ease-out,ease);
+}
+a.card:hover,a.card:focus-visible{
+  border-color:var(--okoa-semantic-border-accent);
+  box-shadow:var(--okoa-elevation-hover);
+  transform:translateY(-2px);
+}
+.card .eyebrow{color:var(--okoa-semantic-fg3);}
+.card h2{font-family:var(--serif);font-weight:500;font-size:24px;line-height:1.2;margin:var(--okoa-space-2,8px) 0 var(--okoa-space-2,8px);color:var(--okoa-semantic-fg1);}
+.card p{font-size:13px;color:var(--okoa-semantic-fg2);}
+.card .stats{margin-top:var(--okoa-space-4,16px);font-family:var(--mono);font-size:11px;color:var(--okoa-semantic-fg3);}
+.legend{
+  border-left:2px solid var(--okoa-semantic-border-accent);
+  padding-left:var(--okoa-space-3,12px);
+  font-size:13px;
+  color:var(--okoa-semantic-fg2);
+}
+.legend b{color:var(--okoa-semantic-fg1);font-weight:600;}
+footer{font-family:var(--mono);font-size:11px;line-height:1.7;color:var(--okoa-semantic-fg3);}
+@media (max-width:480px){
+  body{padding:var(--okoa-space-5,24px) var(--okoa-space-3,12px);}
+  h1{font-size:clamp(24px,7vw,32px);}
+}
+@media (prefers-reduced-motion:reduce){
+  a.card{transition:none;}
+  a.card:hover,a.card:focus-visible{transform:none;}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="eyebrow">Isoscope &times; ODIN &middot; advisory visuals</div>
+    <h1>Two maps of the release checkpoint.</h1>
+    <p class="sub">Draft advisory snapshots for the operator and A/EXEC-ODIN. Open either map, drag to orbit, click any building for its evidence.</p>
+  </header>
+  <div class="cards">
+    <a class="card" href="odin-codebase.html">
+      <div class="eyebrow">Visual A</div>
+      <h2>Codebase city · release checkpoint</h2>
+      <p>Doctrine, the MCP referee, trust machinery, terminal substrates, the npm 0.6.0 to 0.7.0 ruling, and the two Wave-1 worktree lanes that are not on baseline HEAD.</p>
+      <div class="stats">27 modules &middot; 23 links &middot; baseline e431e30 verified</div>
+    </a>
+    <a class="card" href="topology-lab.html">
+      <div class="eyebrow">Visual B</div>
+      <h2>Adaptive topology laboratory</h2>
+      <p>The live 16-seat roster, the one-digest acceptance chain from gates to sealed holdout, the stage program, eight experiment districts with deferred authorizations marked, and the Wave-1 observed timeline.</p>
+      <div class="stats">32 modules &middot; 28 links &middot; roster observed 18:59Z</div>
+    </a>
+  </div>
+  <p class="legend"><b>Truth discipline.</b> Every claim carries its class: <b>observed</b> (verified by direct read), <b>derived</b> (from handoff or planning), <b>reported</b> (via A/EXEC-ODIN), <b>hypothesis</b> (banked, unproven). Active candidates are never drawn as integrated code.</p>
+  <footer>Draft advisory snapshot &middot; 2026-09-01 &middot; authored by A/ISOSCOPE (surface:46) under boot contract and activation GO &middot; advisory only, not QA acceptance, not a release claim &middot; sealed-holdout internals deliberately absent.</footer>
+</div>
+</body>
+</html>

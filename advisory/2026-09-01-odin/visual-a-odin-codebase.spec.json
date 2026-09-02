@@ -1,0 +1,336 @@
+{
+ "groups": [
+  {"id": "doctrine", "label": "Doctrine · protocol source [OBSERVED]"},
+  {"id": "referee", "label": "The referee · MCP server [OBSERVED]"},
+  {"id": "trust", "label": "Trust machinery · gates & audits [OBSERVED]"},
+  {"id": "substrate", "label": "Terminal substrates · truth-mixed [OBSERVED]"},
+  {"id": "ship", "label": "Ship path · installs & release"},
+  {"id": "corpus", "label": "Planning corpus · local-only [OBSERVED presence / DERIVED counts]"},
+  {"id": "lanes", "label": "Active lanes · Wave-1 worktrees · NOT on baseline HEAD"}
+ ],
+ "nodes": [
+  {
+   "id": "SCP", "tag": "DOCTRINE", "g": "doctrine", "name": "SCP.md — the rulebook",
+   "x": 0, "y": 0, "w": 1, "d": 1, "h": 1.2,
+   "does": "[OBSERVED] The canonical protocol text at protocol/SCP.md — Version 0.6.0, SCP_PUBLIC_VERSION 0.6.0, MIN_COMPATIBLE_CHILD_MCP 0.4.5 (header read directly). Generic role contracts, receipt validation, delegation, closeout, bounded state vocabulary. Doctrine is mirrored across three synchronized copies (SCP.md, SKILL.md, bootstrap-skill.md) that must move in mirror.",
+   "built": "<span class='pip shipped'></span>Shipped — v0.6.0 published on npm. JUR/GOVTRUTH/GOVDISP amendments folded in; registry authority default-ON as of 0.6.0.",
+   "refs": "protocol/SCP.md · npm @bradheitmann/odin-sentinel"
+  },
+  {
+   "id": "RCD", "tag": "ROLE CARDS", "g": "doctrine", "name": "Role cards",
+   "x": 2.5, "y": 0, "w": 1, "d": 1, "h": 0.9,
+   "does": "[OBSERVED] Eight quick-start cards &le;4KB each (exec-pm, exec-asst, dev-worker, qa-worker, team-pm, shadow, crush-stability, mission-droid) served via odin.get_role_card; non-control-plane roles activate from these instead of the full skill.",
+   "built": "<span class='pip shipped'></span>Shipped. Verified on disk at protocol/role-cards/ (8 files).",
+   "refs": "protocol/role-cards/"
+  },
+  {
+   "id": "SKL", "tag": "SKILL BUNDLE", "g": "doctrine", "name": "Bootstrap skill & references",
+   "x": 5, "y": 0, "w": 1, "d": 1, "h": 1,
+   "does": "[OBSERVED] protocol/bootstrap-skill.md + skill-references/ (harness-skill-targets, canonical-introduction-prompt). The installed Pi-native copy was read in FULL by A/ISOSCOPE this session: 134,880 bytes · 1,871 lines · sha256 1be9a35c&hellip;1ee58 · SCP_PUBLIC_VERSION 0.6.0 — hash-pinned and matching the coordination pin.",
+   "built": "<span class='pip shipped'></span>Shipped. Skill version 3.6.1 frontmatter; governance for any harness, MCP or native.",
+   "refs": "protocol/bootstrap-skill.md · protocol/skill-references/"
+  },
+  {
+   "id": "TOP", "tag": "TOPOLOGY", "g": "doctrine", "name": "Topology & model profiles",
+   "x": 7.5, "y": 0, "w": 1, "d": 1, "h": 0.9,
+   "does": "[OBSERVED] topology.yaml (default executive office + pods, human_cmux_quad layout, launch phases, readiness gates, failover ladders), roles.yaml, model-profiles.yaml, delegation.yaml, closeout.yaml — the organizational contract the referee serves.",
+   "built": "<span class='pip shipped'></span>Shipped. Receipts templates in protocol/receipts/ (boot, harness-probe-matrix, team-manifest).",
+   "refs": "protocol/topology.yaml · protocol/roles.yaml"
+  },
+  {
+   "id": "SRV", "tag": "REFEREE", "g": "referee", "name": "MCP server core",
+   "x": 0, "y": 3.2, "w": 1.5, "d": 1.5, "h": 2, "stack": 4,
+   "does": "[OBSERVED] src/mcp/server.ts — 1,015 lines, 48 tool/resource registration sites counted by direct grep. Serves versioned startup packets sized per role, role cards, receipt schemas, layout computation, harness probes, telemetry config to any MCP-capable agent.",
+   "built": "<span class='pip shipped'></span>Shipped as npm 0.6.0. Any AI agent loads the referee; no cloud, no AI of its own.",
+   "refs": "src/mcp/server.ts · dist/ build output present"
+  },
+  {
+   "id": "VAL", "tag": "VALIDATORS", "g": "referee", "name": "Deterministic validators",
+   "x": 3, "y": 3.2, "w": 1.1, "d": 1.1, "h": 1.3,
+   "does": "[OBSERVED files / DERIVED count ~20] schemas.ts, validators.ts, role-identity.ts, repository.ts. Same input, same verdict — agents cannot argue. Closure independence is machine-enforced (CLOSURE_LANE_COLLAPSE / SELF-review refusals); canonical role-slot identity uses NFKC + exact hyphen-class fold, refusing fail-closed.",
+   "built": "<span class='pip shipped'></span>Shipped. GOVTRUTH R1/R2 hardening live on HEAD.",
+   "refs": "src/protocol/validators.ts · src/protocol/role-identity.ts"
+  },
+  {
+   "id": "REG", "tag": "EVENT REGISTRY", "g": "referee", "name": "Event registry · circuit breakers",
+   "x": 5.5, "y": 3.2, "w": 1.1, "d": 1.1, "h": 1.2,
+   "does": "[OBSERVED] src/protocol/event-registry/ — types, storage, index, diagnostic, compact (5 modules, all on HEAD). Append-only registry authority: typed events are AUTHORITY for governance facts (blockers, attempts, verdicts, receipts); attempt ceilings, depth caps, paperwork budgets are machine-enforced, default-ON since 0.6.0.",
+   "built": "<span class='pip shipped'></span>Shipped — EPIC-052/053 verified closed; nine commits ancestors of HEAD.",
+   "refs": "src/protocol/event-registry/"
+  },
+  {
+   "id": "LAY", "tag": "SURFACE LAYOUT", "g": "referee", "name": "Surface layout & capability tiers",
+   "x": 8, "y": 3.2, "w": 1.1, "d": 1.1, "h": 1,
+   "does": "[OBSERVED] surface-layout.ts — odin.compute_surface_layout, canonical packing (equal columns, max two stacked, Team A column 0, tall-column rule), pre-staffing gate, substrate capability tiers. herdr is advertised tier 3 with six capabilities at line ~47 — see the herdr block for the truth gap.",
+   "built": "<span class='pip shipped'></span>Shipped. Reference layouts N=1..8.",
+   "refs": "src/protocol/surface-layout.ts"
+  },
+  {
+   "id": "HAR", "tag": "HARNESS MATRIX", "g": "referee", "name": "Harness matrix & pacing",
+   "x": 10.5, "y": 3.2, "w": 1.1, "d": 1.1, "h": 1,
+   "does": "[OBSERVED] src/harness-pacing/ (index, recommend, schema, storage, seeds). Single source of truth for per-harness submit profiles (single_line_flatten, double_enter, single_enter_verify). GOVTRUTH-R4: harness ids are exact-match fail-closed — respellings are thrown refusals, never normalized.",
+   "built": "<span class='pip shipped'></span>Shipped on HEAD.",
+   "refs": "src/harness-pacing/ · protocol/receipts/harness-probe-matrix.yaml"
+  },
+  {
+   "id": "SEN", "tag": "SENTINELS", "g": "referee", "name": "Slice-health sentinels",
+   "x": 13, "y": 3.2, "w": 0.9, "d": 0.9, "h": 0.9,
+   "does": "[OBSERVED doctrine / DERIVED wiring] Advisory-only sentinels with fail-closed input hygiene (GOVTRUTH-R5): a sentinel told nothing says nothing; timeout fields must be finite and strictly positive; max_seconds &ge; base_seconds is the named coherence rule. Insufficient input yields NO finding, never a default-shaped one.",
+   "built": "<span class='pip shipped'></span>Shipped on HEAD.",
+   "refs": "src/protocol/ · SKILL.md amendment GOVEDGE-SENTINEL-HYGIENE"
+  },
+  {
+   "id": "TEL", "tag": "TELEMETRY", "g": "referee", "name": "Telemetry workspace",
+   "x": 15, "y": 3.2, "w": 0.9, "d": 0.9, "h": 0.8,
+   "does": "[OBSERVED] telemetry/ — a Cloudflare Workers sub-workspace (wrangler.toml, migrations, schema.sql, src) for session reports with secret scrubbing before storage or sharing.",
+   "built": "<span class='pip shipped'></span>Present on HEAD; session reports + redaction preview shipped.",
+   "refs": "telemetry/ · wrangler.toml"
+  },
+  {
+   "id": "AGH", "tag": "ACTIVATION GATES", "g": "trust", "name": "Activation gates & hooks",
+   "x": 0, "y": 6.4, "w": 1.4, "d": 1.1, "h": 1,
+   "does": "[OBSERVED] scripts/protocol/ — verify-instruction-read.mjs (full-instruction-read proofs: path, byte/line count, SHA-256 per file), verify-governed-context.mjs, install-activation-hooks.mjs, cmux-send-governed.sh. The machinery behind 'prove you read your instructions' — the same proof class A/ISOSCOPE just executed against the pinned skill.",
+   "built": "<span class='pip shipped'></span>Shipped. Digest binding applies to instruction/canonical files only (DIS-004).",
+   "refs": "scripts/protocol/"
+  },
+  {
+   "id": "AUD", "tag": "AUDIT GATES", "g": "trust", "name": "Audit chain",
+   "x": 2.8, "y": 6.4, "w": 1.2, "d": 1.1, "h": 1,
+   "does": "[OBSERVED] scripts/audit/ — audit:public (public-surface), audit:deps (dependency), audit:doctrine (doctrine-currency parity). GOVTRUTH-R6: the publish path is fail-closed with severity floor high; accepted advisories carry owner+expiry+rationale in a reviewed exception manifest validated BEFORE the audit runs.",
+   "built": "<span class='pip shipped'></span>Shipped. prepublishOnly runs the full validate chain.",
+   "refs": "scripts/audit/ · package.json scripts"
+  },
+  {
+   "id": "TST", "tag": "TESTS", "g": "trust", "name": "Test suite",
+   "x": 4.6, "y": 6.4, "w": 0.9, "d": 0.9, "h": 0.8,
+   "does": "[OBSERVED tree / DERIVED baseline] tests/ — seven suites: audit, fixtures, harness-pacing, mcp, odin-watch, protocol, telemetry. Baseline 1315 passed / 3 skipped at e431e30 is DERIVED from the PM handoff and treated as a floor; NOT re-run by A/ISOSCOPE (advisory, read-only).",
+   "built": "<span class='pip shipped'></span>Green per handoff; validate = audit&times;3 &rarr; typecheck &rarr; test &rarr; build &rarr; test:package.",
+   "refs": "tests/ · vitest.config.ts"
+  },
+  {
+   "id": "CMX", "tag": "CMUX", "g": "substrate", "name": "cmux adapter",
+   "x": 6.5, "y": 6.4, "w": 0.9, "d": 0.9, "h": 0.8,
+   "does": "[OBSERVED] Reference substrate, capability tier 3 (SEND, ENTER_PROOF, READ_SCREEN, WAIT_IDLE, EVENTS). CmuxBackend shipped in src/odin-watch/backends; adapter doc published. This workspace runs on it.",
+   "built": "<span class='pip shipped'></span>Shipped.",
+   "refs": "src/odin-watch/backends · docs/adapters/cmux-adapter.md"
+  },
+  {
+   "id": "TMX", "tag": "TMUX", "g": "substrate", "name": "tmux adapter",
+   "x": 8.3, "y": 6.4, "w": 0.9, "d": 0.9, "h": 0.8,
+   "does": "[OBSERVED] TmuxBackend present in the backend switch (case 'tmux'). Capability tier 2 — no EVENTS; obligations needing tier 3+ cannot be satisfied by tmux without degraded-mode authorization.",
+   "built": "<span class='pip shipped'></span>Backend present on HEAD.",
+   "refs": "src/odin-watch/index.ts · docs/adapters/tmux-adapter.md"
+  },
+  {
+   "id": "HRD", "tag": "HERDR", "g": "substrate", "name": "herdr — advertised, not implemented",
+   "x": 10.1, "y": 6.4, "w": 1.2, "d": 1.1, "h": 1.1,
+   "does": "[OBSERVED — code-level, this session] The truthfulness defect, verified in source: VALID_SUBSTRATES accepts 'herdr' (src/odin-watch/index.ts:14-18); getSubstrateCapability advertises tier 3 + six capabilities (surface-layout.ts:~47); the backend switch has cmux/tmux cases only and THROWS: \"Substrate 'herdr' is not yet supported by odin-watch. Supported: cmux, tmux\" (index.ts:154-165). A caller reads a six-capability promise and receives a hard failure.",
+   "built": "<span class='pip planned'></span>EPIC-059 READY, 0/3: STORY-HERDR-001 spec correction (P1 — verify against the installed herdr 0.8.2 binary, never the research table), -002 snapshot backend at cmux parity (P1), -003 capability truthfulness (P2 — subtraction is acceptable). Published docs/adapters/herdr-adapter.md is materially wrong [DERIVED: handoff] — envelope, addressing, operations, and license (Apache-2.0, not AGPL).",
+   "refs": "src/odin-watch/index.ts:154-165 · EPIC-059",
+   "cond": "herdr 0.8.2 installed at /opt/homebrew/bin/herdr — prerequisite satisfied at plan time."
+  },
+  {
+   "id": "MMX", "tag": "MINIMUX", "g": "substrate", "name": "minimux",
+   "x": 12.1, "y": 6.4, "w": 0.9, "d": 0.9, "h": 0.7,
+   "does": "[OBSERVED advertisement / DERIVED defect class] Advertised at capability tier 4 (all seven flags) in the capability table; carries the same unbacked-claim defect class as herdr. Deliberately OUT of EPIC-059 scope — deserves its own epic.",
+   "built": "<span class='pip planned'></span>Unplanned; recorded as defect-class sibling of herdr.",
+   "refs": "src/protocol/surface-layout.ts · docs/adapters/minimux-adapter.md"
+  },
+  {
+   "id": "REL", "tag": "CHECKPOINT", "g": "ship", "name": "0.7.0 release checkpoint · RULING REL-1",
+   "x": 0.5, "y": 9.4, "w": 2.2, "d": 1.3, "h": 1.5,
+   "does": "[OBSERVED: EPIC-060 read in full] The operator-ruled FIRST CHECKPOINT GOAL. Scope = HEAD e431e30 + EPIC-055 S1/S2/S3 (close merge blockers H1/H2/H3) + REL070 version-sync slice; S4/S5 are P1, NOT blockers. Six version-authority files move in mirror (package.json, version.ts, SCP.md, SKILL.md, bootstrap-skill.md, marketplace.json) — release-sync tests are the oracle. CHANGELOG keeps all five BREAKING disclosures verbatim; historical entries byte-sacred.",
+   "built": "<span class='pip built'></span>IN FLIGHT: waves 1-3 running now in isolated worktrees &rarr; EPIC-060 runs strictly alone on post-S3 state &rarr; PM pushes &rarr; operator merges to main, tags v0.7.0, publishes from clean main &rarr; PM syncs fleet 13/13 and hands website release notes (operator carries them — production deploys only from the website repo's main).",
+   "refs": "EPIC-060 · RULING REL-1 · SESSION_OBJECTIVES 2026-09-01",
+   "cond": "Merge / tag / publish are OPERATOR-ONLY steps. npm serves 0.7.0 = checkpoint complete."
+  },
+  {
+   "id": "PKG", "tag": "NPM", "g": "ship", "name": "npm package · published",
+   "x": 5.5, "y": 9.4, "w": 1.1, "d": 1.1, "h": 0.9,
+   "does": "[OBSERVED version] @bradheitmann/odin-sentinel 0.6.0 on npm (package.json 0.6.0; ten unpublished commits counted on HEAD above the v0.6.0 tag this session). [DERIVED: EPIC-060] The published package still carries H1 (authority-gate bypass via trailing space) and H3 (display-name shadowing) until 0.7.0 lands; operator ruled fix-forward, no deprecate, no revert.",
+   "built": "<span class='pip shipped'></span>0.6.0 shipped · <span class='pip blocked'></span>superseded at 0.7.0 checkpoint.",
+   "refs": "package.json · git log v0.6.0..HEAD = 10"
+  },
+  {
+   "id": "PLG", "tag": "PLUGIN", "g": "ship", "name": "Plugin & skill installs",
+   "x": 7.7, "y": 9.4, "w": 1.1, "d": 1.1, "h": 0.9,
+   "does": "[OBSERVED] plugins/odin-scp/ — Claude Code plugin + the odin-scp skill (agents/, references/, scripts/, SKILL.md, CHANGELOG). Doctrine-currency parity gate shipped at HEAD (STORY-GOVEDGE-S6): the published skill must stay current with shipped governance.",
+   "built": "<span class='pip shipped'></span>Shipped; sync via sync-installations.sh.",
+   "refs": "plugins/odin-scp/"
+  },
+  {
+   "id": "SYN", "tag": "FLEET SYNC", "g": "ship", "name": "Fleet sync",
+   "x": 9.9, "y": 9.4, "w": 0.9, "d": 0.9, "h": 0.8,
+   "does": "[OBSERVED script / DERIVED target] sync-installations.sh propagates the published skill to every install target. Post-publish checkpoint step 5 [PM]: verify 13/13 fleet installs byte-converged — the guard against the Aug-19 drift finding (plugin trailing canon).",
+   "built": "<span class='pip shipped'></span>Script present; convergence check runs after 0.7.0 publish.",
+   "refs": "plugins/odin-scp/skills/odin-scp/scripts/sync-installations.sh"
+  },
+  {
+   "id": "RSY", "tag": "RELEASE-SYNC", "g": "trust", "name": "Release-sync tests",
+   "x": 3.2, "y": 9.4, "w": 1, "d": 1, "h": 0.8,
+   "does": "[DERIVED: EPIC-060] tests/protocol/release-sync.test.ts is the ORACLE for the 0.6.0&rarr;0.7.0 bump — a multi-file sync across package.json, version.ts, and the mirrored doctrine headers. A version reference found outside WRITE-ALLOWED is a STOP for scope amendment, never a silent skip.",
+   "built": "<span class='pip shipped'></span>Enforced in the validate chain.",
+   "refs": "tests/protocol/release-sync.test.ts"
+  },
+  {
+   "id": "PLN", "tag": "PLANNING", "g": "corpus", "name": "Planning corpus (gitignored)",
+   "x": 0, "y": 12.4, "w": 1.5, "d": 1.2, "h": 1,
+   "does": "[OBSERVED on disk this session] project/planning/ — 52 epic files, 89 story files, 7 dispatches, ~206 slice records across lanes (active empty · todo · backlog · done). Gitignored BY RULING V-1: the repo is public and the corpus enumerates unfixed defects — never committed, but Backblaze-backed (1,589 transmitted file-events verified).",
+   "built": "<span class='pip shipped'></span>Local-only by operator ruling; validators all green per PM handoff [DERIVED].",
+   "refs": "project/planning/ · RULING V-1"
+  },
+  {
+   "id": "EVB", "tag": "EVIDENCE", "g": "corpus", "name": "Evidence & audit trails",
+   "x": 2.8, "y": 12.4, "w": 1.4, "d": 1.2, "h": 1,
+   "does": "[OBSERVED presence] .edge-agentic/local/evidence/ DEV bundles (before/, after/, verify.log, stage-readiness) + .odin/audit/ session records, including scp-20260901-outrider-eval — the session whose objectives drive VISUAL B. Sealed-holdout internals are NOT accessed or visualized (prohibited for A/ISOSCOPE).",
+   "built": "<span class='pip shipped'></span>Durable local evidence layer; gitignored with the corpus.",
+   "refs": ".odin/audit/ · .edge-agentic/local/evidence/"
+  },
+  {
+   "id": "WT1", "tag": "LANE S1", "g": "lanes", "name": "odin-wt-s1 · GOVEDGE-S1",
+   "x": 5.5, "y": 12.2, "w": 1.4, "d": 1.2, "h": 1, "stack": 3,
+   "does": "[OBSERVED worktree] /Users/bradleyheitmann/open_protocols/odin-wt-s1 on branch lane/govedge-s1, spawned from verified baseline e431e30. NOTHING here is on baseline HEAD — integration happens only through dual-verdict closure. [REPORTED via A/EXEC-ODIN GO packet] Candidate history: 46dea649&hellip; QA-1 16/16 PASS, QA-2 CLEAN, HLDT FAIL (one bounded duplicate hyphen-fold implementation) &rarr; repair 49a9dedd&hellip;8f39 QA-1 16/16, QA-2 NOT_CLEAN (one LOW stale source-comment name) &rarr; third candidate 0fd70e5c&hellip; currently in QA-1.",
+   "built": "<span class='pip built'></span>ACTIVE LANE — not integrated. Closes H1 at merge.",
+   "refs": "git worktree list (observed) · EXEC-ODIN GO packet (timeline)"
+  },
+  {
+   "id": "WT2", "tag": "LANE S2", "g": "lanes", "name": "odin-wt-s2 · GOVEDGE-S2",
+   "x": 7.7, "y": 12.2, "w": 1.4, "d": 1.2, "h": 1, "stack": 3,
+   "does": "[OBSERVED worktree] odin-wt-s2 on lane/govedge-s2 from e431e30 — isolated index, no shared writers. [REPORTED via A/EXEC-ODIN GO packet] Candidate history: 4668cdd0&hellip; 28m51 impl-to-QA-pending after an atomic-routing intervention, QA-1 16/16, QA-2 CLEAN, HLDT FAIL (two bounded fail-closed / workspace-handling behaviors) &rarr; 182223c2&hellip; QA-1 16/16, QA-2 NOT_CLEAN (one LOW documentation defect) &rarr; third 9c274e22&hellip; gates green, queued behind S1 QA-1 custody.",
+   "built": "<span class='pip built'></span>ACTIVE LANE — not integrated. Closes H2 at merge.",
+   "refs": "git worktree list (observed) · EXEC-ODIN GO packet (timeline)"
+  }
+ ],
+ "short": {
+  "SCP": "SCP.md", "RCD": "Role cards", "SKL": "Skill bundle", "TOP": "Topology",
+  "SRV": "MCP server", "VAL": "Validators", "REG": "Event registry", "LAY": "Surface layout",
+  "HAR": "Harness matrix", "SEN": "Sentinels", "TEL": "Telemetry",
+  "AGH": "Activation gates", "AUD": "Audit chain", "TST": "Tests",
+  "CMX": "cmux", "TMX": "tmux", "HRD": "herdr", "MMX": "minimux",
+  "REL": "0.7.0 checkpoint", "PKG": "npm 0.6.0", "PLG": "Plugin", "SYN": "Fleet sync", "RSY": "Release-sync",
+  "PLN": "Planning", "EVB": "Evidence", "WT1": "Lane S1", "WT2": "Lane S2"
+ },
+ "status": {
+  "SCP": {"state": "ok", "items": []},
+  "RCD": {"state": "ok", "items": []},
+  "SKL": {"state": "ok", "items": [
+    {"c": "amber", "l": "[OBSERVED] installed copy hash-pinned &amp; full-read by A/ISOSCOPE this session (1be9a35c&hellip;)"}]},
+  "TOP": {"state": "ok", "items": []},
+  "SRV": {"state": "ok", "items": []},
+  "VAL": {"state": "ok", "items": []},
+  "REG": {"state": "ok", "items": []},
+  "LAY": {"state": "ok", "items": []},
+  "HAR": {"state": "ok", "items": []},
+  "SEN": {"state": "ok", "items": []},
+  "TEL": {"state": "ok", "items": []},
+  "AGH": {"state": "ok", "items": []},
+  "AUD": {"state": "ok", "items": []},
+  "TST": {"state": "ok", "items": [
+    {"c": "amber", "l": "[DERIVED] 1315 passed / 3 skipped floor at e431e30 per PM handoff — not re-run by A/ISOSCOPE"}]},
+  "CMX": {"state": "ok", "items": []},
+  "TMX": {"state": "ok", "items": [
+    {"c": "amber", "l": "tier 2 — no EVENTS; tier-3+ obligations need degraded-mode authorization"}]},
+  "HRD": {"state": "attn", "items": [
+    {"c": "amber", "l": "[OBSERVED] advertised tier-3 / six capabilities; backend switch throws 'Supported: cmux, tmux'"},
+    {"c": "amber", "l": "[DERIVED] published adapter doc materially wrong — EPIC-059 S1 corrects against installed herdr 0.8.2"}]},
+  "MMX": {"state": "ok", "items": [
+    {"c": "amber", "l": "[DERIVED] tier-4 advertised, same unbacked-claim class — out of EPIC-059 scope, own epic owed"}]},
+  "REL": {"state": "build", "items": [
+    {"c": "you", "l": "merge &rarr; tag v0.7.0 &rarr; publish from clean main = OPERATOR ONLY"},
+    {"c": "amber", "l": "waves 1-3 in worktrees now &rarr; EPIC-060 strictly alone on post-S3 state"}]},
+  "PKG": {"state": "attn", "items": [
+    {"c": "amber", "l": "[DERIVED] carries H1 + H3 until 0.7.0 (fix-forward ruled)"},
+    {"c": "amber", "l": "[OBSERVED] 10 unpublished commits on HEAD above v0.6.0 tag"}]},
+  "PLG": {"state": "ok", "items": []},
+  "SYN": {"state": "ok", "items": []},
+  "RSY": {"state": "ok", "items": []},
+  "PLN": {"state": "ok", "items": [
+    {"c": "amber", "l": "[OBSERVED] gitignored local-only by RULING V-1 — never committed"}]},
+  "EVB": {"state": "ok", "items": []},
+  "WT1": {"state": "build", "items": [
+    {"c": "amber", "l": "[REPORTED] third candidate in QA-1 custody; HLDT FAIL &times;1 (bounded) + QA-2 NOT_CLEAN &times;1 (LOW) so far"}]},
+  "WT2": {"state": "build", "items": [
+    {"c": "amber", "l": "[REPORTED] third candidate queued behind S1 QA-1 custody; HLDT FAIL &times;1 + QA-2 NOT_CLEAN &times;1 (LOW) so far"}]}
+ },
+ "edges": [
+  ["SCP", "SRV", "auth"],
+  ["RCD", "SRV", "data"],
+  ["TOP", "SRV", "data"],
+  ["SCP", "SKL", "data"],
+  ["SKL", "PLG", "data"],
+  ["SRV", "VAL", "data"],
+  ["SRV", "REG", "data"],
+  ["SRV", "LAY", "data"],
+  ["SRV", "HAR", "data"],
+  ["SRV", "SEN", "data"],
+  ["SRV", "TEL", "data"],
+  ["AGH", "SCP", "data"],
+  ["TST", "SRV", "data"],
+  ["AUD", "PKG", "auth"],
+  ["RSY", "REL", "data"],
+  ["PLN", "WT1", "data"],
+  ["PLN", "WT2", "data"],
+  ["WT1", "REL", "intended"],
+  ["WT2", "REL", "intended"],
+  ["REL", "PKG", "intended"],
+  ["PKG", "SYN", "data"],
+  ["HRD", "LAY", "intended"],
+  ["EVB", "PLN", "data"]
+ ],
+ "edgeDocs": {
+  "SCP-SRV": {"title": "Doctrine compiles into the bundle", "carries": "The rulebook text, role contracts, and receipt schemas compiled into the packets the referee serves to any connecting agent.", "refs": "odin.get_startup_packet"},
+  "AGH-SCP": {"title": "Activation gates bind the doctrine", "carries": "Full-instruction-read proofs: byte counts and SHA-256 digests per protocol file, proving an activated agent read what it claims to govern by.", "refs": "scripts/protocol/verify-instruction-read.mjs"},
+  "AUD-PKG": {"title": "The publish path is gated", "carries": "Fail-closed dependency audit at severity floor high; exception manifests validated before the audit; prepublishOnly runs the full chain.", "refs": "STORY-GOVTRUTH-R6"},
+  "RSY-REL": {"title": "Release-sync tests are the bump oracle", "carries": "The authoritative version surface derives from release-sync.test.ts plus a corpus-wide 0.6.0 sweep — six authority files move in mirror, historical entries stay byte-sacred.", "refs": "EPIC-060 technical decisions"},
+  "PLN-WT1": {"title": "Dispatch drives lane S1", "carries": "DISPATCH-EPIC-055 wave 1: the slice contract, addendum overrides, and per-lane worktree mandate (Override 7) that spawned odin-wt-s1 from baseline e431e30.", "refs": "project/planning/dispatches/"},
+  "PLN-WT2": {"title": "Dispatch drives lane S2", "carries": "Same generator, sibling lane: identical baseline, isolated index — the two-writer collision of 2026-09-01 is why worktrees are mandatory.", "refs": "Override 7"},
+  "WT1-REL": {"title": "Intended: S1 closes H1", "carries": "On dual-verdict closure (QA PASS + sealed holdout PASS on one digest), lane S1's fix for the authority-gate trailing-space bypass merges toward the 0.7.0 checkpoint.", "refs": "STORY-GOVEDGE-S1"},
+  "WT2-REL": {"title": "Intended: S2 closes H2", "carries": "Lane S2's hardening merges only through the same dual-verdict path — nothing lands on HEAD from an open lane.", "refs": "STORY-GOVEDGE-S2"},
+  "REL-PKG": {"title": "Intended: 0.7.0 replaces 0.6.0 on npm", "carries": "Operator merges to main, tags v0.7.0, publishes from a clean main checkout; the five BREAKING disclosures (R1/R2/R4/R5/R6) ship in the CHANGELOG entry.", "refs": "RULING REL-1 steps 2-4"},
+  "PKG-SYN": {"title": "Published skill propagates", "carries": "Post-publish, sync-installations.sh converges 13/13 installs to the published bytes — fleet drift is a release step, not an afterthought.", "refs": "EPIC-060 checkpoint step 5"},
+  "HRD-LAY": {"title": "Intended: EPIC-059 reconciles capability truth", "carries": "The advertised herdr tier/capability set gets a real backend (S2) and a truthful, possibly narrowed capability row (S3); the adapter doc is corrected against the installed binary (S1).", "refs": "EPIC-059 stories 1-3"},
+  "TST-SRV": {"title": "Tests pin the referee", "carries": "Seven suites hold server behavior, validators, odin-watch, pacing, and packaging to a 1315-passed floor at every gate.", "refs": "tests/"}
+ },
+ "trace": [
+  "PLN-WT1", "PLN-WT2", "WT1-REL", "WT2-REL", "RSY-REL",
+  "REL-PKG", "PKG-SYN", "SCP-SRV", "SRV-VAL", "SRV-REG", "AUD-PKG"
+ ],
+ "traceText": {
+  "PLN-WT1": "Wave-1 dispatch spawns lane S1 from verified baseline e431e30 — an isolated worktree, an isolated git index.",
+  "PLN-WT2": "Lane S2 spawns in parallel under the same mandate: concurrent lanes must never share a checkout.",
+  "WT1-REL": "On dual-verdict closure, S1's fix for H1 (authority-gate trailing-space bypass) feeds the checkpoint.",
+  "WT2-REL": "S2's hardening feeds it too — nothing reaches HEAD from an open lane.",
+  "RSY-REL": "The version-sync slice bumps 0.6.0 &rarr; 0.7.0 with release-sync tests as the oracle, strictly alone on post-S3 state.",
+  "REL-PKG": "Operator merges to main, tags v0.7.0, publishes from a clean checkout — the only operator-only steps in the chain.",
+  "PKG-SYN": "sync-installations.sh converges the 13-install fleet; the operator carries release notes to the website repo.",
+  "SCP-SRV": "Underneath the release: doctrine compiles into the bundle any agent can load.",
+  "SRV-VAL": "Every receipt, proof, and closure claim hits a deterministic validator — same input, same verdict.",
+  "SRV-REG": "Circuit breakers live in the append-only event registry: attempt ceilings, depth caps, budgets — machine-enforced, default-ON.",
+  "AUD-PKG": "And the publish path itself is gated — fail-closed dependency audit, severity floor high."
+ },
+ "levels": {
+  "SCP": 1, "RCD": 1, "SKL": 1, "TOP": 1,
+  "SRV": 0, "VAL": 0, "REG": 0, "LAY": 0, "HAR": 0, "SEN": 0, "TEL": 0,
+  "AGH": 0, "AUD": 0, "TST": 0, "RSY": 0,
+  "CMX": -1, "TMX": -1, "HRD": -1, "MMX": -1,
+  "REL": -1, "PKG": -1, "PLG": -1, "SYN": -1,
+  "PLN": -1, "EVB": -1, "WT1": -1, "WT2": -1
+ },
+ "title": "ODIN SENTINEL — Codebase City · Release Checkpoint · advisory",
+ "brand": {"k": "Package", "v": "odin-sentinel · advisory snapshot"},
+ "metrics": [
+  {"k": "Baseline HEAD", "v": "e431e30 · clean [observed]"},
+  {"k": "npm shipped", "v": "0.6.0"},
+  {"k": "Unpublished on HEAD", "v": "10 commits [observed]"},
+  {"k": "Checkpoint", "v": "0.7.0 · RULING REL-1"}
+ ],
+ "wordmark": "ISOSCOPE &times; ODIN",
+ "asOf": "Draft advisory snapshot &middot; 2026-09-01T19:00Z &middot; HEAD e431e30 verified &middot; sources: direct code reads + PM handoff 2026-09-01 + EPIC-060 + SESSION_OBJECTIVES + EXEC-ODIN GO packet &middot; skill pin 1be9a35c&hellip;1ee58",
+ "intro": {
+  "eyebrow": "VISUAL A &middot; draft advisory &middot; A/ISOSCOPE for A/EXEC-ODIN &amp; the operator",
+  "title": "ODIN Sentinel — the codebase city at its release checkpoint",
+  "sub": "what ships, what guards it, and what is still in flight",
+  "proseHTML": "<p class=\"t-label\" style=\"color:var(--okoa-semantic-fg3);margin-bottom:var(--okoa-space-2)\">Truth discipline</p>\n<p class=\"t-body-sm\">Every claim on this map carries its evidence class: <strong>[OBSERVED]</strong> verified by direct read this session, <strong>[DERIVED]</strong> from the 2026-09-01 PM handoff or planning artifacts, <strong>[REPORTED]</strong> via A/EXEC-ODIN's GO packet. Active candidates are never drawn as integrated code &mdash; the two worktree lanes at south are physically separate checkouts, verified via <span class=\"mark\">git worktree list</span>.</p>\n<p class=\"t-label\" style=\"color:var(--okoa-semantic-fg3);margin:var(--okoa-space-4) 0 var(--okoa-space-2)\">The city</p>\n<p class=\"t-body-sm\">North: the <span class=\"mark\">doctrine district</span> (rulebook, role cards, the pinned skill). Center: the <span class=\"mark\">referee</span> &mdash; the MCP server and everything deterministic around it. West-south: <span class=\"mark\">trust machinery</span> (activation gates, audits, tests). East-south: <span class=\"mark\">substrates</span> &mdash; note <span class=\"mark\">herdr</span> amber-roofed: advertised but not implemented. The release story runs the trace: dispatch &rarr; lanes &rarr; checkpoint &rarr; publish &rarr; fleet sync.</p>\n<p class=\"t-label\" style=\"color:var(--okoa-semantic-fg3);margin:var(--okoa-space-4) 0 var(--okoa-space-2)\">Reading the roofs</p>\n<p class=\"t-body-sm\">Paper is healthy, amber owes work, blue is being built, and a slate diamond marks an <em>operator</em> decision &mdash; the merge/tag/publish steps on the checkpoint block are yours alone, Brad. Press <strong>R</strong> to return home; click any building for its evidence; click a pipe to read what flows.</p>"
+ },
+ "drcBudget": {"maxWeightedCrossings": 44, "acknowledged": "advisory draft — observed 42 weighted crossings: referee hub fan-out (SRV radiates to six dependents) plus the southern release corridor (PLN feeds both lanes; both lanes feed the checkpoint). Forced by the architecture itself; reduction paths tracked as R13 hub-escape / R16 shove in isoscope's roadmap."}
+}

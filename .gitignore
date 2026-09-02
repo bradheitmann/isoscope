@@ -2,3 +2,5 @@ out/
 *.db
 .DS_Store
 node_modules/
+advisory/*/screens/
+*.log

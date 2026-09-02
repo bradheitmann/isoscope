@@ -20,6 +20,8 @@ One JSON object drives the whole visualization. All keys top-level.
 | `edgeDocs` | `{"A-B":{title?,carries?,refs?}}` | links are entities: click/hover a link for its inspector — `carries` explains what data flows over it |
 | `trace` | `["A-B",…]` | ordered story steps (edge keys) |
 | `traceText` | `{"A-B":text}` | narration per step |
+| `paths` | `{id:[prefix,…]}` | path ownership for finding attribution (`cli.ts ingest`, SARIF); longest prefix wins, `file.ts:symbol` allowed |
+| `drcBudget` | `{maxWeightedCrossings, acknowledged?}` | the L2 law's "unless forced" clause, machine-checkable: `drc.ts` fails over budget |
 
 Semantics the engine renders for free: whole-building state color, circuit-breaker
 click interaction, PCB-routed pipes, flow dots, 3-level stacking, trace narration,

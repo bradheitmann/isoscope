@@ -1,0 +1,402 @@
+{
+ "groups": [
+  {"id": "teamA", "label": "Team A · executive office [OBSERVED live]"},
+  {"id": "infra", "label": "Display infrastructure · not a governed worker"},
+  {"id": "teamBctrl", "label": "Team B · pod control [OBSERVED live]"},
+  {"id": "cohort", "label": "Tournament cohort · DEV-1..3 [OBSERVED live]"},
+  {"id": "fixers", "label": "Repair ladder · DEV-4/5 [OBSERVED live]"},
+  {"id": "chain", "label": "Acceptance chain · one immutable digest [design + live]"},
+  {"id": "stages", "label": "Stage program [DESIGN]"},
+  {"id": "arms", "label": "Experiment districts · arms & hypotheses"},
+  {"id": "measure", "label": "Measurement · metrics, wave-1, lessons"}
+ ],
+ "nodes": [
+  {
+   "id": "APM", "tag": "EXEC-PM", "g": "teamA", "name": "A/EXEC-PM · surface:12",
+   "x": 0, "y": 0, "w": 1.1, "d": 1.1, "h": 1.1,
+   "does": "[OBSERVED seat · DERIVED duties] Executive PM — owns intent, priority, authorization; sole staffing authority and CMUX surface custodian. All Team-B commands route through B/TEAM-PM, never around it. Operator waived the recorded Fable/Opus staffing mandate for this mission (misinstruction, not intent) — Team B's existing seats execute.",
+   "built": "<span class='pip shipped'></span>Live in workspace:5. Issued A/ISOSCOPE's boot contract; rules activation GO.",
+   "refs": "SESSION_OBJECTIVES &middot; staffing waiver 2026-09-01"
+  },
+  {
+   "id": "AOD", "tag": "EXEC-ODIN", "g": "teamA", "name": "A/EXEC-ODIN · surface:13",
+   "x": 2.5, "y": 0, "w": 1.1, "d": 1.1, "h": 1.2,
+   "does": "[OBSERVED seat] Chief of staff and independent monitor — coequal control plane, not subordinate to EXEC-PM. Aggregates the ODIN mesh; holds HALT authority. Authored the workflow-hypothesis packet (RANK_1..5) and relayed the operator's experiment rulings; issued this visualization GO.",
+   "built": "<span class='pip shipped'></span>Live. A/ISOSCOPE reports here for this bounded advisory.",
+   "refs": "SESSION_OBJECTIVES &middot; hypothesis packet 2026-09-01"
+  },
+  {
+   "id": "ARS", "tag": "EXEC-RSCH", "g": "teamA", "name": "A/EXEC-RSCH · surface:24",
+   "x": 5, "y": 0, "w": 1, "d": 1, "h": 0.9,
+   "does": "[OBSERVED seat] Read-only strategy and research. Contributed six workflow hypotheses to the ranked consideration set. Evidence boundary ruling: holds NO custody of release-mission artifacts — Wave-1 activity must not enter any comparison or normalization.",
+   "built": "<span class='pip shipped'></span>Live.",
+   "refs": "SESSION_OBJECTIVES evidence boundary"
+  },
+  {
+   "id": "AOU", "tag": "OUTRIDER", "g": "teamA", "name": "A/OUTRIDER · surface:20",
+   "x": 7.5, "y": 0, "w": 1, "d": 1, "h": 1,
+   "does": "[OBSERVED seat] Consulting ally from a different repo — advisory, NOT under command. Carries the reconnaissance protocol: a frontier command agent, fast scouts, and a deterministic non-LLM controller enforcing that scouts never write and output stays untrusted. Contributed seven hypotheses. Greeting deferred past the checkpoint — nothing runs beside the release chain.",
+   "built": "<span class='pip shipped'></span>Live as consult. v1.0.0 protocol: twelve-state fail-safe controller, sole-writer rule.",
+   "refs": "research/&hellip;/outrider/ &middot; controller spec INV-1..7"
+  },
+  {
+   "id": "AIS", "tag": "ISOSCOPE", "g": "teamA", "name": "A/ISOSCOPE · surface:46",
+   "x": 10, "y": 0, "w": 1, "d": 1, "h": 0.9,
+   "does": "[OBSERVED — this agent] Advisory visualization consultant (GLM on Pi harness), added by operator ruling 2026-09-01. Writes ONLY inside the isoscope repo; every claim labeled OBSERVED / DERIVED / HYPOTHESIS; artifacts handed back in conversation. Author of the map you are reading — the map paints its own painter.",
+   "built": "<span class='pip shipped'></span>GOVERNED_READY advisory; skill pin 1be9a35c&hellip; full-read.",
+   "refs": "A/EXEC-PM boot contract &middot; EXEC-ODIN GO packet"
+  },
+  {
+   "id": "BRW", "tag": "BROWSER", "g": "infra", "name": "C/ISOSCOPE-VISUALS · surface:47",
+   "x": 12.5, "y": 0, "w": 0.8, "d": 0.8, "h": 0.5,
+   "does": "[OBSERVED] The dedicated cmux browser pane hosting this visualization. Display infrastructure only — NOT a governed worker, holds no role slot, executes no protocol duties. It exists so the operator and team can watch the maps without leaving the workspace.",
+   "built": "<span class='pip shipped'></span>Live pane (pane:12), workspace:5.",
+   "refs": "cmux list-pane-surfaces &middot; operator-provided"
+  },
+  {
+   "id": "ST0", "tag": "STAGE 0", "g": "stages", "name": "Stage 0 · fixed-workflow model screening",
+   "x": 14.2, "y": 0, "w": 1.1, "d": 1.1, "h": 0.9,
+   "does": "[DESIGN · ruled ACTIVE] DEV-1, DEV-2, DEV-3 receive the SAME bounded brief from one verified baseline in separate clean worktrees — direct implementers, no peer visibility, no shared index. Minimum THREE comparable same-brief runs before any agent-reliability claim; current S1/S2 are operational baselines only (tasks differ).",
+   "built": "<span class='pip built'></span>Active — S3 is the first ruled comparable cohort.",
+   "refs": "OPERATOR RULING THREE_LOW_COST_WORKTREES"
+  },
+  {
+   "id": "ST1", "tag": "STAGE 1", "g": "stages", "name": "Stage 1 · fixed-model workflow screening",
+   "x": 16.2, "y": 0, "w": 1.1, "d": 1.1, "h": 0.9,
+   "does": "[DESIGN] Hold the model fixed; vary the WORKFLOW against a control arm. Never change model and workflow in the same comparison — one variable at a time or the read is meaningless.",
+   "built": "<span class='pip planned'></span>Queued behind Stage 0 evidence.",
+   "refs": "GO packet stage program"
+  },
+  {
+   "id": "ST2", "tag": "STAGE 2", "g": "stages", "name": "Stage 2 · one-challenger rotation",
+   "x": 18.2, "y": 0, "w": 1.1, "d": 1.1, "h": 0.9,
+   "does": "[DESIGN] Rotate ONE challenger slot at a time with two anchors stable — same brief, baseline, scope, gates. No wholesale churn; removal never on one failure; immediate removal only for scope/custody/security breach.",
+   "built": "<span class='pip planned'></span>LATER — challenger pool: Grok-4.5 in Droid &middot; Luna in Codex &middot; Haiku in an operator-approved harness.",
+   "refs": "observation-window addendum"
+  },
+  {
+   "id": "BPM", "tag": "TEAM-PM", "g": "teamBctrl", "name": "B/TEAM-PM · surface:18",
+   "x": 0, "y": 3, "w": 1.1, "d": 1.1, "h": 1.1,
+   "does": "[OBSERVED seat] Pod router — ALL worker commands flow through here; PM commands and delegates only, no implementation. Routes findings to DEV seats; owns the acceptance chain's final commit/integrate step on dual PASS. Survived an auto-compaction mid-custody and recovered without a single misroute (see the lesson block, south).",
+   "built": "<span class='pip shipped'></span>Live. Commands route EXEC-PM &rarr; here &rarr; workers.",
+   "refs": "SESSION_OBJECTIVES binding constraints"
+  },
+  {
+   "id": "BOD", "tag": "TEAM-ODIN", "g": "teamBctrl", "name": "B/ODIN · surface:17",
+   "x": 2.5, "y": 3, "w": 1, "d": 1, "h": 1,
+   "does": "[OBSERVED seat] Pod meta-control — monitors lanes, polls health, intervenes on blockers, freezes unsafe work. Coequal with TEAM-PM, accountable to user authority through the ODIN mesh, never the PM's subordinate.",
+   "built": "<span class='pip shipped'></span>Live.",
+   "refs": "topology.yaml odin_mesh"
+  },
+  {
+   "id": "D1", "tag": "DEV-1", "g": "cohort", "name": "B/DEV-1 · surface:15 · GLM-5.3-Flash",
+   "x": 5.5, "y": 3, "w": 1, "d": 1, "h": 1,
+   "does": "[OBSERVED seat / model via EXEC-ODIN packet] Tournament lane — cheap-fast candidate generation. Operator-flagged HIGH-POTENTIAL: a hypothesis, explicitly not a result. Assessment goal per operator: which small model best delivers big-model outcomes. Gets plenty of saddle time before any call.",
+   "built": "<span class='pip shipped'></span>Live. Removal never on one failure.",
+   "refs": "operator directive 2026-09-01"
+  },
+  {
+   "id": "D2", "tag": "DEV-2", "g": "cohort", "name": "B/DEV-2 · surface:19 · GPT-5.6-Luna",
+   "x": 7.5, "y": 3, "w": 1, "d": 1, "h": 1,
+   "does": "[OBSERVED seat / model via packet] Tournament lane — current S1 occupant in odin-wt-s1 (GOVEDGE-S1). First candidate 46dea649&hellip; reached QA-pending in 9m29 — fastest implementation-to-pending observed so far. Distinct model family from its lane's reviewers, per the preserved pairing principle.",
+   "built": "<span class='pip shipped'></span>Live · S1 lane.",
+   "refs": "EXEC-ODIN GO packet timeline"
+  },
+  {
+   "id": "D3", "tag": "DEV-3", "g": "cohort", "name": "B/DEV-3 · surface:10 · DeepSeek-V4-Flash",
+   "x": 9.5, "y": 3, "w": 1, "d": 1, "h": 1,
+   "does": "[OBSERVED seat / model via packet] Tournament lane — current S2 occupant in odin-wt-s2 (GOVEDGE-S2). First candidate 4668cdd0&hellip; took 28m51 to QA-pending after an atomic-routing intervention. Its S1/S2 behavior is NOT a model-defect finding from one non-comparable slice — the inference gate protects it.",
+   "built": "<span class='pip shipped'></span>Live · S2 lane.",
+   "refs": "EXEC-ODIN GO packet timeline"
+  },
+  {
+   "id": "D4", "tag": "DEV-4", "g": "fixers", "name": "B/DEV-4 · surface:16 · GLM-5.3 full",
+   "x": 5.5, "y": 5.6, "w": 1, "d": 1, "h": 1,
+   "does": "[OBSERVED seat / role via packet] Correctness / frontier fixer. Receives bounded correctness findings plus the candidate when QA-1 FAIL warrants escalation, and the cascade arm's 'two cheap failures' hand-off. Full-capability model occupant.",
+   "built": "<span class='pip shipped'></span>Live. Repair candidates are NEW digests — full chain restart.",
+   "refs": "RANK_3 repair ladder"
+  },
+  {
+   "id": "D5", "tag": "DEV-5", "g": "fixers", "name": "B/DEV-5 · surface:21 · GLM-5.3 full",
+   "x": 7.5, "y": 5.6, "w": 1, "d": 1, "h": 1,
+   "does": "[OBSERVED seat / role via packet] Hygiene / control fixer. Receives hygiene-ONLY findings (QA-2 NOT_CLEAN class); control-plane repairs when governance surfaces need fixing. Full-capability model occupant.",
+   "built": "<span class='pip shipped'></span>Live.",
+   "refs": "RANK_3 repair ladder"
+  },
+  {
+   "id": "GAT", "tag": "GATES", "g": "chain", "name": "Deterministic gates",
+   "x": 0, "y": 7.2, "w": 1.3, "d": 1.2, "h": 1.1,
+   "does": "[DESIGN · ruling text] The chain's front door: deterministic validation on the EXACT candidate digest — git write-tree IS the candidate identity; per-path staging; no bulk adds. Any edit creates a new digest and restarts the FULL chain. Verdicts never cross digests.",
+   "built": "<span class='pip shipped'></span>Binding on every release candidate.",
+   "refs": "acceptance-chain addendum 2026-09-01"
+  },
+  {
+   "id": "Q1", "tag": "QA-1", "g": "chain", "name": "B/QA-1 · surface:14 · correctness",
+   "x": 2.8, "y": 7.2, "w": 1.1, "d": 1.1, "h": 1.1,
+   "does": "[OBSERVED seat / DESIGN duties] Independent correctness review of EVERY gate-eligible candidate under one rubric, with BLINDED/RANDOMIZED labels and fresh-review discipline. Never fixes; reports. In the three-worktree screen it reviews all three candidates — that per-agent first-pass evidence is the point.",
+   "built": "<span class='pip shipped'></span>Live. 16/16 PASS verdicts observed on four Wave-1 candidates so far.",
+   "refs": "three-worktree protocol &middot; blind labels"
+  },
+  {
+   "id": "Q2", "tag": "QA-2", "g": "chain", "name": "B/QA-2 · surface:25 · mister-clean hygiene",
+   "x": 5.3, "y": 7.2, "w": 1.1, "d": 1.1, "h": 1.1,
+   "does": "[OBSERVED seat / DESIGN duties] Hygiene-only CLEAN / NOT_CLEAN on the SELECTED digest, strictly post-QA-1: submitted slice only; no correctness acceptance, no fixes, no commits, no holdout access, no lifecycle closeout. Findings route to DEV via B/TEAM-PM. Activation gate required mister-clean + qa-review skill uptake before first release review.",
+   "built": "<span class='pip shipped'></span>Live — currently the selected pane in pane:9 [OBSERVED 18:59Z].",
+   "refs": "QA-2 boundary ruling"
+  },
+  {
+   "id": "HLT", "tag": "HLDT-1", "g": "chain", "name": "B/HLDT-1 · surface:11 · sealed holdout",
+   "x": 7.8, "y": 7.2, "w": 1.1, "d": 1.1, "h": 1.7,
+   "does": "[OBSERVED seat · internals SEALED] The final gate: sealed PASS on the SAME digest before commit/integrate. Sealed material NEVER reaches DEV or QA seats; successors are lineage-linked, never edited in place. This map renders the seat and its verdicts ONLY — no criteria, no internals, by design and by A/ISOSCOPE's standing prohibition.",
+   "built": "<span class='pip shipped'></span>Live. Wave-1 verdicts observed: FAIL &times;2 (bounded findings) — the gate that caught what QA passed.",
+   "refs": "dual-verdict closure rule"
+  },
+  {
+   "id": "X1", "tag": "ARM 1", "g": "arms", "name": "Three-worktree tournament",
+   "x": 11.5, "y": 7.2, "w": 1.2, "d": 1.1, "h": 1.1,
+   "does": "[RULING · ACTIVE design] RANK_1 — the S3 plan as ruled: DEV-1/2/3, same brief and baseline, isolated worktrees, identical deterministic gates. QA-1 blindly reviews every eligible candidate; selection ONLY among QA-1 PASS (predeclared non-holdout criteria); the selected digest ALONE proceeds to QA-2 and HLDT. No informal mixing — combining candidates = new candidate = full review.",
+   "built": "<span class='pip built'></span>First comparable cohort = S3, after the current S1/S2 round completes unchanged.",
+   "refs": "OPERATOR RULING THREE_LOW_COST_WORKTREES &middot; RANK_1"
+  },
+  {
+   "id": "X2", "tag": "ARM 2", "g": "arms", "name": "Race to first QA-1 PASS",
+   "x": 13.5, "y": 7.2, "w": 1.1, "d": 1.1, "h": 1,
+   "does": "[HYPOTHESIS · DEFERRED] RANK_2 production-speed arm: race-to-first-QA1-PASS with hot standbys. Runs only AFTER the initial 3-run screen; challengers one slot at a time; verdicts never cross digests. 3&times; candidate cost and QA queue load are the accepted risks to measure.",
+   "built": "<span class='pip planned'></span>Deferred until the initial screen reports.",
+   "refs": "hypothesis packet RANK_2"
+  },
+  {
+   "id": "X3", "tag": "ARM 3", "g": "arms", "name": "Cheap-primary cascade",
+   "x": 15.5, "y": 7.2, "w": 1.1, "d": 1.1, "h": 1,
+   "does": "[HYPOTHESIS · control arm] RANK_4 cost control: one cheap primary; escalate to the next cheap lane only on a fixed no-first-edit / invalid-gate signal; DEV-4 after two cheap failures. Guard: one non-comparable slice is never a model verdict (protects DEV-3).",
+   "built": "<span class='pip planned'></span>Control arm for the cost question.",
+   "refs": "hypothesis packet RANK_4"
+  },
+  {
+   "id": "X4", "tag": "ARM 4", "g": "arms", "name": "Repair ladder",
+   "x": 17.5, "y": 7.2, "w": 1.1, "d": 1.1, "h": 1,
+   "does": "[RULING · ACTIVE] RANK_3: bounded correctness finding &rarr; DEV-4 (candidate + findings); hygiene-only finding &rarr; DEV-5; structural or sealed failure &rarr; PM routes to the strongest authorized fixer WITHOUT sealed leakage. Every edit = new digest = full chain restart. QA never fixes. Wave-1 already exercised this ladder twice.",
+   "built": "<span class='pip built'></span>Live — S1/S2 repairs rode it.",
+   "refs": "RANK_3 &middot; failure-loop ruling"
+  },
+  {
+   "id": "X5", "tag": "ARM 5", "g": "arms", "name": "Two-anchor rotation",
+   "x": 11.5, "y": 9.8, "w": 1.1, "d": 1.1, "h": 1,
+   "does": "[HYPOTHESIS · LATER] Stage-2 realization: rotate one challenger at a time against two stable anchors. Challenger pool is LATER_NOT_NOW: Grok-4.5 in Droid, Luna in Codex, Haiku in an operator-approved harness — smoke-test availability and model identity directly before any activation.",
+   "built": "<span class='pip planned'></span>After the observation window.",
+   "refs": "observation-window addendum"
+  },
+  {
+   "id": "X6", "tag": "ARM 6", "g": "arms", "name": "Pre-QA hygiene modifier",
+   "x": 13.5, "y": 9.8, "w": 1.1, "d": 1.1, "h": 1,
+   "does": "[HYPOTHESIS · CONDITIONAL] Deterministic pre-QA hygiene gate: adopted ONLY if repeated QA-2-class findings prove it; read-only; NEVER a substitute for QA-2. Evidence so far: two LOW hygiene findings in Wave-1 — noted, not yet a pattern.",
+   "built": "<span class='pip planned'></span>Conditional on repeated findings.",
+   "refs": "hypothesis packet &middot; hygiene gate clause"
+  },
+  {
+   "id": "X7", "tag": "ARM 7", "g": "arms", "name": "QA-2 &parallel; HLDT parallel",
+   "x": 15.5, "y": 9.8, "w": 1.1, "d": 1.1, "h": 1,
+   "does": "[HYPOTHESIS · DEFERRED — needs YOUR authorization, Brad] RANK_5: run QA-2 and HLDT-1 in parallel after QA-1 to shorten the tail. CONFLICTS with the ordered chain; reconsider only if &ge;3 comparable runs show the post-QA1 tail dominates total time. Holdout latency is measured separately; HLDT is never moved or parallelized without explicit operator sign-off.",
+   "built": "<span class='pip planned'></span>Deferred policy hypothesis.",
+   "refs": "RANK_5 &middot; holdout-protection clause"
+  },
+  {
+   "id": "X8", "tag": "ARM 8", "g": "arms", "name": "QA-2-first trial arm",
+   "x": 17.5, "y": 9.8, "w": 1.1, "d": 1.1, "h": 1,
+   "does": "[OPERATOR HYPOTHESIS · DEFERRED_TRIAL_ARM — your call, Brad] Treatment: QA-2 reviews ALL candidates, then QA-1 only CLEAN ones; control: current order. Requires a QA-2 contract amendment (post&rarr;pre for treatment only). CIRCULARITY WARNING: under QA-1-based selection, selected-only QA-2-first reviews nothing QA-1 hasn't passed. Current-order evidence: 2/2 QA-1 PASS, 2/2 QA-2 CLEAN, 2/2 holdout FAIL — QA-2-first saves zero reviews while the holdout tail binds. Promote only if avoided QA-1 work exceeds added QA-2 load AND median accepted-output time improves &ge;50% with no quality/custody/rework/cost regression.",
+   "built": "<span class='pip planned'></span>Banked trial design; paired same-brief rounds after &ge;3 current-order runs.",
+   "refs": "operator hypothesis + ODIN disposition"
+  },
+  {
+   "id": "MET", "tag": "METRICS", "g": "measure", "name": "Metrics spine",
+   "x": 0, "y": 9.8, "w": 1.6, "d": 1.2, "h": 1.1,
+   "does": "[DESIGN · ruled] Per candidate and per seat: processed-GO, activation/preflight, first edit, DEV-complete, QA-1 queue + review, QA-2 queue + review, HLDT queue + review, repairs, TOTAL GO-to-accepted-digest, tokens/cost basis, interventions, delivery failures, exact digest, first-pass verdict + severity. Timing priority HIGH; harness-reported vs observer-bounded timestamps distinguished. CONTINUATION GATE: retain the pattern only if median time-to-accepted-digest drops &ge;50% across &ge;3 comparable trials with NO increase in high-severity findings, custody violations, or rework — and no tiny-n significance language, ever.",
+   "built": "<span class='pip built'></span>Collecting now — Wave-1 is the first data.",
+   "refs": "continuation gate &middot; timing addendum"
+  },
+  {
+   "id": "WV1", "tag": "WAVE-1", "g": "measure", "name": "Wave-1 observed timeline",
+   "x": 2.6, "y": 9.8, "w": 1.9, "d": 1.2, "h": 1.2,
+   "does": "[OBSERVED via A/EXEC-ODIN GO packet, as of packet time; cross-consistent with SESSION_OBJECTIVES baselines] S1 (DEV-2): 46dea649&hellip; 9m29 impl&rarr;QA-pending, QA-1 16/16 PASS, QA-2 CLEAN, HLDT FAIL (one bounded duplicate hyphen-fold implementation) &rarr; repair 49a9dedd&hellip;8f39 QA-1 16/16, QA-2 NOT_CLEAN (one LOW stale source-comment name) &rarr; third 0fd70e5c&hellip; IN QA-1. S2 (DEV-3): 4668cdd0&hellip; 28m51 after atomic-routing intervention, QA-1 16/16, QA-2 CLEAN, HLDT FAIL (two bounded fail-closed/workspace-handling behaviors) &rarr; 182223c2&hellip; QA-1 16/16, QA-2 NOT_CLEAN (one LOW doc defect) &rarr; third 9c274e22&hellip; gates green, queued behind S1 QA-1 custody.",
+   "built": "<span class='pip built'></span>Operational baselines ONLY — tasks differ; no reliability claim before the comparable-run gate.",
+   "refs": "EXEC-ODIN GO packet &middot; session baselines"
+  },
+  {
+   "id": "MEL", "tag": "LESSON", "g": "measure", "name": "Compaction recovery · meta-event",
+   "x": 5.1, "y": 9.8, "w": 1.5, "d": 1.2, "h": 1,
+   "does": "[OBSERVED event] B/TEAM-PM auto-compacted during active custody: mission and gate state PRESERVED; briefly used stale bare-numeric locators; caught 'Surface index not found' BEFORE any send; re-enumerated the topology; recovered with zero misroute. [DERIVED lesson] Pin workspace + surface refs in continuity skeletons, and require post-compaction locator re-identification before any send — the failure that never happened, made into design.",
+   "built": "<span class='pip shipped'></span>Closed lesson; candidate continuity-skeleton doctrine.",
+   "refs": "GO packet META_EVENT"
+  },
+  {
+   "id": "PRD", "tag": "PRODUCTIZE", "g": "measure", "name": "Productization obligation",
+   "x": 7.2, "y": 9.8, "w": 1.3, "d": 1.2, "h": 1,
+   "does": "[DERIVED · standing obligation] This laboratory is a future ODIN product capability and case study: hypothesis formation, visible instantiation on cmux/herdr, custody-preserving measurement of ACCEPTED-output performance, comparison/promotion policy, auditable export. OBSERVE_AND_PRESERVE during REL-1 — hypotheses, topology + exact occupants, timing, digests, findings, rulings, deviations. Post-checkpoint planning owed: workflow/skill contract, substrate-neutral orchestration model, experiment/telemetry schema, validators, worked case study.",
+   "built": "<span class='pip planned'></span>Preservation active; productization after the checkpoint.",
+   "refs": "productization obligation 2026-09-01"
+  }
+ ],
+ "short": {
+  "APM": "EXEC-PM", "AOD": "EXEC-ODIN", "ARS": "EXEC-RSCH", "AOU": "OUTRIDER", "AIS": "ISOSCOPE", "BRW": "Browser",
+  "ST0": "Stage 0", "ST1": "Stage 1", "ST2": "Stage 2",
+  "BPM": "TEAM-PM", "BOD": "B/ODIN",
+  "D1": "DEV-1", "D2": "DEV-2", "D3": "DEV-3", "D4": "DEV-4", "D5": "DEV-5",
+  "GAT": "Gates", "Q1": "QA-1", "Q2": "QA-2", "HLT": "HLDT-1",
+  "X1": "Tournament", "X2": "Race", "X3": "Cascade", "X4": "Repair ladder",
+  "X5": "Rotation", "X6": "Hygiene mod", "X7": "QA2&parallel;HLDT", "X8": "QA-2-first",
+  "MET": "Metrics", "WV1": "Wave-1", "MEL": "Lesson", "PRD": "Productize"
+ },
+ "status": {
+  "APM": {"state": "ok", "items": []},
+  "AOD": {"state": "ok", "items": []},
+  "ARS": {"state": "ok", "items": []},
+  "AOU": {"state": "ok", "items": [
+    {"c": "amber", "l": "greeting deferred past checkpoint — nothing runs beside the release chain"}]},
+  "AIS": {"state": "ok", "items": [
+    {"c": "amber", "l": "advisory only — writes confined to isoscope repo; this map is not a release claim"}]},
+  "BRW": {"state": "ok", "items": []},
+  "ST0": {"state": "build", "items": [
+    {"c": "amber", "l": "active — S1/S2 baselines in hand; S3 = first comparable cohort"}]},
+  "ST1": {"state": "ok", "items": [
+    {"c": "amber", "l": "queued — one variable at a time, never model + workflow together"}]},
+  "ST2": {"state": "ok", "items": [
+    {"c": "amber", "l": "LATER_NOT_NOW — challenger pool smoke-tested before any activation"}]},
+  "BPM": {"state": "attn", "items": [
+    {"c": "amber", "l": "[OBSERVED] auto-compacted during active custody — recovered, zero misroute; lesson banked"}]},
+  "BOD": {"state": "ok", "items": []},
+  "D1": {"state": "ok", "items": [
+    {"c": "amber", "l": "flagged high-potential by operator — HYPOTHESIS, not a result"}]},
+  "D2": {"state": "ok", "items": [
+    {"c": "amber", "l": "S1 lane: third candidate in QA-1 custody (reported)"}]},
+  "D3": {"state": "ok", "items": [
+    {"c": "amber", "l": "S2 lane: third candidate queued behind S1 QA-1 custody (reported)"}]},
+  "D4": {"state": "ok", "items": []},
+  "D5": {"state": "ok", "items": []},
+  "GAT": {"state": "ok", "items": [
+    {"c": "amber", "l": "any edit = new digest = FULL chain restart — no inheritance, ever"}]},
+  "Q1": {"state": "ok", "items": []},
+  "Q2": {"state": "ok", "items": [
+    {"c": "amber", "l": "hygiene only — selected digest, strictly post-QA-1; never fixes"}]},
+  "HLT": {"state": "ok", "items": [
+    {"c": "amber", "l": "sealed — criteria and internals never visualized (by design + A/ISOSCOPE prohibition)"},
+    {"c": "amber", "l": "never moved or parallelized without explicit operator authorization"}]},
+  "X1": {"state": "build", "items": [
+    {"c": "amber", "l": "S3 = first ruled comparable cohort; selection only among QA-1 PASS"}]},
+  "X2": {"state": "ok", "items": [
+    {"c": "amber", "l": "DEFERRED until initial screen (RANK_2)"}]},
+  "X3": {"state": "ok", "items": [
+    {"c": "amber", "l": "control arm — one non-comparable slice is never a model verdict"}]},
+  "X4": {"state": "build", "items": [
+    {"c": "amber", "l": "live — exercised twice in Wave-1; sealed material never leaked"}]},
+  "X5": {"state": "ok", "items": [
+    {"c": "amber", "l": "LATER — two anchors stable, one challenger at a time"}]},
+  "X6": {"state": "ok", "items": [
+    {"c": "amber", "l": "HYPOTHESIS — only if repeated QA-2 findings prove it; never a QA-2 substitute"}]},
+  "X7": {"state": "attn", "items": [
+    {"c": "you", "l": "DEFERRED — explicit OPERATOR authorization required (conflicts with the ordered chain)"}]},
+  "X8": {"state": "attn", "items": [
+    {"c": "you", "l": "DEFERRED_TRIAL_ARM — operator hypothesis banked; selected-only QA-2-first is circular"},
+    {"c": "amber", "l": "promote only if avoided QA-1 work &gt; added QA-2 load AND &ge;50% median gain, no regressions"}]},
+  "MET": {"state": "ok", "items": [
+    {"c": "amber", "l": "continuation gate: &ge;50% &darr; median accepted-output time over &ge;3 comparable runs"}]},
+  "WV1": {"state": "attn", "items": [
+    {"c": "amber", "l": "S1: HLDT FAIL &times;1 (bounded) &rarr; repair NOT_CLEAN (LOW) &rarr; 3rd candidate in QA-1"},
+    {"c": "amber", "l": "S2: HLDT FAIL &times;1 (2 bounded) &rarr; NOT_CLEAN (LOW) &rarr; 3rd queued"},
+    {"c": "amber", "l": "operational baselines ONLY — tasks differ; no reliability claim"}]},
+  "MEL": {"state": "ok", "items": [
+    {"c": "amber", "l": "DERIVED: pin workspace+surface refs in continuity skeletons; re-identify locators post-compaction"}]},
+  "PRD": {"state": "ok", "items": [
+    {"c": "amber", "l": "OBSERVE_AND_PRESERVE during REL-1; productization planning owed post-checkpoint"}]}
+ },
+ "edges": [
+  ["APM", "BPM", "auth"],
+  ["AIS", "AOD", "auth"],
+  ["BPM", "D1", "data"],
+  ["BPM", "D2", "data"],
+  ["BPM", "D3", "data"],
+  ["D1", "GAT", "data"],
+  ["D2", "GAT", "data"],
+  ["D3", "GAT", "data"],
+  ["GAT", "Q1", "data"],
+  ["Q1", "Q2", "data"],
+  ["Q2", "HLT", "data"],
+  ["HLT", "BPM", "data"],
+  ["Q1", "BPM", "data"],
+  ["X4", "D4", "auth"],
+  ["X4", "D5", "auth"],
+  ["D4", "GAT", "intended"],
+  ["D5", "GAT", "intended"],
+  ["ST0", "ST1", "data"],
+  ["ST1", "ST2", "data"],
+  ["ST0", "X1", "data"],
+  ["X5", "ST2", "data"],
+  ["X6", "GAT", "intended"],
+  ["X7", "Q2", "intended"],
+  ["X7", "HLT", "intended"],
+  ["X8", "Q2", "intended"],
+  ["X1", "Q1", "data"],
+  ["Q1", "MET", "data"],
+  ["AIS", "BRW", "intended"]
+ ],
+ "edgeDocs": {
+  "APM-BPM": {"title": "Commands enter the pod through one door", "carries": "Executive routing authority: every Team-B worker command flows EXEC-PM &rarr; B/TEAM-PM &rarr; worker. No lateral commands, no worker self-selection.", "refs": "SESSION_OBJECTIVES constraints"},
+  "AIS-AOD": {"title": "Advisory reports to the chief of staff", "carries": "A/ISOSCOPE's bounded reports_to line for this engagement: artifacts and handoffs in conversation, coordinating with the operator.", "refs": "boot contract"},
+  "BPM-D2": {"title": "Wave-1 lane dispatch", "carries": "The S1 brief: bounded implementation scope, worktree location, gate requirements — routed to DEV-2 as direct implementer with may_implement=true.", "refs": "three-worktree ruling"},
+  "D2-GAT": {"title": "Candidate enters the gates", "carries": "The staged tree digest (git write-tree) IS the candidate identity; deterministic validation runs on exactly those bytes.", "refs": "LCE per pair"},
+  "GAT-Q1": {"title": "Gate-eligible &rarr; blind correctness review", "carries": "Every gate-eligible candidate, one rubric, blinded randomized labels, fresh-review discipline; per-agent first-pass verdict + severity recorded.", "refs": "blind QA protocol"},
+  "Q1-Q2": {"title": "Selected digest &rarr; hygiene", "carries": "Only the selected QA-1 PASS digest proceeds; QA-2 checks cleanliness of the submitted slice only — never correctness, never fixes.", "refs": "QA-2 boundary"},
+  "Q2-HLT": {"title": "CLEAN digest &rarr; sealed holdout", "carries": "The same immutable digest faces the sealed lane; PASS here is the second of the two independent verdicts closure requires.", "refs": "dual-verdict rule"},
+  "HLT-BPM": {"title": "Verdict returns to the router", "carries": "PASS &rarr; PM commits/integrates on the recorded digest (HEAD^{tree} verified after). FAIL &rarr; bounded findings route back through the repair ladder; QA never fixes.", "refs": "failure-loop ruling"},
+  "Q1-BPM": {"title": "Findings route through the PM", "carries": "QA-1 and QA-2 findings reach DEV seats only via B/TEAM-PM routing — reviewers never dispatch repairs directly.", "refs": "QA-2 boundary"},
+  "X4-D4": {"title": "Correctness repair &rarr; DEV-4", "carries": "Bounded correctness findings + the candidate go to the full-capability fixer; the repair is a NEW digest restarting all gates.", "refs": "RANK_3"},
+  "X4-D5": {"title": "Hygiene repair &rarr; DEV-5", "carries": "Hygiene-only findings (the LOW stale-comment and doc-defect class seen in Wave-1) route to the hygiene fixer.", "refs": "RANK_3"},
+  "D4-GAT": {"title": "Repair candidate restarts the chain", "carries": "49a9dedd&hellip; and 182223c2&hellip; both re-entered at the gates as fresh identities — no verdict inheritance, no shortcut.", "refs": "Wave-1 timeline"},
+  "ST0-X1": {"title": "Stage 0 runs the tournament", "carries": "The ruled S3 cohort operationalizes RANK_1: same brief, one baseline, three lanes, blind QA-1 on all.", "refs": "operator ruling"},
+  "X1-Q1": {"title": "Tournament loads QA-1 by design", "carries": "Three candidates mean three blind reviews — per-agent reliability evidence is the product; QA-1 queue load is a measured cost, not a surprise.", "refs": "bottleneck metric"},
+  "X6-GAT": {"title": "Intended: hygiene modifier front-loads the gates", "carries": "If adopted, a read-only deterministic hygiene check runs pre-QA — reducing QA-2-class findings before human-tier review, never replacing QA-2.", "refs": "hygiene gate clause"},
+  "X7-Q2": {"title": "HYPOTHESIS: parallel tail", "carries": "Deferred: QA-2 and HLDT in parallel after QA-1. Requires explicit operator authorization; holdout latency is measured separately and HLDT is protected.", "refs": "RANK_5"},
+  "X8-Q2": {"title": "HYPOTHESIS: QA-2-first reordering", "carries": "Deferred trial arm: treatment runs QA-2 on all candidates before QA-1 sees them — requires QA-2 contract amendment and survives only the promotion arithmetic.", "refs": "operator hypothesis disposition"},
+  "Q1-MET": {"title": "Every verdict feeds the spine", "carries": "Queue + review latency, first-pass verdicts, severity, rework, digests, tokens — the experiment measures itself; continuation rides these numbers.", "refs": "metrics addendum"},
+  "AIS-BRW": {"title": "Intended: the map reaches its display", "carries": "A/ISOSCOPE builds and navigates this visualization into the dedicated browser pane — display infrastructure only.", "refs": "GO packet browser delivery"}
+ },
+ "trace": [
+  "APM-BPM", "BPM-D2", "D2-GAT", "GAT-Q1", "Q1-Q2", "Q2-HLT", "HLT-BPM", "X4-D4", "D4-GAT", "Q1-MET"
+ ],
+ "traceText": {
+  "APM-BPM": "Commands enter the pod through one door: EXEC-PM &rarr; B/TEAM-PM &rarr; workers. Always.",
+  "BPM-D2": "Wave-1, lane S1: DEV-2 takes the brief in an isolated worktree cut from verified baseline e431e30.",
+  "D2-GAT": "Candidate 46dea649&hellip; stages; the tree digest IS the identity; deterministic gates run on exactly those bytes.",
+  "GAT-Q1": "QA-1 reviews blind: 16/16 PASS, 9m29 implementation-to-pending — the fastest lane observed so far.",
+  "Q1-Q2": "The selected digest proceeds to hygiene: CLEAN, zero findings.",
+  "Q2-HLT": "Same digest, sealed lane: FAIL — one bounded duplicate hyphen-fold implementation. The gate that caught what QA passed.",
+  "HLT-BPM": "The verdict routes back through the PM. QA never fixes; sealed findings never leak.",
+  "X4-D4": "The repair ladder routes the bounded finding to the right fixer with the candidate.",
+  "D4-GAT": "Repair candidate 49a9dedd&hellip; is a NEW digest: the full chain restarts. No inheritance, no shortcuts.",
+  "Q1-MET": "And every queue, verdict, and minute feeds the metrics spine — because the real question is speed to ACCEPTED code, and the experiment must measure itself."
+ },
+ "levels": {
+  "APM": 1, "AOD": 1, "ARS": 1, "AOU": 1, "AIS": 1, "BRW": 1,
+  "ST0": 1, "ST1": 1, "ST2": 1,
+  "BPM": 0, "BOD": 0, "D1": 0, "D2": 0, "D3": 0, "D4": 0, "D5": 0,
+  "GAT": 0, "Q1": 0, "Q2": 0, "HLT": 0,
+  "X1": -1, "X2": -1, "X3": -1, "X4": -1, "X5": -1, "X6": -1, "X7": -1, "X8": -1,
+  "MET": -1, "WV1": -1, "MEL": -1, "PRD": -1
+ },
+ "title": "ODIN — Adaptive Topology Laboratory · advisory",
+ "brand": {"k": "Map", "v": "odin · topology laboratory · advisory snapshot"},
+ "metrics": [
+  {"k": "Live roster", "v": "16 seats + 1 display [observed]"},
+  {"k": "Acceptance chain", "v": "4-role · one immutable digest"},
+  {"k": "Wave-1 @ packet time", "v": "S1 3rd candidate in QA-1"},
+  {"k": "Continuation bar", "v": "&ge;50% &darr; median · &ge;3 runs"}
+ ],
+ "wordmark": "ISOSCOPE &times; ODIN",
+ "asOf": "Draft advisory &middot; 2026-09-01T19:00Z &middot; roster observed 18:59:20Z (workspace:5) &middot; chain / stages / arms from SESSION_OBJECTIVES + EXEC-ODIN GO packet &middot; Wave-1 timeline OBSERVED via A/EXEC-ODIN, cross-consistent with session baselines",
+ "intro": {
+  "eyebrow": "VISUAL B &middot; draft advisory &middot; A/ISOSCOPE for A/EXEC-ODIN &amp; the operator",
+  "title": "The adaptive topology laboratory",
+  "sub": "who is seated, how candidates become accepted code, and the experiments that will decide what the team becomes",
+  "proseHTML": "<p class=\"t-label\" style=\"color:var(--okoa-semantic-fg3);margin-bottom:var(--okoa-space-2)\">Primary audience: you, Brad</p>\n<p class=\"t-body-sm\">This map is decision support first. The <span class=\"mark\">experiment districts</span> (south-east) are separate city blocks so arms can be compared at a glance; the two slate diamonds on <span class=\"mark\">QA-2 &parallel; HLDT</span> and <span class=\"mark\">QA-2-first</span> are deferred authorizations that belong to you alone. The <span class=\"mark\">acceptance chain</span> (west) is the spine every candidate rides: gates &rarr; QA-1 &rarr; QA-2 &rarr; sealed holdout &rarr; commit, all on ONE immutable digest.</p>\n<p class=\"t-label\" style=\"color:var(--okoa-semantic-fg3);margin:var(--okoa-space-4) 0 var(--okoa-space-2)\">Truth discipline</p>\n<p class=\"t-body-sm\">Seats and surfaces are <strong>[OBSERVED]</strong> live via cmux at 18:59Z. Chain design, stages, and arms come from the session objectives and A/EXEC-ODIN's GO packet. The Wave-1 timeline is <strong>observed by A/EXEC-ODIN</strong> and cross-checks against the session baselines (9m29 / 28m51, digests 46dea649&hellip; / 4668cdd0&hellip; agree across both sources). Model assignments arrive via the packet. Sealed-holdout internals are deliberately absent.</p>\n<p class=\"t-label\" style=\"color:var(--okoa-semantic-fg3);margin:var(--okoa-space-4) 0 var(--okoa-space-2)\">How to read it</p>\n<p class=\"t-body-sm\">North: Team A (your executive office, plus two consultants and the display pane). Middle: Team B &mdash; control, the tournament cohort, fixers, and the chain. South: the eight experiment arms and the measurement district. Run the <strong>trace</strong> to ride one candidate (46dea649&hellip;) through the whole chain including its failure and repair. Press <strong>R</strong> for home; click any building for its evidence class.</p>"
+ },
+ "drcBudget": {"maxWeightedCrossings": 90, "acknowledged": "advisory draft — observed 87 weighted crossings, forced by topology: one router fans out to three lanes; three lanes converge on one gate; a four-role sequential chain carries feedback loops; and the deferred arms intentionally edge toward the exact chain links they propose to reorder. This crossing debt IS the experiment's shape."}
+}

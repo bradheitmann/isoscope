@@ -6,6 +6,10 @@
       "env": {
         "ISOSCOPE_DB": "./isoscope.db"
       }
+    },
+    "okoa-design": {
+      "command": "npx",
+      "args": ["-y", "mcp-remote", "https://okoa-design-mcp.okoalabs.workers.dev/mcp"]
     }
   }
 }

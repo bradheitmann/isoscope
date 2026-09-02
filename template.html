@@ -72,16 +72,16 @@ body{display:grid;overflow:hidden;
   grid-template-rows:auto minmax(0,1fr) auto;}
 .topbar{--h:58px;grid-area:top;display:flex;align-items:stretch;height:var(--h);
   border-bottom:var(--okoa-border-hair) solid var(--okoa-semantic-border-strong);
-  background:var(--okoa-semantic-surface-default);z-index:100;}
+  background:var(--okoa-semantic-surface-default);z-index:var(--okoa-z-sticky);}
 .topbar .cell{flex:0 0 auto;padding:var(--okoa-space-2) var(--okoa-space-4);
   border-right:var(--okoa-border-hair) solid var(--okoa-semantic-border-default);
   display:flex;flex-direction:column;justify-content:center;gap:var(--okoa-space-1);}
 .topbar .cell .k{color:var(--okoa-component-metric-label);}
 .topbar .cell .v{color:var(--okoa-component-metric-value);white-space:nowrap;}
 .topbar .brand .v{font-family:var(--okoa-mono);font-weight:var(--w-medium);font-size:1.05rem;}
-.topbar .actions{margin-left:auto;display:flex;align-items:center;gap:var(--okoa-space-2);
+.topbar .actions{margin-left:auto;display:flex;align-items:center;gap:var(--okoa-space-2);flex-wrap:wrap;
   padding:var(--okoa-space-2) var(--okoa-space-4);}
-.metricstrip{display:flex;flex:1 1 auto;min-width:0;overflow:hidden;}
+.metricstrip{display:flex;flex:1 1 auto;min-width:0;flex-wrap:wrap;}
 .side{grid-area:side;overflow-y:auto;background:var(--okoa-semantic-surface-default);
   border-right:var(--okoa-border-hair) solid var(--okoa-semantic-border-strong);
   padding:var(--okoa-space-4) 0 var(--okoa-space-8);}
@@ -129,7 +129,7 @@ body{display:grid;overflow:hidden;
 .lbl.hot .id{color:var(--okoa-semantic-fg1);}
 .lbl.hot .sfx{display:inline;opacity:1;}
 .lbl.dim{opacity:0.12;}
-.zoomctl{position:absolute;top:var(--okoa-space-4);right:var(--okoa-space-4);display:flex;flex-direction:column;gap:var(--okoa-space-1);z-index:10;}
+.zoomctl{position:absolute;top:var(--okoa-space-4);right:var(--okoa-space-4);display:flex;flex-direction:column;gap:var(--okoa-space-1);z-index:var(--okoa-z-raised);}
 .zoomctl .okoa-btn{min-height:32px;min-width:32px;padding:0;font-size:var(--t-body-sm);}
 /* the key lives in the frame (sidebar), never on the artwork */
 .sidekey{padding:var(--okoa-space-4) var(--okoa-space-4) 0;border-top:var(--okoa-border-hair) solid var(--okoa-semantic-border-default);margin-top:var(--okoa-space-4);}
@@ -187,6 +187,27 @@ body{display:grid;overflow:hidden;
 }
 .w-short{display:none;}
 @media (max-width:980px){ .w-long{display:none;} .w-short{display:inline;} }
+/* — responsive hardening: extreme aspect ratios + touch — */
+@media (max-width:1280px){
+  .topbar{--h:auto;min-height:58px;flex-wrap:wrap;}
+  .topbar .cell .v{white-space:normal;overflow-wrap:anywhere;}
+}
+@media (max-height:360px){
+  .side,.panel,.hint{display:none;}
+  body{grid-template-areas:"top" "canvas";grid-template-columns:minmax(0,1fr);grid-template-rows:auto minmax(0,1fr);}
+}
+@media (max-width:640px){
+  body{grid-template-rows:auto minmax(0,1.25fr) minmax(0,0.75fr) auto;}
+  .hint{min-height:32px;}
+}
+@media (pointer:coarse){
+  .okoa-btn,.zoomctl button,.trow{min-height:44px;min-width:44px;}
+}
+@media (max-width:480px){
+  .topbar .actions{flex-basis:100%;margin-left:0;}
+  .okoa-btn{padding:0 var(--okoa-space-2);font-size:11px;}
+}
+.panel,.side{overflow-wrap:break-word;}
 </style>
 <style id="okoa-canonical">
 /* CANONICAL — okoa-design-mcp okoa_emit_stylesheet v3.0.0, embedded verbatim */
@@ -1394,173 +1415,12 @@ body{display:grid;overflow:hidden;
 
 </style>
 
-<style id="ide-themes">
-[data-style="kanagawa"]{
- --okoa-semantic-surface-default:#1F1F28;--okoa-semantic-surface-warm:#2A2A37;--okoa-semantic-surface-alt:#363646;
- --okoa-semantic-fg1:#DCD7BA;--okoa-semantic-fg2:#C8C093;--okoa-semantic-fg3:#9E9B93;--okoa-semantic-fg:#DCD7BA;
- --okoa-semantic-fg-accent:#7E9CD8;--okoa-semantic-entity-primary:#7E9CD8;--okoa-semantic-fg-on-dark:#1F1F28;
- --okoa-semantic-border-default:#363646;--okoa-semantic-border-strong:#54546D;--okoa-semantic-border-accent:#7E9CD8;
- --okoa-signal-risk:#C34043;--okoa-signal-caution:#DCA561;--okoa-signal-info:#7FB4CA;--okoa-signal-pass:#98BB6C;
- --okoa-component-chrome-footer-bg:#16161D;--okoa-component-chrome-footer-text:#DCD7BA;
- --okoa-component-metric-label:#9E9B93;--okoa-component-metric-value:#DCD7BA;
- --okoa-focus-ring-color:#7E9CD8;
-}
-[data-style="dracula"]{
- --okoa-semantic-surface-default:#282A36;--okoa-semantic-surface-warm:#313342;--okoa-semantic-surface-alt:#44475A;
- --okoa-semantic-fg1:#F8F8F2;--okoa-semantic-fg2:#BFBFBF;--okoa-semantic-fg3:#6272A4;--okoa-semantic-fg:#F8F8F2;
- --okoa-semantic-fg-accent:#BD93F9;--okoa-semantic-entity-primary:#BD93F9;--okoa-semantic-fg-on-dark:#282A36;
- --okoa-semantic-border-default:#44475A;--okoa-semantic-border-strong:#6272A4;--okoa-semantic-border-accent:#BD93F9;
- --okoa-signal-risk:#FF5555;--okoa-signal-caution:#FFB86C;--okoa-signal-info:#8BE9FD;--okoa-signal-pass:#50FA7B;
- --okoa-component-chrome-footer-bg:#1E2029;--okoa-component-chrome-footer-text:#F8F8F2;
- --okoa-component-metric-label:#6272A4;--okoa-component-metric-value:#F8F8F2;
- --okoa-focus-ring-color:#BD93F9;
-}
-[data-style="tokyo-night"]{
- --okoa-semantic-surface-default:#1A1B26;--okoa-semantic-surface-warm:#24283B;--okoa-semantic-surface-alt:#2F3549;
- --okoa-semantic-fg1:#C0CAF5;--okoa-semantic-fg2:#A9B1D6;--okoa-semantic-fg3:#565F89;--okoa-semantic-fg:#C0CAF5;
- --okoa-semantic-fg-accent:#7AA2F7;--okoa-semantic-entity-primary:#7AA2F7;--okoa-semantic-fg-on-dark:#1A1B26;
- --okoa-semantic-border-default:#2F3549;--okoa-semantic-border-strong:#3B4261;--okoa-semantic-border-accent:#7AA2F7;
- --okoa-signal-risk:#F7768E;--okoa-signal-caution:#E0AF68;--okoa-signal-info:#7DCFFF;--okoa-signal-pass:#9ECE6A;
- --okoa-component-chrome-footer-bg:#16161E;--okoa-component-chrome-footer-text:#C0CAF5;
- --okoa-component-metric-label:#565F89;--okoa-component-metric-value:#C0CAF5;
- --okoa-focus-ring-color:#7AA2F7;
-}
-[data-style="catppuccin-mocha"]{
- --okoa-semantic-surface-default:#1E1E2E;--okoa-semantic-surface-warm:#313244;--okoa-semantic-surface-alt:#45475A;
- --okoa-semantic-fg1:#CDD6F4;--okoa-semantic-fg2:#BAC2DE;--okoa-semantic-fg3:#A6ADC8;--okoa-semantic-fg:#CDD6F4;
- --okoa-semantic-fg-accent:#89B4FA;--okoa-semantic-entity-primary:#89B4FA;--okoa-semantic-fg-on-dark:#1E1E2E;
- --okoa-semantic-border-default:#313244;--okoa-semantic-border-strong:#585B70;--okoa-semantic-border-accent:#89B4FA;
- --okoa-signal-risk:#F38BA8;--okoa-signal-caution:#F9E2AF;--okoa-signal-info:#89DCEB;--okoa-signal-pass:#A6E3A1;
- --okoa-component-chrome-footer-bg:#181825;--okoa-component-chrome-footer-text:#CDD6F4;
- --okoa-component-metric-label:#A6ADC8;--okoa-component-metric-value:#CDD6F4;
- --okoa-focus-ring-color:#89B4FA;
-}
-[data-style="nord"]{
- --okoa-semantic-surface-default:#2E3440;--okoa-semantic-surface-warm:#3B4252;--okoa-semantic-surface-alt:#434C5E;
- --okoa-semantic-fg1:#ECEFF4;--okoa-semantic-fg2:#D8DEE9;--okoa-semantic-fg3:#9AA5B8;--okoa-semantic-fg:#ECEFF4;
- --okoa-semantic-fg-accent:#88C0D0;--okoa-semantic-entity-primary:#88C0D0;--okoa-semantic-fg-on-dark:#2E3440;
- --okoa-semantic-border-default:#3B4252;--okoa-semantic-border-strong:#4C566A;--okoa-semantic-border-accent:#88C0D0;
- --okoa-signal-risk:#BF616A;--okoa-signal-caution:#EBCB8B;--okoa-signal-info:#81A1C1;--okoa-signal-pass:#A3BE8C;
- --okoa-component-chrome-footer-bg:#272C36;--okoa-component-chrome-footer-text:#ECEFF4;
- --okoa-component-metric-label:#9AA5B8;--okoa-component-metric-value:#ECEFF4;
- --okoa-focus-ring-color:#88C0D0;
-}
-[data-style="gruvbox-dark"]{
- --okoa-semantic-surface-default:#282828;--okoa-semantic-surface-warm:#3C3836;--okoa-semantic-surface-alt:#504945;
- --okoa-semantic-fg1:#EBDBB2;--okoa-semantic-fg2:#D5C4A1;--okoa-semantic-fg3:#A89984;--okoa-semantic-fg:#EBDBB2;
- --okoa-semantic-fg-accent:#83A598;--okoa-semantic-entity-primary:#83A598;--okoa-semantic-fg-on-dark:#282828;
- --okoa-semantic-border-default:#3C3836;--okoa-semantic-border-strong:#665C54;--okoa-semantic-border-accent:#83A598;
- --okoa-signal-risk:#FB4934;--okoa-signal-caution:#FABD2F;--okoa-signal-info:#83A598;--okoa-signal-pass:#B8BB26;
- --okoa-component-chrome-footer-bg:#1D2021;--okoa-component-chrome-footer-text:#EBDBB2;
- --okoa-component-metric-label:#A89984;--okoa-component-metric-value:#EBDBB2;
- --okoa-focus-ring-color:#83A598;
-}
-[data-style="everforest-dark"]{
- --okoa-semantic-surface-default:#2D353B;--okoa-semantic-surface-warm:#343F44;--okoa-semantic-surface-alt:#3D484D;
- --okoa-semantic-fg1:#D3C6AA;--okoa-semantic-fg2:#9DA9A0;--okoa-semantic-fg3:#859289;--okoa-semantic-fg:#D3C6AA;
- --okoa-semantic-fg-accent:#7FBBB3;--okoa-semantic-entity-primary:#7FBBB3;--okoa-semantic-fg-on-dark:#2D353B;
- --okoa-semantic-border-default:#3D484D;--okoa-semantic-border-strong:#4F5B58;--okoa-semantic-border-accent:#7FBBB3;
- --okoa-signal-risk:#E67E80;--okoa-signal-caution:#DBBC7F;--okoa-signal-info:#7FBBB3;--okoa-signal-pass:#A7C080;
- --okoa-component-chrome-footer-bg:#232A2E;--okoa-component-chrome-footer-text:#D3C6AA;
- --okoa-component-metric-label:#859289;--okoa-component-metric-value:#D3C6AA;
- --okoa-focus-ring-color:#7FBBB3;
-}
-[data-style="rose-pine"]{
- --okoa-semantic-surface-default:#191724;--okoa-semantic-surface-warm:#1F1D2E;--okoa-semantic-surface-alt:#26233A;
- --okoa-semantic-fg1:#E0DEF4;--okoa-semantic-fg2:#908CAA;--okoa-semantic-fg3:#6E6A86;--okoa-semantic-fg:#E0DEF4;
- --okoa-semantic-fg-accent:#C4A7E7;--okoa-semantic-entity-primary:#C4A7E7;--okoa-semantic-fg-on-dark:#191724;
- --okoa-semantic-border-default:#26233A;--okoa-semantic-border-strong:#403D52;--okoa-semantic-border-accent:#C4A7E7;
- --okoa-signal-risk:#EB6F92;--okoa-signal-caution:#F6C177;--okoa-signal-info:#31748F;--okoa-signal-pass:#9CCFD8;
- --okoa-component-chrome-footer-bg:#12101A;--okoa-component-chrome-footer-text:#E0DEF4;
- --okoa-component-metric-label:#6E6A86;--okoa-component-metric-value:#E0DEF4;
- --okoa-focus-ring-color:#C4A7E7;
-}
-[data-style="one-dark"]{
- --okoa-semantic-surface-default:#282C34;--okoa-semantic-surface-warm:#2F333D;--okoa-semantic-surface-alt:#3E4451;
- --okoa-semantic-fg1:#ABB2BF;--okoa-semantic-fg2:#9DA5B4;--okoa-semantic-fg3:#5C6370;--okoa-semantic-fg:#ABB2BF;
- --okoa-semantic-fg-accent:#61AFEF;--okoa-semantic-entity-primary:#61AFEF;--okoa-semantic-fg-on-dark:#282C34;
- --okoa-semantic-border-default:#3E4451;--okoa-semantic-border-strong:#528BFF;--okoa-semantic-border-accent:#61AFEF;
- --okoa-signal-risk:#E06C75;--okoa-signal-caution:#E5C07B;--okoa-signal-info:#56B6C2;--okoa-signal-pass:#98C379;
- --okoa-component-chrome-footer-bg:#21252B;--okoa-component-chrome-footer-text:#ABB2BF;
- --okoa-component-metric-label:#5C6370;--okoa-component-metric-value:#ABB2BF;
- --okoa-focus-ring-color:#61AFEF;
-}
-[data-style="nightfox"]{
- --okoa-semantic-surface-default:#192330;--okoa-semantic-surface-warm:#212E3F;--okoa-semantic-surface-alt:#29394F;
- --okoa-semantic-fg1:#CDCECF;--okoa-semantic-fg2:#AEB7C0;--okoa-semantic-fg3:#71839B;--okoa-semantic-fg:#CDCECF;
- --okoa-semantic-fg-accent:#719CD6;--okoa-semantic-entity-primary:#719CD6;--okoa-semantic-fg-on-dark:#192330;
- --okoa-semantic-border-default:#29394F;--okoa-semantic-border-strong:#39506D;--okoa-semantic-border-accent:#719CD6;
- --okoa-signal-risk:#C94F6D;--okoa-signal-caution:#DBC074;--okoa-signal-info:#63CDCF;--okoa-signal-pass:#81B29A;
- --okoa-component-chrome-footer-bg:#131A24;--okoa-component-chrome-footer-text:#CDCECF;
- --okoa-component-metric-label:#71839B;--okoa-component-metric-value:#CDCECF;
- --okoa-focus-ring-color:#719CD6;
-}
-[data-style="solarized-dark"]{
- --okoa-semantic-surface-default:#002B36;--okoa-semantic-surface-warm:#073642;--okoa-semantic-surface-alt:#0E4A59;
- --okoa-semantic-fg1:#93A1A1;--okoa-semantic-fg2:#839496;--okoa-semantic-fg3:#586E75;--okoa-semantic-fg:#93A1A1;
- --okoa-semantic-fg-accent:#268BD2;--okoa-semantic-entity-primary:#268BD2;--okoa-semantic-fg-on-dark:#002B36;
- --okoa-semantic-border-default:#073642;--okoa-semantic-border-strong:#586E75;--okoa-semantic-border-accent:#268BD2;
- --okoa-signal-risk:#DC322F;--okoa-signal-caution:#B58900;--okoa-signal-info:#2AA198;--okoa-signal-pass:#859900;
- --okoa-component-chrome-footer-bg:#00212B;--okoa-component-chrome-footer-text:#93A1A1;
- --okoa-component-metric-label:#586E75;--okoa-component-metric-value:#93A1A1;
- --okoa-focus-ring-color:#268BD2;
-}
-[data-style="carbon"]{
- --okoa-semantic-surface-default:#161616;--okoa-semantic-surface-warm:#262626;--okoa-semantic-surface-alt:#393939;
- --okoa-semantic-fg1:#F4F4F4;--okoa-semantic-fg2:#C6C6C6;--okoa-semantic-fg3:#8D8D8D;--okoa-semantic-fg:#F4F4F4;
- --okoa-semantic-fg-accent:#78A9FF;--okoa-semantic-entity-primary:#78A9FF;--okoa-semantic-fg-on-dark:#161616;
- --okoa-semantic-border-default:#262626;--okoa-semantic-border-strong:#525252;--okoa-semantic-border-accent:#78A9FF;
- --okoa-signal-risk:#FA4D56;--okoa-signal-caution:#F1C21B;--okoa-signal-info:#33B1FF;--okoa-signal-pass:#42BE65;
- --okoa-component-chrome-footer-bg:#0B0B0B;--okoa-component-chrome-footer-text:#F4F4F4;
- --okoa-component-metric-label:#8D8D8D;--okoa-component-metric-value:#F4F4F4;
- --okoa-focus-ring-color:#78A9FF;
-}
-[data-style="catppuccin-latte"]{
- --okoa-semantic-surface-default:#EFF1F5;--okoa-semantic-surface-warm:#E6E9EF;--okoa-semantic-surface-alt:#CCD0DA;
- --okoa-semantic-fg1:#4C4F69;--okoa-semantic-fg2:#5C5F77;--okoa-semantic-fg3:#8C8FA1;--okoa-semantic-fg:#4C4F69;
- --okoa-semantic-fg-accent:#1E66F5;--okoa-semantic-entity-primary:#1E66F5;--okoa-semantic-fg-on-dark:#FFFFFF;
- --okoa-semantic-border-default:#CCD0DA;--okoa-semantic-border-strong:#9CA0B0;--okoa-semantic-border-accent:#1E66F5;
- --okoa-signal-risk:#D20F39;--okoa-signal-caution:#DF8E1D;--okoa-signal-info:#04A5E5;--okoa-signal-pass:#40A02B;
- --okoa-component-chrome-footer-bg:#4C4F69;--okoa-component-chrome-footer-text:#EFF1F5;
- --okoa-component-metric-label:#8C8FA1;--okoa-component-metric-value:#4C4F69;
- --okoa-focus-ring-color:#1E66F5;
-}
-[data-style="gruvbox-light"]{
- --okoa-semantic-surface-default:#FBF1C7;--okoa-semantic-surface-warm:#F2E5BC;--okoa-semantic-surface-alt:#EBDBB2;
- --okoa-semantic-fg1:#3C3836;--okoa-semantic-fg2:#504945;--okoa-semantic-fg3:#7C6F64;--okoa-semantic-fg:#3C3836;
- --okoa-semantic-fg-accent:#076678;--okoa-semantic-entity-primary:#076678;--okoa-semantic-fg-on-dark:#FBF1C7;
- --okoa-semantic-border-default:#EBDBB2;--okoa-semantic-border-strong:#BDAE93;--okoa-semantic-border-accent:#076678;
- --okoa-signal-risk:#9D0006;--okoa-signal-caution:#B57614;--okoa-signal-info:#076678;--okoa-signal-pass:#79740E;
- --okoa-component-chrome-footer-bg:#3C3836;--okoa-component-chrome-footer-text:#FBF1C7;
- --okoa-component-metric-label:#7C6F64;--okoa-component-metric-value:#3C3836;
- --okoa-focus-ring-color:#076678;
-}
-[data-style="solarized-light"]{
- --okoa-semantic-surface-default:#FDF6E3;--okoa-semantic-surface-warm:#EEE8D5;--okoa-semantic-surface-alt:#E3DCC6;
- --okoa-semantic-fg1:#586E75;--okoa-semantic-fg2:#657B83;--okoa-semantic-fg3:#93A1A1;--okoa-semantic-fg:#586E75;
- --okoa-semantic-fg-accent:#268BD2;--okoa-semantic-entity-primary:#268BD2;--okoa-semantic-fg-on-dark:#FDF6E3;
- --okoa-semantic-border-default:#EEE8D5;--okoa-semantic-border-strong:#93A1A1;--okoa-semantic-border-accent:#268BD2;
- --okoa-signal-risk:#DC322F;--okoa-signal-caution:#B58900;--okoa-signal-info:#2AA198;--okoa-signal-pass:#859900;
- --okoa-component-chrome-footer-bg:#073642;--okoa-component-chrome-footer-text:#FDF6E3;
- --okoa-component-metric-label:#93A1A1;--okoa-component-metric-value:#586E75;
- --okoa-focus-ring-color:#268BD2;
-}
-[data-style="rose-pine-dawn"]{
- --okoa-semantic-surface-default:#FAF4ED;--okoa-semantic-surface-warm:#FFFAF3;--okoa-semantic-surface-alt:#F2E9E1;
- --okoa-semantic-fg1:#575279;--okoa-semantic-fg2:#797593;--okoa-semantic-fg3:#9893A5;--okoa-semantic-fg:#575279;
- --okoa-semantic-fg-accent:#907AA9;--okoa-semantic-entity-primary:#907AA9;--okoa-semantic-fg-on-dark:#FAF4ED;
- --okoa-semantic-border-default:#F2E9E1;--okoa-semantic-border-strong:#DFDAD9;--okoa-semantic-border-accent:#907AA9;
- --okoa-signal-risk:#B4637A;--okoa-signal-caution:#EA9D34;--okoa-signal-info:#56949F;--okoa-signal-pass:#286983;
- --okoa-component-chrome-footer-bg:#575279;--okoa-component-chrome-footer-text:#FAF4ED;
- --okoa-component-metric-label:#9893A5;--okoa-component-metric-value:#575279;
- --okoa-focus-ring-color:#907AA9;
-}
-</style>
+<style id="ide-themes">/* IDE theme palettes relocated to the runtime store (IDE_THEMES) — static CSS carries canon variants only. */</style>
 <style id="app-drawer">
-.drawer{position:fixed;top:0;right:0;bottom:0;width:min(88vw,340px);z-index:60;
+.drawer{position:fixed;top:0;right:0;bottom:0;width:min(88vw,340px);z-index:var(--okoa-z-overlay);
  background:var(--okoa-semantic-surface-default);border-left:1px solid var(--okoa-semantic-border-strong);
  transform:translateX(103%);transition:transform .28s var(--okoa-ease-out,ease);
- display:flex;flex-direction:column;box-shadow:-18px 0 40px rgba(0,0,0,.18);}
+ display:flex;flex-direction:column;box-shadow:var(--okoa-elevation-overlay);}
 .drawer.open{transform:none;}
 .drawer header{display:flex;justify-content:space-between;align-items:center;padding:12px 16px;border-bottom:1px solid var(--okoa-semantic-border-default);flex:none;}
 .drawer h3{font-family:var(--okoa-mono);font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--okoa-semantic-fg1);}
@@ -1575,13 +1435,13 @@ body{display:grid;overflow:hidden;
 .trow .nm{flex:1;}
 .seg{display:flex;border:1px solid var(--okoa-semantic-border-strong);}
 .seg button{flex:1;padding:8px 6px;background:none;border:0;cursor:pointer;font-family:var(--okoa-mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--okoa-semantic-fg1);}
-.seg button.on{background:var(--okoa-semantic-entity-primary,var(--okoa-semantic-fg1));color:var(--okoa-semantic-fg-on-dark,#fff);}
+.seg button.on{background:var(--okoa-semantic-entity-primary,var(--okoa-semantic-fg1));color:var(--okoa-semantic-fg-on-dark,var(--okoa-accent-fill-text));}
 #btnRandomTheme{width:100%;margin-bottom:4px;}
-.introveil{position:fixed;inset:0;z-index:80;background:color-mix(in srgb,var(--okoa-semantic-fg1) 42%,transparent);
+.introveil{position:fixed;inset:0;z-index:var(--okoa-z-modal);background:color-mix(in srgb,var(--okoa-semantic-fg1) 42%,transparent);
  display:flex;align-items:center;justify-content:center;padding:20px;}
 .introveil[hidden]{display:none;}
 .introcard{background:var(--okoa-semantic-surface-default);border:1px solid var(--okoa-semantic-border-strong);
- max-width:520px;width:100%;max-height:86vh;overflow-y:auto;padding:26px 28px;box-shadow:0 24px 80px rgba(0,0,0,.3);}
+ max-width:520px;width:100%;max-height:86vh;overflow-y:auto;padding:26px 28px;box-shadow:var(--okoa-elevation-overlay);}
 .introcard h2{font-family:var(--okoa-serif);font-size:26px;line-height:1.15;margin:0 0 6px;color:var(--okoa-semantic-fg1);}
 .introcard .sub{font-family:var(--okoa-sans);font-size:13px;color:var(--okoa-semantic-fg2);margin:0 0 16px;}
 .introcard h3{font-family:var(--okoa-mono);font-size:10px;letter-spacing:.16em;text-transform:uppercase;
@@ -2292,6 +2152,9 @@ const THEMES=[
  {id:"solarized-light",label:"Solarized Light",mode:"light",sw:["#FDF6E3","#586E75","#268BD2"]},
  {id:"rose-pine-dawn",label:"Rosé Pine Dawn",mode:"light",sw:["#FAF4ED","#575279","#907AA9"]}
 ];
+/* ————— runtime IDE theme store (values relocated verbatim from static CSS) ————— */
+const IDE_PROPS=["--okoa-component-chrome-footer-bg","--okoa-component-chrome-footer-text","--okoa-component-metric-label","--okoa-component-metric-value","--okoa-focus-ring-color","--okoa-semantic-border-accent","--okoa-semantic-border-default","--okoa-semantic-border-strong","--okoa-semantic-entity-primary","--okoa-semantic-fg","--okoa-semantic-fg-accent","--okoa-semantic-fg-on-dark","--okoa-semantic-fg1","--okoa-semantic-fg2","--okoa-semantic-fg3","--okoa-semantic-surface-alt","--okoa-semantic-surface-default","--okoa-semantic-surface-warm","--okoa-signal-caution","--okoa-signal-info","--okoa-signal-pass","--okoa-signal-risk"];
+const IDE_THEMES={"kanagawa":{"--okoa-semantic-surface-default":"#1F1F28","--okoa-semantic-surface-warm":"#2A2A37","--okoa-semantic-surface-alt":"#363646","--okoa-semantic-fg1":"#DCD7BA","--okoa-semantic-fg2":"#C8C093","--okoa-semantic-fg3":"#9E9B93","--okoa-semantic-fg":"#DCD7BA","--okoa-semantic-fg-accent":"#7E9CD8","--okoa-semantic-entity-primary":"#7E9CD8","--okoa-semantic-fg-on-dark":"#1F1F28","--okoa-semantic-border-default":"#363646","--okoa-semantic-border-strong":"#54546D","--okoa-semantic-border-accent":"#7E9CD8","--okoa-signal-risk":"#C34043","--okoa-signal-caution":"#DCA561","--okoa-signal-info":"#7FB4CA","--okoa-signal-pass":"#98BB6C","--okoa-component-chrome-footer-bg":"#16161D","--okoa-component-chrome-footer-text":"#DCD7BA","--okoa-component-metric-label":"#9E9B93","--okoa-component-metric-value":"#DCD7BA","--okoa-focus-ring-color":"#7E9CD8"},"dracula":{"--okoa-semantic-surface-default":"#282A36","--okoa-semantic-surface-warm":"#313342","--okoa-semantic-surface-alt":"#44475A","--okoa-semantic-fg1":"#F8F8F2","--okoa-semantic-fg2":"#BFBFBF","--okoa-semantic-fg3":"#6272A4","--okoa-semantic-fg":"#F8F8F2","--okoa-semantic-fg-accent":"#BD93F9","--okoa-semantic-entity-primary":"#BD93F9","--okoa-semantic-fg-on-dark":"#282A36","--okoa-semantic-border-default":"#44475A","--okoa-semantic-border-strong":"#6272A4","--okoa-semantic-border-accent":"#BD93F9","--okoa-signal-risk":"#FF5555","--okoa-signal-caution":"#FFB86C","--okoa-signal-info":"#8BE9FD","--okoa-signal-pass":"#50FA7B","--okoa-component-chrome-footer-bg":"#1E2029","--okoa-component-chrome-footer-text":"#F8F8F2","--okoa-component-metric-label":"#6272A4","--okoa-component-metric-value":"#F8F8F2","--okoa-focus-ring-color":"#BD93F9"},"tokyo-night":{"--okoa-semantic-surface-default":"#1A1B26","--okoa-semantic-surface-warm":"#24283B","--okoa-semantic-surface-alt":"#2F3549","--okoa-semantic-fg1":"#C0CAF5","--okoa-semantic-fg2":"#A9B1D6","--okoa-semantic-fg3":"#565F89","--okoa-semantic-fg":"#C0CAF5","--okoa-semantic-fg-accent":"#7AA2F7","--okoa-semantic-entity-primary":"#7AA2F7","--okoa-semantic-fg-on-dark":"#1A1B26","--okoa-semantic-border-default":"#2F3549","--okoa-semantic-border-strong":"#3B4261","--okoa-semantic-border-accent":"#7AA2F7","--okoa-signal-risk":"#F7768E","--okoa-signal-caution":"#E0AF68","--okoa-signal-info":"#7DCFFF","--okoa-signal-pass":"#9ECE6A","--okoa-component-chrome-footer-bg":"#16161E","--okoa-component-chrome-footer-text":"#C0CAF5","--okoa-component-metric-label":"#565F89","--okoa-component-metric-value":"#C0CAF5","--okoa-focus-ring-color":"#7AA2F7"},"catppuccin-mocha":{"--okoa-semantic-surface-default":"#1E1E2E","--okoa-semantic-surface-warm":"#313244","--okoa-semantic-surface-alt":"#45475A","--okoa-semantic-fg1":"#CDD6F4","--okoa-semantic-fg2":"#BAC2DE","--okoa-semantic-fg3":"#A6ADC8","--okoa-semantic-fg":"#CDD6F4","--okoa-semantic-fg-accent":"#89B4FA","--okoa-semantic-entity-primary":"#89B4FA","--okoa-semantic-fg-on-dark":"#1E1E2E","--okoa-semantic-border-default":"#313244","--okoa-semantic-border-strong":"#585B70","--okoa-semantic-border-accent":"#89B4FA","--okoa-signal-risk":"#F38BA8","--okoa-signal-caution":"#F9E2AF","--okoa-signal-info":"#89DCEB","--okoa-signal-pass":"#A6E3A1","--okoa-component-chrome-footer-bg":"#181825","--okoa-component-chrome-footer-text":"#CDD6F4","--okoa-component-metric-label":"#A6ADC8","--okoa-component-metric-value":"#CDD6F4","--okoa-focus-ring-color":"#89B4FA"},"nord":{"--okoa-semantic-surface-default":"#2E3440","--okoa-semantic-surface-warm":"#3B4252","--okoa-semantic-surface-alt":"#434C5E","--okoa-semantic-fg1":"#ECEFF4","--okoa-semantic-fg2":"#D8DEE9","--okoa-semantic-fg3":"#9AA5B8","--okoa-semantic-fg":"#ECEFF4","--okoa-semantic-fg-accent":"#88C0D0","--okoa-semantic-entity-primary":"#88C0D0","--okoa-semantic-fg-on-dark":"#2E3440","--okoa-semantic-border-default":"#3B4252","--okoa-semantic-border-strong":"#4C566A","--okoa-semantic-border-accent":"#88C0D0","--okoa-signal-risk":"#BF616A","--okoa-signal-caution":"#EBCB8B","--okoa-signal-info":"#81A1C1","--okoa-signal-pass":"#A3BE8C","--okoa-component-chrome-footer-bg":"#272C36","--okoa-component-chrome-footer-text":"#ECEFF4","--okoa-component-metric-label":"#9AA5B8","--okoa-component-metric-value":"#ECEFF4","--okoa-focus-ring-color":"#88C0D0"},"gruvbox-dark":{"--okoa-semantic-surface-default":"#282828","--okoa-semantic-surface-warm":"#3C3836","--okoa-semantic-surface-alt":"#504945","--okoa-semantic-fg1":"#EBDBB2","--okoa-semantic-fg2":"#D5C4A1","--okoa-semantic-fg3":"#A89984","--okoa-semantic-fg":"#EBDBB2","--okoa-semantic-fg-accent":"#83A598","--okoa-semantic-entity-primary":"#83A598","--okoa-semantic-fg-on-dark":"#282828","--okoa-semantic-border-default":"#3C3836","--okoa-semantic-border-strong":"#665C54","--okoa-semantic-border-accent":"#83A598","--okoa-signal-risk":"#FB4934","--okoa-signal-caution":"#FABD2F","--okoa-signal-info":"#83A598","--okoa-signal-pass":"#B8BB26","--okoa-component-chrome-footer-bg":"#1D2021","--okoa-component-chrome-footer-text":"#EBDBB2","--okoa-component-metric-label":"#A89984","--okoa-component-metric-value":"#EBDBB2","--okoa-focus-ring-color":"#83A598"},"everforest-dark":{"--okoa-semantic-surface-default":"#2D353B","--okoa-semantic-surface-warm":"#343F44","--okoa-semantic-surface-alt":"#3D484D","--okoa-semantic-fg1":"#D3C6AA","--okoa-semantic-fg2":"#9DA9A0","--okoa-semantic-fg3":"#859289","--okoa-semantic-fg":"#D3C6AA","--okoa-semantic-fg-accent":"#7FBBB3","--okoa-semantic-entity-primary":"#7FBBB3","--okoa-semantic-fg-on-dark":"#2D353B","--okoa-semantic-border-default":"#3D484D","--okoa-semantic-border-strong":"#4F5B58","--okoa-semantic-border-accent":"#7FBBB3","--okoa-signal-risk":"#E67E80","--okoa-signal-caution":"#DBBC7F","--okoa-signal-info":"#7FBBB3","--okoa-signal-pass":"#A7C080","--okoa-component-chrome-footer-bg":"#232A2E","--okoa-component-chrome-footer-text":"#D3C6AA","--okoa-component-metric-label":"#859289","--okoa-component-metric-value":"#D3C6AA","--okoa-focus-ring-color":"#7FBBB3"},"rose-pine":{"--okoa-semantic-surface-default":"#191724","--okoa-semantic-surface-warm":"#1F1D2E","--okoa-semantic-surface-alt":"#26233A","--okoa-semantic-fg1":"#E0DEF4","--okoa-semantic-fg2":"#908CAA","--okoa-semantic-fg3":"#6E6A86","--okoa-semantic-fg":"#E0DEF4","--okoa-semantic-fg-accent":"#C4A7E7","--okoa-semantic-entity-primary":"#C4A7E7","--okoa-semantic-fg-on-dark":"#191724","--okoa-semantic-border-default":"#26233A","--okoa-semantic-border-strong":"#403D52","--okoa-semantic-border-accent":"#C4A7E7","--okoa-signal-risk":"#EB6F92","--okoa-signal-caution":"#F6C177","--okoa-signal-info":"#31748F","--okoa-signal-pass":"#9CCFD8","--okoa-component-chrome-footer-bg":"#12101A","--okoa-component-chrome-footer-text":"#E0DEF4","--okoa-component-metric-label":"#6E6A86","--okoa-component-metric-value":"#E0DEF4","--okoa-focus-ring-color":"#C4A7E7"},"one-dark":{"--okoa-semantic-surface-default":"#282C34","--okoa-semantic-surface-warm":"#2F333D","--okoa-semantic-surface-alt":"#3E4451","--okoa-semantic-fg1":"#ABB2BF","--okoa-semantic-fg2":"#9DA5B4","--okoa-semantic-fg3":"#5C6370","--okoa-semantic-fg":"#ABB2BF","--okoa-semantic-fg-accent":"#61AFEF","--okoa-semantic-entity-primary":"#61AFEF","--okoa-semantic-fg-on-dark":"#282C34","--okoa-semantic-border-default":"#3E4451","--okoa-semantic-border-strong":"#528BFF","--okoa-semantic-border-accent":"#61AFEF","--okoa-signal-risk":"#E06C75","--okoa-signal-caution":"#E5C07B","--okoa-signal-info":"#56B6C2","--okoa-signal-pass":"#98C379","--okoa-component-chrome-footer-bg":"#21252B","--okoa-component-chrome-footer-text":"#ABB2BF","--okoa-component-metric-label":"#5C6370","--okoa-component-metric-value":"#ABB2BF","--okoa-focus-ring-color":"#61AFEF"},"nightfox":{"--okoa-semantic-surface-default":"#192330","--okoa-semantic-surface-warm":"#212E3F","--okoa-semantic-surface-alt":"#29394F","--okoa-semantic-fg1":"#CDCECF","--okoa-semantic-fg2":"#AEB7C0","--okoa-semantic-fg3":"#71839B","--okoa-semantic-fg":"#CDCECF","--okoa-semantic-fg-accent":"#719CD6","--okoa-semantic-entity-primary":"#719CD6","--okoa-semantic-fg-on-dark":"#192330","--okoa-semantic-border-default":"#29394F","--okoa-semantic-border-strong":"#39506D","--okoa-semantic-border-accent":"#719CD6","--okoa-signal-risk":"#C94F6D","--okoa-signal-caution":"#DBC074","--okoa-signal-info":"#63CDCF","--okoa-signal-pass":"#81B29A","--okoa-component-chrome-footer-bg":"#131A24","--okoa-component-chrome-footer-text":"#CDCECF","--okoa-component-metric-label":"#71839B","--okoa-component-metric-value":"#CDCECF","--okoa-focus-ring-color":"#719CD6"},"solarized-dark":{"--okoa-semantic-surface-default":"#002B36","--okoa-semantic-surface-warm":"#073642","--okoa-semantic-surface-alt":"#0E4A59","--okoa-semantic-fg1":"#93A1A1","--okoa-semantic-fg2":"#839496","--okoa-semantic-fg3":"#586E75","--okoa-semantic-fg":"#93A1A1","--okoa-semantic-fg-accent":"#268BD2","--okoa-semantic-entity-primary":"#268BD2","--okoa-semantic-fg-on-dark":"#002B36","--okoa-semantic-border-default":"#073642","--okoa-semantic-border-strong":"#586E75","--okoa-semantic-border-accent":"#268BD2","--okoa-signal-risk":"#DC322F","--okoa-signal-caution":"#B58900","--okoa-signal-info":"#2AA198","--okoa-signal-pass":"#859900","--okoa-component-chrome-footer-bg":"#00212B","--okoa-component-chrome-footer-text":"#93A1A1","--okoa-component-metric-label":"#586E75","--okoa-component-metric-value":"#93A1A1","--okoa-focus-ring-color":"#268BD2"},"carbon":{"--okoa-semantic-surface-default":"#161616","--okoa-semantic-surface-warm":"#262626","--okoa-semantic-surface-alt":"#393939","--okoa-semantic-fg1":"#F4F4F4","--okoa-semantic-fg2":"#C6C6C6","--okoa-semantic-fg3":"#8D8D8D","--okoa-semantic-fg":"#F4F4F4","--okoa-semantic-fg-accent":"#78A9FF","--okoa-semantic-entity-primary":"#78A9FF","--okoa-semantic-fg-on-dark":"#161616","--okoa-semantic-border-default":"#262626","--okoa-semantic-border-strong":"#525252","--okoa-semantic-border-accent":"#78A9FF","--okoa-signal-risk":"#FA4D56","--okoa-signal-caution":"#F1C21B","--okoa-signal-info":"#33B1FF","--okoa-signal-pass":"#42BE65","--okoa-component-chrome-footer-bg":"#0B0B0B","--okoa-component-chrome-footer-text":"#F4F4F4","--okoa-component-metric-label":"#8D8D8D","--okoa-component-metric-value":"#F4F4F4","--okoa-focus-ring-color":"#78A9FF"},"catppuccin-latte":{"--okoa-semantic-surface-default":"#EFF1F5","--okoa-semantic-surface-warm":"#E6E9EF","--okoa-semantic-surface-alt":"#CCD0DA","--okoa-semantic-fg1":"#4C4F69","--okoa-semantic-fg2":"#5C5F77","--okoa-semantic-fg3":"#8C8FA1","--okoa-semantic-fg":"#4C4F69","--okoa-semantic-fg-accent":"#1E66F5","--okoa-semantic-entity-primary":"#1E66F5","--okoa-semantic-fg-on-dark":"#FFFFFF","--okoa-semantic-border-default":"#CCD0DA","--okoa-semantic-border-strong":"#9CA0B0","--okoa-semantic-border-accent":"#1E66F5","--okoa-signal-risk":"#D20F39","--okoa-signal-caution":"#DF8E1D","--okoa-signal-info":"#04A5E5","--okoa-signal-pass":"#40A02B","--okoa-component-chrome-footer-bg":"#4C4F69","--okoa-component-chrome-footer-text":"#EFF1F5","--okoa-component-metric-label":"#8C8FA1","--okoa-component-metric-value":"#4C4F69","--okoa-focus-ring-color":"#1E66F5"},"gruvbox-light":{"--okoa-semantic-surface-default":"#FBF1C7","--okoa-semantic-surface-warm":"#F2E5BC","--okoa-semantic-surface-alt":"#EBDBB2","--okoa-semantic-fg1":"#3C3836","--okoa-semantic-fg2":"#504945","--okoa-semantic-fg3":"#7C6F64","--okoa-semantic-fg":"#3C3836","--okoa-semantic-fg-accent":"#076678","--okoa-semantic-entity-primary":"#076678","--okoa-semantic-fg-on-dark":"#FBF1C7","--okoa-semantic-border-default":"#EBDBB2","--okoa-semantic-border-strong":"#BDAE93","--okoa-semantic-border-accent":"#076678","--okoa-signal-risk":"#9D0006","--okoa-signal-caution":"#B57614","--okoa-signal-info":"#076678","--okoa-signal-pass":"#79740E","--okoa-component-chrome-footer-bg":"#3C3836","--okoa-component-chrome-footer-text":"#FBF1C7","--okoa-component-metric-label":"#7C6F64","--okoa-component-metric-value":"#3C3836","--okoa-focus-ring-color":"#076678"},"solarized-light":{"--okoa-semantic-surface-default":"#FDF6E3","--okoa-semantic-surface-warm":"#EEE8D5","--okoa-semantic-surface-alt":"#E3DCC6","--okoa-semantic-fg1":"#586E75","--okoa-semantic-fg2":"#657B83","--okoa-semantic-fg3":"#93A1A1","--okoa-semantic-fg":"#586E75","--okoa-semantic-fg-accent":"#268BD2","--okoa-semantic-entity-primary":"#268BD2","--okoa-semantic-fg-on-dark":"#FDF6E3","--okoa-semantic-border-default":"#EEE8D5","--okoa-semantic-border-strong":"#93A1A1","--okoa-semantic-border-accent":"#268BD2","--okoa-signal-risk":"#DC322F","--okoa-signal-caution":"#B58900","--okoa-signal-info":"#2AA198","--okoa-signal-pass":"#859900","--okoa-component-chrome-footer-bg":"#073642","--okoa-component-chrome-footer-text":"#FDF6E3","--okoa-component-metric-label":"#93A1A1","--okoa-component-metric-value":"#586E75","--okoa-focus-ring-color":"#268BD2"},"rose-pine-dawn":{"--okoa-semantic-surface-default":"#FAF4ED","--okoa-semantic-surface-warm":"#FFFAF3","--okoa-semantic-surface-alt":"#F2E9E1","--okoa-semantic-fg1":"#575279","--okoa-semantic-fg2":"#797593","--okoa-semantic-fg3":"#9893A5","--okoa-semantic-fg":"#575279","--okoa-semantic-fg-accent":"#907AA9","--okoa-semantic-entity-primary":"#907AA9","--okoa-semantic-fg-on-dark":"#FAF4ED","--okoa-semantic-border-default":"#F2E9E1","--okoa-semantic-border-strong":"#DFDAD9","--okoa-semantic-border-accent":"#907AA9","--okoa-signal-risk":"#B4637A","--okoa-signal-caution":"#EA9D34","--okoa-signal-info":"#56949F","--okoa-signal-pass":"#286983","--okoa-component-chrome-footer-bg":"#575279","--okoa-component-chrome-footer-text":"#FAF4ED","--okoa-component-metric-label":"#9893A5","--okoa-component-metric-value":"#575279","--okoa-focus-ring-color":"#907AA9"}};
 function refreshTheme(){
  computePalette();
  scene.background=COL.paper.clone();
@@ -2301,7 +2164,12 @@ function refreshTheme(){
  paintCircuit();
 }
 function setTheme(id){
+ IDE_PROPS.forEach(p=>document.documentElement.style.removeProperty(p));
+ const ide=IDE_THEMES[id];
+ /* data-style always names the active theme (drawer highlight, Random, QC); IDE ids match no CSS
+    variant, so the canon :root defaults apply and the palette rides on inline custom properties. */
  document.documentElement.setAttribute("data-style",id);
+ if(ide)Object.entries(ide).forEach(([k,v])=>document.documentElement.style.setProperty(k,v));
  refreshTheme();paintThemeRows();
 }
 /* ————— settings drawer ————— */
@@ -2357,12 +2225,10 @@ LINEW.forEach((p,i)=>{
 const MONOFONTS=[
  {label:"JetBrains Mono",stack:"'JetBrains Mono', ui-monospace, monospace"},
  {label:"Fira Code",stack:"'Fira Code', ui-monospace, monospace"},
- {label:"IBM Plex Mono",stack:"'IBM Plex Mono', ui-monospace, monospace"},
  {label:"Space Mono",stack:"'Space Mono', ui-monospace, monospace"}
 ];
 const SANSFONTS=[
  {label:"Inter",stack:"'Inter', 'Helvetica Neue', Arial, sans-serif"},
- {label:"IBM Plex Sans",stack:"'IBM Plex Sans', 'Helvetica Neue', Arial, sans-serif"},
  {label:"Space Grotesk",stack:"'Space Grotesk', 'Helvetica Neue', Arial, sans-serif"},
  {label:"Source Sans 3",stack:"'Source Sans 3', 'Helvetica Neue', Arial, sans-serif"}
 ];

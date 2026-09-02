@@ -1,6 +1,6 @@
 # Isoscope — development handoff
 
-**As of 2026-08-22 · repo at commit 818e493 · no remote yet · name "isoscope" is a working title**
+**As of 2026-09-02 · no remote yet · name "isoscope" is a working title**
 
 ## What this is
 Schematic observability engine: a system rendered as an inspectable isometric
@@ -28,6 +28,40 @@ Sentinel architecture map (built iteratively with the operator, 2026-08-19..22).
 - `build.mjs` — spec→self-contained HTML (file://-safe, GENERATED banner).
 - `SPEC.md` — schema. `DESIGN-RULES.md` — doctrine + scale roadmap + sources.
 - `examples/odin.spec.json` — reference spec (16 modules / 18 links).
+
+## 2026-09-02 — landing the Sep 1 advisory session (this commit)
+- **Theme store relocation** (template.html): the 18 IDE palettes moved from a
+  static `<style id="ide-themes">` block into a runtime `IDE_THEMES` map;
+  `setTheme()` applies them as inline custom properties on `<html>`, canon
+  variants still switch via `data-style`. `data-style` now names the active
+  theme in BOTH cases (regression fixed: drawer highlight + Random broke for
+  IDE themes). Transform scripts kept for provenance:
+  `scripts/relocate-ide-themes.ts` → `/tmp/ide-themes.json` →
+  `scripts/apply-theme-relocation.ts` (idempotent, no hand-typed values).
+- **Responsive hardening** (template.html): topbar wraps ≤1280px, sidebar/panel
+  hide ≤360px tall, 44px touch targets on coarse pointers, z-index tokens.
+- **Render proof**: `bun scripts/render-proof.ts` = headless Chrome over CDP
+  (Bun WebSocket, zero deps), 3 artifacts × 6 viewports, asserts no
+  h-overflow / canvas sized / intro dismissible / focus ring, screenshots to
+  `advisory/*/screens/` (gitignored). `scripts/overflow-diagnose.ts` lists
+  offending elements at one viewport. Both expect the advisory server on :4180
+  (`bun advisory/2026-09-01-odin/serve.ts`).
+- **advisory/2026-09-01-odin/**: ODIN advisory deliverable — two specs
+  (visual-a = ODIN codebase map, visual-b = topology lab), their built maps,
+  and an OKOA-token landing page (`scripts/build-landing.ts`, expects
+  `/tmp/okoa-tokens.css` from `okoa_emit_stylesheet`). Committed as the
+  candidate "second consumer" material; `.db` + screens are gitignored.
+- **OKOA design MCP**: `.mcp.json` registers the hosted server via mcp-remote;
+  `okoa.ts` is a one-shot CLI for the same tools (`bun okoa.ts okoa_status`).
+- **Self-portrait refreshed** (dogfood rule): new `DR` node (DRC lint + render
+  proof, edge TP→DR auth = shared router source), paths now cover drc.ts,
+  scripts/, okoa.ts, dsh-plugin/, advisory/, all docs. DRC: 2/2 weighted, PASS.
+- **SPEC.md** gained the `paths` and `drcBudget` rows the code already read.
+- **dsh-plugin/** is untracked on purpose: a package.json stub whose `main`
+  does not exist. `adapters/DSH.md` already gets isoscope into dsh via its MCP
+  client, so this native-plugin route may be redundant — operator: keep or rm.
+- Verified this session: `import`+`build` of the self-map and `drc` on both
+  examples pass from the working tree. Browser zero-JS-error check NOT re-run.
 
 ## ODIN integration contract (consumer #1)
 - ODIN owns `odin/product-research/architecture-map/odin.spec.json` (+README).

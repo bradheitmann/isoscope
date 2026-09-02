@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="en" data-style="ridgeline">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ISOSCOPE · ODIN advisory visuals</title>
+<style>
+/*__OKOA_TOKENS__*/
+:root{
+  --serif:'Cormorant Garamond', Georgia, 'Times New Roman', serif;
+  --sans:'Inter', -apple-system, 'Helvetica Neue', Arial, sans-serif;
+  --mono:'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+html{height:100%;}
+body{
+  min-height:100%;
+  background:var(--okoa-semantic-surface-default);
+  color:var(--okoa-semantic-fg1);
+  font-family:var(--sans);
+  font-size:15px;
+  line-height:1.6;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:var(--okoa-space-6,32px);
+  padding:var(--okoa-space-7,48px) var(--okoa-space-4,16px);
+}
+:focus-visible{outline:2px solid var(--okoa-focus-ring-color);outline-offset:2px;}
+.wrap{max-width:var(--okoa-container-lg,1024px);width:100%;display:flex;flex-direction:column;gap:var(--okoa-space-6,32px);}
+.eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.25em;text-transform:uppercase;color:var(--okoa-semantic-fg3);}
+h1{font-family:var(--serif);font-weight:500;font-size:clamp(28px,5vw,44px);line-height:1.15;color:var(--okoa-semantic-fg1);margin-top:var(--okoa-space-2,8px);}
+.sub{color:var(--okoa-semantic-fg2);font-size:14px;max-width:62ch;}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,320px),1fr));gap:var(--okoa-space-5,24px);}
+a.card{
+  display:block;
+  padding:var(--okoa-space-5,24px);
+  border:1px solid var(--okoa-semantic-border-default);
+  border-radius:var(--okoa-radii-md,4px);
+  background:var(--okoa-semantic-surface-warm);
+  text-decoration:none;
+  color:inherit;
+  transition:border-color var(--okoa-motion-fast,120ms) var(--okoa-ease-out,ease),
+             box-shadow var(--okoa-motion-fast,120ms) var(--okoa-ease-out,ease),
+             transform var(--okoa-motion-fast,120ms) var(--okoa-ease-out,ease);
+}
+a.card:hover,a.card:focus-visible{
+  border-color:var(--okoa-semantic-border-accent);
+  box-shadow:var(--okoa-elevation-hover);
+  transform:translateY(-2px);
+}
+.card .eyebrow{color:var(--okoa-semantic-fg3);}
+.card h2{font-family:var(--serif);font-weight:500;font-size:24px;line-height:1.2;margin:var(--okoa-space-2,8px) 0 var(--okoa-space-2,8px);color:var(--okoa-semantic-fg1);}
+.card p{font-size:13px;color:var(--okoa-semantic-fg2);}
+.card .stats{margin-top:var(--okoa-space-4,16px);font-family:var(--mono);font-size:11px;color:var(--okoa-semantic-fg3);}
+.legend{
+  border-left:2px solid var(--okoa-semantic-border-accent);
+  padding-left:var(--okoa-space-3,12px);
+  font-size:13px;
+  color:var(--okoa-semantic-fg2);
+}
+.legend b{color:var(--okoa-semantic-fg1);font-weight:600;}
+footer{font-family:var(--mono);font-size:11px;line-height:1.7;color:var(--okoa-semantic-fg3);}
+@media (max-width:480px){
+  body{padding:var(--okoa-space-5,24px) var(--okoa-space-3,12px);}
+  h1{font-size:clamp(24px,7vw,32px);}
+}
+@media (prefers-reduced-motion:reduce){
+  a.card{transition:none;}
+  a.card:hover,a.card:focus-visible{transform:none;}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="eyebrow">Isoscope &times; ODIN &middot; advisory visuals</div>
+    <h1>Two maps of the release checkpoint.</h1>
+    <p class="sub">Draft advisory snapshots for the operator and A/EXEC-ODIN. Open either map, drag to orbit, click any building for its evidence.</p>
+  </header>
+  <div class="cards">
+    <a class="card" href="odin-codebase.html">
+      <div class="eyebrow">Visual A</div>
+      <h2>Codebase city · release checkpoint</h2>
+      <p>Doctrine, the MCP referee, trust machinery, terminal substrates, the npm 0.6.0 to 0.7.0 ruling, and the two Wave-1 worktree lanes that are not on baseline HEAD.</p>
+      <div class="stats">27 modules &middot; 23 links &middot; baseline e431e30 verified</div>
+    </a>
+    <a class="card" href="topology-lab.html">
+      <div class="eyebrow">Visual B</div>
+      <h2>Adaptive topology laboratory</h2>
+      <p>The live 16-seat roster, the one-digest acceptance chain from gates to sealed holdout, the stage program, eight experiment districts with deferred authorizations marked, and the Wave-1 observed timeline.</p>
+      <div class="stats">32 modules &middot; 28 links &middot; roster observed 18:59Z</div>
+    </a>
+  </div>
+  <p class="legend"><b>Truth discipline.</b> Every claim carries its class: <b>observed</b> (verified by direct read), <b>derived</b> (from handoff or planning), <b>reported</b> (via A/EXEC-ODIN), <b>hypothesis</b> (banked, unproven). Active candidates are never drawn as integrated code.</p>
+  <footer>Draft advisory snapshot &middot; 2026-09-01 &middot; authored by A/ISOSCOPE (surface:46) under boot contract and activation GO &middot; advisory only, not QA acceptance, not a release claim &middot; sealed-holdout internals deliberately absent.</footer>
+</div>
+</body>
+</html>

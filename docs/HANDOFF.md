@@ -29,6 +29,18 @@ Sentinel architecture map (built iteratively with the operator, 2026-08-19..22).
 - `SPEC.md` — schema. `DESIGN-RULES.md` — doctrine + scale roadmap + sources.
 - `examples/odin.spec.json` — reference spec (16 modules / 18 links).
 
+## 2026-09-02 — lumbr bridge, isoscope side
+- `normalizeCi("signal", …)`: provider-agnostic telemetry push —
+  `{source?, events:[{signal|service|job, severity red|amber|ok | ok:bool,
+  message, url?, path?}]}`; amber marks amber (CiEvent.mark), ok heals the
+  `[source:job]` tag. `blastRadius(db)`: same rule as the engine (reds +
+  1-hop), returns reds/worst/scope/modules(items, paths, sensor)/links/
+  `allowedPaths`. `GET /blast-radius` on serve, `cli.ts blast-radius <db>`.
+  Verified: signal red+amber → SV red / MC amber; scope SV,DB,CO with
+  allowedPaths; ok-signal heals → scope empty; both endpoints over HTTP.
+- Self-portrait `ci.jobs` maps `error_rate_*`→SV, `token_velocity_*`→MC as
+  the worked example.
+
 ## 2026-09-02 — CI adapters · R30 phase 1 · lumbr consumer
 - **CI provider adapters** (`lib.ts normalizeCi/applyCi/detectCiProvider`):
   GitHub `workflow_run` / `workflow_job` (failing step named) / `check_run` /
@@ -174,15 +186,23 @@ example and must stay current with the repo.
 5. ~~`iso_propose_sensor` MCP tool~~ DONE 2026-09-02 (+ `iso_set_sensor`, CLI
    `sensor`, `telemetry` table/spec key, inspector sensor block). Open: the
    "N sessions unchanged" trigger needs a change log the store does not keep.
-6. Lumbr bridge (lumbr instrumentation → mark/status; lumbr mcp-worker executes
-   remediation ladder against blast-radius scope).
+6. Lumbr bridge — ISOSCOPE SIDE DONE 2026-09-02 (`adapters/LUMBR.md`: generic
+   `signal` provider in + `GET /blast-radius` / `cli.ts blast-radius` out with
+   `allowedPaths` as the remediation scope contract). Lumbr side (an exporter
+   that POSTs on threshold crossings) is a lumbr slice, its governance.
 7. ~~CI provider adapters~~ DONE 2026-09-02 (`cli.ts ci` + `POST /ci`;
    GitHub Actions / GitLab / Buildkite; review bots via PR review comments).
 8. R30 — PHASE 1 DONE 2026-09-02 (stateful reload: view survives). Phase 2 =
    in-place hot-swap without reload (engine refactor: rebuild from a new spec).
 9. ~~Second real consumer spec~~ DONE 2026-09-02 — `examples/lumbr.spec.json`
    (10 modules / 12 links, DRC 0, authored from the repo's package graph).
-10. R12 PathFinder negotiation when consumer specs exceed ~50 edges.
+10. R12 PathFinder negotiation when consumer specs exceed ~50 edges — not
+    started, by design: largest spec today is 28 links (advisory topology lab).
+
+**Still open after 2026-09-02:** R30 phase 2 (in-place hot-swap) · R10 lane
+assignment (topology-lab spec still has 6 shared channels) · `dsh-plugin/`
+keep-or-remove (untracked stub) · sensor-offer trigger needs a change log ·
+lumbr-side exporter · going public is the operator's call.
 
 **KNOWN BUGS:**
 - ~~Dark themes: insufficient font contrast~~ FIXED 2026-09-02. Measured cause:

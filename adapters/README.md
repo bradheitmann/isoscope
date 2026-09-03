@@ -12,6 +12,9 @@ tool call repaints any browser running `isoscope serve`.
   `dsh.cordis.patch.yml`.
 - **No MCP client at all**: paste `DEEPSEEK.md` into the harness's
   system/context slot. It teaches the same operations through the CLI.
+- **lumbr (or any telemetry/remediation system)**: `LUMBR.md` — signals in
+  via `POST /ci?provider=signal`, the remediation scope out via
+  `GET /blast-radius`.
 
 The server runs under **bun only** — the graph store uses `bun:sqlite`, so there
 is no Node entry point and `npx` will not work. Use absolute paths; harnesses do

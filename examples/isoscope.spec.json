@@ -108,7 +108,7 @@
    "d": 1,
    "h": 1,
    "does": "How each harness is taught to keep the map honest. MCP-capable harnesses (Claude Code, Codex, the DeepSeek Harness) register the server and get the nine tools; harnesses with no MCP client get the same operations as a paste-in CLI contract. Every adapter carries the same working agreement: mirror the codebase in the same session, record what flows, never leave a broken thing unmarked.",
-   "built": "DSH.md + dsh.cordis.patch.yml ship the DeepSeek Harness route (cordis insert layer, verified end-to-end against dsh 0.1.1-rc.2). mcp.json is the generic registration. DEEPSEEK.md remains the no-MCP fallback.",
+   "built": "DSH.md + dsh.cordis.patch.yml ship the DeepSeek Harness route (cordis insert layer, verified end-to-end against dsh 0.1.1-rc.2). mcp.json is the generic registration. DEEPSEEK.md remains the no-MCP fallback. LUMBR.md is the telemetry bridge: signals in through POST /ci?provider=signal, the remediation scope out through GET /blast-radius.",
    "refs": "adapters/"
   },
   {
@@ -552,7 +552,9 @@
    "contrast-proof": "DR",
    "render-proof": "DR",
    "build-self": "BU",
-   "mcp-*": "MC"
+   "mcp-*": "MC",
+   "error_rate_*": "SV",
+   "token_velocity_*": "MC"
   },
   "default": "CL"
  }

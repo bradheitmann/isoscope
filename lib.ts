@@ -123,8 +123,8 @@ export function setSensor(db: Database, a: { id: string; trace_boundary: string;
    are read. Job→module mapping is authored in the spec (`ci.jobs`, `ci.default`)
    with sensible fallbacks; events that carry file paths (review comments) attribute
    through node_paths like `ingest` does. */
-export type CiEvent = { job: string; ok: boolean | null; message: string; url?: string; path?: string; source: string };
-export const CI_PROVIDERS = ["github", "gitlab", "buildkite"] as const;
+export type CiEvent = { job: string; ok: boolean | null; message: string; url?: string; path?: string; source: string; mark?: "red" | "amber" };
+export const CI_PROVIDERS = ["github", "gitlab", "buildkite", "signal"] as const;
 export function normalizeCi(provider: string, p: any): CiEvent[] {
   const ev: CiEvent[] = [];
   const done = (c: string | null | undefined) => c == null ? null : ["success", "passed", "neutral"].includes(c) ? true
@@ -142,7 +142,7 @@ export function normalizeCi(provider: string, p: any): CiEvent[] {
       const c = p.comment, who = String(c.user?.login ?? "review").replace(/\[bot\]$/, "");
       const body = String(c.body ?? "");
       const red = /\b(critical|blocker|vulnerab|security|crash|data loss|bug)\b/i.test(body);
-      ev.push({ job: c.path, ok: red ? false : null, path: c.path, message: body.split("\n")[0].slice(0, 160), url: c.html_url, source: who }); }
+      ev.push({ job: c.path, ok: red ? false : null, mark: red ? "red" : "amber", path: c.path, message: body.split("\n")[0].slice(0, 160), url: c.html_url, source: who }); }
     if (p.review && p.pull_request && !p.comment) { const r = p.review; const st = String(r.state ?? "").toLowerCase();
       if (st === "changes_requested" || st === "approved")
         ev.push({ job: `review:${String(r.user?.login ?? "review").replace(/\[bot\]$/, "")}`, ok: st === "approved",
@@ -164,8 +164,36 @@ export function normalizeCi(provider: string, p: any): CiEvent[] {
       ev.push({ job: p.job.name ?? p.job.step_key ?? "job", ok, message: `${p.pipeline?.slug ?? "pipeline"} › ${p.job.name} ${p.job.state} on ${p.build?.branch} (build #${p.build?.number})`, url: p.job.web_url ?? p.build?.web_url, source: src }); }
     if (p.event === "build.finished" && p.build) { const ok = done(p.build.state); if (ok !== null)
       ev.push({ job: p.pipeline?.slug ?? "build", ok, message: `${p.pipeline?.slug ?? "build"} ${p.build.state} on ${p.build.branch} (build #${p.build.number})`, url: p.build.web_url, source: src }); }
-  } else throw new Error(`unknown CI provider: ${provider} (github|gitlab|buildkite)`);
+  } else if (provider === "signal") {
+    /* telemetry → map, provider-agnostic (lumbr's signals, alertmanager, a cron, anything):
+       { source?, events:[{ job|service|signal, ok?:bool, severity?:"red"|"amber"|"ok", message, url?, path? }] } or one event */
+    const list = Array.isArray(p) ? p : Array.isArray(p.events) ? p.events : [p];
+    for (const e of list) {
+      const job = e.job ?? e.signal ?? e.service; if (!job || !e.message) continue;
+      const ok = typeof e.ok === "boolean" ? e.ok : e.severity === "ok" ? true : e.severity === "red" ? false : e.severity === "amber" ? null : false;
+      ev.push({ job, ok, mark: ok === false ? "red" : ok === null ? "amber" : undefined, message: e.message, url: e.url, path: e.path, source: e.source ?? p.source ?? "signal" });
+    }
+  } else throw new Error(`unknown CI provider: ${provider} (github|gitlab|buildkite|signal)`);
   return ev;
+}
+/* ————— blast radius: the incident scope the engine opens with, as data —————
+   Same rule as the map (any red item → red modules + their 1-hop neighbours), so a
+   remediation agent (lumbr's mcp-worker) works exactly the scope the operator sees. */
+export function blastRadius(db: Database): Spec {
+  const reds = (db.query("SELECT DISTINCT node_id FROM status_items WHERE class='red'").all() as any[]).map(r => r.node_id);
+  const scope = new Set<string>(reds);
+  const edges = db.query("SELECT src,dst,type,health FROM edges").all() as any[];
+  for (const e of edges) { if (reds.includes(e.src)) scope.add(e.dst); if (reds.includes(e.dst)) scope.add(e.src); }
+  const modules = [...scope].map(id => {
+    const n = db.query("SELECT id,name,state,refs FROM nodes WHERE id=?").get(id) as any;
+    const items = (db.query("SELECT class,label FROM status_items WHERE node_id=? ORDER BY ord").all(id) as any[]).map(i => ({ c: i.class, l: i.label }));
+    const paths = (db.query("SELECT prefix FROM node_paths WHERE node_id=?").all(id) as any[]).map(p => p.prefix);
+    const t = db.query("SELECT trace_boundary,event_stream FROM telemetry WHERE node_id=?").get(id) as any;
+    return { id, name: n?.name, state: n?.state, red: reds.includes(id), items, paths, refs: n?.refs, sensor: t ?? null };
+  });
+  const links = edges.filter(e => scope.has(e.src) && scope.has(e.dst)).map(e => ({ src: e.src, dst: e.dst, type: e.type, health: e.health }));
+  const worst = reds.map(id => ({ id, reds: (db.query("SELECT count(*) c FROM status_items WHERE node_id=? AND class='red'").get(id) as any).c })).sort((a, b) => b.reds - a.reds)[0]?.id ?? null;
+  return { reds, worst, scope: [...scope], modules, links, allowedPaths: modules.flatMap(m => m.paths) };
 }
 export function detectCiProvider(headers: Headers): string | null {
   if (headers.get("x-github-event")) return "github";
@@ -193,7 +221,7 @@ export function applyCi(db: Database, events: CiEvent[]): Spec {
       const id = e.path ? (byPath(e.path) ?? byJob(e.job)) : byJob(e.job);
       const tag = `[${e.source}:${e.job}]`;
       if (!id) { orphans.push(e.job); continue; }
-      if (e.ok === false || (e.ok === null && e.path)) {
+      if (e.ok === false || (e.ok === null && (e.mark === "amber" || e.path))) {
         db.prepare("DELETE FROM status_items WHERE label LIKE ?").run(tag + "%"); /* one live item per job, wherever it sat */
         const ord = (db.query("SELECT COALESCE(MAX(ord)+1,0) o FROM status_items WHERE node_id=?").get(id) as any).o;
         db.prepare("INSERT INTO status_items(node_id,ord,class,label) VALUES(?,?,?,?)")

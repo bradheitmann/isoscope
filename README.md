@@ -27,7 +27,8 @@ bun cli.ts build my.db out/map.html                   # shippable artifact
 ```
 
 The primary example is isoscope describing itself (`examples/isoscope.spec.json`);
-`examples/odin.spec.json` is the first real consumer (ODIN Sentinel, 16 modules).
+`examples/odin.spec.json` is the first real consumer (ODIN Sentinel, 16 modules) and
+`examples/lumbr.spec.json` the second (lumbr, 7 packages — read layer, referee, write layer).
 
 ## The loop
 
@@ -39,16 +40,26 @@ The primary example is isoscope describing itself (`examples/isoscope.spec.json`
    ```bash
    bun cli.ts install-hook /path/to/your/repo /path/to/my.db
    ```
-   (any store write repaints every open browser via SSE).
-3b. **When CI breaks, the map turns red where it broke**:
+   (any store write repaints every open browser via SSE; camera, stack, theme
+   and the open inspector survive the repaint — a *new* red module still takes
+   the camera).
+3b. **When CI breaks, the map turns red where it broke** — point the provider's
+   webhook at `serve` and it attributes the job itself:
    ```bash
-   # from any pipeline, against wherever `serve` runs:
+   # GitHub Actions · GitLab · Buildkite: webhook URL = $MAP_HOST/ci
+   # (provider read from X-GitHub-Event / X-Gitlab-Event / X-Buildkite-Event, or ?provider=)
+   # failing job → red on its module · passing job → the building heals
+   # review bots (Greptile, CodeRabbit) arrive as PR review comments → attributed by file path
+   bun cli.ts ci my.db payload.json --provider github     # same thing from a runner
+   ```
+   Job → module mapping lives in the spec (`ci.jobs`, `ci.default`; falls back to
+   node id / short / tag). Hand-marking still works:
+   ```bash
    curl -X POST $MAP_HOST/mark -H 'content-type: application/json' \
      -d '{"id":"API","state":"attn","items":[{"c":"red","l":"CI: tests failing on main (#123)"}]}'
-   # or locally / from a runner with repo access:
    bun cli.ts mark my.db API --red "CI: tests failing on main (#123)"
    ```
-   Optional `ISOSCOPE_TOKEN` env guards the endpoint (Bearer auth).
+   Optional `ISOSCOPE_TOKEN` env guards both endpoints (Bearer auth).
 3c. **Keep the wiring lawful**: the collision lint fails your build when routes
    cross beyond the acknowledged budget —
    ```bash
@@ -92,7 +103,7 @@ cli.ts          init · import · export · build · serve
 mcp.ts          MCP server (agents maintain the map)
 db/schema.sql   the graph shape: nodes, edges-as-entities, status, trace
 adapters/       contracts for non-MCP harnesses (DeepSeek first)
-examples/       isoscope-by-isoscope (primary) · ODIN Sentinel
+examples/       isoscope-by-isoscope (primary) · ODIN Sentinel · lumbr
 docs/           design rules (routing doctrine + sources) · dev handoff
 ```
 
@@ -103,7 +114,8 @@ Spec schema: [SPEC.md](SPEC.md) · Routing laws & roadmap: [docs/DESIGN-RULES.md
 CI/CD provider integrations (GitHub Actions / GitLab / Buildkite adapters that
 map failing jobs → modules automatically) · test-runner adapters
 (failure→module attribution) · live telemetry streaming into the trace-shaped
-status slots · R30 mental-map-stable hot-swap for `serve` · R10 lane
-assignment in shared corridors · R12 PathFinder negotiation past ~50 links.
+status slots · R30 phase 2: in-place hot-swap for `serve` (phase 1, stateful
+reload, shipped) · R10 lane assignment in shared corridors · R12 PathFinder
+negotiation past ~50 links · lumbr bridge (its instrumentation → `mark`).
 
 MIT.

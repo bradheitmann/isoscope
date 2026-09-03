@@ -29,6 +29,38 @@ Sentinel architecture map (built iteratively with the operator, 2026-08-19..22).
 - `SPEC.md` — schema. `DESIGN-RULES.md` — doctrine + scale roadmap + sources.
 - `examples/odin.spec.json` — reference spec (16 modules / 18 links).
 
+## 2026-09-02 — CI adapters · R30 phase 1 · lumbr consumer
+- **CI provider adapters** (`lib.ts normalizeCi/applyCi/detectCiProvider`):
+  GitHub `workflow_run` / `workflow_job` (failing step named) / `check_run` /
+  PR review comments (Greptile, CodeRabbit … → path-attributed, red if the body
+  says critical/vulnerab/bug…) / `pull_request_review`; GitLab `pipeline`
+  (per build) + `build`/`job`; Buildkite `job.finished` + `build.finished`.
+  Spec key `ci {jobs:{name|glob*:id}, default}` round-trips via meta. Mapping
+  order: exact job → glob/prefix → node id/short/tag → `ci.default` → orphan;
+  path-bearing events attribute through node_paths first. One live item per
+  job (tag `[source:job]`), moved wherever the job now fails; a passing job
+  deletes its tag everywhere = the building heals. `cli.ts ci <db> <payload>
+  --provider p [--dry]`; `POST /ci` on serve (provider from header or
+  `?provider=`, ISOSCOPE_TOKEN Bearer). Verified with fixtures in
+  /tmp/ci-fixtures (all providers, unknown job → default, heal, 401/400).
+- **R30 phase 1 — stateful reload**: live client snapshots
+  `window.__isoViewState()` (theme, dot/line weights, stacked, pinned, camera,
+  red ids) to sessionStorage before `location.reload()`; module end restores
+  it. A red module that was not red before wins: the blast-radius flight
+  stands and the saved camera is ignored. Theme now persists in localStorage
+  across sessions too. Verified: headless reload restored nord + heavy + stack
+  + Graph-store inspector + camera, 0 JS errors. NOTE: the restore block MUST
+  stay at the very end of the module (it once landed inside the intro-dismiss
+  handler and silently never ran).
+- **lumbr = consumer #2** (`examples/lumbr.spec.json`): 10 modules (7
+  packages + backends, targets, planning) / 12 links from real imports
+  (mcp-server→execution/policy/schema/trust, policy→execution = PolicyGate
+  inversion, trust→execution, worker→server; SDK→schema is `intended`:
+  conformance, no import). Open items are the repo's real state (uncommitted
+  audit.ts/index.ts/evaluation-store.ts, 6 hook scripts, 4 story-review
+  candidates). DRC 0 crossings, budget 0. `bun run build:lumbr`.
+- `scripts/shot.ts` gained `SHOT_WAIT` (ms) for JS that reloads the page.
+
 ## 2026-09-02 — seams → sensors: the offer loop is live
 - `db/schema.sql` `telemetry` table (one binding per module: trace_boundary
   proposed|offered|installed|verified|declined, event_stream, wide_event_keys
@@ -144,10 +176,12 @@ example and must stay current with the repo.
    "N sessions unchanged" trigger needs a change log the store does not keep.
 6. Lumbr bridge (lumbr instrumentation → mark/status; lumbr mcp-worker executes
    remediation ladder against blast-radius scope).
-7. CI provider adapters (Actions/GitLab/Buildkite auto-attribution) +
-   Greptile/CodeRabbit webhook transforms.
-8. R30 mental-map-stable hot-swap for serve (replaces reload).
-9. Second real consumer spec (proves generality).
+7. ~~CI provider adapters~~ DONE 2026-09-02 (`cli.ts ci` + `POST /ci`;
+   GitHub Actions / GitLab / Buildkite; review bots via PR review comments).
+8. R30 — PHASE 1 DONE 2026-09-02 (stateful reload: view survives). Phase 2 =
+   in-place hot-swap without reload (engine refactor: rebuild from a new spec).
+9. ~~Second real consumer spec~~ DONE 2026-09-02 — `examples/lumbr.spec.json`
+   (10 modules / 12 links, DRC 0, authored from the repo's package graph).
 10. R12 PathFinder negotiation when consumer specs exceed ~50 edges.
 
 **KNOWN BUGS:**

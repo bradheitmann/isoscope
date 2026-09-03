@@ -16,6 +16,7 @@
     "build:odin": "node build.mjs examples/odin.spec.json out/odin.html",
     "mcp": "bun mcp.ts",
     "drc": "bun drc.ts",
-    "proof:contrast": "bun cli.ts import examples/isoscope.spec.json /tmp/isoscope-self.db && bun cli.ts build /tmp/isoscope-self.db /tmp/isoscope-self.html && bun scripts/contrast-proof.ts /tmp/isoscope-self.html"
+    "proof:contrast": "bun cli.ts import examples/isoscope.spec.json /tmp/isoscope-self.db && bun cli.ts build /tmp/isoscope-self.db /tmp/isoscope-self.html && bun scripts/contrast-proof.ts /tmp/isoscope-self.html",
+    "build:lumbr": "bun cli.ts import examples/lumbr.spec.json /tmp/isoscope-lumbr.db && bun cli.ts build /tmp/isoscope-lumbr.db out/lumbr.html"
   }
 }

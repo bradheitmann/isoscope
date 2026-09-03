@@ -6,7 +6,7 @@
      bun cli.ts build  [db] <out.html>         db → spec → self-contained map      */
 import { readFileSync, writeFileSync } from "fs";
 import { buildHtml } from "./build.mjs";
-import { DB_DEFAULT, open, importSpec, exportSpec, proposeSensor, setSensor } from "./lib.ts";
+import { DB_DEFAULT, open, importSpec, exportSpec, proposeSensor, setSensor, normalizeCi, applyCi, detectCiProvider } from "./lib.ts";
 
 const [cmd, ...args] = Bun.argv.slice(2);
 switch (cmd) {
@@ -109,6 +109,21 @@ switch (cmd) {
     console.log(`isoscope: marked ${nodeId} — every live map repaints`);
     break;
   }
+  case "ci": {
+    /* CI/CD webhook payload → the map. Failing job = red on its module; passing = healed.
+       bun cli.ts ci <db> <payload.json> --provider github|gitlab|buildkite [--dry]
+       Job→module mapping: spec `ci.jobs` {"job name or glob*": "ID"} · `ci.default` · fallbacks: node id/short/tag. */
+    const [dbPath, file] = args;
+    const pIdx = args.indexOf("--provider");
+    if (!dbPath || !file || pIdx < 0) { console.error("usage: cli.ts ci <db> <payload.json> --provider github|gitlab|buildkite [--dry]"); process.exit(2); }
+    const events = normalizeCi(args[pIdx + 1], JSON.parse(readFileSync(file, "utf8")));
+    if (args.includes("--dry")) { console.log(JSON.stringify(events, null, 1)); break; }
+    const db = open(dbPath);
+    const r = applyCi(db, events);
+    db.close();
+    console.log(`isoscope: ci ${events.length} event(s) · marked ${r.marked.length} · healed ${r.cleared.length}` + (r.orphans.length ? ` · unmapped: ${r.orphans.join(", ")} (add ci.jobs to the spec)` : ""));
+    break;
+  }
   case "sensor": {
     /* seams → sensors for non-MCP harnesses.
        bun cli.ts sensor <db> <nodeId> --offer "why" [--stream s] [--keys a,b] [--force]
@@ -177,6 +192,19 @@ switch (cmd) {
             return Response.json({ marked: b.id });
           });
         }
+        if (url.pathname === "/ci" && req.method === "POST") {
+          /* CI/CD webhooks straight in: provider from ?provider= or the X-GitHub-Event / X-Gitlab-Event / X-Buildkite-Event header */
+          const token = Bun.env.ISOSCOPE_TOKEN;
+          if (token && req.headers.get("authorization") !== `Bearer ${token}`)
+            return new Response("unauthorized", { status: 401 });
+          const provider = url.searchParams.get("provider") ?? detectCiProvider(req.headers);
+          if (!provider) return new Response("provider? (?provider=github|gitlab|buildkite or provider event header)", { status: 400 });
+          return req.json().then((b: any) => {
+            let events; try { events = normalizeCi(provider, b); } catch (e: any) { return new Response(e.message, { status: 400 }); }
+            const d = open(dbPath); const r = applyCi(d, events); d.close();
+            return Response.json({ provider, events: events.length, ...r });
+          });
+        }
         if (url.pathname === "/events") {
           let ctrl: ReadableStreamDefaultController;
           const stream = new ReadableStream({
@@ -194,5 +222,5 @@ switch (cmd) {
     break;
   }
   default:
-    console.log("isoscope · graph store CLI\n  init [db] · import <spec.json> [db] · export [db] [--out spec.json] · build [db] <out.html> · serve [db] [--port 4177]\n  lint: bun drc.ts <spec.json|db> [--budget N]");
+    console.log("isoscope · graph store CLI\n  init [db] · import <spec.json> [db] · export [db] [--out spec.json] · build [db] <out.html> · serve [db] [--port 4177]\n  incident loop: mark <db> <id> … · ingest <db> <findings.json> [--sarif] · ci <db> <payload.json> --provider github|gitlab|buildkite · sensor <db> <id> --offer|--state\n  install-hook <repo> <db> · lint: bun drc.ts <spec.json|db> [--budget N]");
 }

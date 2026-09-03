@@ -22,6 +22,7 @@ One JSON object drives the whole visualization. All keys top-level.
 | `traceText` | `{"A-B":text}` | narration per step |
 | `paths` | `{id:[prefix,…]}` | path ownership for finding attribution (`cli.ts ingest`, SARIF); longest prefix wins, `file.ts:symbol` allowed |
 | `telemetry` | `{id:{trace_boundary,event_stream?,wide_event_keys?,installed_by?,offered_at?,verified_at?,rationale?}}` | seams→sensors binding per module; `trace_boundary` ∈ proposed·offered·installed·verified·declined (docs/INSTRUMENTATION.md) |
+| `ci` | `{jobs:{"job name or glob*":id}, default?:id}` | CI job → module mapping for `cli.ts ci` / `POST /ci` (GitHub Actions, GitLab, Buildkite); fallbacks: node id/short/tag; path-bearing events use `paths` |
 | `drcBudget` | `{maxWeightedCrossings, acknowledged?}` | the L2 law's "unless forced" clause, machine-checkable: `drc.ts` fails over budget |
 
 Semantics the engine renders for free: whole-building state color, circuit-breaker

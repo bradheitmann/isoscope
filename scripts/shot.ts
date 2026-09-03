@@ -31,7 +31,8 @@ await send("Page.navigate", { url: "file://" + resolve(html) });
 await new Promise(r => setTimeout(r, 2200));
 const ev = await send("Runtime.evaluate", { expression: `document.querySelector('.introveil')?.remove(); ${js}` });
 if (ev.exceptionDetails) errors.push("js arg: " + String(ev.exceptionDetails.exception?.description ?? ev.exceptionDetails.text).slice(0, 200));
-await new Promise(r => setTimeout(r, 900));
+await new Promise(r => setTimeout(r, Number(Bun.env.SHOT_WAIT ?? 900))); /* SHOT_WAIT=ms if the JS reloads the page */
+await send("Runtime.evaluate", { expression: `document.querySelector('.introveil')?.remove()` });
 const shot = await send("Page.captureScreenshot", { format: "png" });
 await Bun.write(out, Buffer.from(shot.data, "base64"));
 chrome.kill();

@@ -1562,7 +1562,12 @@ body{display:grid;overflow:hidden;
 /* live mode: present only when served by `isoscope serve` — the map follows the graph store */
 if (typeof window.__ISOSCOPE_LIVE !== "undefined") {
   const es = new EventSource("/events");
-  es.addEventListener("update", () => location.reload());
+  /* R30 mental-map stability, phase 1: the store changed → snapshot the view, reload, restore.
+     Camera, stack, inspector, theme and weights survive; a NEW red module still wins the camera. */
+  es.addEventListener("update", () => {
+    try { if (window.__isoViewState) sessionStorage.setItem("isoscope.view", JSON.stringify(window.__isoViewState())); } catch (e) {}
+    location.reload();
+  });
 }
 </script>
 <script type="module">
@@ -1953,7 +1958,7 @@ window.odinView={set(az,pol,r,zoom){placeCamera(az??HOME.az,pol??HOME.pol,r??HOM
  /* test hooks (module scope is closed): look = cancel autopilot + aim; restore = leave any circuit/blast scope */
  look(tx,tz,zoom,az,pol){flyGoal=null;placeCamera(az??HOME.az,pol??HOME.pol,HOME.r,tx,0,tz,zoom??camera.zoom);},
  restore(){flyGoal=null;exitCordon();paintCircuit();renderPanel(null);},
- inspect(id){renderPanel(id);},
+ inspect(id){pinned=id;NODES.forEach(n=>mark(n.id,n.id===id));renderPanel(id);},
  state:()=>({zoom:camera.zoom,cordon:[...cordon]})};
 function flyTo(n){flyGoal={tx:n.x+n.w/2,ty:(n._lyT||0)+0.5,tz:n.y+n.d/2,
  zoom:Math.max(camera.zoom,2.1)};}
@@ -2263,6 +2268,7 @@ function refreshTheme(){
  paintCircuit();
 }
 function setTheme(id){
+ try{localStorage.setItem("isoscope.theme",id);}catch(e){}
  IDE_PROPS.concat(CF_PROPS).forEach(p=>document.documentElement.style.removeProperty(p));
  const ide=IDE_THEMES[id];
  /* data-style always names the active theme (drawer highlight, Random, QC); IDE ids match no CSS
@@ -2355,6 +2361,7 @@ try{ if(!localStorage.getItem("isoscope.introSeen")) introVeil.hidden=false; }ca
 document.getElementById("introDismiss").addEventListener("click",()=>{
  introVeil.hidden=true;
  try{ localStorage.setItem("isoscope.introSeen","1"); }catch(e){}
+
 });
 document.getElementById("btnGuide").addEventListener("click",()=>{
  drawer.classList.remove("open");
@@ -2470,6 +2477,26 @@ document.fonts.ready.then(()=>{NODES.forEach(n=>{ /* redraw roofs once mono font
  g.traverse(o=>{if(o.isMesh&&Array.isArray(o.material)&&o.material[2]&&o.material[2].map){
    o.material[2].map=roofTexture(n);o.material[2].needsUpdate=true;}});
 });});
+/* ————— R30 phase 1: restore the view after a live reload; remember theme + weights across sessions ————— */
+window.__isoViewState=()=>({
+ theme:document.documentElement.getAttribute("data-style"),dotSet,lineSet,stacked,pinned,
+ cam:{p:[camera.position.x,camera.position.y,camera.position.z],t:[controls.target.x,controls.target.y,controls.target.z],zoom:camera.zoom},
+ reds:NODES.filter(n=>n.items.some(i=>i.c==="red")).map(n=>n.id)});
+(function restoreView(){
+ let saved=null,theme=null;
+ try{theme=localStorage.getItem("isoscope.theme");const s=sessionStorage.getItem("isoscope.view");if(s){saved=JSON.parse(s);sessionStorage.removeItem("isoscope.view");}}catch(e){}
+ const t=(saved&&saved.theme)||theme;
+ if(t&&THEMES.some(x=>x.id===t)&&t!==document.documentElement.getAttribute("data-style"))setTheme(t);
+ if(!saved)return;
+ if(typeof saved.dotSet==="number"&&saved.dotSet!==dotSet)dashSeg.querySelectorAll("button")[saved.dotSet]?.click();
+ if(typeof saved.lineSet==="number"&&saved.lineSet!==lineSet)weightSeg.querySelectorAll("button")[saved.lineSet]?.click();
+ if(saved.stacked&&!stacked)btnStack.click();
+ const redsNow=NODES.filter(n=>n.items.some(i=>i.c==="red")).map(n=>n.id);
+ const newRed=redsNow.some(id=>!(saved.reds||[]).includes(id));
+ if(newRed)return; /* the incident loop owns the camera: blast-radius flight stands */
+ if(saved.cam){flyGoal=null;camera.position.set(...saved.cam.p);controls.target.set(...saved.cam.t);camera.zoom=saved.cam.zoom;camera.updateProjectionMatrix();controls.update();}
+ if(saved.pinned&&byId[saved.pinned]&&cordon.size===0){pinned=saved.pinned;NODES.forEach(n=>mark(n.id,n.id===pinned));renderPanel(pinned);}
+})();
 tick();
 </script>
 </body>

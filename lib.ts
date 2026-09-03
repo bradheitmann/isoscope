@@ -25,6 +25,7 @@ export function importSpec(db: Database, spec: Spec): void {
       "intro.sub": spec.intro?.sub ?? "", "intro.proseHTML": spec.intro?.proseHTML ?? "",
       metrics: JSON.stringify(spec.metrics ?? []),
       drcBudget: JSON.stringify(spec.drcBudget ?? null),
+      ci: JSON.stringify(spec.ci ?? null),
     };
     for (const [k, v] of Object.entries(flat)) meta.run(k, v);
     const g = db.prepare("INSERT INTO groups(id,label,ord) VALUES(?,?,?)");
@@ -117,6 +118,97 @@ export function setSensor(db: Database, a: { id: string; trace_boundary: string;
   return { outcome: a.trace_boundary, telemetry: telemetryOut(db.query("SELECT * FROM telemetry WHERE node_id=?").get(a.id)) };
 }
 
+/* ————— CI provider adapters: failing jobs → red buildings, passing jobs → healed —————
+   One normalized event shape; providers differ only in how their webhook payloads
+   are read. Job→module mapping is authored in the spec (`ci.jobs`, `ci.default`)
+   with sensible fallbacks; events that carry file paths (review comments) attribute
+   through node_paths like `ingest` does. */
+export type CiEvent = { job: string; ok: boolean | null; message: string; url?: string; path?: string; source: string };
+export const CI_PROVIDERS = ["github", "gitlab", "buildkite"] as const;
+export function normalizeCi(provider: string, p: any): CiEvent[] {
+  const ev: CiEvent[] = [];
+  const done = (c: string | null | undefined) => c == null ? null : ["success", "passed", "neutral"].includes(c) ? true
+    : ["failure", "failed", "timed_out", "cancelled", "canceled", "action_required", "startup_failure", "broken"].includes(c) ? false : null;
+  if (provider === "github") {
+    const src = "gha";
+    if (p.workflow_run) { const r = p.workflow_run; const ok = done(r.conclusion); if (ok !== null)
+      ev.push({ job: r.name, ok, message: `${r.name} ${r.conclusion} on ${r.head_branch} (run #${r.run_number})`, url: r.html_url, source: src }); }
+    if (p.workflow_job) { const j = p.workflow_job; const ok = done(j.conclusion); if (ok !== null) {
+      const step = (j.steps ?? []).find((s: any) => s.conclusion === "failure");
+      ev.push({ job: j.name, ok, message: `${j.workflow_name ?? "job"} › ${j.name} ${j.conclusion}${step ? ` at step "${step.name}"` : ""} on ${j.head_branch}`, url: j.html_url, source: src }); } }
+    if (p.check_run) { const c = p.check_run; const ok = done(c.conclusion); if (ok !== null)
+      ev.push({ job: c.name, ok, message: `${c.name} ${c.conclusion}${c.output?.title ? ` — ${c.output.title}` : ""}`, url: c.html_url ?? c.details_url, source: c.app?.slug ?? src }); }
+    if (p.comment && p.comment.path) { /* review bots (Greptile, CodeRabbit, …) speak as PR review comments */
+      const c = p.comment, who = String(c.user?.login ?? "review").replace(/\[bot\]$/, "");
+      const body = String(c.body ?? "");
+      const red = /\b(critical|blocker|vulnerab|security|crash|data loss|bug)\b/i.test(body);
+      ev.push({ job: c.path, ok: red ? false : null, path: c.path, message: body.split("\n")[0].slice(0, 160), url: c.html_url, source: who }); }
+    if (p.review && p.pull_request && !p.comment) { const r = p.review; const st = String(r.state ?? "").toLowerCase();
+      if (st === "changes_requested" || st === "approved")
+        ev.push({ job: `review:${String(r.user?.login ?? "review").replace(/\[bot\]$/, "")}`, ok: st === "approved",
+          message: `${r.user?.login ?? "review"} ${st.replace("_", " ")} on PR #${p.pull_request.number}${r.body ? " — " + String(r.body).split("\n")[0].slice(0, 120) : ""}`, url: r.html_url, source: "review" }); }
+  } else if (provider === "gitlab") {
+    const src = "gitlab", base = p.project?.web_url;
+    if (p.object_kind === "pipeline") {
+      const ref = p.object_attributes?.ref, pid = p.object_attributes?.id;
+      const builds = (p.builds ?? []).filter((b: any) => done(b.status) !== null);
+      if (builds.length) builds.forEach((b: any) => ev.push({ job: b.name, ok: done(b.status)!, message: `${b.stage ? b.stage + " › " : ""}${b.name} ${b.status} on ${ref} (pipeline #${pid})`, url: base && b.id ? `${base}/-/jobs/${b.id}` : undefined, source: src }));
+      else { const ok = done(p.object_attributes?.status); if (ok !== null) ev.push({ job: "pipeline", ok, message: `pipeline ${p.object_attributes.status} on ${ref} (#${pid})`, url: base ? `${base}/-/pipelines/${pid}` : undefined, source: src }); }
+    } else if (p.object_kind === "build" || p.object_kind === "job") {
+      const ok = done(p.build_status); if (ok !== null)
+        ev.push({ job: p.build_name, ok, message: `${p.build_stage ? p.build_stage + " › " : ""}${p.build_name} ${p.build_status} on ${p.ref}`, url: base && p.build_id ? `${base}/-/jobs/${p.build_id}` : undefined, source: src });
+    }
+  } else if (provider === "buildkite") {
+    const src = "buildkite";
+    if (p.event === "job.finished" && p.job) { const ok = done(p.job.state); if (ok !== null)
+      ev.push({ job: p.job.name ?? p.job.step_key ?? "job", ok, message: `${p.pipeline?.slug ?? "pipeline"} › ${p.job.name} ${p.job.state} on ${p.build?.branch} (build #${p.build?.number})`, url: p.job.web_url ?? p.build?.web_url, source: src }); }
+    if (p.event === "build.finished" && p.build) { const ok = done(p.build.state); if (ok !== null)
+      ev.push({ job: p.pipeline?.slug ?? "build", ok, message: `${p.pipeline?.slug ?? "build"} ${p.build.state} on ${p.build.branch} (build #${p.build.number})`, url: p.build.web_url, source: src }); }
+  } else throw new Error(`unknown CI provider: ${provider} (github|gitlab|buildkite)`);
+  return ev;
+}
+export function detectCiProvider(headers: Headers): string | null {
+  if (headers.get("x-github-event")) return "github";
+  if (headers.get("x-gitlab-event")) return "gitlab";
+  if (headers.get("x-buildkite-event")) return "buildkite";
+  return null;
+}
+export function applyCi(db: Database, events: CiEvent[]): Spec {
+  const ci = JSON.parse((db.query("SELECT value FROM meta WHERE key='ci'").get() as any)?.value || "null") ?? {};
+  const jobs: Record<string, string> = ci.jobs ?? {};
+  const nodes = db.query("SELECT id,short,tag FROM nodes").all() as any[];
+  const prefixes = db.query("SELECT node_id,prefix FROM node_paths").all() as any[];
+  const byPath = (p: string) => { let best: any = null; for (const r of prefixes) if (p.startsWith(r.prefix) && (!best || r.prefix.length > best.prefix.length)) best = r; return best?.node_id ?? null; };
+  const byJob = (job: string) => {
+    if (jobs[job]) return jobs[job];
+    const k = Object.keys(jobs).find(k => job.toLowerCase().startsWith(k.toLowerCase()) || new RegExp("^" + k.replace(/[.+^${}()|[\]\\]/g, "\\$&").replace(/\*/g, ".*") + "$", "i").test(job));
+    if (k) return jobs[k];
+    const lo = job.toLowerCase();
+    const n = nodes.find(n => n.id.toLowerCase() === lo || (n.short ?? "").toLowerCase() === lo || (n.tag ?? "").toLowerCase() === lo);
+    return n?.id ?? ci.default ?? null;
+  };
+  const marked: string[] = [], cleared: string[] = [], orphans: string[] = [];
+  const tx = db.transaction(() => {
+    for (const e of events) {
+      const id = e.path ? (byPath(e.path) ?? byJob(e.job)) : byJob(e.job);
+      const tag = `[${e.source}:${e.job}]`;
+      if (!id) { orphans.push(e.job); continue; }
+      if (e.ok === false || (e.ok === null && e.path)) {
+        db.prepare("DELETE FROM status_items WHERE label LIKE ?").run(tag + "%"); /* one live item per job, wherever it sat */
+        const ord = (db.query("SELECT COALESCE(MAX(ord)+1,0) o FROM status_items WHERE node_id=?").get(id) as any).o;
+        db.prepare("INSERT INTO status_items(node_id,ord,class,label) VALUES(?,?,?,?)")
+          .run(id, ord, e.ok === false ? "red" : "amber", `${tag} ${e.message}${e.url ? " → " + e.url : ""}`);
+        marked.push(`${id} ← ${e.job}`);
+      } else if (e.ok === true) {
+        const n = db.prepare("DELETE FROM status_items WHERE label LIKE ?").run(tag + "%").changes;
+        if (n) cleared.push(`${id} ← ${e.job}`);
+      }
+    }
+  });
+  tx();
+  return { marked, cleared, orphans };
+}
+
 export function exportSpec(db: Database): Spec {
   const meta = Object.fromEntries(
     (db.query("SELECT key,value FROM meta").all() as any[]).map(r => [r.key, r.value]));
@@ -134,6 +226,8 @@ export function exportSpec(db: Database): Spec {
   // or export→edit→import silently disarms the DRC lint.
   const budget = JSON.parse(meta.drcBudget || "null");
   if (budget) spec.drcBudget = budget;
+  const ci = JSON.parse(meta.ci || "null");
+  if (ci) spec.ci = ci;
   for (const r of db.query("SELECT * FROM nodes").all() as any[]) {
     const node: Spec = { id: r.id, tag: r.tag, g: r.grp, name: r.name,
       x: r.x, y: r.y, w: r.w, d: r.d, h: r.h,

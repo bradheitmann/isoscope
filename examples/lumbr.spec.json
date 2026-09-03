@@ -1,0 +1,493 @@
+{
+ "title": "lumbr — the alert → investigate → fix loop, closed",
+ "wordmark": "LUMBR",
+ "asOf": "As of 2026-09-02 · authored from the repo (7 packages, 16k lines) · consumer #2",
+ "brand": {
+  "k": "Package",
+  "v": "lumbr · autonomous remediation"
+ },
+ "metrics": [
+  {
+   "k": "Status",
+   "v": "private · pre-MVP"
+  },
+  {
+   "k": "Epics",
+   "v": "10 · 76/76 slices done"
+  },
+  {
+   "k": "Runtime",
+   "v": "pnpm workspace · 7 packages"
+  }
+ ],
+ "intro": {
+  "eyebrow": "lumbr",
+  "title": "Agents that read the telemetry and are allowed to act",
+  "sub": "the observability space stops at suggest — lumbr closes the loop under policy",
+  "proseHTML": "<p class='t-label' style='color:var(--okoa-semantic-fg3);margin-bottom:var(--okoa-space-2)'>What this is</p><p class='t-body-sm'>Agents with situational awareness (read) plus execution capability (write). Humans set policy; agents handle the rest. The <strong>read layer</strong> is an OpenTelemetry pipeline with a wide-event schema; the <strong>referee</strong> is an MCP server any agent can load; the <strong>write layer</strong> executes four safe remediations behind a policy gate, a confidence scorer, and a trust ledger that humans can audit.</p><p class='t-body-sm'>This map is isoscope's second real consumer: authored from lumbr's package graph, its uncommitted working tree, and its planning ledger — so the open items are real. Press <strong>Stack</strong> to separate read, referee, and write.</p>"
+ },
+ "groups": [
+  {
+   "id": "read",
+   "label": "The read layer · telemetry in"
+  },
+  {
+   "id": "referee",
+   "label": "The referee · MCP server"
+  },
+  {
+   "id": "write",
+   "label": "The write layer · remediation out"
+  },
+  {
+   "id": "govern",
+   "label": "Governance"
+  }
+ ],
+ "nodes": [
+  {
+   "id": "IN",
+   "tag": "SDK",
+   "g": "read",
+   "name": "Instrumentation SDK",
+   "x": 0,
+   "y": 0,
+   "w": 1.2,
+   "d": 1,
+   "h": 1,
+   "does": "What a service calls to be seen: initLumbr() wires an OTel tracer, the LumbrSpanProcessor injects session identity from baggage, and a token-velocity exporter turns LLM spans into the signals the referee watches.",
+   "built": "OTLP trace export (Honeycomb-shaped), a demo harness, ~900 lines. Runs under doppler for credentials.",
+   "refs": "packages/instrumentation/"
+  },
+  {
+   "id": "SC",
+   "tag": "SCHEMA",
+   "g": "read",
+   "name": "Wide-event schema",
+   "x": 3.5,
+   "y": 0,
+   "w": 1,
+   "d": 1,
+   "h": 0.8,
+   "does": "The contract every span must meet: twelve required fields per wide event, extending the OTel GenAI semantic conventions (opt-in, pinned). session_id rides in baggage — it is not native OTel.",
+   "built": "Types + validators, ~500 lines. Imported by the referee to check what it reads.",
+   "refs": "packages/schema/"
+  },
+  {
+   "id": "BK",
+   "tag": "STORES",
+   "g": "read",
+   "name": "Observability backends",
+   "x": 7,
+   "y": 0,
+   "w": 1.2,
+   "d": 1,
+   "h": 0.8,
+   "does": "Where the wide events live: Honeycomb for traces, SurrealDB for lumbr's own stores (policy versions, evaluations, trust ledger). The referee reads through a backend interface so either can answer.",
+   "built": "Two backend adapters inside the MCP server; SurrealDB via docker-compose locally. Param-binding hardened in EPIC-9 (E9S1–S3).",
+   "refs": "packages/mcp-server/src/backends/ · docker-compose.yml"
+  },
+  {
+   "id": "MS",
+   "tag": "MCP",
+   "g": "referee",
+   "name": "MCP observability server",
+   "x": 3.5,
+   "y": 3.6,
+   "w": 1.4,
+   "d": 1.2,
+   "h": 1.6,
+   "stack": 4,
+   "does": "The tool surface any agent loads: four observability signals (error-rate acceleration, tool-call failure acceleration, token-velocity decline, output-length collapse), plus policy, execution, and trust-export tools. Everything an agent needs to notice, decide, and act — through one stdio JSON-RPC door.",
+   "built": "~3.3k lines; tools split by domain; stderr-only logging keeps stdout clean for the protocol. Phase-1 GTM distribution surface (EPIC-1).",
+   "refs": "packages/mcp-server/"
+  },
+  {
+   "id": "MW",
+   "tag": "EDGE",
+   "g": "referee",
+   "name": "Remote MCP worker",
+   "x": 0,
+   "y": 3.7,
+   "w": 1,
+   "d": 1,
+   "h": 1,
+   "does": "The same server, hosted: a Cloudflare Worker wraps createLumbrMcpServer() in a stateless Streamable-HTTP handler behind a timing-safe bearer token. POST /mcp for tools, GET /healthz for liveness.",
+   "built": "~200 lines, Agents SDK handler, no Durable Objects. Private — never published to npm.",
+   "refs": "packages/mcp-worker/"
+  },
+  {
+   "id": "PO",
+   "tag": "POLICY",
+   "g": "write",
+   "name": "Policy engine",
+   "x": 0,
+   "y": 7.4,
+   "w": 1.2,
+   "d": 1,
+   "h": 1,
+   "does": "Humans write the rules; this enforces them. Policy schema + validation, a versioned SurrealDB store, a confidence scorer (determinism, pattern confidence, recency, ambiguity penalty), a rate limiter, and the blast-radius evaluator that decides how much an action may touch.",
+   "built": "~3.4k lines. Four starter rules ship: pod restart, deployment rollback, cache clear, cert renewal. The PolicyGate contract lives in execution (dependency inversion) — this package implements it.",
+   "refs": "packages/policy/"
+  },
+  {
+   "id": "EX",
+   "tag": "EXEC",
+   "g": "write",
+   "name": "Execution substrate",
+   "x": 3.5,
+   "y": 7.4,
+   "w": 1.4,
+   "d": 1.2,
+   "h": 1.2,
+   "does": "The write layer: a RunbookExecutor with preflight checks, trigger evaluators (error rate, OOMKill, cache health, cert expiry), providers for Kubernetes, Redis and cert-manager, verification after the act, and an immutable audit store of every step taken.",
+   "built": "~4.5k lines. Level-2 beachhead: four safe remediations end-to-end (EPIC-2/3). Webhook entry for external triggers.",
+   "refs": "packages/execution/"
+  },
+  {
+   "id": "TR",
+   "tag": "TRUST",
+   "g": "write",
+   "name": "Trust & audit layer",
+   "x": 7,
+   "y": 7.4,
+   "w": 1.2,
+   "d": 1,
+   "h": 1,
+   "does": "Why an operator can let this run: an accuracy scorer per remediation, a state machine for trust levels, an exception router that escalates the unusual, notification channels (Slack live; PagerDuty and email stubbed), SRE feedback intake, and an audit exporter.",
+   "built": "~3.3k lines. Dashboard aggregates the ledger. EPIC-4.",
+   "refs": "packages/trust/"
+  },
+  {
+   "id": "TG",
+   "tag": "TARGETS",
+   "g": "write",
+   "name": "Remediation targets",
+   "x": 3.5,
+   "y": 10.8,
+   "w": 1.4,
+   "d": 1,
+   "h": 0.7,
+   "does": "What the write layer is allowed to touch: Kubernetes workloads (restart, rollback), Redis caches (clear), cert-manager certificates (renew). Each behind its provider interface, each with a preflight and a verify.",
+   "built": "Provider interface + three providers; the Kubernetes provider is the beachhead, the others follow the same shape.",
+   "refs": "packages/execution/src/providers/"
+  },
+  {
+   "id": "PL",
+   "tag": "SCP",
+   "g": "govern",
+   "name": "Planning & governance",
+   "x": 7,
+   "y": 3.7,
+   "w": 1.2,
+   "d": 1,
+   "h": 0.8,
+   "does": "How the repo is allowed to change: epics → stories → DEV/QA slice pairs with holdouts, dispatch ledgers, escalations, and an auto-generated status board. Every package above landed through this loop.",
+   "built": "planning/ tree + .claude/hooks that enforce slice pairing, immutable ids, and post-push CI verification. 76/76 slices in done/.",
+   "refs": "planning/ · .claude/hooks/ · AGENTS.md"
+  }
+ ],
+ "short": {
+  "IN": "SDK",
+  "SC": "Schema",
+  "BK": "Backends",
+  "MS": "MCP server",
+  "MW": "Worker",
+  "PO": "Policy",
+  "EX": "Execution",
+  "TR": "Trust",
+  "TG": "Targets",
+  "PL": "Planning"
+ },
+ "status": {
+  "IN": {
+   "state": "build",
+   "items": [
+    {
+     "c": "amber",
+     "l": "token-velocity exporter is the only LLM-specific signal source; the other three referee signals still derive from generic spans"
+    }
+   ]
+  },
+  "SC": {
+   "state": "ok",
+   "items": []
+  },
+  "BK": {
+   "state": "ok",
+   "items": []
+  },
+  "MS": {
+   "state": "ok",
+   "items": []
+  },
+  "MW": {
+   "state": "ok",
+   "items": [
+    {
+     "c": "you",
+     "l": "private remote endpoint — who gets a bearer token, and where is it rotated?"
+    }
+   ]
+  },
+  "PO": {
+   "state": "attn",
+   "items": [
+    {
+     "c": "amber",
+     "l": "uncommitted local change: src/evaluation-store.ts — land it through a slice or classify it (tracked in isoscope HANDOFF since 2026-08-22)"
+    }
+   ]
+  },
+  "EX": {
+   "state": "attn",
+   "items": [
+    {
+     "c": "amber",
+     "l": "uncommitted local changes: src/audit.ts, src/index.ts — land or classify"
+    },
+    {
+     "c": "amber",
+     "l": "KubernetesProvider is a placeholder in the public API (index.ts) — the beachhead needs the real one"
+    }
+   ]
+  },
+  "TR": {
+   "state": "build",
+   "items": [
+    {
+     "c": "amber",
+     "l": "PagerDuty and email channels are stubs; Slack is the only live notifier"
+    }
+   ]
+  },
+  "TG": {
+   "state": "build",
+   "items": []
+  },
+  "PL": {
+   "state": "ok",
+   "items": [
+    {
+     "c": "you",
+     "l": "4 story-review candidates waiting in planning/story-reviews/todo (EVIDENCE-001, GOVMAINT-001, HUMANAPPROVAL-001, PARAMBIND-001)"
+    },
+    {
+     "c": "amber",
+     "l": "6 .claude/hooks scripts modified but uncommitted — governance drift until landed"
+    }
+   ]
+  }
+ },
+ "levels": {
+  "IN": 1,
+  "SC": 1,
+  "BK": 1,
+  "PL": 1,
+  "PO": -1,
+  "EX": -1,
+  "TR": -1,
+  "TG": -1
+ },
+ "paths": {
+  "IN": [
+   "packages/instrumentation/"
+  ],
+  "SC": [
+   "packages/schema/",
+   "tests/schema/"
+  ],
+  "BK": [
+   "packages/mcp-server/src/backends/",
+   "docker-compose.yml"
+  ],
+  "MS": [
+   "packages/mcp-server/",
+   "tests/mcp-server/"
+  ],
+  "MW": [
+   "packages/mcp-worker/"
+  ],
+  "PO": [
+   "packages/policy/",
+   "tests/policy/"
+  ],
+  "EX": [
+   "packages/execution/",
+   "tests/execution/"
+  ],
+  "TR": [
+   "packages/trust/",
+   "tests/trust/"
+  ],
+  "TG": [
+   "packages/execution/src/providers/"
+  ],
+  "PL": [
+   "planning/",
+   ".claude/",
+   "AGENTS.md",
+   "CLAUDE.md",
+   "tests/hooks/"
+  ]
+ },
+ "ci": {
+  "jobs": {
+   "lint": "PL",
+   "typecheck": "MS",
+   "test:*": "MS"
+  },
+  "default": "PL"
+ },
+ "edges": [
+  [
+   "IN",
+   "BK",
+   "data"
+  ],
+  [
+   "IN",
+   "SC",
+   "intended"
+  ],
+  [
+   "BK",
+   "MS",
+   "data"
+  ],
+  [
+   "SC",
+   "MS",
+   "data"
+  ],
+  [
+   "MW",
+   "MS",
+   "auth"
+  ],
+  [
+   "MS",
+   "PO",
+   "data"
+  ],
+  [
+   "MS",
+   "EX",
+   "data"
+  ],
+  [
+   "MS",
+   "TR",
+   "data"
+  ],
+  [
+   "PO",
+   "EX",
+   "auth"
+  ],
+  [
+   "TR",
+   "EX",
+   "data"
+  ],
+  [
+   "EX",
+   "TG",
+   "data"
+  ],
+  [
+   "PL",
+   "MS",
+   "auth"
+  ]
+ ],
+ "edgeStatus": {},
+ "edgeDocs": {
+  "IN-BK": {
+   "title": "Spans out",
+   "carries": "OTLP traces with lumbr's wide-event attributes and baggage-propagated session_id, exported to Honeycomb.",
+   "refs": "packages/instrumentation/src/init.ts · processor.ts"
+  },
+  "IN-SC": {
+   "title": "Conformance, not import",
+   "carries": "Every span the SDK emits is meant to satisfy the twelve-field schema; nothing enforces it at emit time yet — the referee validates on read.",
+   "refs": "packages/schema/src/index.ts"
+  },
+  "BK-MS": {
+   "title": "The referee reads",
+   "carries": "Queries over traces and lumbr stores: error rates, tool-call failures, token velocity, output lengths — the raw material of the four signals.",
+   "refs": "packages/mcp-server/src/backends/"
+  },
+  "SC-MS": {
+   "title": "Validate what you read",
+   "carries": "Schema types and validators applied to backend rows before a signal is computed.",
+   "refs": "packages/mcp-server/src/tools/observability.ts"
+  },
+  "MW-MS": {
+   "title": "Hosted door",
+   "carries": "Authenticated JSON-RPC over Streamable HTTP — a fresh server per request, identical tool names to the stdio CLI.",
+   "refs": "packages/mcp-worker/src/index.ts"
+  },
+  "MS-PO": {
+   "title": "May I?",
+   "carries": "Proposed actions submitted to the policy gate; back come a verdict, a confidence score, and the blast-radius level.",
+   "refs": "packages/mcp-server/src/tools/policy.ts"
+  },
+  "MS-EX": {
+   "title": "Do it",
+   "carries": "Runbook execution requests with the policy verdict attached; execution replies with preflight, steps, verify, and the audit id.",
+   "refs": "packages/mcp-server/src/tools/execution.ts"
+  },
+  "MS-TR": {
+   "title": "Tell the humans",
+   "carries": "Trust-level reads, exception routing, and audit export for the operator's dashboard.",
+   "refs": "packages/mcp-server/src/tools/trust.ts · trust-export.ts"
+  },
+  "PO-EX": {
+   "title": "The gate is a contract",
+   "carries": "PolicyGate / PolicyGateResult are declared in execution and implemented in policy — the write layer never imports the rules, the rules plug into it.",
+   "refs": "packages/policy/src/gate.ts"
+  },
+  "TR-EX": {
+   "title": "Every act is scored",
+   "carries": "Audit records and outcomes flow into accuracy scoring and the trust state machine.",
+   "refs": "packages/trust/src/accuracy.ts · state-machine.ts"
+  },
+  "EX-TG": {
+   "title": "Hands on the system",
+   "carries": "Provider calls: restart / rollback a workload, clear a cache, renew a certificate — each after preflight, each verified after.",
+   "refs": "packages/execution/src/providers/"
+  },
+  "PL-MS": {
+   "title": "Under governance",
+   "carries": "Nothing ships without a DEV/QA slice pair and a holdout; the referee is the most-shipped surface and the hooks guard it.",
+   "refs": "planning/_GUIDE.md · .claude/hooks/"
+  }
+ },
+ "trace": [
+  "IN-BK",
+  "BK-MS",
+  "SC-MS",
+  "MS-PO",
+  "PO-EX",
+  "MS-EX",
+  "EX-TG",
+  "TR-EX",
+  "MS-TR"
+ ],
+ "traceText": {
+  "IN-BK": "A service is instrumented; its spans, tagged with session identity, land in the backend.",
+  "BK-MS": "The referee reads them and computes its four signals.",
+  "SC-MS": "Only rows that satisfy the wide-event schema count.",
+  "MS-PO": "A signal crosses a threshold; the agent asks policy whether the fix is allowed.",
+  "PO-EX": "The gate answers through a contract the write layer owns.",
+  "MS-EX": "Permission in hand, the agent executes the runbook.",
+  "EX-TG": "The provider acts on the real system — after preflight, before verify.",
+  "TR-EX": "The audit record is scored; trust moves.",
+  "MS-TR": "Humans see it: dashboard, exceptions, notifications. The loop is closed."
+ },
+ "drcBudget": {
+  "maxWeightedCrossings": 0,
+  "acknowledged": "none yet — set by the first lint"
+ }
+}

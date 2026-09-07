@@ -53,7 +53,7 @@ CREATE TABLE IF NOT EXISTS trace_steps (     -- the guided story, in order
   src       TEXT NOT NULL,
   dst       TEXT NOT NULL,
   narration TEXT NOT NULL,
-  FOREIGN KEY (src, dst) REFERENCES edges(src, dst)
+  FOREIGN KEY (src, dst) REFERENCES edges(src, dst) ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS telemetry (       -- seams → sensors: one sensor binding per module
@@ -72,3 +72,16 @@ CREATE TABLE IF NOT EXISTS node_paths (      -- path ownership: findings attribu
   prefix  TEXT NOT NULL,                     -- longest-prefix match wins
   PRIMARY KEY (node_id, prefix)
 );
+
+-- Operational history survives graph replacement/deletion; deliberately no FK.
+CREATE TABLE IF NOT EXISTS node_history (
+  node_id TEXT NOT NULL,
+  at TEXT NOT NULL,
+  session TEXT NOT NULL,
+  kind TEXT NOT NULL CHECK (kind IN ('created','moved','resized','renamed',
+    'redocumented','status','edge_added','edge_removed','edge_changed',
+    'path','telemetry','deleted')),
+  detail TEXT NOT NULL
+);
+CREATE INDEX IF NOT EXISTS node_history_node_session ON node_history(node_id,session);
+CREATE INDEX IF NOT EXISTS node_history_session ON node_history(session);

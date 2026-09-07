@@ -6,10 +6,15 @@
      bun cli.ts build  [db] <out.html>         db → spec → self-contained map      */
 import { readFileSync, writeFileSync } from "fs";
 import { buildHtml } from "./build.mjs";
-import { DB_DEFAULT, open, importSpec, exportSpec, proposeSensor, setSensor, normalizeCi, applyCi, detectCiProvider, blastRadius } from "./lib.ts";
+import { DB_DEFAULT, open, importSpec, exportSpec, proposeSensor, setSensor, normalizeCi, applyCi, detectCiProvider, blastRadius, withHistory, markNode, overview } from "./lib.ts";
 
 const [cmd, ...args] = Bun.argv.slice(2);
 switch (cmd) {
+  case "overview": {
+    const db = open(args[0] ?? DB_DEFAULT);
+    try { console.log(JSON.stringify(overview(db))); } finally { db.close(); }
+    break;
+  }
   case "init": {
     open(args[0] ?? DB_DEFAULT).close();
     console.log(`isoscope: graph store ready at ${args[0] ?? DB_DEFAULT}`);
@@ -64,25 +69,27 @@ switch (cmd) {
       });
     } else findings = raw;
     const db = open(dbPath);
-    const prefixes = db.query("SELECT node_id,prefix FROM node_paths").all() as any[];
-    const attribute = (p: string) => {
-      let best: any = null;
-      for (const row of prefixes)
-        if (p.startsWith(row.prefix) && (!best || row.prefix.length > best.prefix.length)) best = row;
-      return best?.node_id ?? null;
-    };
-    if (args.includes("--replace"))
-      db.prepare("DELETE FROM status_items WHERE label LIKE ?").run(`[${defSource}]%`);
     let placed = 0, orphans = 0;
-    for (const f of findings) {
-      const id = attribute(f.path);
-      if (!id) { orphans++; continue; }
-      const cls = f.severity === "error" ? "red" : "amber";
-      const ord = (db.query("SELECT COALESCE(MAX(ord)+1,0) o FROM status_items WHERE node_id=?").get(id) as any).o;
-      db.prepare("INSERT INTO status_items(node_id,ord,class,label) VALUES(?,?,?,?)")
-        .run(id, ord, cls, `[${f.source ?? defSource}] ${f.message} (${f.path})`);
-      placed++;
-    }
+    withHistory(db,() => {
+      const prefixes = db.query("SELECT node_id,prefix FROM node_paths").all() as any[];
+      const attribute = (p: string) => {
+        let best: any = null;
+        for (const row of prefixes)
+          if (p.startsWith(row.prefix) && (!best || row.prefix.length > best.prefix.length)) best = row;
+        return best?.node_id ?? null;
+      };
+      if (args.includes("--replace"))
+        db.prepare("DELETE FROM status_items WHERE label LIKE ?").run(`[${defSource}]%`);
+      for (const f of findings) {
+        const id = attribute(f.path);
+        if (!id) { orphans++; continue; }
+        const cls = f.severity === "error" ? "red" : "amber";
+        const ord = (db.query("SELECT COALESCE(MAX(ord)+1,0) o FROM status_items WHERE node_id=?").get(id) as any).o;
+        db.prepare("INSERT INTO status_items(node_id,ord,class,label) VALUES(?,?,?,?)")
+          .run(id, ord, cls, `[${f.source ?? defSource}] ${f.message} (${f.path})`);
+        placed++;
+      }
+    });
     db.close();
     console.log(`isoscope: ingested ${placed} finding(s) onto the map` + (orphans ? ` · ${orphans} unattributed (no owning module — extend paths in the spec)` : ""));
     break;
@@ -96,15 +103,14 @@ switch (cmd) {
     const exists = db.query("SELECT 1 FROM nodes WHERE id=?").get(nodeId);
     if (!exists) { console.error(`no such module: ${nodeId}`); process.exit(2); }
     const sIdx = args.indexOf("--state");
-    if (sIdx >= 0) db.prepare("UPDATE nodes SET state=? WHERE id=?").run(args[sIdx+1], nodeId);
-    if (args.includes("--clear")) db.prepare("DELETE FROM status_items WHERE node_id=?").run(nodeId);
+    const append: { c: string; l: string }[] = [];
     for (const cls of ["red","amber","you"] as const) {
       let i = -1;
       while ((i = args.indexOf(`--${cls}`, i+1)) >= 0) {
-        const ord = (db.query("SELECT COALESCE(MAX(ord)+1,0) o FROM status_items WHERE node_id=?").get(nodeId) as any).o;
-        db.prepare("INSERT INTO status_items(node_id,ord,class,label) VALUES(?,?,?,?)").run(nodeId, ord, cls, args[i+1]);
+        append.push({ c: cls, l: args[i+1] });
       }
     }
+    markNode(db,{ id: nodeId, state: sIdx >= 0 ? args[sIdx+1] : undefined, clear: args.includes("--clear"), append });
     db.close();
     console.log(`isoscope: marked ${nodeId} — every live map repaints`);
     break;
@@ -187,13 +193,8 @@ switch (cmd) {
           return req.json().then((b: any) => {
             const d = open(dbPath);
             if (!d.query("SELECT 1 FROM nodes WHERE id=?").get(b.id)) { d.close(); return new Response("no such module", { status: 404 }); }
-            if (b.state) d.prepare("UPDATE nodes SET state=? WHERE id=?").run(b.state, b.id);
-            if (Array.isArray(b.items)) {
-              d.prepare("DELETE FROM status_items WHERE node_id=?").run(b.id);
-              const si = d.prepare("INSERT INTO status_items(node_id,ord,class,label) VALUES(?,?,?,?)");
-              b.items.forEach((it: any, i: number) => si.run(b.id, i, it.c, it.l));
-            }
-            d.close();
+            try { markNode(d,{ id: b.id, state: b.state, items: Array.isArray(b.items) ? b.items : undefined }); }
+            finally { d.close(); }
             return Response.json({ marked: b.id });
           });
         }
@@ -227,5 +228,5 @@ switch (cmd) {
     break;
   }
   default:
-    console.log("isoscope · graph store CLI\n  init [db] · import <spec.json> [db] · export [db] [--out spec.json] · build [db] <out.html> · serve [db] [--port 4177]\n  incident loop: mark <db> <id> … · ingest <db> <findings.json> [--sarif] · ci <db> <payload.json> --provider github|gitlab|buildkite|signal · blast-radius <db> · sensor <db> <id> --offer|--state\n  install-hook <repo> <db> · lint: bun drc.ts <spec.json|db> [--budget N]");
+    console.log("isoscope · graph store CLI\n  init [db] · import <spec.json> [db] · export [db] [--out spec.json] · overview <db> · build [db] <out.html> · serve [db] [--port 4177]\n  incident loop: mark <db> <id> … · ingest <db> <findings.json> [--sarif] · ci <db> <payload.json> --provider github|gitlab|buildkite|signal · blast-radius <db> · sensor <db> <id> --offer|--state\n  install-hook <repo> <db> · lint: bun drc.ts <spec.json|db> [--budget N]");
 }

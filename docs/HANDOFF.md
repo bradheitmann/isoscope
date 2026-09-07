@@ -280,6 +280,22 @@ S1; weighted-cost rejections remain explicit. Flat QC does not certify
 stacked-plane crossings. S1 remains uncommitted pending independent QA and
 B/TEAM-PM authorization; this entry does not close R10 or the session.
 
+## 2026-09-07 · S2 change log and stable seams (DEV; independent QA pending)
+
+Store mutations now append net per-node/per-kind history in the same transaction,
+including cross-node CI heals and ingest replacement clears. Nested helpers share
+one timestamp; imports preserve history and new nodes emit only `created`.
+MCP/CLI overview exposes store-global distinct write sessions and stable seams;
+eligible sensor offers can generate their rationale from that evidence.
+`markNode()` unifies CLI, MCP status, and HTTP mark history. Export preserves
+authored path order explicitly, so the self-spec round trip keeps array order.
+Fresh schemas cascade traced-edge deletion. Existing databases retain their old
+foreign-key constraint: importing into the same database does NOT upgrade it.
+To obtain the new constraint, create a fresh store and re-import the spec; retain
+the old store because operational history is not exported or migrated by that
+procedure. S2 performs no automatic existing-store migration. Validation and
+independent QA govern acceptance; no commit/push is authorized before the relay.
+
 ## Operator taste rules (hard-won — do not relearn)
 Animations AND 3D controls together, never one at the expense of the other; no
 camera-facing sprites on paths (they don't bend at corners); one visual

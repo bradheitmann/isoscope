@@ -13,8 +13,117 @@ export function open(path: string): Database {
   return db;
 }
 
+/* One outer operation owns the transaction, timestamp, and net change log.
+   Snapshot all affected tables: CI/ingest can clear items outside their targets.
+   Nested helpers participate without producing intermediate or duplicate rows. */
+const historyCalls = new WeakMap<Database, string>();
+type HistoryNode = { row: Spec; items: Spec[]; paths: string[]; telemetry: Spec | null };
+function historySnapshot(db: Database) {
+  const nodes = new Map<string, HistoryNode>();
+  for (const row of db.query("SELECT * FROM nodes ORDER BY id").all() as Spec[])
+    nodes.set(row.id, { row, items: [], paths: [], telemetry: null });
+  for (const { node_id, class: c, label } of db.query("SELECT node_id,class,label FROM status_items ORDER BY node_id,ord").all() as Spec[])
+    nodes.get(node_id)?.items.push({ c, label });
+  for (const { node_id, prefix } of db.query("SELECT node_id,prefix FROM node_paths ORDER BY node_id,prefix").all() as Spec[])
+    nodes.get(node_id)?.paths.push(prefix);
+  for (const row of db.query("SELECT * FROM telemetry ORDER BY node_id").all() as Spec[]) {
+    if (row.wide_event_keys != null) row.wide_event_keys = JSON.parse(row.wide_event_keys);
+    if (nodes.has(row.node_id)) nodes.get(row.node_id)!.telemetry = row;
+  }
+  const edges = new Map<string, Spec>();
+  for (const row of db.query("SELECT * FROM edges ORDER BY src,dst").all() as Spec[])
+    edges.set(JSON.stringify([row.src, row.dst]), row);
+  return { nodes, edges };
+}
+const same = (a: unknown, b: unknown) => JSON.stringify(a) === JSON.stringify(b);
+function appendHistory(db: Database, before: ReturnType<typeof historySnapshot>, after: ReturnType<typeof historySnapshot>, at: string) {
+  const insert = db.prepare("INSERT INTO node_history(node_id,at,session,kind,detail) VALUES(?,?,?,?,?)");
+  const log = (id: string, kind: string, detail: string) => insert.run(id, at, at.slice(0,10), kind, detail);
+  const edgeChanges = new Map<string, Map<string, string[]>>();
+  for (const key of new Set([...before.edges.keys(), ...after.edges.keys()])) {
+    const a = before.edges.get(key), b = after.edges.get(key);
+    if (same(a,b)) continue;
+    const kind = !a ? "edge_added" : !b ? "edge_removed" : "edge_changed", e = b ?? a!;
+    for (const id of new Set<string>([e.src,e.dst])) {
+      if (!before.nodes.has(id) || !after.nodes.has(id)) continue; // creation/deletion wins
+      if (!edgeChanges.has(id)) edgeChanges.set(id,new Map());
+      const kinds = edgeChanges.get(id)!;
+      if (!kinds.has(kind)) kinds.set(kind,[]);
+      kinds.get(kind)!.push(`${e.src}-${e.dst}`);
+    }
+  }
+  for (const id of [...new Set([...before.nodes.keys(), ...after.nodes.keys()])].sort()) {
+    const a = before.nodes.get(id), b = after.nodes.get(id);
+    if (!a) { log(id,"created",id); continue; }
+    if (!b) { log(id,"deleted",id); continue; }
+    const changed = (fields: string[]) => fields.filter(f => !same(a.row[f],b.row[f]));
+    const detail = (fields: string[]) => fields.map(f => `${f}:${a.row[f]}→${b.row[f]}`).join(" ");
+    if (changed(["x","y"]).length) log(id,"moved",detail(["x","y"]));
+    const resized = changed(["w","d","h","stack","level"]);
+    if (resized.length) log(id,"resized",detail(resized));
+    const renamed = changed(["name","short","tag","grp"]);
+    if (renamed.length) log(id,"renamed",detail(renamed));
+    const documented = changed(["does","built","refs","good","cond"]);
+    if (documented.length) log(id,"redocumented","fields:"+documented.join(","));
+    if (a.row.state !== b.row.state || !same(a.items,b.items))
+      log(id,"status",`state:${b.row.state} items:${b.items.length} red:${b.items.filter(i => i.c === "red").length}`);
+    for (const kind of ["edge_added","edge_removed","edge_changed"]) {
+      const keys = edgeChanges.get(id)?.get(kind);
+      if (keys?.length) log(id,kind,keys.sort().join(","));
+    }
+    if (!same(a.paths,b.paths)) log(id,"path",`${b.paths.length} prefixes`);
+    if (!same(a.telemetry,b.telemetry)) log(id,"telemetry",b.telemetry ? `trace_boundary:${b.telemetry.trace_boundary}` : "removed");
+  }
+}
+export function withHistory<T>(db: Database, mutate: (at: string) => T): T {
+  const active = historyCalls.get(db);
+  if (active) return mutate(active);
+  return db.transaction(() => {
+    const at = new Date().toISOString(), before = historySnapshot(db);
+    historyCalls.set(db,at);
+    try {
+      const result = mutate(at);
+      appendHistory(db,before,historySnapshot(db),at);
+      return result;
+    } finally { historyCalls.delete(db); }
+  })();
+}
+
+export function overview(db: Database): Spec {
+  const n = Number(Bun.env.ISOSCOPE_STABLE_N);
+  const threshold = Number.isSafeInteger(n) && n > 0 ? n : 3;
+  return db.transaction(() => {
+    const counts = db.query(`SELECT (SELECT value FROM meta WHERE key='title') title,
+      (SELECT count(*) FROM nodes) nodes,(SELECT count(*) FROM edges) edges,
+      (SELECT count(*) FROM status_items) open,
+      (SELECT count(*) FROM status_items WHERE class='red') blockers,
+      (SELECT count(DISTINCT session) FROM node_history) sessions`).get() as Spec;
+    const stable_seams = db.query(`WITH sessions AS (SELECT DISTINCT session FROM node_history),
+      last_change AS (SELECT node_id,MAX(session) since_session FROM node_history WHERE kind<>'telemetry' GROUP BY node_id),
+      seams AS (SELECT n.id,l.since_session,
+        (SELECT count(*) FROM sessions s WHERE s.session>l.since_session) sessions_unchanged,
+        (SELECT count(*) FROM edges e WHERE e.src=n.id OR e.dst=n.id) links
+        FROM nodes n JOIN last_change l ON l.node_id=n.id
+        WHERE NOT EXISTS (SELECT 1 FROM telemetry t WHERE t.node_id=n.id))
+      SELECT * FROM seams WHERE links>0 AND sessions_unchanged>=?
+      ORDER BY sessions_unchanged DESC,id`).all(threshold);
+    return { ...counts, stable_seams };
+  })();
+}
+
+export function markNode(db: Database, a: { id: string; state?: string; items?: { c: string; l: string }[]; clear?: boolean; append?: { c: string; l: string }[] }): void {
+  withHistory(db,() => {
+    if (!db.query("SELECT 1 FROM nodes WHERE id=?").get(a.id)) throw new Error(`no such module: ${a.id}`);
+    if (a.state) db.prepare("UPDATE nodes SET state=? WHERE id=?").run(a.state,a.id);
+    if (a.clear || a.items !== undefined) db.prepare("DELETE FROM status_items WHERE node_id=?").run(a.id);
+    const si = db.prepare("INSERT INTO status_items(node_id,ord,class,label) VALUES(?,?,?,?)");
+    let ord = (db.query("SELECT COALESCE(MAX(ord)+1,0) o FROM status_items WHERE node_id=?").get(a.id) as Spec).o;
+    for (const it of [...(a.items ?? []),...(a.append ?? [])]) si.run(a.id,ord++,it.c,it.l);
+  });
+}
+
 export function importSpec(db: Database, spec: Spec): void {
-  const tx = db.transaction(() => {
+  withHistory(db,() => {
     for (const t of ["trace_steps", "edges", "status_items", "node_paths", "telemetry", "nodes", "groups", "meta"])
       db.exec(`DELETE FROM ${t};`);
     const meta = db.prepare("INSERT INTO meta(key,value) VALUES(?,?)");
@@ -61,7 +170,6 @@ export function importSpec(db: Database, spec: Spec): void {
       t.run(i, src, dst, spec.traceText?.[k] ?? "");
     });
   });
-  tx();
 }
 
 export function telemetryOut(t: any): Spec {
@@ -80,7 +188,8 @@ export function telemetryOut(t: any): Spec {
    proposal lands on the map as a YOUR-CALL item (the existing decision vocabulary) and
    as a telemetry row. Accepting = installing; the item clears on install/verify/decline. */
 export const OFFER_PREFIX = "Sensor offered — ";
-export function proposeSensor(db: Database, a: { id: string; rationale: string; event_stream?: string; wide_event_keys?: string[]; force?: boolean }): Spec {
+export function proposeSensor(db: Database, a: { id: string; rationale?: string; event_stream?: string; wide_event_keys?: string[]; force?: boolean }): Spec {
+ return withHistory(db,(at) => {
   const node = db.query("SELECT id,name FROM nodes WHERE id=?").get(a.id) as any;
   if (!node) throw new Error(`no such module: ${a.id}`);
   const cur = db.query("SELECT * FROM telemetry WHERE node_id=?").get(a.id) as any;
@@ -88,22 +197,30 @@ export function proposeSensor(db: Database, a: { id: string; rationale: string; 
     return { outcome: "already-" + cur.trace_boundary, telemetry: telemetryOut(cur) };
   if (cur && cur.trace_boundary === "declined" && !a.force)
     return { outcome: "declined-earlier", hint: "operator declined this sensor; pass force:true to re-offer", telemetry: telemetryOut(cur) };
-  const today = new Date().toISOString().slice(0, 10);
+  let rationale = a.rationale?.trim() ?? "";
+  if (!rationale) {
+    const seam = overview(db).stable_seams.find((s: Spec) => s.id === a.id);
+    if (!seam) return { outcome: "rationale-required" };
+    rationale = `stable since ${seam.since_session}; unchanged for ${seam.sessions_unchanged} sessions; ${seam.links} links cross it`;
+  }
+  const today = at.slice(0, 10);
   db.prepare(`INSERT INTO telemetry(node_id,trace_boundary,event_stream,wide_event_keys,offered_at,rationale)
               VALUES($id,'offered',$stream,$keys,$today,$why)
               ON CONFLICT(node_id) DO UPDATE SET trace_boundary='offered',event_stream=COALESCE($stream,event_stream),
                 wide_event_keys=COALESCE($keys,wide_event_keys),offered_at=$today,rationale=$why`)
-    .run({ $id: a.id, $stream: a.event_stream ?? null, $keys: a.wide_event_keys ? JSON.stringify(a.wide_event_keys) : null, $today: today, $why: a.rationale });
-  const label = `${OFFER_PREFIX}trace boundary at ${node.name}: ${a.rationale}` +
+    .run({ $id: a.id, $stream: a.event_stream ?? null, $keys: a.wide_event_keys ? JSON.stringify(a.wide_event_keys) : null, $today: today, $why: rationale });
+  const label = `${OFFER_PREFIX}trace boundary at ${node.name}: ${rationale}` +
     (a.event_stream ? ` (events → ${a.event_stream})` : "") + ". Accept and an agent installs it; decline with iso_set_sensor.";
   db.prepare(`DELETE FROM status_items WHERE node_id=? AND label LIKE ?`).run(a.id, OFFER_PREFIX + "%");
   const ord = (db.query("SELECT COALESCE(MAX(ord)+1,0) o FROM status_items WHERE node_id=?").get(a.id) as any).o;
   db.prepare("INSERT INTO status_items(node_id,ord,class,label) VALUES(?,?,'you',?)").run(a.id, ord, label);
   return { outcome: "offered", item: label, telemetry: telemetryOut(db.query("SELECT * FROM telemetry WHERE node_id=?").get(a.id)) };
+ });
 }
 export function setSensor(db: Database, a: { id: string; trace_boundary: string; event_stream?: string; wide_event_keys?: string[]; installed_by?: string; verified_at?: string; rationale?: string }): Spec {
+ return withHistory(db,(at) => {
   if (!db.query("SELECT 1 FROM nodes WHERE id=?").get(a.id)) throw new Error(`no such module: ${a.id}`);
-  const today = new Date().toISOString().slice(0, 10);
+  const today = at.slice(0, 10);
   const by = a.installed_by ?? ((a.trace_boundary === "installed" || a.trace_boundary === "verified") ? "agent" : null);
   const vAt = a.verified_at ?? (a.trace_boundary === "verified" ? today : null);
   db.prepare(`INSERT INTO telemetry(node_id,trace_boundary,event_stream,wide_event_keys,installed_by,verified_at,rationale)
@@ -112,10 +229,11 @@ export function setSensor(db: Database, a: { id: string; trace_boundary: string;
                 wide_event_keys=COALESCE($keys,wide_event_keys),installed_by=COALESCE($by,installed_by),
                 verified_at=COALESCE($vAt,verified_at),rationale=COALESCE($why,rationale)`)
     .run({ $id: a.id, $tb: a.trace_boundary, $stream: a.event_stream ?? null, $keys: a.wide_event_keys ? JSON.stringify(a.wide_event_keys) : null,
-           $by: by, $vAt: vAt, $why: a.rationale ?? null });
+           $by: by, $vAt: vAt, $why: a.rationale?.trim() ?? null });
   if (a.trace_boundary !== "offered")
     db.prepare(`DELETE FROM status_items WHERE node_id=? AND label LIKE ?`).run(a.id, OFFER_PREFIX + "%");
   return { outcome: a.trace_boundary, telemetry: telemetryOut(db.query("SELECT * FROM telemetry WHERE node_id=?").get(a.id)) };
+ });
 }
 
 /* ————— CI provider adapters: failing jobs → red buildings, passing jobs → healed —————
@@ -202,6 +320,7 @@ export function detectCiProvider(headers: Headers): string | null {
   return null;
 }
 export function applyCi(db: Database, events: CiEvent[]): Spec {
+ return withHistory(db,() => {
   const ci = JSON.parse((db.query("SELECT value FROM meta WHERE key='ci'").get() as any)?.value || "null") ?? {};
   const jobs: Record<string, string> = ci.jobs ?? {};
   const nodes = db.query("SELECT id,short,tag FROM nodes").all() as any[];
@@ -216,7 +335,6 @@ export function applyCi(db: Database, events: CiEvent[]): Spec {
     return n?.id ?? ci.default ?? null;
   };
   const marked: string[] = [], cleared: string[] = [], orphans: string[] = [];
-  const tx = db.transaction(() => {
     for (const e of events) {
       const id = e.path ? (byPath(e.path) ?? byJob(e.job)) : byJob(e.job);
       const tag = `[${e.source}:${e.job}]`;
@@ -232,9 +350,8 @@ export function applyCi(db: Database, events: CiEvent[]): Spec {
         if (n) cleared.push(`${id} ← ${e.job}`);
       }
     }
-  });
-  tx();
   return { marked, cleared, orphans };
+ });
 }
 
 export function exportSpec(db: Database): Spec {
@@ -269,7 +386,7 @@ export function exportSpec(db: Database): Spec {
     const items = (db.query("SELECT class,label FROM status_items WHERE node_id=? ORDER BY ord")
       .all(r.id) as any[]).map(i => ({ c: i.class, l: i.label }));
     spec.status[r.id] = { state: r.state, items };
-    const pp = (db.query("SELECT prefix FROM node_paths WHERE node_id=?").all(r.id) as any[]).map(p => p.prefix);
+    const pp = (db.query("SELECT prefix FROM node_paths WHERE node_id=? ORDER BY rowid").all(r.id) as any[]).map(p => p.prefix);
     if (pp.length) spec.paths[r.id] = pp;
     const t = db.query("SELECT * FROM telemetry WHERE node_id=?").get(r.id) as any;
     if (t) spec.telemetry[r.id] = telemetryOut(t);
@@ -294,4 +411,3 @@ export function exportSpec(db: Database): Spec {
   }
   return spec;
 }
-

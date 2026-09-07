@@ -24,6 +24,7 @@ One JSON object drives the whole visualization. All keys top-level.
 | `telemetry` | `{id:{trace_boundary,event_stream?,wide_event_keys?,installed_by?,offered_at?,verified_at?,rationale?}}` | seams→sensors binding per module; `trace_boundary` ∈ proposed·offered·installed·verified·declined (docs/INSTRUMENTATION.md) |
 | `ci` | `{jobs:{"job name or glob*":id}, default?:id}` | CI job → module mapping for `cli.ts ci` / `POST /ci` (GitHub Actions, GitLab, Buildkite); fallbacks: node id/short/tag; path-bearing events use `paths` |
 | `drcBudget` | `{maxWeightedCrossings, acknowledged?}` | the L2 law's "unless forced" clause, machine-checkable: `drc.ts` fails over budget |
+| `node_history` (store only) | operational SQLite table, not a spec key | append-only per-node net change history; survives graph imports/deletions and is never exported in the interchange spec |
 
 Semantics the engine renders for free: whole-building state color, circuit-breaker
 click interaction, PCB-routed pipes, flow dots, 3-level stacking, trace narration,

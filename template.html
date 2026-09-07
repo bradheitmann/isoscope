@@ -1562,11 +1562,34 @@ body{display:grid;overflow:hidden;
 /* live mode: present only when served by `isoscope serve` — the map follows the graph store */
 if (typeof window.__ISOSCOPE_LIVE !== "undefined") {
   const es = new EventSource("/events");
-  /* R30 mental-map stability, phase 1: the store changed → snapshot the view, reload, restore.
-     Camera, stack, inspector, theme and weights survive; a NEW red module still wins the camera. */
-  es.addEventListener("update", () => {
-    try { if (window.__isoViewState) sessionStorage.setItem("isoscope.view", JSON.stringify(window.__isoViewState())); } catch (e) {}
+  let latestRequest=0,pending=null,applying=false,reloading=false;
+  const reload=saved=>{
+    if(reloading)return;reloading=true;
+    try { const state=saved||window.__isoViewState?.();if(state)sessionStorage.setItem("isoscope.view",JSON.stringify(state)); } catch(e) {}
     location.reload();
+  };
+  async function flush(){
+    if(applying||!window.__isoApplySpec||reloading)return;
+    applying=true;
+    try{
+      while(pending&&!reloading){
+        const next=pending;pending=null;
+        const saved=window.__isoViewState?.();
+        try{await window.__isoApplySpec(next);}catch(e){reload(saved);}
+      }
+    }finally{applying=false;}
+  }
+  window.addEventListener("isoscope-ready",flush);
+  es.addEventListener("update",async()=>{
+    if(new URLSearchParams(location.search).get("reload")==="1"){reload();return;}
+    const request=++latestRequest;
+    try{
+      const response=await fetch("/spec.json");
+      if(!response.ok)throw Error("spec fetch failed");
+      const next=await response.json();
+      if(request!==latestRequest)return; // a slower response cannot undo a newer update
+      pending=next;await flush();
+    }catch(e){if(request===latestRequest)reload();}
   });
 }
 </script>
@@ -1592,30 +1615,14 @@ const SPEC=JSON.parse(document.getElementById("isospec").textContent);
 document.title=SPEC.title||"Isoscope";
 const GROUPS=SPEC.groups,NODES=SPEC.nodes,STATUS=SPEC.status,EDGES=SPEC.edges,EDGEDOCS=SPEC.edgeDocs||{},
       TRACE=SPEC.trace||[],TRACETEXT=SPEC.traceText||{};
-NODES.forEach(n=>{const s2=STATUS[n.id]||{state:"ok",items:[]};n.st=s2.state;n.items=s2.items;if(s2.items.some(i=>i.c==="red"))n.st="blocked";});
-const byId={};NODES.forEach(n=>byId[n.id]=n);
+const byId={};
 /* auto-fit: every spec gets a centered home and a view scaled to its extents */
 const _bb=(()=>{let x0=1e9,x1=-1e9,z0=1e9,z1=-1e9;
+ if(!NODES.length)return {x0:-1,x1:1,z0:-1,z1:1};
  NODES.forEach(n=>{x0=Math.min(x0,n.x);x1=Math.max(x1,n.x+n.w);z0=Math.min(z0,n.y);z1=Math.max(z1,n.y+n.d);});
  return {x0,x1,z0,z1};})();
 const CENTER={x:(_bb.x0+_bb.x1)/2,z:(_bb.z0+_bb.z1)/2};
-const FITSPAN=Math.max(_bb.x1-_bb.x0,_bb.z1-_bb.z0);
-/* chrome from spec */
-document.getElementById("brandK").textContent=(SPEC.brand||{}).k||"";
-document.getElementById("brandV").textContent=(SPEC.brand||{}).v||"";
-(SPEC.metrics||[]).forEach(mt=>{
- const c=document.createElement("div");c.className="cell";
- const k=document.createElement("span");k.className="k t-label-sm";k.textContent=mt.k;
- const v=document.createElement("span");v.className="v t-data";v.textContent=mt.v;
- c.appendChild(k);c.appendChild(v);document.getElementById("metricStrip").appendChild(c);
-});
-document.getElementById("wordmark").textContent=SPEC.wordmark||"";
-document.getElementById("asOf").textContent=SPEC.asOf||"";
-const dec=t=>new DOMParser().parseFromString("<x>"+(t||"")+"</x>","text/html").documentElement.textContent;
-document.getElementById("pEyebrow").textContent=dec((SPEC.intro||{}).eyebrow);
-document.getElementById("pTitle").textContent=dec((SPEC.intro||{}).title);
-document.getElementById("pSub").textContent=dec((SPEC.intro||{}).sub);
-
+let FITSPAN=Math.max(_bb.x1-_bb.x0,_bb.z1-_bb.z0);
 /* ————— OKOA colors into WebGL ————— */
 function cssv(n){return getComputedStyle(document.documentElement).getPropertyValue(n).trim();}
 /* ————— contrast floor ————— every theme, canon or IDE, must render muted text and signal ink legibly.
@@ -1709,7 +1716,7 @@ const scene=new THREE.Scene();
 scene.background=COL.paper.clone();
 /* orthographic projection: no vanishing point — a building is the same size on
    screen near or far; orbiting slides things behind/above each other (flat iso) */
-const VIEW=Math.max(16,FITSPAN*1.25+3); /* auto-fit: world units visible at zoom 1 */
+let VIEW=Math.max(16,FITSPAN*1.25+3); /* auto-fit: world units visible at zoom 1 */
 const camera=new THREE.OrthographicCamera(-VIEW/2,VIEW/2,VIEW/2,-VIEW/2,-200,500);
 scene.add(new THREE.AmbientLight(0xffffff,0.85));
 const sun=new THREE.DirectionalLight(0xffffff,0.9);sun.position.set(18,30,10);scene.add(sun);
@@ -1719,7 +1726,7 @@ const fill=new THREE.DirectionalLight(0xffffff,0.25);fill.position.set(-14,12,-1
 const LVL_H=2.8;let stacked=false; /* declared before makeGrid runs at setup */
 let grids=[];
 function makeGrid(){
- grids.forEach(g=>scene.remove(g));grids=[];
+ grids.forEach(g=>{scene.remove(g);g.geometry.dispose();g.material.dispose();});grids=[];
  const gridC=mix(COL.paper,COL.fg1,0.20);
  /* stacked: three aligned planes — one grid seen from directly above.
     Off-ground planes are fainter with the barest hue shift (noise discipline). */
@@ -1749,47 +1756,6 @@ function worstOf(n){
  if(n.items.some(i=>i.c==="you"))return "you";
  return "amber";
 }
-NODES.forEach(n=>{
- const grp=new THREE.Group();grp.userData.id=n.id;
- /* etched, poster-flat, simple: paper roof + hatched sides, no base plate */
- const side=new THREE.MeshBasicMaterial({map:makeHatch(n.st)});
- hatched.push({m:side,st:n.st});
- const roof=new THREE.MeshBasicMaterial({color:ROOF[n.st]});
- themed.push({m:roof,get:()=>ROOF[n.st]});
- const cx=n.x+n.w/2,cz=n.y+n.d/2;
- const w=worstOf(n);
- function box(h0,hh){
-   const geo=new THREE.BoxGeometry(n.w,hh,n.d);
-   const m=new THREE.Mesh(geo,[side,side,roof,side,side,side]);
-   m.position.set(cx,h0+hh/2,cz);m.userData.id=n.id;
-   grp.add(m);pickables.push(m);
-   const egm=new THREE.LineBasicMaterial({color:COL.fg1,transparent:true,opacity:0.8});
-   themed.push({m:egm,get:()=>COL.fg1});
-   const eg=new THREE.LineSegments(new THREE.EdgesGeometry(geo),egm);
-   eg.position.copy(m.position);grp.add(eg);
- }
- if(n.stack){const sh=n.h/n.stack,gap=sh*0.25;
-   for(let i=0;i<n.stack;i++)box(i*(sh+gap)*0.8,sh);}
- else box(0,n.h);
- scene.add(grp);meshById[n.id]=grp;
- /* placard */
- const lb=document.createElement("div");lb.className="lbl";lb.id="lb-"+n.id;
- const idsp=document.createElement("span");idsp.className="id";idsp.textContent=n.id;
- lb.appendChild(idsp);lb.appendChild(document.createTextNode(SHORT[n.id]||n.name));
- if(n.items&&n.items.length){
-   const sfx=document.createElement("span");sfx.className="sfx "+w;
-   sfx.textContent="· "+n.items.length+" open"+(n.items.some(i=>i.c==="you")?" · yours":"");
-   lb.appendChild(sfx);
- }
- lblLayer.appendChild(lb);
- n._anchor=new THREE.Vector3(cx,0,n.y+n.d+0.35);
-});
-
-/* resting opacity of every material (faces AND ink outlines) for honest trace-dimming */
-NODES.forEach(n=>meshById[n.id].traverse(o=>{if(o.material){
- const mats=Array.isArray(o.material)?o.material:[o.material];
- mats.forEach(m=>{m.userData.op0=m.opacity;});}}));
-
 /* graph edges on the ground */
 /* connection health: a link can be broken/degraded independent of its modules.
    broken = risk red, gapped, and flow refuses to cross. degraded = amber, slow flow. */
@@ -1811,8 +1777,7 @@ function sensorBlock(id){
  return h+"</div>";
 }
 /*__ISOSCOPE_ROUTER__*/
-const __ROUTED=isoRouteAll(NODES,EDGES);
-window.__isoRouteQC=__ROUTED.qc;
+const __ROUTED={};
 function edgePath(e){return __ROUTED.routes[e[0]+"-"+e[1]].map(p=>new THREE.Vector3(p[0],0.03,p[1]));}
 /* ————— R31 junction grammar —————
    A link JOINS a module: a dot sits where the pipe meets the wall (electrical convention).
@@ -1848,7 +1813,7 @@ function junctionScale(){return 0.075*LINEW[lineSet].dot;}
    −1 the field below (installs, downstream, feedback — and the work rising from it).
    Flat by default; Stack lifts each stratum to its plane. */
 const LEVELS=SPEC.levels||{};
-NODES.forEach(n=>{n._lvl=LEVELS[n.id]||0;n._ly=0;n._lyT=0;});
+
 /* flow grammar: static = solid line to inspect from any angle; Flow = dots along the pipe */
 const DOTSETS=[{label:"Fine",r:0.032,gap:0.5},{label:"Medium",r:0.046,gap:0.72},{label:"Bold",r:0.062,gap:1.05}];
 let dotSet=1;
@@ -1862,25 +1827,8 @@ function edgeMat(colGet,op){
  themed.push({m,get:colGet});edgeMats.push(m);
  return m;
 }
-EDGES.forEach(e=>{
- const key=e[0]+"-"+e[1];
- const health=EDGESTATUS[key]||null;
- const basePts=edgePath(e);
- /* ALL SOLID: color + weight carry the semantics — no dashes anywhere.
-    planned = faint · degraded = amber · broken = red and never carries flow */
- let mat,dotted=true,speed=1;
- if(health==="broken"){mat=edgeMat(()=>COL.risk,0.95);dotted=false;}
- else if(health==="degraded"){mat=edgeMat(()=>COL.caution,0.9);speed=0.45;}
- else if(e[2]==="auth"){mat=edgeMat(()=>COL.accent,0.95);}
- else if(e[2]==="intended"){mat=edgeMat(()=>mix(COL.fg1,COL.paper,0.45),0.4);speed=0.35;}
- else{mat=edgeMat(()=>COL.fg2,0.75);}
- const line=new Line2(new LineGeometry(),mat);
- line.userData.edgeKey=key;
- scene.add(line);
- edgeLinesById[key]={key,line,type:e[2],health,basePts,a:e[0],b:e[1],dotted,speed,t:0,dots:[],pts:[],L:[0],total:1,jn:[junctionMesh(),junctionMesh()]};
-});
-const dotMatN=new THREE.MeshBasicMaterial({color:COL.accent});themed.push({m:dotMatN,get:()=>COL.accent});
-const dotMatW=new THREE.MeshBasicMaterial({color:COL.caution});themed.push({m:dotMatW,get:()=>COL.caution});
+const dotMatN=new THREE.MeshBasicMaterial({color:COL.accent});
+const dotMatW=new THREE.MeshBasicMaterial({color:COL.caution});
 function edgePts3D(o){
  const ya=byId[o.a]._ly+0.03,yb=byId[o.b]._ly+0.03;
  const pts=o.basePts.map(p=>new THREE.Vector3(p.x,ya,p.z));
@@ -1926,7 +1874,6 @@ function buildDots(o){
  }
 }
 function rebuildAllEdges(){Object.values(edgeLinesById).forEach(o=>{rebuildEdge(o);buildDots(o);});}
-rebuildAllEdges();
 
 /* ————— navigation: standard OrbitControls (industry-standard, multi-device) —————
    Mouse: drag = orbit · wheel = zoom · right-drag = pan
@@ -2016,6 +1963,7 @@ function selectEdge(key){
  renderEdgePanel(key);
 }
 function pickAt(cx,cy,shift,meta){
+ incidentActive=false;
  const hit=castAt(cx,cy);
  if(hit&&hit.kind==="node"){
   clearEdgeSel();
@@ -2048,7 +1996,8 @@ function pin(id){
    its ends are energized. Click an energized module to cut it — every flow
    through it dies. Click empty ground to restore the whole board. */
 const cordon=new Set(); /* energized modules; empty = all live */
-function exitCordon(){cordon.clear();}
+let incidentActive=false;
+function exitCordon(){cordon.clear();incidentActive=false;}
 function paintCircuit(){
  const allLive=cordon.size===0;
  Object.entries(edgeLinesById).forEach(([k,o])=>{
@@ -2101,31 +2050,11 @@ function renderCircuitPanel(){
  setSafe(pP,html);
 }
 /* ————— legend ————— */
-const legend=document.getElementById("legend");
-GROUPS.forEach(gr=>{
- const h=document.createElement("p");h.className="grouphead t-label-sm";h.textContent=gr.label;legend.appendChild(h);
- NODES.filter(n=>n.g===gr.id).forEach(n=>{
-   const b=document.createElement("button");b.className="item";b.id="li-"+n.id;b.type="button";
-   const chip=document.createElement("span");chip.className="chip";chip.textContent=n.id;
-   const nm=document.createElement("span");nm.className="nm";nm.textContent=n.name;
-   const ct=document.createElement("span");ct.className="ct";
-   ct.textContent=(n.items&&n.items.length)?n.items.length+" open":"✓";
-   if(n.items&&n.items.length)ct.style.color=n.items.some(i=>i.c==="red")?"var(--okoa-signal-risk)":
-     (n.items.some(i=>i.c==="you")?"var(--okoa-semantic-fg-accent)":"var(--okoa-signal-caution)");
-   b.appendChild(chip);b.appendChild(nm);b.appendChild(ct);
-   b.addEventListener("mouseenter",()=>{if(!pinned&&!cordon.size){NODES.forEach(m=>mark(m.id,m.id===n.id));renderPanel(n.id);}});
-   b.addEventListener("mouseleave",()=>{if(!pinned&&!cordon.size){NODES.forEach(m=>mark(m.id,false));renderPanel(null);}});
-   b.addEventListener("click",()=>pin(n.id));
-   legend.appendChild(b);
- });
-});
-legend.appendChild(document.getElementById("sideKey")); /* key sits below the list, in the frame */
-
+const legend=document.getElementById("legend"),sideKey=document.getElementById("sideKey");
 /* ————— panel ————— */
 const pE=document.getElementById("pEyebrow"),pT=document.getElementById("pTitle"),
       pS=document.getElementById("pSub"),pP=document.getElementById("pProse");
-setSafe(pP,(SPEC.intro||{}).proseHTML||"");
-const DEF={e:pE.textContent,t:pT.textContent,s:pS.textContent,node:pP.cloneNode(true)};
+const DEF={};
 function edgeTypeLabel(o){return o.type==="auth"?"installs / authority":o.type==="intended"?"planned":"data flow";}
 function renderEdgePanel(key){
  const o=edgeLinesById[key],e=key.split("-");
@@ -2215,9 +2144,8 @@ function clearTrace(){
  NODES.forEach(n=>mark(n.id,false));
  if(!pinned)renderPanel(null);
 }
-document.getElementById("btnTrace").addEventListener("click",()=>{
- exitCordon();
- ti=(ti+1)%TRACE.length;const cur=TRACE[ti],ends=cur.split("-");
+function renderTrace(){
+ const cur=TRACE[ti],ends=cur.split("-");
  Object.entries(edgeLinesById).forEach(([k,o])=>{o.line.material.opacity=(k===cur)?1:0.06;});
  NODES.forEach(n=>{
    const on=ends.indexOf(n.id)>=0;
@@ -2232,6 +2160,11 @@ document.getElementById("btnTrace").addEventListener("click",()=>{
  pT.textContent=byId[ends[0]].name+" → "+byId[ends[1]].name;
  pS.textContent="trace one step";
  setSafe(pP,"<p class='t-body-sm'>"+TRACETEXT[cur]+"</p>");
+}
+document.getElementById("btnTrace").addEventListener("click",()=>{
+ exitCordon();
+ if(!TRACE.length)return;
+ ti=(ti+1)%TRACE.length;renderTrace();
 });
 
 /* ————— theme switch: re-read OKOA tokens, repaint the whole scene ————— */
@@ -2369,17 +2302,191 @@ document.getElementById("btnGuide").addEventListener("click",()=>{
 });
 introVeil.addEventListener("click",ev=>{ if(ev.target===introVeil) document.getElementById("introDismiss").click(); });
 
-/* blast radius: if anything is RED, open already scoped to the problem area —
-   the failing module(s) plus direct neighbors, circuit-energized, camera on the worst.
-   Ground-click restores the whole board as always. */
-(function(){
- const reds=NODES.filter(n=>n.items&&n.items.some(i=>i.c==="red"));
+/* R30: rebuild only graph-owned resources; closures retain their collections. */
+function buildScene(spec){
+ document.title=spec.title||"Isoscope";
+ document.getElementById("metricStrip").replaceChildren();
+ NODES.forEach(n=>{
+  const st=STATUS[n.id]||{state:"ok",items:[]};n.items=st.items||[];
+  n.st=n.items.some(i=>i.c==="red")?"blocked":st.state;
+  n._lvl=LEVELS[n.id]||0;n._lyT=stacked?n._lvl*LVL_H:0;n._ly=n._lyT;
+  byId[n.id]=n;
+ });
+/* chrome from spec */
+document.getElementById("brandK").textContent=(spec.brand||{}).k||"";
+document.getElementById("brandV").textContent=(spec.brand||{}).v||"";
+(spec.metrics||[]).forEach(mt=>{
+ const c=document.createElement("div");c.className="cell";
+ const k=document.createElement("span");k.className="k t-label-sm";k.textContent=mt.k;
+ const v=document.createElement("span");v.className="v t-data";v.textContent=mt.v;
+ c.appendChild(k);c.appendChild(v);document.getElementById("metricStrip").appendChild(c);
+});
+document.getElementById("wordmark").textContent=spec.wordmark||"";
+document.getElementById("asOf").textContent=spec.asOf||"";
+const dec=t=>new DOMParser().parseFromString("<x>"+(t||"")+"</x>","text/html").documentElement.textContent;
+document.getElementById("pEyebrow").textContent=dec((spec.intro||{}).eyebrow);
+document.getElementById("pTitle").textContent=dec((spec.intro||{}).title);
+document.getElementById("pSub").textContent=dec((spec.intro||{}).sub);
+
+NODES.forEach(n=>{
+ const grp=new THREE.Group();grp.userData.id=n.id;
+ /* etched, poster-flat, simple: paper roof + hatched sides, no base plate */
+ const side=new THREE.MeshBasicMaterial({map:makeHatch(n.st)});
+ hatched.push({m:side,st:n.st});
+ const roof=new THREE.MeshBasicMaterial({color:ROOF[n.st]});
+ themed.push({m:roof,get:()=>ROOF[n.st]});
+ const cx=n.x+n.w/2,cz=n.y+n.d/2;
+ const w=worstOf(n);
+ function box(h0,hh){
+   const geo=new THREE.BoxGeometry(n.w,hh,n.d);
+   const m=new THREE.Mesh(geo,[side,side,roof,side,side,side]);
+   m.position.set(cx,h0+hh/2,cz);m.userData.id=n.id;
+   grp.add(m);pickables.push(m);
+   const egm=new THREE.LineBasicMaterial({color:COL.fg1,transparent:true,opacity:0.8});
+   themed.push({m:egm,get:()=>COL.fg1});
+   const eg=new THREE.LineSegments(new THREE.EdgesGeometry(geo),egm);
+   eg.position.copy(m.position);grp.add(eg);
+ }
+ if(n.stack){const sh=n.h/n.stack,gap=sh*0.25;
+   for(let i=0;i<n.stack;i++)box(i*(sh+gap)*0.8,sh);}
+ else box(0,n.h);
+ scene.add(grp);meshById[n.id]=grp;
+ /* placard */
+ const lb=document.createElement("div");lb.className="lbl";lb.id="lb-"+n.id;
+ const idsp=document.createElement("span");idsp.className="id";idsp.textContent=n.id;
+ lb.appendChild(idsp);lb.appendChild(document.createTextNode(SHORT[n.id]||n.name));
+ if(n.items&&n.items.length){
+   const sfx=document.createElement("span");sfx.className="sfx "+w;
+   sfx.textContent="· "+n.items.length+" open"+(n.items.some(i=>i.c==="you")?" · yours":"");
+   lb.appendChild(sfx);
+ }
+ lblLayer.appendChild(lb);
+ n._anchor=new THREE.Vector3(cx,0,n.y+n.d+0.35);
+});
+
+/* resting opacity of every material (faces AND ink outlines) for honest trace-dimming */
+NODES.forEach(n=>meshById[n.id].traverse(o=>{if(o.material){
+ const mats=Array.isArray(o.material)?o.material:[o.material];
+ mats.forEach(m=>{m.userData.op0=m.opacity;});}}));
+
+
+ NODES.forEach(n=>meshById[n.id].position.y=n._ly);
+ Object.assign(__ROUTED,isoRouteAll(NODES,EDGES));window.__isoRouteQC=__ROUTED.qc;
+EDGES.forEach(e=>{
+ const key=e[0]+"-"+e[1];
+ const health=EDGESTATUS[key]||null;
+ const basePts=edgePath(e);
+ /* ALL SOLID: color + weight carry the semantics — no dashes anywhere.
+    planned = faint · degraded = amber · broken = red and never carries flow */
+ let mat,dotted=true,speed=1;
+ if(health==="broken"){mat=edgeMat(()=>COL.risk,0.95);dotted=false;}
+ else if(health==="degraded"){mat=edgeMat(()=>COL.caution,0.9);speed=0.45;}
+ else if(e[2]==="auth"){mat=edgeMat(()=>COL.accent,0.95);}
+ else if(e[2]==="intended"){mat=edgeMat(()=>mix(COL.fg1,COL.paper,0.45),0.4);speed=0.35;}
+ else{mat=edgeMat(()=>COL.fg2,0.75);}
+ const line=new Line2(new LineGeometry(),mat);
+ line.userData.edgeKey=key;
+ scene.add(line);
+ edgeLinesById[key]={key,line,type:e[2],health,basePts,a:e[0],b:e[1],dotted,speed,t:0,dots:[],pts:[],L:[0],total:1,jn:[junctionMesh(),junctionMesh()]};
+});
+
+ themed.push({m:dotMatN,get:()=>COL.accent},{m:dotMatW,get:()=>COL.caution});
+ rebuildAllEdges();
+GROUPS.forEach(gr=>{
+ const h=document.createElement("p");h.className="grouphead t-label-sm";h.textContent=gr.label;legend.appendChild(h);
+ NODES.filter(n=>n.g===gr.id).forEach(n=>{
+   const b=document.createElement("button");b.className="item";b.id="li-"+n.id;b.type="button";
+   const chip=document.createElement("span");chip.className="chip";chip.textContent=n.id;
+   const nm=document.createElement("span");nm.className="nm";nm.textContent=n.name;
+   const ct=document.createElement("span");ct.className="ct";
+   ct.textContent=(n.items&&n.items.length)?n.items.length+" open":"✓";
+   if(n.items&&n.items.length)ct.style.color=n.items.some(i=>i.c==="red")?"var(--okoa-signal-risk)":
+     (n.items.some(i=>i.c==="you")?"var(--okoa-semantic-fg-accent)":"var(--okoa-signal-caution)");
+   b.appendChild(chip);b.appendChild(nm);b.appendChild(ct);
+   b.addEventListener("mouseenter",()=>{if(!pinned&&!cordon.size){NODES.forEach(m=>mark(m.id,m.id===n.id));renderPanel(n.id);}});
+   b.addEventListener("mouseleave",()=>{if(!pinned&&!cordon.size){NODES.forEach(m=>mark(m.id,false));renderPanel(null);}});
+   b.addEventListener("click",()=>pin(n.id));
+   legend.appendChild(b);
+ });
+});
+legend.appendChild(document.getElementById("sideKey")); /* key sits below the list, in the frame */
+
+
+ setSafe(pP,(spec.intro||{}).proseHTML||"");
+ Object.assign(DEF,{e:pE.textContent,t:pT.textContent,s:pS.textContent,node:pP.cloneNode(true)});
+ window.__lblMeasured=false;
+}
+function disposeScene(){
+ const geometries=new Set(),materials=new Set(),textures=new Set();
+ Object.values(meshById).forEach(g=>{
+  g.traverse(o=>{if(o.geometry)geometries.add(o.geometry);
+   if(o.material)(Array.isArray(o.material)?o.material:[o.material]).forEach(m=>materials.add(m));});
+  scene.remove(g);
+ });
+ hatched.forEach(h=>{if(h.m.map)textures.add(h.m.map);});
+ Object.values(edgeLinesById).forEach(o=>{
+  o.dots.forEach(d=>{scene.remove(d);geometries.add(d.geometry);});
+  scene.remove(o.line);geometries.add(o.line.geometry);materials.add(o.line.material);
+  o.jn.forEach(j=>{scene.remove(j);materials.add(j.material);});
+ });
+ geometries.forEach(g=>g.dispose());textures.forEach(t=>t.dispose());materials.forEach(m=>m.dispose());
+ pickables.length=0;themed.length=0;hatched.length=0;edgeMats.length=0;
+ [meshById,edgeLinesById,byId].forEach(m=>Object.keys(m).forEach(k=>delete m[k]));
+ lblLayer.replaceChildren();legend.replaceChildren(sideKey);
+}
+function blastIncident(){
+ const reds=NODES.filter(n=>n.items.some(i=>i.c==="red"));
  if(!reds.length)return;
- const adj={};EDGES.forEach(e=>{(adj[e[0]]=adj[e[0]]||[]).push(e[1]);(adj[e[1]]=adj[e[1]]||[]).push(e[0]);});
- reds.forEach(r=>{cordon.add(r.id);(adj[r.id]||[]).forEach(nb=>cordon.add(nb));});
- applyCircuit();
- setTimeout(()=>flyTo(byId[reds[0].id]),400);
-})();
+ reds.sort((a,b)=>b.items.filter(i=>i.c==="red").length-a.items.filter(i=>i.c==="red").length);
+ cordon.clear();reds.forEach(n=>cordon.add(n.id));
+ EDGES.forEach(e=>{if(reds.some(n=>n.id===e[0]))cordon.add(e[1]);if(reds.some(n=>n.id===e[1]))cordon.add(e[0]);});
+ incidentActive=true;pinned=null;selEdge=null;ti=-1;paintCircuit();
+ const worst=reds[0];renderPanel(worst.id);pE.textContent="Incident · "+worst.id;
+ flyTo(worst);
+ Object.assign(flyGoal,{tx:worst._anchor.x,ty:worst._lyT,tz:worst._anchor.z});
+}
+function applySpec(next){
+ // Clone before clearing: callers may supply objects aliased to the active spec.
+ next=structuredClone(next);
+ if(!Array.isArray(next.nodes)||!Array.isArray(next.edges)||!Array.isArray(next.groups))throw Error("invalid live spec");
+ const ids=new Set(next.nodes.map(n=>n.id));
+ if(ids.size!==next.nodes.length||next.edges.some(e=>!ids.has(e[0])||!ids.has(e[1])))throw Error("invalid live graph");
+ const oldReds=new Set(NODES.filter(n=>n.items.some(i=>i.c==="red")).map(n=>n.id));
+ const replace=(target,value)=>{if(Array.isArray(target)){target.length=0;target.push(...(value||[]));}
+  else{Object.keys(target).forEach(k=>delete target[k]);Object.assign(target,value||{});}};
+ disposeScene();
+ [[NODES,next.nodes],[EDGES,next.edges],[GROUPS,next.groups],[STATUS,next.status],[SHORT,next.short],
+  [EDGEDOCS,next.edgeDocs],[EDGESTATUS,next.edgeStatus],[TELEMETRY,next.telemetry],[LEVELS,next.levels],
+  [TRACE,next.trace],[TRACETEXT,next.traceText]].forEach(([target,value])=>replace(target,value));
+ replace(SPEC,next);
+ Object.assign(SPEC,{nodes:NODES,edges:EDGES,groups:GROUPS,status:STATUS,short:SHORT,edgeDocs:EDGEDOCS,
+  edgeStatus:EDGESTATUS,telemetry:TELEMETRY,levels:LEVELS,trace:TRACE,traceText:TRACETEXT});
+ Object.assign(_bb,NODES.length?{
+  x0:Math.min(...NODES.map(n=>n.x)),x1:Math.max(...NODES.map(n=>n.x+n.w)),
+  z0:Math.min(...NODES.map(n=>n.y)),z1:Math.max(...NODES.map(n=>n.y+n.d))}:{x0:-1,x1:1,z0:-1,z1:1});
+ Object.assign(CENTER,{x:(_bb.x0+_bb.x1)/2,z:(_bb.z0+_bb.z1)/2});
+ FITSPAN=Math.max(_bb.x1-_bb.x0,_bb.z1-_bb.z0);VIEW=Math.max(16,FITSPAN*1.25+3);
+ Object.assign(HOME,{tx:CENTER.x,tz:CENTER.z});
+ if(pinned&&!ids.has(pinned))pinned=null;
+ [...cordon].forEach(id=>{if(!ids.has(id))cordon.delete(id);});
+ if(selEdge&&!EDGES.some(e=>e[0]+"-"+e[1]===selEdge))selEdge=null;
+ if(ti>=TRACE.length||ti<0||!EDGES.some(e=>e[0]+"-"+e[1]===TRACE[ti]))ti=-1;
+ hoverId=null;flyGoal=null;
+ buildScene(SPEC);refreshTheme();resize();
+ const reds=NODES.filter(n=>n.items.some(i=>i.c==="red"));
+ if(reds.some(n=>!oldReds.has(n.id))){blastIncident();return;}
+ if(incidentActive&&!reds.length){cordon.clear();incidentActive=false;}
+ paintCircuit();
+ if(selEdge)selectEdge(selEdge);
+ else if(pinned){NODES.forEach(n=>mark(n.id,n.id===pinned));renderPanel(pinned);}
+ else if(cordon.size)renderCircuitPanel();
+ else if(ti>=0)renderTrace();
+ else renderPanel(null);
+ if(controls.target.x<_bb.x0-1||controls.target.x>_bb.x1+1||controls.target.z<_bb.z0-1||controls.target.z>_bb.z1+1)
+  flyGoal={tx:HOME.tx,ty:HOME.ty,tz:HOME.tz,zoom:HOME.zoom,az:HOME.az,pol:HOME.pol};
+}
+buildScene(SPEC);
+blastIncident();
 
 /* ————— frame loop ————— */
 function resize(){
@@ -2409,7 +2516,9 @@ function tick(){
      camera.position.copy(controls.target).add(new THREE.Vector3().setFromSpherical(sph));
      angDone=Math.abs(dth)<0.01&&Math.abs(flyGoal.pol-sph.phi)<0.01;
    }
-   if(Math.abs(nz-flyGoal.zoom)<0.02&&Math.abs(controls.target.x-flyGoal.tx)<0.05&&angDone)flyGoal=null;
+   if(Math.abs(nz-flyGoal.zoom)<1e-5&&controls.target.distanceTo(new THREE.Vector3(flyGoal.tx,flyGoal.ty,flyGoal.tz))<1e-5&&angDone){
+    controls.target.set(flyGoal.tx,flyGoal.ty,flyGoal.tz);camera.zoom=flyGoal.zoom;camera.updateProjectionMatrix();flyGoal=null;
+   }
  }
  controls.update();
  /* levels tween: modules glide to their planes; pipes re-route live */
@@ -2444,13 +2553,15 @@ function tick(){
  NODES.forEach(n=>{
    tmpV.copy(n._anchor);tmpV.y+=n._ly;tmpV.project(camera);
    const lb=document.getElementById("lb-"+n.id);
-   if(tmpV.z>1){lb.style.display="none";return;}
-   lb.style.display="";
+   if(tmpV.z>1){if(lb.style.display!=="none")lb.style.display="none";return;}
+   if(lb.style.display!=="")lb.style.display="";
    lb.classList.toggle("far",far);
    const vf=veryfar&&!(n.items&&n.items.length);
    lb.classList.toggle("veryfar",vf);
    const lx=(tmpV.x*0.5+0.5)*rect.width,ly=(-tmpV.y*0.5+0.5)*rect.height+4;
-   lb.style.left=lx+"px";lb.style.top=ly+"px";
+   const left=lx.toFixed(4)+"px",top=ly.toFixed(4)+"px";
+   if(lb._left!==left){lb.style.left=left;lb._left=left;}
+   if(lb._top!==top){lb.style.top=top;lb._top=top;}
    if(!vf)ents.push({n,lb,lx,ly,depth:tmpV.z});
  });
  /* declutter: place labels by priority; an overlapping lower-priority label recedes */
@@ -2470,13 +2581,7 @@ function tick(){
  });
  renderer.render(scene,camera);
 }
-document.fonts.ready.then(()=>{NODES.forEach(n=>{ /* redraw roofs once mono font is loaded */
- const g=meshById[n.id];let lastMesh=null;
- g.traverse(o=>{if(o.isMesh)lastMesh=o;});
- /* top material of the top mesh */
- g.traverse(o=>{if(o.isMesh&&Array.isArray(o.material)&&o.material[2]&&o.material[2].map){
-   o.material[2].map=roofTexture(n);o.material[2].needsUpdate=true;}});
-});});
+document.fonts.ready.then(()=>{window.__lblMeasured=false;});
 /* ————— R30 phase 1: restore the view after a live reload; remember theme + weights across sessions ————— */
 window.__isoViewState=()=>({
  theme:document.documentElement.getAttribute("data-style"),dotSet,lineSet,stacked,pinned,
@@ -2497,6 +2602,13 @@ window.__isoViewState=()=>({
  if(saved.cam){flyGoal=null;camera.position.set(...saved.cam.p);controls.target.set(...saved.cam.t);camera.zoom=saved.cam.zoom;camera.updateProjectionMatrix();controls.update();}
  if(saved.pinned&&byId[saved.pinned]&&cordon.size===0){pinned=saved.pinned;NODES.forEach(n=>mark(n.id,n.id===pinned));renderPanel(pinned);}
 })();
+window.__isoApplySpec=applySpec;
+window.__isoSwapState=()=>({stacked,pinned,selEdge,ti,flowing,dotSet,lineSet,cordon:[...cordon],
+ cam:{p:camera.position.toArray(),t:controls.target.toArray(),zoom:camera.zoom},fly:!!flyGoal,
+ center:{...CENTER},bounds:{..._bb},nodes:NODES.map(n=>({id:n.id,anchor:[n._anchor.x,n._ly,n._anchor.z],items:n.items})),
+ edges:Object.fromEntries(Object.entries(edgeLinesById).map(([k,o])=>[k,{junctions:o.jn.filter(j=>j.parent===scene).length}])),
+ memory:{...renderer.info.memory,programs:renderer.info.programs.length},children:scene.children.length});
+window.dispatchEvent(new Event("isoscope-ready"));
 tick();
 </script>
 </body>

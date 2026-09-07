@@ -151,7 +151,7 @@
    "d": 1,
    "h": 1,
    "does": "Runs the map in a browser from day one of a project: watches the graph store and repaints on every change — every commit, every agent edit, live.",
-   "built": "Bun.serve + SSE + a three-line client in the template. The view survives every repaint (R30 phase 1: camera, stack, theme, inspector restored; a new red module still takes the camera). POST /mark and POST /ci accept CI/CD webhooks directly.",
+   "built": "Bun.serve + SSE + a three-line client in the template. The view survives every repaint (R30 phase 2: the scene rebuilds in place on every store change; camera, stack, theme, inspector, circuit preserved; a new red module still takes the camera). POST /mark and POST /ci accept CI/CD webhooks directly.",
    "refs": "cli.ts (serve) · template.html (live client)"
   },
   {
@@ -272,10 +272,6 @@
   "SV": {
    "state": "build",
    "items": [
-    {
-     "c": "amber",
-     "l": "R30 phase 2: in-place hot-swap without reload"
-    },
     {
      "c": "you",
      "l": "Sensor offered — trace boundary at Live serve: the store→browser seam has not moved since 2026-08-22 and every consumer crosses it (events → lumbr://isoscope/serve/*). Accept and an agent installs it; decline with iso_set_sensor."

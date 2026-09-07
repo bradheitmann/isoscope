@@ -303,3 +303,24 @@ vocabulary per element (no static+moving duplication); toggles are colored only
 when ON; no hidden modes (tabs died for this); motion only where attention
 belongs (nothing ghosted may move); labels quiet, mono, darken-on-hover,
 word-capped; grids visible but subtle; whole-building color+shade for state.
+
+## 2026-09-07 — R30 phase 2: live scene hot-swap
+
+`serve` now fetches `/spec.json` on SSE updates and rebuilds the graph scene
+in place. `buildScene`, `disposeScene` and `applySpec` preserve collection
+identities, camera/controls, shared WebGL resources, theme, weights, Stack,
+and valid inspector/circuit/trace selections. New red modules win the camera;
+a preserved target outside the new bounds glides home. Healing clears an
+incident circuit without moving the camera. Per-node and per-edge GPU
+resources are disposed, including hatch textures and junction materials;
+shared junction geometry and dot materials survive.
+
+The live client serializes applications, drops superseded fetches and keeps
+the latest pending spec. `?reload=1` or a failed apply uses the existing
+snapshot/reload path; `restoreView` remains boot-only. The unconditional
+fonts-ready hook remains, with its dead `roofTexture` branch removed.
+
+Run `bun scripts/swap-proof.ts <evidence-directory>` for the live CLI/MCP
+C1–C7 numerical proof, contrast/DRC checks and a live CDP PNG. `--headed`
+opens the proof browser for an independent observer. Results are DEV evidence;
+independent QA and the headed C1/C3 observation remain acceptance gates.

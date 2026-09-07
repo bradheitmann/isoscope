@@ -40,9 +40,9 @@ The primary example is isoscope describing itself (`examples/isoscope.spec.json`
    ```bash
    bun cli.ts install-hook /path/to/your/repo /path/to/my.db
    ```
-   (any store write repaints every open browser via SSE; camera, stack, theme
-   and the open inspector survive the repaint — a *new* red module still takes
-   the camera).
+   (any store write rebuilds the live scene in place via SSE, without reloading;
+   camera, stack, theme, inspector and circuit survive — a *new* red module
+   still takes the camera).
 3b. **When CI breaks, the map turns red where it broke** — point the provider's
    webhook at `serve` and it attributes the job itself:
    ```bash
@@ -114,8 +114,7 @@ Spec schema: [SPEC.md](SPEC.md) · Routing laws & roadmap: [docs/DESIGN-RULES.md
 CI/CD provider integrations (GitHub Actions / GitLab / Buildkite adapters that
 map failing jobs → modules automatically) · test-runner adapters
 (failure→module attribution) · live telemetry streaming into the trace-shaped
-status slots · R30 phase 2: in-place hot-swap for `serve` (phase 1, stateful
-reload, shipped) · R10 lane assignment in shared corridors · R12 PathFinder
+status slots · R30 phase 2: in-place hot-swap for `serve` (shipped) · R10 lane assignment in shared corridors · R12 PathFinder
 negotiation past ~50 links · lumbr bridge (its instrumentation → `mark`).
 
 MIT.

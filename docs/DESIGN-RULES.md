@@ -91,10 +91,13 @@ code and QC output.
 
 ### From schematic & metro-map cartography
 
-- **R30 Mental-map stability.** Rebuilding from an updated spec must not
-  scramble the layout — persist/seed positions so diffs read as diffs (metro-map
-  rule R1: preserve topology; force-directed variants exist with explicit
-  mental-map preservation). Critical for observability over time.
+- **R30 Mental-map stability.** *In force — phase 2.* `serve` rebuilds the
+  graph scene in place on store changes, preserving the camera, stack, theme,
+  weights, inspector and surviving circuit selections. Newly red modules take
+  the camera into their blast radius; a target outside the updated bounds
+  glides home. Shared WebGL resources survive; graph-owned resources are
+  disposed before rebuilding. `?reload=1` and failed swaps retain the phase-1
+  snapshot/reload fallback. Authored positions remain the layout authority.
 - **R31 Junction grammar.** *In force — see Laws.* Electrical convention:
   connected joins get an explicit junction dot; unavoidable crossings get a hop
   arc and never a dot — crossing ≠ connection is visually unambiguous.

@@ -266,7 +266,7 @@ lumbr-side exporter · going public is the operator's call.
 5. R12 PathFinder negotiation when consumer specs exceed ~50 edges.
 6. Telemetry adapter: stream live events into the trace-shaped status slots.
 
-## 2026-09-07 · S1 R10 conservative lanes (DEV; independent QA pending)
+## 2026-09-07 · S1 R10 conservative lanes (QA PASS · 6c13e6e)
 
 `router.mjs` assigns corridor lanes after joint shove, retains R13 pins/stubs,
 checks obstacle clearance and non-increasing weighted cost, and derives all QC
@@ -280,7 +280,7 @@ S1; weighted-cost rejections remain explicit. Flat QC does not certify
 stacked-plane crossings. S1 remains uncommitted pending independent QA and
 B/TEAM-PM authorization; this entry does not close R10 or the session.
 
-## 2026-09-07 · S2 change log and stable seams (DEV; independent QA pending)
+## 2026-09-07 · S2 change log and stable seams (QA PASS · 3e13459)
 
 Store mutations now append net per-node/per-kind history in the same transaction,
 including cross-node CI heals and ingest replacement clears. Nested helpers share

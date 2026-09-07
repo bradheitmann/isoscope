@@ -16,6 +16,20 @@ code and QC output.
 - **L3 — Level honesty.** Cross-level connections descend/climb via an outside
   riser and enter the destination wall *at the destination's level* — true from
   every camera angle.
+- **R10 — Clearance & lane assignment (in force 2026-09-07).** After joint
+  shove, shared parallel runs receive deterministic, edge-key-ordered offsets
+  spaced by 0.34 units, with orthogonal connectors and fixed R13 pins/stubs.
+  A corridor change must clear unrelated modules, fully separate its members,
+  reduce total sharing, and not increase weighted crossings. Unsafe sets retain
+  their previous routes. QC reports `lanes_assigned` (runs displaced),
+  `corridors_resolved` (groups fully separated), and `unresolved_shares`
+  (remaining segment pairs, edge keys, and rejection reasons).
+  All crossing metrics and R31 hops use the same final, trimmed geometry.
+  Near-coincident offsets that yield less than the 0.30 hop diameter after
+  shifting are rejected. Residual corridors require follow-up routing work;
+  this pass does not guarantee zero shares.
+  **Limitation:** "same-plane" is flat routing; the engine lifts levels
+  afterwards, so flat QC cannot certify stacked-plane crossings.
 - **R13 — Escape pins (in force 2026-09-02).** Modules with degree ≥ 3 fan
   their links out through assigned wall pins: each link end picks the wall
   facing its partner, pins on a shared wall are spread evenly and ordered by
@@ -37,10 +51,9 @@ code and QC output.
 
 ### From PCB / EDA practice
 
-- **R10 Clearance & lane assignment.** Minimum spacing between parallel traces;
-  when a corridor must be shared, assign each trace its own parallel lane offset
-  (Altium-style clearance rules; channel routing). *Status: penalized, not yet
-  lane-assigned.*
+- **R10 Clearance & lane assignment.** *In force — see Laws.* Conservative
+  parallel lanes separate feasible shared corridors; unresolved pairs remain
+  explicit in QC.
 - **R11 Netclasses.** Edge classes (data/auth/planned/…) carry per-class rules —
   width, clearance, routing priority, color — declared in the spec, enforced by
   DRC. Mirrors EDA netclass constraint systems.

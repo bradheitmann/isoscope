@@ -158,14 +158,115 @@ function isoRouteAll(NODES, EDGES) {
   }
   if (!improved) break;
  }
- const routes = {}, perEdge = [], hops = {};
+ /* R10: resolve shared corridors on the actual route, not in the renderer.
+    Pins and escape stubs stay put; short orthogonal connectors join each lane. */
+ const LANE_GAP = 0.34;
+ let lanes_assigned = 0, corridors_resolved = 0;
+ const laneFailures = new Map();
+ const edgeKey = e => e[0]+"-"+e[1];
+ const trimmed = (c, e) => {
+  const pts = c.map(p => [...p]);
+  trimEnd(pts, 0, byId[e[0]]); trimEnd(pts, 1, byId[e[1]]);
+  return pts;
+ };
+ function corridorGroups() {
+  const segs = [];
+  routed.forEach((r, ri) => {
+   for (let si = 1; si < r.c.length; si++) segs.push({ ri, si, p: r.c[si-1], q: r.c[si], key: edgeKey(r.e) });
+  });
+  const parent = segs.map((_, i) => i), active = new Set();
+  const root = i => { while (parent[i] !== i) i = parent[i]; return i; };
+  for (let i = 0; i < segs.length; i++) for (let j = i+1; j < segs.length; j++) {
+   const a = segs[i], b = segs[j];
+   if (a.ri === b.ri || xPenalty(a.p, a.q, b.p, b.q) !== 4) continue;
+   parent[root(j)] = root(i); active.add(i); active.add(j);
+  }
+  const groups = new Map();
+  active.forEach(i => { const k = root(i); if (!groups.has(k)) groups.set(k, []); groups.get(k).push(segs[i]); });
+  return [...groups.values()].map(g => g.sort((a,b) => a.key < b.key ? -1 : a.key > b.key ? 1 : a.si-b.si));
+ }
+ const totalPenalty = paths => {
+  let x = 0;
+  for (let i = 0; i < paths.length; i++) for (let j = i+1; j < paths.length; j++) x += pairPenalty(paths[i], paths[j]);
+  return x;
+ };
+ function compactPath(pts) {
+  const out = [];
+  pts.forEach(p => {
+   if (out.length && Math.abs(p[0]-out[out.length-1][0]) < 1e-9 && Math.abs(p[1]-out[out.length-1][1]) < 1e-9) return;
+   out.push(p);
+  });
+  return out;
+ }
+ const sharedSegments = (a, b) => {
+  let n = 0;
+  for (let i = 1; i < a.length; i++) for (let j = 1; j < b.length; j++)
+   if (xPenalty(a[i-1], a[i], b[j-1], b[j]) === 4) n++;
+  return n;
+ };
+ const shareCount = paths => {
+  let n = 0;
+  for (let i = 0; i < paths.length; i++) for (let j = i+1; j < paths.length; j++) n += sharedSegments(paths[i], paths[j]);
+  return n;
+ };
+ /* Recompute groups after every accepted change: segment indices are ephemeral.
+    Each accepted pass must reduce sharing, bounding progress without oscillation. */
+ for (;;) {
+  let improved = false;
+  const before = routed.map(r => trimmed(r.c, r.e));
+  const oldCost = totalPenalty(before);
+  const oldShares = shareCount(before);
+  for (const group of corridorGroups()) {
+   const changed = new Map(), moved = [];
+   let reason = "";
+   group.forEach((s, i) => {
+    const r = routed[s.ri], delta = LANE_GAP * (i-(group.length-1)/2);
+    if (Math.abs(delta) < 1e-9) return;
+    if ((s.si === 1 && deg[r.e[0]] >= HUB_DEGREE) || (s.si === r.c.length-1 && deg[r.e[1]] >= HUB_DEGREE)) {
+     reason = "fixed R13 escape stub"; return;
+    }
+    const axis = Math.abs(s.p[1]-s.q[1]) < 1e-9 ? 1 : 0;
+    const p = [...s.p], q = [...s.q]; p[axis] += delta; q[axis] += delta;
+    if (!changed.has(s.ri)) changed.set(s.ri, new Map());
+    changed.get(s.ri).set(s.si, [p, q]); moved.push(s);
+   });
+   const candidate = routed.map((r, ri) => {
+    const edits = changed.get(ri); if (!edits) return r.c;
+    const pts = [[...r.c[0]]];
+    for (let si = 1; si < r.c.length; si++) {
+     if (edits.has(si)) pts.push(...edits.get(si));
+     pts.push([...r.c[si]]);
+    }
+    return compactPath(pts);
+   });
+   if (!reason && [...changed.keys()].some(ri => !routeClear(candidate[ri], ...routed[ri].e.slice(0,2)))) reason = "obstacle clearance";
+   const after = candidate.map((c, ri) => trimmed(c, routed[ri].e));
+   if (!reason && totalPenalty(after) > oldCost) reason = "weighted cost would rise";
+   if (!reason && shareCount(after) >= oldShares) reason = "connectors retain shared corridor";
+   if (!reason && group.some(a => group.some(b => a.ri !== b.ri && sharedSegments(after[a.ri], after[b.ri]) > 0))) reason = "corridor members remain shared";
+   /* Near-coincident original offsets can make the literal symmetric shifts
+      closer than LANE_GAP. Reject those sets rather than overlap R31 arcs. */
+   const axis = Math.abs(group[0].p[1]-group[0].q[1]) < 1e-9 ? 1 : 0;
+   const offsets = group.map((s,i) => s.p[axis] + LANE_GAP*(i-(group.length-1)/2));
+   if (!reason && offsets.some((a,i) => offsets.some((b,j) => i !== j && Math.abs(a-b) < 0.30-1e-9))) reason = "lane spacing below hop diameter";
+   if (reason) {
+    group.forEach(a => group.forEach(b => { if (a.key !== b.key) laneFailures.set([a.key,b.key].sort().join("|"), reason); }));
+    continue;
+   }
+   candidate.forEach((c, ri) => routed[ri].c = c);
+   lanes_assigned += moved.length; corridors_resolved++;
+   improved = true; break;
+  }
+  if (!improved) break;
+ }
+ const routes = {}, perEdge = [], hops = {}, unresolved_shares = [];
  let weighted = 0, crossings = 0, shares = 0;
+ routed.forEach(slot => { slot.c = trimmed(slot.c, slot.e); });
  routed.forEach(slot => {
   const x = scoreAgainst(slot.c, routed.filter(r => r !== slot));
   if (x > 0) perEdge.push({ key: slot.e[0]+"-"+slot.e[1], weighted: x });
   weighted += x;
   const pts = slot.c.map(p => [p[0], p[1]]);
-  trimEnd(pts, 0, byId[slot.e[0]]); trimEnd(pts, 1, byId[slot.e[1]]);
   slot.key = slot.e[0]+"-"+slot.e[1];
   routes[slot.key] = pts;
  });
@@ -175,7 +276,12 @@ function isoRouteAll(NODES, EDGES) {
   const P = routes[routed[i].key], Q = routes[routed[j].key];
   for (let a = 1; a < P.length; a++) for (let b = 1; b < Q.length; b++) {
    const pen = xPenalty(P[a-1], P[a], Q[b-1], Q[b]);
-   if (pen === 4) { shares++; continue; }
+   if (pen === 4) {
+    shares++;
+    const keys = [routed[i].key, routed[j].key];
+    unresolved_shares.push({ keys, segments: [a-1,b-1], reason: laneFailures.get([...keys].sort().join("|")) || "no feasible lane set" });
+    continue;
+   }
    if (pen !== 1) continue;
    crossings++;
    const pH = Math.abs(P[a-1][1]-P[a][1]) < 1e-9;
@@ -186,6 +292,6 @@ function isoRouteAll(NODES, EDGES) {
  }
  perEdge.sort((a,b) => b.weighted - a.weighted);
  const hubs = NODES.filter(n => (deg[n.id]||0) >= HUB_DEGREE).map(n => n.id);
- return { routes, hops, qc: { weighted, crossings, shares, hops: Object.values(hops).reduce((s,h) => s+h.length, 0), hubs, offenders: perEdge, edges: EDGES.length } };
+ return { routes, hops, qc: { weighted, crossings, shares, lanes_assigned, corridors_resolved, unresolved_shares, hops: Object.values(hops).reduce((s,h) => s+h.length, 0), hubs, offenders: perEdge, edges: EDGES.length } };
 }
 export { isoRouteAll };

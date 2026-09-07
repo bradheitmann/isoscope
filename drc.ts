@@ -21,6 +21,9 @@ const budget = bIdx >= 0 ? Number(rest[bIdx + 1])
 const { qc } = isoRouteAll(spec.nodes, spec.edges);
 console.log(`isoscope drc · ${spec.nodes.length} modules · ${qc.edges} links`);
 console.log(`weighted crossings: ${qc.weighted}   budget: ${budget}   (${qc.crossings} crossing${qc.crossings === 1 ? "" : "s"} rendered as hops · ${qc.shares} shared channel${qc.shares === 1 ? "" : "s"})`);
+console.log(`lanes_assigned: ${qc.lanes_assigned}   corridors_resolved: ${qc.corridors_resolved}   unresolved_shares: ${qc.unresolved_shares.length}`);
+for (const share of qc.unresolved_shares)
+  console.log(`  unresolved ${share.keys.join(" / ")}: ${share.reason}`);
 if (qc.hubs.length) console.log(`hubs with escape pins (R13): ${qc.hubs.join(", ")}`);
 if (qc.offenders.length) {
   console.log("offenders (worst first):");

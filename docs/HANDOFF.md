@@ -266,6 +266,20 @@ lumbr-side exporter · going public is the operator's call.
 5. R12 PathFinder negotiation when consumer specs exceed ~50 edges.
 6. Telemetry adapter: stream live events into the trace-shaped status slots.
 
+## 2026-09-07 · S1 R10 conservative lanes (DEV; independent QA pending)
+
+`router.mjs` assigns corridor lanes after joint shove, retains R13 pins/stubs,
+checks obstacle clearance and non-increasing weighted cost, and derives all QC
+and hop points from final trimmed routes. `drc.ts` exposes displaced runs,
+resolved corridors, and every residual share pair with its reason.
+Example weighted baselines remain 1/5/0. Advisory codebase remains weighted 25
+with 3 shares; topology lab falls from 64 to 55 and from 6 to 3 shares, with
+4 displaced runs across 2 resolved corridors. Amendment 1 accepts these
+conservative residuals: obstacle-clearance detours are queued as S1b, outside
+S1; weighted-cost rejections remain explicit. Flat QC does not certify
+stacked-plane crossings. S1 remains uncommitted pending independent QA and
+B/TEAM-PM authorization; this entry does not close R10 or the session.
+
 ## Operator taste rules (hard-won — do not relearn)
 Animations AND 3D controls together, never one at the expense of the other; no
 camera-facing sprites on paths (they don't bend at corners); one visual

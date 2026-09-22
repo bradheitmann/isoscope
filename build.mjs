@@ -17,11 +17,54 @@ export function buildHtml(spec, { specLabel = "inline spec" } = {}) {
   return tpl.replace("/*__ISOSCOPE_ROUTER__*/", routerSrc).replace("__ISOSCOPE_SPEC__", json).replace(/^(<!doctype html>\s*\n?)/i, m => m + banner);
 }
 
+/* Provenance lock check — specs that carry a top-level `provenance` block must match a sibling
+   `<spec>.lock.json` computed externally. Specs without `provenance` are untouched.
+   Returns { ok: true } or { ok: false, reason }. Never opens the output path. */
+const HEX40 = /^[0-9a-f]{40}$/, HEX64 = /^[0-9a-f]{64}$/;
+const isPlainObject = v => v !== null && typeof v === "object" && !Array.isArray(v);
+const validHex = (v, re) => typeof v === "string" && re.test(v) && /[^0]/.test(v);
+export function validateProvenance(spec, specPath) {
+  const prov = spec.provenance;
+  if (prov === undefined) return { ok: true };
+  const refuse = reason => ({ ok: false, reason });
+  if (!isPlainObject(prov)) return refuse("provenance is not a plain object");
+  if (typeof specPath !== "string" || !specPath.endsWith(".json")) return refuse("spec path must end in .json to locate the sibling lock");
+  const lockPath = specPath.slice(0, -".json".length) + ".lock.json";
+  let lockText;
+  try { lockText = readFileSync(lockPath, "utf8"); } catch { return refuse(`missing lock ${lockPath}`); }
+  let lock;
+  try { lock = JSON.parse(lockText); } catch { return refuse(`lock JSON is malformed at ${lockPath}`); }
+  if (!isPlainObject(lock) || !Array.isArray(lock.sources)) return refuse("lock JSON is malformed: expected an object with a sources array");
+  for (const [key, re] of [["pinned_spec_head", HEX40], ["pinned_product_head", HEX40], ["spec_payload_root", HEX64]]) {
+    if (!validHex(prov[key], re)) return refuse(`${key} is not ${re === HEX40 ? 40 : 64} lowercase hex or is all zeros`);
+    if (prov[key] !== lock[key]) return refuse(`${key} differs from lock`);
+  }
+  if (!Array.isArray(prov.sources)) return refuse("sources is not an array");
+  const pairSet = (list, label) => {
+    const set = new Set();
+    for (const s of list) {
+      if (!isPlainObject(s) || typeof s.path !== "string" || !validHex(s.sha256, HEX64)) return refuse(`${label} source lacks a string path or a 64-lowercase-hex non-zero sha256`);
+      const k = s.path + "\u0000" + s.sha256;
+      if (set.has(k)) return refuse(`duplicate ${label} source ${s.path}`);
+      set.add(k);
+    }
+    return set;
+  };
+  const specSet = pairSet(prov.sources, "spec"); if (specSet.ok === false) return specSet;
+  const lockSet = pairSet(lock.sources, "lock"); if (lockSet.ok === false) return lockSet;
+  if (specSet.size !== lockSet.size) return refuse(`source count ${specSet.size} differs from lock count ${lockSet.size}`);
+  for (const k of specSet) if (!lockSet.has(k)) return refuse(`source not in lock: ${k.split("\u0000")[0]}`);
+  for (const k of lockSet) if (!specSet.has(k)) return refuse(`lock source missing from spec: ${k.split("\u0000")[0]}`);
+  return { ok: true };
+}
+
 const invokedDirectly = process.argv[1] && import.meta.url === new URL(`file://${process.argv[1]}`).href;
 if (invokedDirectly) {
   const [, , specPath, outPath] = process.argv;
   if (!specPath || !outPath) { console.error("usage: build.mjs <spec.json> <out.html>"); process.exit(1); }
   const spec = JSON.parse(readFileSync(specPath, "utf8"));
+  const prov = validateProvenance(spec, specPath);
+  if (!prov.ok) { process.stderr.write(`PROVENANCE_REFUSAL: ${prov.reason}\n`); process.exit(2); }
   writeFileSync(outPath, buildHtml(spec, { specLabel: specPath }));
   console.log(`isoscope: built ${outPath} from ${specPath} · ${spec.nodes.length} modules · ${spec.edges.length} links`);
 }

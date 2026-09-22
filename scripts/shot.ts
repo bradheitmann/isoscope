@@ -3,15 +3,29 @@
    Usage: bun scripts/shot.ts <built.html> <out.png> [w] [h] [js-expression]
    Exit 1 on any uncaught exception or console.error during boot.             */
 import { spawn } from "child_process";
-import { resolve } from "path";
+import { existsSync, mkdtempSync, rmSync } from "node:fs";
+import { tmpdir } from "node:os";
+import { join, resolve } from "path";
 
 const CHROME = "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome";
 const PORT = 9336;
 const [html, out, w = "1440", h = "900", js = ""] = Bun.argv.slice(2);
 if (!html || !out) { console.error("usage: shot.ts <built.html> <out.png> [w] [h] [js]"); process.exit(2); }
 const errors: string[] = [];
+/* F-HARNESS-001 owned-profile repair: an owned, per-run mkdtemp profile replaces the fixed shared
+   path /tmp/isoscope-chrome-shot (which persisted browser state across runs and was left behind).
+   Removal waits for Chrome to exit so shutdown cannot recreate the directory after deletion. */
+const profile = mkdtempSync(join(tmpdir(), "isoscope-shot-"));
 const chrome = spawn(CHROME, ["--headless=new", `--remote-debugging-port=${PORT}`, "--no-first-run",
-  "--user-data-dir=/tmp/isoscope-chrome-shot", "--remote-allow-origins=*", "about:blank"], { stdio: "ignore" });
+  `--user-data-dir=${profile}`, "--remote-allow-origins=*", "about:blank"], { stdio: "ignore" });
+const cleanup = async () => {
+  try { chrome.kill(); } catch {}
+  try { await Promise.race([new Promise(r => chrome.once("close", r)), new Promise(r => setTimeout(r, 3000))]); } catch {}
+  try { rmSync(profile, { recursive: true, force: true }); } catch {}
+};
+const cleanupSync = () => { try { chrome.kill(); } catch {} try { rmSync(profile, { recursive: true, force: true }); } catch {} };
+process.on("SIGINT", () => { cleanupSync(); process.exit(130); });
+process.on("SIGTERM", () => { cleanupSync(); process.exit(143); });
 await new Promise(r => setTimeout(r, 1500));
 let msgId = 0;
 const pending = new Map<number, { resolve: (v: any) => void; reject: (e: any) => void }>();
@@ -35,7 +49,8 @@ await new Promise(r => setTimeout(r, Number(Bun.env.SHOT_WAIT ?? 900))); /* SHOT
 await send("Runtime.evaluate", { expression: `document.querySelector('.introveil')?.remove()` });
 const shot = await send("Page.captureScreenshot", { format: "png" });
 await Bun.write(out, Buffer.from(shot.data, "base64"));
-chrome.kill();
+await cleanup();
 console.log(`${out} · ${w}x${h} · JS errors: ${errors.length}`);
 errors.forEach(e => console.log("  JS ERROR:", e));
+console.log(`owned profile ${profile} absent after cleanup: ${!existsSync(profile)}`);
 process.exit(errors.length ? 1 : 0);

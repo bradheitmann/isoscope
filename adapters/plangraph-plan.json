@@ -1,0 +1,721 @@
+{
+ "title": "PlanGraph — planned projection from pinned baseline · lifecycle snapshot 2026-09-22T03:56:47Z from exec-pm-status.json 03689288 · not live",
+ "wordmark": "PLANGRAPH · SNAPSHOT · NOT LIVE",
+ "asOf": "Planned projection from pinned baseline · spec afb23518cc0c0c1b5c41c8b22b8d9c1f27537aaf · payload root b2c15a3b90b3…efa72a6 · authored 2026-09-21 by D/ISOSCOPE-DEV · lifecycle snapshot 2026-09-22T03:56:47Z UTC from exec-pm-status.json 03689288 (updated_at 2026-09-22T03:48:12Z) · not live · states are quoted from that one source, nothing else",
+ "brand": {
+  "k": "PlanGraph",
+  "v": "planned module map · lifecycle snapshot · not live"
+ },
+ "metrics": [
+  {
+   "k": "Lifecycle",
+   "v": "1 integrated · 1 active work · 1 candidate · 8 planned"
+  },
+  {
+   "k": "Pinned spec",
+   "v": "afb23518 · 4 sanitized sources"
+  },
+  {
+   "k": "Snapshot",
+   "v": "exec-pm-status.json 03689288 · 03:56:47Z · not live"
+  }
+ ],
+ "intro": {
+  "eyebrow": "PlanGraph · planned projection from pinned baseline · lifecycle snapshot · not live",
+  "title": "What PlanGraph intends to be, with one honest lifecycle snapshot laid over it",
+  "sub": "eleven work nodes, twenty-seven planned dependencies — state text is quoted from exec-pm-status.json 03689288 at 2026-09-22T03:56:47Z UTC, and nothing else claims anything",
+  "proseHTML": "<p class='t-label' style='color:var(--okoa-semantic-fg3);margin-bottom:var(--okoa-space-2)'>What this is</p><p class='t-body-sm'>A <strong>planned projection from pinned baseline</strong> — the PlanGraph build graph exactly as the specification declares it at commit <code>afb23518</code> — now carrying one <strong>lifecycle snapshot</strong>: a read-only observation of exec-pm-status.json (sha256 03689288&hellip;, updated_at 2026-09-22T03:48:12Z) taken 2026-09-22T03:56:47Z UTC. This page is <strong>not live</strong>: it does not follow the work; it quotes one status file at one moment. The planned baseline is preserved unchanged underneath, so plan and observed state stay separate dimensions.</p><p class='t-label' style='color:var(--okoa-semantic-fg3);margin:var(--okoa-space-4) 0 var(--okoa-space-2)'>How to read the state (lifecycle legend)</p><p class='t-body-sm'><strong>INTEGRATED</strong> — paper roof, green pip: an explicit acceptance and integration record exists. Only M0, integrated to local main b5dd18b1, <em>not pushed</em>. <strong>ACTIVE WORK</strong> — blue roof, blue pip: a correction/QA/gate chain is in flight (pg-core). <strong>IMPLEMENTED CANDIDATE</strong> — blue roof, amber pip: a frozen candidate exists but independent re-verify, GUARD and HOLDOUT are pending (identity-independent-check). The engine owns only four roof colours, so candidate shares the blue roof with active work; the exact text and the amber pip carry the difference. <strong>PLANNED</strong> — amber roof, hollow pip: no implementation record in the source (the other eight nodes). <strong>BLOCKED</strong> would be a red roof, <strong>UNKNOWN OR STALE</strong> an amber roof with an exact stale note; neither appears in this snapshot.</p><p class='t-body-sm'>Every state phrase is quoted from the status source and is <strong>stale</strong> the moment exec-pm-status.json&rsquo;s sha256 differs from 03689288&hellip; or the snapshot is older than 24&nbsp;h. A hollow pip still marks a <strong>declared uncertainty</strong> from the plan sources — recorded, not resolved. Every pipe remains the engine&rsquo;s <strong>planned</strong> link style; no observed or inferred edge exists in this view. Press <strong>Trace</strong> to walk the declared critical path; press <strong>Stack</strong> to lift the graph into its strata.</p><p class='t-label' style='color:var(--okoa-semantic-fg3);margin:var(--okoa-space-4) 0 var(--okoa-space-2)'>Deliberately absent</p><p class='t-body-sm'>Actual and Compare modes, observed or inferred edges, correspondence, variance disposition, completion percentages, and any live feed. Those are separate slices with their own contracts. This snapshot says what one governance status file said at 03:48Z; it is not a verdict, and an integrated node is not a shipped one.</p><p class='t-label' style='color:var(--okoa-semantic-fg3);margin:var(--okoa-space-4) 0 var(--okoa-space-2)'>Sources (read-only, allowlisted, digests in the spec&rsquo;s provenance block)</p><p class='t-body-sm'>01-specification/PRODUCT-PRIMER.md &middot; 03-implementation-plan/module-contracts.json &middot; 03-implementation-plan/build-dag.json &middot; 02-contracts/boundary-ports.json — plus the lifecycle source exec-pm-status.json named above. Two further plan files were excluded by the allowlist and were not read.</p>"
+ },
+ "groups": [
+  {
+   "id": "m0",
+   "label": "M0 type surface · interface story · depth 0"
+  },
+  {
+   "id": "laneA",
+   "label": "Lane A · bytes, identity, independent check"
+  },
+  {
+   "id": "laneB",
+   "label": "Lane B · contract closure and compilation"
+  },
+  {
+   "id": "laneC",
+   "label": "Lane C · ledger, evidence, admission, CLI"
+  },
+  {
+   "id": "gates",
+   "label": "Integration story and external gate · produce no code"
+  }
+ ],
+ "nodes": [
+  {
+   "id": "M0",
+   "tag": "INTERFACE STORY",
+   "g": "m0",
+   "name": "STORY-V5-M0-000 · M0 core type surface",
+   "x": 6,
+   "y": 0,
+   "w": 1.2,
+   "d": 1,
+   "h": 0.8,
+   "does": "The shared type and byte contract every crate compiles against: pg-core M0 newtypes, the port traits, and the common Refusal and Diagnostic shapes. Declared workspace-first; it is the root of the build DAG (depth 0) and touches all three lanes. Consumers are pg-core and identity-independent-check; the independent checker consumes the published contract as a document only and links no pg-core code.",
+   "built": "<span class='pip planned'></span>PLANNED. Kind: interface_story, produces_code true. Specification files 02-contracts/m0-types.rs, 02-contracts/port-traits.rs, 02-contracts/rust-record-bindings.json. Binding rule: exact public symbols, visibility, fields, signatures and trait semantics; bodies replace specification placeholders; fixture copies remain byte-exact; amendment required to change the surface.",
+   "refs": "03-implementation-plan/stories/00-m0-type-surface/01-build-contract.json · 02-contracts/m0-types.rs · 02-contracts/port-traits.rs · 02-contracts/rust-record-bindings.json"
+  },
+  {
+   "id": "IIC",
+   "tag": "CRATE · LANE A",
+   "g": "laneA",
+   "name": "identity-independent-check",
+   "x": 0,
+   "y": 3,
+   "w": 1,
+   "d": 1,
+   "h": 1,
+   "does": "A deliberately separate recomputation of content identity: (DeclaredDomain, RawObject) → Result<RecomputedCid, Refusal>. Its whole purpose is to disagree with pg-core if pg-core is wrong, so it must not share pg-core's code.",
+   "built": "<span class='pip planned'></span>PLANNED. Invariant: separate canonicalization and domain concatenation; no dependency on pg-core or its byte helpers; at most 400 source lines. One planned module (identity_independent_check::main). No fixture directories are assigned to this crate in module-contracts. Crate dependencies: none; declared interface dependency on STORY-V5-M0-000.",
+   "refs": "03-implementation-plan/stories/crate-identity-independent-check/01-build-contract.json · crates/identity-independent-check/src/main.rs"
+  },
+  {
+   "id": "CORE",
+   "tag": "CRATE · LANE A",
+   "g": "laneA",
+   "name": "pg-core",
+   "x": 6,
+   "y": 3,
+   "w": 1.2,
+   "d": 1.2,
+   "h": 1.2,
+   "stack": 2,
+   "does": "The pure foundation: RawBytes → CanonicalBytes; (Domain, CanonicalBytes) → Cid; SignatureProof → Result<VerifiedSigner, Refusal>. Owns the generated record bindings, the shared port traits, and the AuthorityStore host that issues SnapshotObservations. Every other crate depends on it.",
+   "built": "<span class='pip planned'></span>PLANNED. Invariant: no authority mutation or ambient I/O; reject unsafe integers, duplicate raw keys, unregistered domains, unknown fields and mismatched signer/purpose. Five planned modules: raw, canonical, identity, signature, adapters::bip340. Reference adapter for the IdentityVerifier port (pg_core::adapters::bip340, k256 schnorr + sha2). 18 fixture directories assigned under 04-obligations-and-trace/fixtures/. Crate dependencies: none; declared interface dependency on STORY-V5-M0-000.",
+   "refs": "03-implementation-plan/stories/crate-pg-core/01-build-contract.json · crates/pg-core/src/ · 02-contracts/conformance/IdentityVerifier.json"
+  },
+  {
+   "id": "CONT",
+   "tag": "CRATE · LANE B",
+   "g": "laneB",
+   "name": "pg-contract",
+   "x": 6,
+   "y": 6,
+   "w": 1,
+   "d": 1,
+   "h": 1,
+   "does": "Closure of typed records into contracts: (TypedRecords, Policy, Registry) → Result<ClosedContractSet, Refusal>. Owns semantic validation of the M0 surface. Selectors stay unbound until dispatch; descriptions never confer authority.",
+   "built": "<span class='pip planned'></span>PLANNED. Invariant: all exact references close; selectors remain unbound until dispatch; no authority from descriptions; complete diagnostics. Four planned modules: records, rules, selectors, profiles. 27 fixture directories assigned. Crate dependencies: pg-core.",
+   "refs": "03-implementation-plan/stories/crate-pg-contract/01-build-contract.json · crates/pg-contract/src/"
+  },
+  {
+   "id": "COMP",
+   "tag": "CRATE · LANE B",
+   "g": "laneB",
+   "name": "pg-compile",
+   "x": 1,
+   "y": 9,
+   "w": 1,
+   "d": 1,
+   "h": 1,
+   "does": "Turns authoring intent into closed contracts or bounded questions: (AuthoringIntent, Policy, InstitutionGraph) → Closed | Questions | GeneratorDefect. Also the observe path (compile existing work into advisory contracts without gating it) and the v4 migration.",
+   "built": "<span class='pip planned'></span>PLANNED. Invariant: deterministic outputs; five-question bound; record every default; observe cannot call mutation ports; migration never invents missing power. Seven planned modules: closure, questions, render, recut, observe, migration/v4.rs, principal_digest. Named reference adapter for the VcsAdapter port: pg_compile::adapters::git (argv-only Git). 40 fixture directories assigned. Crate dependencies: pg-core, pg-contract.",
+   "refs": "03-implementation-plan/stories/crate-pg-compile/01-build-contract.json · crates/pg-compile/src/ · 02-contracts/conformance/VcsAdapter.json"
+  },
+  {
+   "id": "EVID",
+   "tag": "CRATE · LANE C",
+   "g": "laneC",
+   "name": "pg-evidence",
+   "x": 6,
+   "y": 9,
+   "w": 1,
+   "d": 1,
+   "h": 1,
+   "does": "Captures evidence against an exact frozen candidate: (FrozenCandidate, Instrument, PortCapture) → Result<EvidenceManifest, Refusal>. Hosts the content-addressed blob store with checked retention, the process recorder, and the file-based independent review exchange.",
+   "built": "<span class='pip planned'></span>PLANNED. Invariant: exact candidate bytes and provider identity; control ACLs before reads; no producer-authored run or independent verdict accepted as trusted capture. Seven planned modules: capture, review, adapters::directory, adapters::process, adapters::vcs, adapters::exchange, retention. Named reference adapters: BlobStore → pg_evidence::adapters::directory; EvidenceRunner → pg_evidence::adapters::process_recorder; ReviewService → pg_evidence::adapters::review_exchange. Retention contract: denial precedes byte removal; unknown copies and shared-tenant retention prevent false completion. 53 fixture directories assigned. Crate dependencies: pg-core, pg-contract.",
+   "refs": "03-implementation-plan/stories/crate-pg-evidence/01-build-contract.json · crates/pg-evidence/src/ · 02-contracts/conformance/BlobStore.json · EvidenceRunner.json · ReviewService.json"
+  },
+  {
+   "id": "LEDG",
+   "tag": "CRATE · LANE C",
+   "g": "laneC",
+   "name": "pg-ledger",
+   "x": 11,
+   "y": 9,
+   "w": 1,
+   "d": 1,
+   "h": 1,
+   "does": "The durable, transactional authority store: (ValidatedDelta, ExpectedVersions) → Result<CommitReceipt, Refusal>. One SQLite database per organization unit; companion writes are atomic; semantic replay returns the original receipt. Also the outbox-driven work exchange and the ancestor delegation feed.",
+   "built": "<span class='pip planned'></span>PLANNED. Invariant: all companion writes atomic; semantic replay returns original receipt; unknown remote effects retain holds; recovery epoch invalidates old attempts. Sixteen planned modules including transaction, claims, budgets, outbox, recovery, adapters::sqlite, model, delegation, rates, stewardship, hold, identity_lifecycle, redaction, assistance, exchange, ancestor_feed. Named reference adapters: AuthorityStore → pg_ledger::adapters::sqlite (backend; the host and snapshot issuer live in pg-core); WorkExchange → pg_ledger::adapters::outbox_exchange. 37 fixture directories assigned. Crate dependencies: pg-core, pg-contract.",
+   "refs": "03-implementation-plan/stories/crate-pg-ledger/01-build-contract.json · crates/pg-ledger/src/ · 02-contracts/conformance/AuthorityStore.json · WorkExchange.json"
+  },
+  {
+   "id": "ADMT",
+   "tag": "CRATE · LANE C",
+   "g": "laneC",
+   "name": "pg-admit",
+   "x": 11,
+   "y": 12,
+   "w": 1,
+   "d": 1,
+   "h": 1,
+   "does": "Admission: (Request, ActorContext, AuthoritySnapshot, TimeObservation) → Result<ValidatedDelta, Refusal>. Checks current authority, fences, revocation, runtime and time in one place; resolves signed ancestor checkpoints and delegation terminals. Hosts the authority clock, runtime attestor, claim authority and effect gateway adapters.",
+   "built": "<span class='pip planned'></span>PLANNED. Invariant: no borrowed authority from a board; exact current fences, revocation and runtime; all read versions retained in delta. Seven planned modules: predicates, resolver, adapters::authority_clock, adapters::runtime, control, lineage, ancestor_authority. Named reference adapters: Clock → pg_admit::adapters::authority_clock; RuntimeAttestor → pg_admit::adapters::local_runtime; ClaimAuthority → pg_admit::adapters::local_claim; EffectGateway → pg_admit::adapters::local_gateway. 58 fixture directories assigned. Crate dependencies: pg-contract, pg-core, pg-ledger.",
+   "refs": "03-implementation-plan/stories/crate-pg-admit/01-build-contract.json · crates/pg-admit/src/ · 02-contracts/conformance/Clock.json · RuntimeAttestor.json · ClaimAuthority.json · EffectGateway.json"
+  },
+  {
+   "id": "PLCT",
+   "tag": "CRATE · LANE C",
+   "g": "laneC",
+   "name": "planctl",
+   "x": 6,
+   "y": 15,
+   "w": 1.2,
+   "d": 1,
+   "h": 1,
+   "does": "The command-line face: CliCommand → structured output and exit status. Dispatches verbs to the typed seams of every other crate. The comparator alone owns expected output; verify never closes a status by printing a word.",
+   "built": "<span class='pip planned'></span>PLANNED. Invariant: dispatch CLI verbs to typed seams; expected output belongs only to comparator; verify never closes status by printing a word. Three planned modules: main, cli, verify. 11 fixture directories assigned. Crate dependencies: pg-core, pg-contract, pg-compile, pg-admit, pg-ledger, pg-evidence — the deepest crate (depth 5).",
+   "refs": "03-implementation-plan/stories/crate-planctl/01-build-contract.json · crates/planctl/src/"
+  },
+  {
+   "id": "BOOT",
+   "tag": "INTEGRATION STORY",
+   "g": "gates",
+   "name": "STORY-V4-BOOTSTRAP-001 · bootstrap integration",
+   "x": 6,
+   "y": 18,
+   "w": 1.2,
+   "d": 1,
+   "h": 0.6,
+   "does": "Where all eight crates meet: the integration story that assembles the workspace once every crate story has landed. Produces no code of its own; it consumes one integration_input edge from each crate.",
+   "built": "<span class='pip planned'></span>PLANNED. Kind: integration_story, produces_code false, depth 6, lanes A, B, C. Dependencies: pg-core, pg-contract, pg-compile, pg-admit, pg-ledger, pg-evidence, identity-independent-check, planctl.",
+   "refs": "03-implementation-plan/stories/01-bootstrap/01-build-contract.json"
+  },
+  {
+   "id": "S7",
+   "tag": "EXTERNAL GATE",
+   "g": "gates",
+   "name": "STAGE-7-EXTERNAL-VERIFICATION",
+   "x": 6,
+   "y": 21,
+   "w": 1.2,
+   "d": 1,
+   "h": 0.6,
+   "does": "The external release gate. The build DAG states this explicitly: an external release gate, not a fabricated code dependency. It requires the bootstrap integration and nothing else.",
+   "built": "<span class='pip planned'></span>PLANNED. Kind: external_gate, produces_code false, depth 7, no lanes. Requires integration STORY-V4-BOOTSTRAP-001.",
+   "refs": "02-contracts/fixture-runner-contract.json"
+  }
+ ],
+ "short": {
+  "M0": "M0 types",
+  "IIC": "Ident check",
+  "CORE": "pg-core",
+  "CONT": "pg-contract",
+  "COMP": "pg-compile",
+  "EVID": "pg-evidence",
+  "LEDG": "pg-ledger",
+  "ADMT": "pg-admit",
+  "PLCT": "planctl",
+  "BOOT": "Bootstrap",
+  "S7": "Stage 7 gate"
+ },
+ "status": {
+  "M0": {
+   "state": "ok",
+   "items": [
+    {
+     "c": "shipped",
+     "l": "INTEGRATED — integrated to local main b5dd18b1 (not pushed); acceptance record present · evidence: m0_isolation.state ACCEPTED_AND_INTEGRATED_TO_LOCAL_MAIN_NOT_PUSHED; A/INTEGRATOR delivery record, exec-pm-status.json 03689288 @ 2026-09-22T03:48:12Z"
+    },
+    {
+     "c": "planned",
+     "l": "Planned baseline retained — projected from pinned spec afb23518; the projection is preserved so plan and observed state stay separate dimensions"
+    }
+   ]
+  },
+  "IIC": {
+   "state": "build",
+   "items": [
+    {
+     "c": "amber",
+     "l": "IMPLEMENTED CANDIDATE — refrozen candidate 49b40cb9; B/QA re-verify, GUARD and HOLDOUT pending; not accepted · evidence: B/DEV corrected and REFROZEN candidate 49b40cb9 at about 03:23Z, exec-pm-status.json 03689288 @ 2026-09-22T03:48:12Z"
+    },
+    {
+     "c": "planned",
+     "l": "DECLARED UNCERTAINTY — module-contracts assigns this crate zero fixture directories; whether that is intentional is not stated in the four sources"
+    }
+   ]
+  },
+  "CORE": {
+   "state": "build",
+   "items": [
+    {
+     "c": "built",
+     "l": "ACTIVE WORK — C/QA SLICE_QA_PASS on binding 34ab25a1 ledgered, not accepted; correction in progress (active_assignments: round 1 dispatched to C64; status field and tracks name round 2 to C/DEV-41); GUARD-68, HOLDOUT-69, EXEC_VERIFY pending · evidence: exec-pm-status.json 03689288 @ 2026-09-22T03:48:12Z"
+    },
+    {
+     "c": "planned",
+     "l": "Planned baseline retained — projected from pinned spec afb23518"
+    }
+   ]
+  },
+  "CONT": {
+   "state": "attn",
+   "items": [
+    {
+     "c": "planned",
+     "l": "PLANNED — no implementation, test, or acceptance record for this node in exec-pm-status.json 03689288 @ 2026-09-22T03:48:12Z; downstream of pg-core in the DAG ordering · planned baseline: projected from pinned spec afb23518"
+    }
+   ]
+  },
+  "COMP": {
+   "state": "attn",
+   "items": [
+    {
+     "c": "planned",
+     "l": "PLANNED — no implementation, test, or acceptance record for this node in exec-pm-status.json 03689288 @ 2026-09-22T03:48:12Z; downstream of pg-core in the DAG ordering · planned baseline: projected from pinned spec afb23518"
+    },
+    {
+     "c": "planned",
+     "l": "DECLARED UNCERTAINTY — boundary-ports names reference adapter pg_compile::adapters::git; module-contracts lists no module by that name"
+    },
+    {
+     "c": "planned",
+     "l": "DECLARED UNCERTAINTY — module entry crates/pg-compile/src/migration/v4.rs has a source_path but no rust_path in module-contracts"
+    }
+   ]
+  },
+  "EVID": {
+   "state": "attn",
+   "items": [
+    {
+     "c": "planned",
+     "l": "PLANNED — no implementation, test, or acceptance record for this node in exec-pm-status.json 03689288 @ 2026-09-22T03:48:12Z; downstream of pg-core in the DAG ordering · planned baseline: projected from pinned spec afb23518"
+    },
+    {
+     "c": "planned",
+     "l": "DECLARED UNCERTAINTY — boundary-ports names adapters process_recorder and review_exchange; module-contracts lists adapters::process and adapters::exchange. Same modules or different ones is not stated"
+    }
+   ]
+  },
+  "LEDG": {
+   "state": "attn",
+   "items": [
+    {
+     "c": "planned",
+     "l": "PLANNED — no implementation, test, or acceptance record for this node in exec-pm-status.json 03689288 @ 2026-09-22T03:48:12Z; downstream of pg-core in the DAG ordering · planned baseline: projected from pinned spec afb23518"
+    },
+    {
+     "c": "planned",
+     "l": "DECLARED UNCERTAINTY — boundary-ports names reference adapter pg_ledger::adapters::outbox_exchange; module-contracts lists outbox and exchange as separate modules and no outbox_exchange"
+    }
+   ]
+  },
+  "ADMT": {
+   "state": "attn",
+   "items": [
+    {
+     "c": "planned",
+     "l": "PLANNED — no implementation, test, or acceptance record for this node in exec-pm-status.json 03689288 @ 2026-09-22T03:48:12Z; downstream of pg-core in the DAG ordering · planned baseline: projected from pinned spec afb23518"
+    },
+    {
+     "c": "planned",
+     "l": "DECLARED UNCERTAINTY — boundary-ports names adapters local_runtime, local_claim and local_gateway; module-contracts lists adapters::runtime only and no local_claim or local_gateway module"
+    }
+   ]
+  },
+  "PLCT": {
+   "state": "attn",
+   "items": [
+    {
+     "c": "planned",
+     "l": "PLANNED — no implementation, test, or acceptance record for this node in exec-pm-status.json 03689288 @ 2026-09-22T03:48:12Z; downstream of pg-core in the DAG ordering · planned baseline: projected from pinned spec afb23518"
+    }
+   ]
+  },
+  "BOOT": {
+   "state": "attn",
+   "items": [
+    {
+     "c": "planned",
+     "l": "PLANNED — integration story; produces no code; no assembly record for this node in exec-pm-status.json 03689288 @ 2026-09-22T03:48:12Z; last in the DAG ordering · planned baseline: projected from pinned spec afb23518"
+    }
+   ]
+  },
+  "S7": {
+   "state": "attn",
+   "items": [
+    {
+     "c": "planned",
+     "l": "PLANNED — external release gate; no verification run record for this node in exec-pm-status.json 03689288 @ 2026-09-22T03:48:12Z; behind the bootstrap story in the DAG ordering · planned baseline: projected from pinned spec afb23518"
+    }
+   ]
+  }
+ },
+ "levels": {
+  "M0": 1,
+  "IIC": 1,
+  "CORE": 1,
+  "BOOT": -1,
+  "S7": -1
+ },
+ "paths": {
+  "M0": [
+   "02-contracts/m0-types.rs",
+   "02-contracts/port-traits.rs",
+   "02-contracts/rust-record-bindings.json"
+  ],
+  "IIC": [
+   "crates/identity-independent-check/"
+  ],
+  "CORE": [
+   "crates/pg-core/"
+  ],
+  "CONT": [
+   "crates/pg-contract/"
+  ],
+  "COMP": [
+   "crates/pg-compile/"
+  ],
+  "EVID": [
+   "crates/pg-evidence/"
+  ],
+  "LEDG": [
+   "crates/pg-ledger/"
+  ],
+  "ADMT": [
+   "crates/pg-admit/"
+  ],
+  "PLCT": [
+   "crates/planctl/"
+  ],
+  "BOOT": [
+   "03-implementation-plan/stories/01-bootstrap/"
+  ],
+  "S7": [
+   "02-contracts/fixture-runner-contract.json"
+  ]
+ },
+ "edges": [
+  ["M0", "IIC", "intended"],
+  ["M0", "CORE", "intended"],
+  ["CORE", "CONT", "intended"],
+  ["CORE", "COMP", "intended"],
+  ["CORE", "EVID", "intended"],
+  ["CORE", "LEDG", "intended"],
+  ["CORE", "ADMT", "intended"],
+  ["CORE", "PLCT", "intended"],
+  ["CONT", "COMP", "intended"],
+  ["CONT", "EVID", "intended"],
+  ["CONT", "LEDG", "intended"],
+  ["CONT", "ADMT", "intended"],
+  ["CONT", "PLCT", "intended"],
+  ["LEDG", "ADMT", "intended"],
+  ["LEDG", "PLCT", "intended"],
+  ["ADMT", "PLCT", "intended"],
+  ["COMP", "PLCT", "intended"],
+  ["EVID", "PLCT", "intended"],
+  ["IIC", "BOOT", "intended"],
+  ["CORE", "BOOT", "intended"],
+  ["CONT", "BOOT", "intended"],
+  ["COMP", "BOOT", "intended"],
+  ["EVID", "BOOT", "intended"],
+  ["LEDG", "BOOT", "intended"],
+  ["ADMT", "BOOT", "intended"],
+  ["PLCT", "BOOT", "intended"],
+  ["BOOT", "S7", "intended"]
+ ],
+ "edgeStatus": {},
+ "edgeDocs": {
+  "M0-IIC": {
+   "title": "declared_interface_dependency · M0 → identity-independent-check",
+   "carries": "The published type and byte contract, consumed as a document only. The checker links no pg-core code; that separation is the point.",
+   "refs": "build-dag.json edges · module-contracts.json m0_story.independent_checker_rule"
+  },
+  "M0-CORE": {
+   "title": "declared_interface_dependency · M0 → pg-core",
+   "carries": "The M0 newtypes, port traits, and common Refusal/Diagnostic shapes that pg-core must implement with exact public symbols, visibility, fields, signatures and trait semantics.",
+   "refs": "build-dag.json edges · module-contracts.json m0_surface_binding"
+  },
+  "CORE-CONT": {
+   "title": "crate_dependency · pg-core → pg-contract",
+   "carries": "Canonical bytes, CIDs, verified signers and the generated record bindings pg-contract closes into contract sets.",
+   "refs": "module-contracts.json crates[pg-contract].dependencies"
+  },
+  "CORE-COMP": {
+   "title": "crate_dependency · pg-core → pg-compile",
+   "carries": "Identity and canonicalization primitives used to produce deterministic compiled outputs and principal digests.",
+   "refs": "module-contracts.json crates[pg-compile].dependencies"
+  },
+  "CORE-EVID": {
+   "title": "crate_dependency · pg-core → pg-evidence",
+   "carries": "Exact-byte identity (CIDs) for frozen candidates, blobs, and evidence manifests.",
+   "refs": "module-contracts.json crates[pg-evidence].dependencies"
+  },
+  "CORE-LEDG": {
+   "title": "crate_dependency · pg-core → pg-ledger",
+   "carries": "The AuthorityStore trait and host contract pg-ledger's SQLite backend plugs into by dependency inversion; store values alone never create a public observation.",
+   "refs": "module-contracts.json store_observation_boundary"
+  },
+  "CORE-ADMT": {
+   "title": "crate_dependency · pg-core → pg-admit",
+   "carries": "Signature verification, CIDs and M0 types the admission predicates check against.",
+   "refs": "module-contracts.json crates[pg-admit].dependencies"
+  },
+  "CORE-PLCT": {
+   "title": "crate_dependency · pg-core → planctl",
+   "carries": "Typed seams the CLI dispatches to.",
+   "refs": "module-contracts.json crates[planctl].dependencies"
+  },
+  "CONT-COMP": {
+   "title": "crate_dependency · pg-contract → pg-compile",
+   "carries": "Closed contract sets and selector rules the compiler emits into or asks bounded questions about.",
+   "refs": "module-contracts.json crates[pg-compile].dependencies"
+  },
+  "CONT-EVID": {
+   "title": "crate_dependency · pg-contract → pg-evidence",
+   "carries": "Criterion and falsifier records that evidence capture runs against an exact candidate.",
+   "refs": "module-contracts.json crates[pg-evidence].dependencies"
+  },
+  "CONT-LEDG": {
+   "title": "crate_dependency · pg-contract → pg-ledger",
+   "carries": "Validated record shapes the ledger persists with transaction companions.",
+   "refs": "module-contracts.json crates[pg-ledger].dependencies"
+  },
+  "CONT-ADMT": {
+   "title": "crate_dependency · pg-contract → pg-admit",
+   "carries": "Closed contracts and policy records admission evaluates requests against.",
+   "refs": "module-contracts.json crates[pg-admit].dependencies"
+  },
+  "CONT-PLCT": {
+   "title": "crate_dependency · pg-contract → planctl",
+   "carries": "Contract types surfaced through CLI verbs.",
+   "refs": "module-contracts.json crates[planctl].dependencies"
+  },
+  "LEDG-ADMT": {
+   "title": "crate_dependency · pg-ledger → pg-admit",
+   "carries": "Store-issued snapshots, delegation feed reads and ancestor checkpoints that admission resolves under exact issuer/nonce/child/grant identity.",
+   "refs": "module-contracts.json crates[pg-admit].ancestor_authority_contract"
+  },
+  "LEDG-PLCT": {
+   "title": "crate_dependency · pg-ledger → planctl",
+   "carries": "Ledger operations reachable from the command line.",
+   "refs": "module-contracts.json crates[planctl].dependencies"
+  },
+  "ADMT-PLCT": {
+   "title": "crate_dependency · pg-admit → planctl",
+   "carries": "Admission results the CLI reports as structured output and exit status.",
+   "refs": "module-contracts.json crates[planctl].dependencies"
+  },
+  "COMP-PLCT": {
+   "title": "crate_dependency · pg-compile → planctl",
+   "carries": "Compile, observe, and migration verbs.",
+   "refs": "module-contracts.json crates[planctl].dependencies"
+  },
+  "EVID-PLCT": {
+   "title": "crate_dependency · pg-evidence → planctl",
+   "carries": "Evidence capture and verify seams; the comparator alone owns expected output.",
+   "refs": "module-contracts.json crates[planctl].invariant"
+  },
+  "IIC-BOOT": {
+   "title": "integration_input · identity-independent-check → bootstrap",
+   "carries": "One of eight integration inputs the bootstrap story assembles.",
+   "refs": "build-dag.json edges"
+  },
+  "CORE-BOOT": {
+   "title": "integration_input · pg-core → bootstrap",
+   "carries": "One of eight integration inputs the bootstrap story assembles.",
+   "refs": "build-dag.json edges"
+  },
+  "CONT-BOOT": {
+   "title": "integration_input · pg-contract → bootstrap",
+   "carries": "One of eight integration inputs the bootstrap story assembles.",
+   "refs": "build-dag.json edges"
+  },
+  "COMP-BOOT": {
+   "title": "integration_input · pg-compile → bootstrap",
+   "carries": "One of eight integration inputs the bootstrap story assembles.",
+   "refs": "build-dag.json edges"
+  },
+  "EVID-BOOT": {
+   "title": "integration_input · pg-evidence → bootstrap",
+   "carries": "One of eight integration inputs the bootstrap story assembles.",
+   "refs": "build-dag.json edges"
+  },
+  "LEDG-BOOT": {
+   "title": "integration_input · pg-ledger → bootstrap",
+   "carries": "One of eight integration inputs the bootstrap story assembles.",
+   "refs": "build-dag.json edges"
+  },
+  "ADMT-BOOT": {
+   "title": "integration_input · pg-admit → bootstrap",
+   "carries": "One of eight integration inputs the bootstrap story assembles.",
+   "refs": "build-dag.json edges"
+  },
+  "PLCT-BOOT": {
+   "title": "integration_input · planctl → bootstrap",
+   "carries": "One of eight integration inputs the bootstrap story assembles.",
+   "refs": "build-dag.json edges"
+  },
+  "BOOT-S7": {
+   "title": "external_release_gate · bootstrap → Stage 7",
+   "carries": "The assembled workspace, handed to an external verification gate the DAG explicitly calls a release gate rather than a code dependency.",
+   "refs": "build-dag.json external_gate · 02-contracts/fixture-runner-contract.json"
+  }
+ },
+ "trace": [
+  "M0-CORE",
+  "CORE-CONT",
+  "CONT-LEDG",
+  "LEDG-ADMT",
+  "ADMT-PLCT",
+  "PLCT-BOOT",
+  "BOOT-S7"
+ ],
+ "traceText": {
+  "M0-CORE": "Declared critical path, step 1 of 7: the M0 type surface is fixed first; pg-core implements it with exact public symbols.",
+  "CORE-CONT": "Step 2: with bytes and identity pure, pg-contract can close typed records into contract sets.",
+  "CONT-LEDG": "Step 3: closed record shapes give the ledger something atomic to persist.",
+  "LEDG-ADMT": "Step 4: admission needs store-issued snapshots and the delegation feed before it can validate a delta.",
+  "ADMT-PLCT": "Step 5: planctl is the deepest crate; it dispatches to every seam and cannot be built before admission exists.",
+  "PLCT-BOOT": "Step 6: the bootstrap integration story assembles all eight crates. It produces no code.",
+  "BOOT-S7": "Step 7: an external verification gate closes the plan. This is a release gate, not a dependency — and on this map it is as planned as everything else."
+ },
+ "drcBudget": {
+  "maxWeightedCrossings": 26,
+  "acknowledged": "measured 26 weighted crossings, 0 shared channels, at authoring (2026-09-21) with the shared router.mjs; forced by the DAG's fan-out from pg-core (6 dependents) and pg-contract (5) plus eight integration inputs into one bootstrap node. Layout reduction is deferred; this is a planned projection, not a wiring claim."
+ },
+ "lifecycle": {
+  "source": {
+   "path": "/Users/bradleyheitmann/open_protocols/plangraph-evidence/team-launch/2026-09-20/exec-pm-status.json",
+   "bytes": 12645,
+   "sha256": "036892882b4407d14c5b35140b6e76c1f2993806a62c35db022aa30f3550c153",
+   "updated_at": "2026-09-22T03:48:12Z"
+  },
+  "observed_at": "2026-09-22T03:56:47Z",
+  "stale_rule": "stale when exec-pm-status.json sha256 differs from source.sha256 or observed_at is older than 24h",
+  "mapping": "Status text to states, disclosed: an explicit acceptance-plus-integration record (m0_isolation.state, A/INTEGRATOR delivery) → INTEGRATED; an in-flight correction/QA/gate chain in active_assignments or status → ACTIVE_WORK; a frozen candidate awaiting independent re-verify/GUARD/HOLDOUT → IMPLEMENTED_CANDIDATE; an acceptance record with no integration record → ACCEPTED; a blockers entry against the node → BLOCKED; no record in the source, or a stale source → UNKNOWN_OR_STALE; everything else → PLANNED. ACCEPTED and INTEGRATED are never inferred from file presence, self-report, or absence of telemetry — only from an explicit quoted record. Engine rendering (template unchanged): INTEGRATED → ok roof + shipped pip; ACCEPTED → ok roof + shipped pip; ACTIVE_WORK → build roof + built pip; IMPLEMENTED_CANDIDATE → build roof + amber pip; PLANNED → attn roof + hollow planned pip; BLOCKED → blocked roof + red pip; UNKNOWN_OR_STALE → attn roof + hollow pip with exact stale text. Limitation: four roof colours for seven lifecycle states, so IMPLEMENTED_CANDIDATE shares the blue roof with ACTIVE_WORK and UNKNOWN_OR_STALE would share amber with PLANNED; the exact state text and the inspector pip carry the distinction.",
+  "nodes": {
+   "M0": {
+    "state": "INTEGRATED",
+    "label": "integrated to local main b5dd18b1 (not pushed); acceptance record present",
+    "evidence_ref": "m0_isolation.state: \"ACCEPTED_AND_INTEGRATED_TO_LOCAL_MAIN_NOT_PUSHED\"; active_assignments[A/INTEGRATOR surface:35].delivery: \"M0 integrated to local main b5dd18b1dcfa at about 03:20Z; acceptance record written\"; status: \"M0_ON_LOCAL_MAIN\"",
+    "observed_at": "2026-09-22T03:56:47Z",
+    "uncertainty": "Push to origin outstanding (publication is a user action); FULL-008 review status noted 'to confirm' in the same delivery record."
+   },
+   "IIC": {
+    "state": "IMPLEMENTED_CANDIDATE",
+    "label": "refrozen candidate 49b40cb9; QA re-verify, GUARD, HOLDOUT pending",
+    "evidence_ref": "active_assignments[B/TEAM-PM surface:71].delivery: \"B/QA SLICE_QA_FAIL 1 HIGH (fmt main.rs:257-259) at about 03:14Z; B/DEV corrected and REFROZEN candidate 49b40cb9 at about 03:23Z; B/QA re-verify next; B/HOLDOUT s22 (Grok) dispatched; GUARD by B/TEAM-ODIN pending\"",
+    "observed_at": "2026-09-22T03:56:47Z",
+    "uncertainty": "Re-verify not yet recorded; the candidate may change again. Authority line says NO_PUSH_OR_ACCEPTANCE."
+   },
+   "CORE": {
+    "state": "ACTIVE_WORK",
+    "label": "correction in progress; C/QA SLICE_QA_PASS on binding 34ab25a1 ledgered, not accepted; GUARD/HOLDOUT/EXEC_VERIFY pending",
+    "evidence_ref": "active_assignments[C/TEAM-PM surface:30 -> C64 surface:64].delivery: \"C/QA SLICE_QA_PASS on binding 34ab25a1 (0 residual) at about 03:23Z, ledgered not accepted; correction round 1 (whitespace rule predicate.rs:648 + payload-root rebind to a8ef2f3 root, drop superseded root) dispatched to C64\"; status: \"C_PGCORE_ROUND_2_TO_C_DEV_41 (walk_inventory root .git fix; FULL-008 closable)\"; next_action: \"Await C64 round-1 [DONE] then C/QA re-verify, GUARD-68, HOLDOUT-69, EXEC_VERIFY\"",
+    "observed_at": "2026-09-22T03:56:47Z",
+    "uncertainty": "The source is internally inconsistent on round numbering and assignee: active_assignments says round 1 dispatched to C64 while the status field and tracks.M0.next name round 2 to C/DEV-41. Both are quoted; the discrepancy is reported to D/ISOSCOPE-PM, not resolved here."
+   },
+   "CONT": {
+    "state": "PLANNED",
+    "label": "planned; not started — downstream of pg-core in the build DAG",
+    "evidence_ref": "No active_assignment, gate, or delivery record names pg-contract in exec-pm-status.json; ordering evidence tracks.M0.next: \"…then C/QA re-verify, GUARD-68, HOLDOUT-69, EXEC_VERIFY, then integration with the spec re-pin; then PGCORE-M0-BODIES to C/DEV-41…\"",
+    "observed_at": "2026-09-22T03:56:47Z",
+    "uncertainty": "PLANNED rests on absence of any implementation record plus DAG ordering; the source has no explicit not-started statement for this node."
+   },
+   "COMP": {
+    "state": "PLANNED",
+    "label": "planned; not started — downstream of pg-core in the build DAG",
+    "evidence_ref": "No active_assignment, gate, or delivery record names pg-compile in exec-pm-status.json; ordering evidence tracks.M0.next: \"…then integration with the spec re-pin; then PGCORE-M0-BODIES to C/DEV-41…\"",
+    "observed_at": "2026-09-22T03:56:47Z",
+    "uncertainty": "PLANNED rests on absence of any implementation record plus DAG ordering; the source has no explicit not-started statement for this node."
+   },
+   "EVID": {
+    "state": "PLANNED",
+    "label": "planned; not started — downstream of pg-core in the build DAG",
+    "evidence_ref": "No active_assignment, gate, or delivery record names pg-evidence in exec-pm-status.json; ordering evidence tracks.M0.next: \"…then integration with the spec re-pin; then PGCORE-M0-BODIES to C/DEV-41…\"",
+    "observed_at": "2026-09-22T03:56:47Z",
+    "uncertainty": "PLANNED rests on absence of any implementation record plus DAG ordering; the source has no explicit not-started statement for this node."
+   },
+   "LEDG": {
+    "state": "PLANNED",
+    "label": "planned; not started — downstream of pg-core in the build DAG",
+    "evidence_ref": "No active_assignment, gate, or delivery record names pg-ledger in exec-pm-status.json; ordering evidence tracks.M0.next: \"…then integration with the spec re-pin; then PGCORE-M0-BODIES to C/DEV-41…\"",
+    "observed_at": "2026-09-22T03:56:47Z",
+    "uncertainty": "PLANNED rests on absence of any implementation record plus DAG ordering; the source has no explicit not-started statement for this node."
+   },
+   "ADMT": {
+    "state": "PLANNED",
+    "label": "planned; not started — downstream of pg-core in the build DAG",
+    "evidence_ref": "No active_assignment, gate, or delivery record names pg-admit in exec-pm-status.json; ordering evidence tracks.M0.next: \"…then integration with the spec re-pin; then PGCORE-M0-BODIES to C/DEV-41…\"",
+    "observed_at": "2026-09-22T03:56:47Z",
+    "uncertainty": "PLANNED rests on absence of any implementation record plus DAG ordering; the source has no explicit not-started statement for this node."
+   },
+   "PLCT": {
+    "state": "PLANNED",
+    "label": "planned; not started — deepest crate, downstream of pg-core in the build DAG",
+    "evidence_ref": "No active_assignment, gate, or delivery record names planctl in exec-pm-status.json; ordering evidence tracks.M0.next: \"…then integration with the spec re-pin; then PGCORE-M0-BODIES to C/DEV-41…\"",
+    "observed_at": "2026-09-22T03:56:47Z",
+    "uncertainty": "PLANNED rests on absence of any implementation record plus DAG ordering; the source has no explicit not-started statement for this node."
+   },
+   "BOOT": {
+    "state": "PLANNED",
+    "label": "planned; not started — integration story, assembles only after all eight crates land",
+    "evidence_ref": "No active_assignment, gate, or delivery record names STORY-V4-BOOTSTRAP-001 in exec-pm-status.json; ordering evidence tracks.M0.next ends the crate sequence before any bootstrap work (\"…then integrator lands identity-checker…\")",
+    "observed_at": "2026-09-22T03:56:47Z",
+    "uncertainty": "PLANNED rests on absence of any implementation record plus DAG ordering; the source has no explicit not-started statement for this node."
+   },
+   "S7": {
+    "state": "PLANNED",
+    "label": "planned; not started — external release gate behind the bootstrap story",
+    "evidence_ref": "No active_assignment, gate, or delivery record names STAGE-7-EXTERNAL-VERIFICATION in exec-pm-status.json; next_action names no verification-gate work",
+    "observed_at": "2026-09-22T03:56:47Z",
+    "uncertainty": "PLANNED rests on absence of any implementation record plus DAG ordering; the source has no explicit not-started statement for this node."
+   }
+  }
+ },
+ "provenance": {
+  "kind": "planned_projection",
+  "label": "planned projection from pinned baseline",
+  "slice": "D_STATIC_FIRST_VIEW",
+  "authored_by": "D/ISOSCOPE-DEV",
+  "authored_on": "2026-09-21",
+  "pinned_spec_head": "afb23518cc0c0c1b5c41c8b22b8d9c1f27537aaf",
+  "pinned_product_head": "28cf79f1fe2a8ad062dcf3d39b399b4f44a48410",
+  "spec_payload_root": "b2c15a3b90b328598571067055c944ba4ecc695594856801468bbdc98efa72a6",
+  "sources": [
+   {
+    "path": "01-specification/PRODUCT-PRIMER.md",
+    "bytes": 767,
+    "sha256": "216cda590c0e90419af5a98b8ef14f3f1fe7aaac281e5f773d15974fb5a6249a"
+   },
+   {
+    "path": "03-implementation-plan/module-contracts.json",
+    "bytes": 30922,
+    "sha256": "c4517e547e1b933d15612423837f4e5b7d112efd703c0b72cd050c38f235152c"
+   },
+   {
+    "path": "03-implementation-plan/build-dag.json",
+    "bytes": 9166,
+    "sha256": "a0463d40857917bf52228581cdb6ce4aa0721b431ac7b225c425cc41bd9cfe94"
+   },
+   {
+    "path": "02-contracts/boundary-ports.json",
+    "bytes": 21240,
+    "sha256": "0739c6137a7b595ce5793717ff149cd521d6ef30205d7372067497742a9c0bbe"
+   }
+  ],
+  "state_rule": "Every node state is PLANNED, rendered as the engine's attn (amber roof, 'work outstanding') with a hollow 'planned' pip. No ok/build/blocked state is asserted. Declared uncertainties are hollow-pip items prefixed DECLARED UNCERTAINTY and are recorded, not resolved.",
+  "edge_rule": "Every edge uses the engine's 'intended' (planned) type. The DAG reason is carried in the edgeDocs title. Direction is prerequisite → dependent. No observed or inferred edge exists in this projection.",
+  "deferred": [
+   "Actual mode",
+   "Compare mode",
+   "observed edges",
+   "inferred edges",
+   "build state",
+   "correspondence",
+   "variance disposition",
+   "live transport"
+  ]
+ }
+}

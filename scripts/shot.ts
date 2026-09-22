@@ -8,7 +8,9 @@ import { tmpdir } from "node:os";
 import { join, resolve } from "path";
 
 const CHROME = "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome";
-const PORT = 9336;
+/* H-1: port 0 lets Chrome pick a free port per run; the real endpoint is read from the
+   DevToolsActivePort file inside the per-run profile — concurrent runs can never cross-wire. */
+import { readFileSync } from "node:fs";
 const [html, out, w = "1440", h = "900", js = ""] = Bun.argv.slice(2);
 if (!html || !out) { console.error("usage: shot.ts <built.html> <out.png> [w] [h] [js]"); process.exit(2); }
 const errors: string[] = [];
@@ -16,7 +18,7 @@ const errors: string[] = [];
    path /tmp/isoscope-chrome-shot (which persisted browser state across runs and was left behind).
    Removal waits for Chrome to exit so shutdown cannot recreate the directory after deletion. */
 const profile = mkdtempSync(join(tmpdir(), "isoscope-shot-"));
-const chrome = spawn(CHROME, ["--headless=new", `--remote-debugging-port=${PORT}`, "--no-first-run",
+const chrome = spawn(CHROME, ["--headless=new", "--remote-debugging-port=0", "--no-first-run",
   `--user-data-dir=${profile}`, "--remote-allow-origins=*", "about:blank"], { stdio: "ignore" });
 const cleanup = async () => {
   try { chrome.kill(); } catch {}
@@ -27,6 +29,10 @@ const cleanupSync = () => { try { chrome.kill(); } catch {} try { rmSync(profile
 process.on("SIGINT", () => { cleanupSync(); process.exit(130); });
 process.on("SIGTERM", () => { cleanupSync(); process.exit(143); });
 await new Promise(r => setTimeout(r, 1500));
+const portFile = join(profile, "DevToolsActivePort");
+let waited = 0;
+while (!existsSync(portFile) && waited < 10000) { await new Promise(r => setTimeout(r, 250)); waited += 250; }
+const PORT = parseInt(readFileSync(portFile, "utf8").split("\n")[0], 10);
 let msgId = 0;
 const pending = new Map<number, { resolve: (v: any) => void; reject: (e: any) => void }>();
 const targets = await (await fetch(`http://127.0.0.1:${PORT}/json/list`)).json();

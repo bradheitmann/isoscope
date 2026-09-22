@@ -1,0 +1,155 @@
+{
+ "schema": "isoscope.meanings.v1",
+ "for": "adapters/plangraph-plan.json",
+ "for_sha256": "6fe6b018678d03e11fe183bf873193bba3a1f3c078ce02b32ce755fe2c71df2a",
+ "copy": {
+  "plan_purpose": "The whole plan: shared types at the root, eight crates in three lanes that build on them, one integration story that assembles the crates, and an external gate that releases the result.",
+  "plan_relations": "Identity check and pg-core build directly on the shared types, and six more crates build on pg-core; Bootstrap takes one input from each of the eight crates, and the external gate needs Bootstrap alone."
+ },
+ "groups": {
+  "m0": {
+   "purpose": "the shared type surface and port contract every other crate programs against"
+  },
+  "laneA": {
+   "purpose": "the lane that lands the core rules and the check that re-verifies them"
+  },
+  "laneB": {
+   "purpose": "the lane that closes contracts and turns them into compiled artifacts"
+  },
+  "laneC": {
+   "purpose": "the lane that records proof: evidence, the ledger, admission, and planning control"
+  },
+  "gates": {
+   "purpose": "the assembly and external gates that turn finished crates into a shipped product"
+  }
+ },
+ "nodes": {
+  "M0": {
+   "role": "defines the shared types and byte formats every crate builds against",
+   "makes": "the shared type and byte contract"
+  },
+  "IIC": {
+   "role": "recomputes content identity on its own, to catch pg-core if it is wrong",
+   "makes": "an independent identity check"
+  },
+  "CORE": {
+   "role": "turns raw bytes into canonical bytes, content IDs and verified signers",
+   "makes": "canonical bytes, content IDs and verified signers"
+  },
+  "CONT": {
+   "role": "closes typed records into checked contract sets",
+   "makes": "closed contract sets"
+  },
+  "COMP": {
+   "role": "turns what an author intends into closed contracts or open questions",
+   "makes": "closed contracts or open questions"
+  },
+  "EVID": {
+   "role": "captures evidence against one frozen candidate and stores it by content",
+   "makes": "evidence manifests"
+  },
+  "LEDG": {
+   "role": "stores authority records durably, one transaction at a time",
+   "makes": "committed authority records"
+  },
+  "ADMT": {
+   "role": "decides whether a request is allowed under current authority",
+   "makes": "validated changes"
+  },
+  "PLCT": {
+   "role": "is the command line that sends each command to the right crate",
+   "makes": "command output and exit status"
+  },
+  "BOOT": {
+   "role": "assembles all eight crates into one workspace once each has landed",
+   "makes": "the integrated workspace"
+  },
+  "S7": {
+   "role": "is the external release gate after integration",
+   "makes": "the release decision"
+  }
+ },
+ "edges": {
+  "M0-IIC": {
+   "meaning": "the type and byte contract it recomputes identity against"
+  },
+  "M0-CORE": {
+   "meaning": "the types, port traits and error shapes it must implement exactly"
+  },
+  "CORE-CONT": {
+   "meaning": "canonical bytes, content IDs and verified signers"
+  },
+  "CORE-COMP": {
+   "meaning": "identity and canonical-form primitives"
+  },
+  "CORE-EVID": {
+   "meaning": "the frozen candidate each evidence record points at"
+  },
+  "CORE-LEDG": {
+   "meaning": "validated transitions to append as authority records"
+  },
+  "CORE-ADMT": {
+   "meaning": "the authority state each admission decision reads"
+  },
+  "CORE-PLCT": {
+   "meaning": "the core rules behind each routed command"
+  },
+  "CONT-COMP": {
+   "meaning": "closed contract sets and selector rules"
+  },
+  "CONT-EVID": {
+   "meaning": "the conformance claims evidence must cover"
+  },
+  "CONT-LEDG": {
+   "meaning": "contract closures recorded as authority"
+  },
+  "CONT-ADMT": {
+   "meaning": "the contracts each admitted delta must satisfy"
+  },
+  "CONT-PLCT": {
+   "meaning": "contract status used to sequence work"
+  },
+  "LEDG-ADMT": {
+   "meaning": "the append right admission grants"
+  },
+  "LEDG-PLCT": {
+   "meaning": "the accepted-state record planning reads"
+  },
+  "ADMT-PLCT": {
+   "meaning": "the gate each planned command passes through"
+  },
+  "COMP-PLCT": {
+   "meaning": "buildable units planning can schedule"
+  },
+  "EVID-PLCT": {
+   "meaning": "proof records that mark work done"
+  },
+  "IIC-BOOT": {
+   "meaning": "re-verified parts the assembly accepts"
+  },
+  "CORE-BOOT": {
+   "meaning": "the validated core the workspace links in"
+  },
+  "CONT-BOOT": {
+   "meaning": "the closed contracts the build satisfies"
+  },
+  "COMP-BOOT": {
+   "meaning": "the compiled artifacts it consumes"
+  },
+  "EVID-BOOT": {
+   "meaning": "the build evidence it records"
+  },
+  "LEDG-BOOT": {
+   "meaning": "the assembly transition it appends"
+  },
+  "ADMT-BOOT": {
+   "meaning": "the admission decision on the assembled product"
+  },
+  "PLCT-BOOT": {
+   "meaning": "the settled sequence it runs"
+  },
+  "BOOT-S7": {
+   "meaning": "the assembled product the gate receives"
+  }
+ }
+}

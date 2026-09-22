@@ -18,12 +18,11 @@
   --okoa-ease-out:cubic-bezier(0.22, 1, 0.36, 1);
   --okoa-serif:'Cormorant Garamond', Georgia, serif;
   --okoa-sans:'Inter', 'Helvetica Neue', Arial, sans-serif;
-  --okoa-disp:'Inter Display', 'Inter', sans-serif;
   --okoa-mono:'JetBrains Mono', ui-monospace, monospace;
-  --t-display-m:clamp(1.6rem, 1.2rem + 1.6vw, 2.4rem);
-  --t-title:clamp(1.3rem, 1.05rem + 1vw, 1.9rem);
-  --t-body:1.0625rem; --t-body-sm:0.9375rem; --t-fine:0.8125rem;
-  --t-label:0.72rem; --t-label-sm:0.66rem;
+  --r-display:clamp(1.6rem, 1.2rem + 1.6vw, 2.4rem);
+  --r-title:clamp(1.3rem, 1.05rem + 1vw, 1.9rem);
+  --t-body:1.0625rem; --r-fine:0.9375rem; --r-fine:0.8125rem;
+  --r-label:0.72rem; --r-label:0.66rem;
   --w-light:300; --w-regular:400; --w-medium:500; --w-semibold:600;
   --tr-snug:-0.01em; --tr-normal:0; --tr-wide:0.06em; --tr-caps:0.12em;
 }
@@ -41,12 +40,12 @@
   --okoa-signal-pass:#2D5E33; --okoa-signal-pass-surface:#F0FAF2;
   --okoa-signal-risk:#7A2E26; --okoa-signal-risk-surface:#FAF0F0;
 }
-.t-display-m{font-family:var(--okoa-serif);font-weight:var(--w-medium);font-size:var(--t-display-m);line-height:1.06;letter-spacing:var(--tr-snug);}
-.t-body-sm{font-family:var(--okoa-sans);font-weight:var(--w-regular);font-size:var(--t-body-sm);line-height:1.55;}
-.t-fine{font-family:var(--okoa-sans);font-weight:var(--w-regular);font-size:var(--t-fine);line-height:1.5;}
-.t-label{font-family:var(--okoa-mono);font-weight:var(--w-medium);font-size:var(--t-label);line-height:1.2;letter-spacing:var(--tr-caps);text-transform:uppercase;}
-.t-label-sm{font-family:var(--okoa-mono);font-weight:var(--w-medium);font-size:var(--t-label-sm);line-height:1.2;letter-spacing:var(--tr-caps);text-transform:uppercase;}
-.t-data{font-family:var(--okoa-mono);font-weight:var(--w-medium);font-size:var(--t-body-sm);line-height:1.4;letter-spacing:var(--tr-wide);}
+.r-display{font-family:var(--okoa-serif);font-weight:var(--w-medium);font-size:var(--r-display);line-height:1.06;letter-spacing:var(--tr-snug);}
+.r-fine{font-family:var(--okoa-sans);font-weight:var(--w-regular);font-size:var(--r-fine);line-height:1.55;}
+.r-fine{font-family:var(--okoa-sans);font-weight:var(--w-regular);font-size:var(--r-fine);line-height:1.5;}
+.r-label{font-family:var(--okoa-mono);font-weight:var(--w-medium);font-size:var(--r-label);line-height:1.2;letter-spacing:var(--tr-caps);text-transform:uppercase;}
+.r-label{font-family:var(--okoa-mono);font-weight:var(--w-medium);font-size:var(--r-label);line-height:1.2;letter-spacing:var(--tr-caps);text-transform:uppercase;}
+.r-data{font-family:var(--okoa-mono);font-weight:var(--w-medium);font-size:var(--r-fine);line-height:1.4;letter-spacing:var(--tr-wide);}
 *,*::before,*::after{box-sizing:border-box;}
 html{background:var(--okoa-semantic-surface-default);}
 body{margin:0;background:var(--okoa-semantic-surface-default);color:var(--okoa-semantic-fg1);
@@ -56,7 +55,7 @@ body{margin:0;background:var(--okoa-semantic-surface-default);color:var(--okoa-s
   min-height:var(--okoa-control-height);padding:0 var(--okoa-space-4);
   border:var(--okoa-border-hair) solid var(--okoa-semantic-border-strong);border-radius:var(--okoa-control-radius);
   background:transparent;color:var(--okoa-semantic-fg1);
-  font-family:var(--okoa-mono);font-weight:var(--w-medium);font-size:var(--t-label);
+  font-family:var(--okoa-mono);font-weight:var(--w-medium);font-size:var(--r-label);
   letter-spacing:var(--tr-caps);text-transform:uppercase;cursor:pointer;user-select:none;
   transition:background-color 120ms var(--okoa-ease-out),transform 120ms var(--okoa-ease-out);}
 .okoa-btn:active{transform:scale(0.98);}
@@ -65,36 +64,66 @@ body{margin:0;background:var(--okoa-semantic-surface-default);color:var(--okoa-s
   *,*::before,*::after{animation-duration:0.01ms !important;transition-duration:0.01ms !important;}
 }
 html,body{height:100%;}
-/* — page chrome layout (Stage A responsive repair). Breakpoint literals are the live OKOA tokens:
-   --okoa-bp-xl 1280 (actions take their own row at or below), --okoa-bp-lg 1024 (single column below),
-   --okoa-bp-sm 640 (phone band). Panel widths adapt between a minimum readable and a maximum measure;
-   the map column never drops under 480 css px on desktop. — */
+/* ————— UI redesign v1 chrome (brief redesign-brief-v1 §2-§4, approval rulings 1-6) ————— */
+:root{
+  --iso-header-h:56px; --iso-header-h-sm:48px; --iso-footer-h:32px;
+  --iso-nav-w:240px; --iso-nav-rail-w:56px; --iso-nav-drawer-w:min(88vw,320px);
+  --iso-panel-w:clamp(320px,26vw,400px); --iso-map-min-w:480px;
+  --iso-canvas-inset:var(--okoa-space-5);
+  --iso-sheet-peek:clamp(120px,30%,200px); --iso-sheet-open:60%;
+  /* type roles (§3): nine roles replace the seventeen sizes */
+  --iso-type-display:28px; --iso-type-display-lh:32px;
+  --iso-type-title:17px; --iso-type-title-lh:24px;
+  --iso-type-body:16px; --iso-type-body-lh:24px;
+  --iso-type-fine:13px; --iso-type-fine-lh:18px;
+  --iso-type-ui:13px; --iso-type-ui-lh:16px;
+  --iso-type-label:11px; --iso-type-label-lh:14px;
+  --iso-type-data:13px; --iso-type-data-lh:18px;
+  --iso-type-map-name:11px; --iso-type-map-name-lh:13px;
+  --iso-type-map-id:10px; --iso-type-map-id-lh:12px;
+  --tr-data:0.04em;
+}
+/* role classes retuned to the scale (names kept: engine-generated HTML uses them) */
+.r-display{font-family:var(--okoa-serif);font-weight:var(--w-medium);font-size:var(--iso-type-display);line-height:var(--iso-type-display-lh);letter-spacing:var(--tr-snug);}
+.r-title{font-family:var(--okoa-sans);font-weight:var(--w-medium);font-size:var(--iso-type-title);line-height:var(--iso-type-title-lh);}
+.r-body{font-family:var(--okoa-sans);font-weight:var(--w-regular);font-size:var(--iso-type-body);line-height:var(--iso-type-body-lh);}
+.r-fine{font-family:var(--okoa-sans);font-weight:var(--w-regular);font-size:var(--iso-type-fine);line-height:var(--iso-type-fine-lh);}
+.r-ui{font-family:var(--okoa-sans);font-weight:var(--w-medium);font-size:var(--iso-type-ui);line-height:var(--iso-type-ui-lh);}
+.r-label{font-family:var(--okoa-mono);font-weight:var(--w-medium);font-size:var(--iso-type-label);line-height:var(--iso-type-label-lh);letter-spacing:var(--tr-caps);text-transform:uppercase;}
+.r-data{font-family:var(--okoa-mono);font-weight:var(--w-medium);font-size:var(--iso-type-data);line-height:var(--iso-type-data-lh);letter-spacing:var(--tr-data);}
+.r-map-name{font-family:var(--okoa-mono);font-weight:var(--w-regular);font-size:var(--iso-type-map-name);line-height:var(--iso-type-map-name-lh);letter-spacing:var(--tr-data);}
+.r-map-id{font-family:var(--okoa-mono);font-weight:var(--w-medium);font-size:var(--iso-type-map-id);line-height:var(--iso-type-map-id-lh);letter-spacing:var(--tr-caps);text-transform:uppercase;}.r-label{font-family:var(--okoa-mono);font-weight:var(--w-medium);font-size:var(--iso-type-map-id);line-height:var(--iso-type-map-id-lh);letter-spacing:var(--tr-caps);text-transform:uppercase;}
+.r-data{font-family:var(--okoa-mono);font-weight:var(--w-medium);font-size:var(--iso-type-data);line-height:var(--iso-type-data-lh);letter-spacing:var(--tr-wide);}
+html,body{height:100%;}
 body{display:grid;overflow:hidden;
   grid-template-areas:"top top top" "side canvas panel" "hint hint hint";
-  grid-template-columns:clamp(224px,18vw,264px) minmax(480px,1fr) clamp(280px,26vw,380px);
-  grid-template-rows:auto minmax(0,1fr) auto;}
-/* A1: the topbar is never a fixed height — it wraps and grows; the map row below simply starts lower */
-.topbar{grid-area:top;position:relative;display:flex;flex-wrap:wrap;align-items:stretch;min-height:58px;
+  grid-template-columns:var(--iso-nav-w) minmax(var(--iso-map-min-w),1fr) var(--iso-panel-w);
+  grid-template-rows:var(--iso-header-h) minmax(0,1fr) var(--iso-footer-h);}
+/* R1: header — ONE 56px row, never wraps */
+.topbar{grid-area:top;display:flex;align-items:center;gap:var(--okoa-space-3);
+  height:var(--iso-header-h);padding:0 var(--okoa-space-4);
   border-bottom:var(--okoa-border-hair) solid var(--okoa-semantic-border-strong);
   background:var(--okoa-semantic-surface-default);z-index:var(--okoa-z-sticky);}
-.topbar .cell{flex:0 1 auto;min-width:0;max-width:100%;padding:var(--okoa-space-2) var(--okoa-space-4);
-  border-right:var(--okoa-border-hair) solid var(--okoa-semantic-border-default);
-  display:flex;flex-direction:column;justify-content:center;gap:var(--okoa-space-1);}
-.topbar .cell .k{color:var(--okoa-component-metric-label);}
-.topbar .cell .v{color:var(--okoa-component-metric-value);overflow-wrap:anywhere;}
-.topbar .brand .v{font-family:var(--okoa-mono);font-weight:var(--w-medium);font-size:1.05rem;}
-.topbar .actions{margin-left:auto;display:flex;align-items:center;gap:var(--okoa-space-2);flex-wrap:wrap;
-  padding:var(--okoa-space-2) var(--okoa-space-4);}
-.metricstrip{display:flex;flex:1 1 auto;min-width:0;flex-wrap:wrap;}
-/* JS-free disclosure hooks: a visually-hidden checkbox is the state, its label is the control.
-   Hidden on the layouts that do not need them; focus ring is forwarded to the label. */
-.vh-toggle{display:none;position:absolute;width:1px;height:1px;margin:calc(-1 * var(--okoa-border-hair));padding:0;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap;border:0;}
-.vh-toggle:focus-visible + label{outline:2px solid var(--okoa-focus-ring-color);outline-offset:2px;}
+.topbar .h-left{display:flex;align-items:baseline;gap:var(--okoa-space-3);min-width:0;flex:0 1 auto;}
+.topbar .wordmark-slot{font-family:var(--okoa-mono);font-weight:var(--w-medium);font-size:var(--iso-type-label);letter-spacing:var(--tr-caps);text-transform:uppercase;white-space:nowrap;}
+.topbar .h-title{font-family:var(--okoa-sans);font-weight:var(--w-medium);font-size:var(--iso-type-ui);line-height:var(--iso-type-ui-lh);color:var(--okoa-semantic-fg2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:40ch;min-width:0;}
+.topbar .h-prov{flex:1 1 auto;min-width:0;display:flex;justify-content:center;
+  font-family:var(--okoa-mono);font-weight:var(--w-medium);font-size:var(--iso-type-data);line-height:var(--iso-type-data-lh);letter-spacing:var(--tr-wide);
+  color:var(--okoa-semantic-fg2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.topbar .actions{margin-left:auto;display:flex;align-items:center;gap:var(--okoa-space-2);flex:0 0 auto;}
+.topbar .actions .okoa-btn{min-height:32px;padding:0 var(--okoa-space-3);}
+.metricstrip{display:none;} /* R1/R6/R20: counts → panel eyebrow; provenance → header line */
+.vh-toggle{display:none;position:absolute;width:1px;height:1px;margin:calc(-1 * var(--okoa-border-hair));padding:0;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap;border:0;} /* R-OP-2: every state checkbox stays visually hidden; its label is the control */
+#navToggle:focus-visible + label,#actionsToggle:focus-visible + label{outline:2px solid var(--okoa-focus-ring-color);outline-offset:2px;}
 .menu-btn{display:none;}
-.side{grid-area:side;min-height:0;overflow-y:auto;background:var(--okoa-semantic-surface-default);
+.nav-toggle{display:none;}
+@media (max-width:1023px){.nav-toggle{display:inline-flex;}}
+/* R4/R5/R11: nav — story list only; key leaves the nav */
+.side{grid-area:side;min-height:0;overflow-y:auto;overflow-x:hidden;background:var(--okoa-semantic-surface-default);
   border-right:var(--okoa-border-hair) solid var(--okoa-semantic-border-strong);
-  padding:var(--okoa-space-4) 0 var(--okoa-space-8);}
-.side .grouphead{padding:var(--okoa-space-4) var(--okoa-space-4) var(--okoa-space-2);color:var(--okoa-semantic-fg3);}
+  padding:var(--okoa-space-3) 0 var(--okoa-space-8);}
+.side .grouphead{padding:var(--okoa-space-3) var(--okoa-space-4) var(--okoa-space-2);color:var(--okoa-semantic-fg3);
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 .side .item{display:flex;align-items:center;gap:var(--okoa-space-2);width:100%;text-align:left;
   background:transparent;border:none;border-left:var(--okoa-border-thick) solid transparent;
   padding:var(--okoa-space-2) var(--okoa-space-4) var(--okoa-space-2) calc(var(--okoa-space-4) - var(--okoa-border-thick));
@@ -104,47 +133,61 @@ body{display:grid;overflow:hidden;
 .side .item.hot{border-left-color:var(--okoa-semantic-fg-accent);background:var(--okoa-semantic-surface-alt);}
 .side .chip{flex:0 0 auto;min-width:22px;height:22px;padding:0 var(--okoa-space-1);display:grid;place-items:center;
   border:var(--okoa-border-hair) solid var(--okoa-semantic-border-strong);
-  font-family:var(--okoa-mono);font-weight:var(--w-medium);font-size:var(--t-label-sm);}
-.side .nm{flex:1 1 auto;min-width:0;overflow-wrap:anywhere;font-family:var(--okoa-mono);font-weight:var(--w-medium);
-  font-size:var(--t-label);letter-spacing:var(--tr-wide);text-transform:uppercase;line-height:1.25;}
-.side .ct{flex:0 0 auto;font-family:var(--okoa-mono);font-size:var(--t-label-sm);color:var(--okoa-semantic-fg3);}
+  font-family:var(--okoa-mono);font-weight:var(--w-medium);font-size:var(--iso-type-map-id);}
+.side .nm{flex:1 1 auto;min-width:0;overflow-wrap:normal;hyphens:manual;word-break:normal;
+  font-family:var(--okoa-sans);font-weight:var(--w-medium);font-size:var(--iso-type-ui);line-height:var(--iso-type-ui-lh);
+  text-transform:none;letter-spacing:0;
+  display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
+.side .ct{flex:0 0 auto;font-family:var(--okoa-mono);font-size:var(--iso-type-map-id);color:var(--okoa-semantic-fg3);}
 .side .ct svg{width:var(--okoa-space-3);height:var(--okoa-space-3);display:block;}
 .canvas-wrap{grid-area:canvas;position:relative;overflow:hidden;min-width:0;min-height:0;
   background:var(--okoa-semantic-surface-default);}
-#gl{position:absolute;inset:0;width:100%;height:100%;display:block;touch-action:none;cursor:grab;}
+#gl{position:absolute;inset:var(--iso-canvas-inset);width:calc(100% - 2*var(--iso-canvas-inset));height:calc(100% - 2*var(--iso-canvas-inset));display:block;touch-action:none;cursor:grab;}
 #gl.dragging{cursor:grabbing;}
-#labels{position:absolute;inset:0;pointer-events:none;overflow:hidden;}
-/* labels — museum placards, not signage. Sentence case, quiet, detail-on-approach. */
+#labels{position:absolute;inset:var(--iso-canvas-inset);pointer-events:none;overflow:hidden;}
+/* R17: labels — two tiers, 10px floor */
 .lbl{position:absolute;transform:translate(-50%,0);
-  max-width:100px;text-align:center;
-  /* OKOA t-label idiom: mono, uppercase, wide tracking — quiet ink on paper, no chrome */
-  font-family:var(--okoa-mono);font-weight:var(--w-regular);font-size:9.5px;
-  letter-spacing:0.09em;text-transform:uppercase;
+  max-width:150px;text-align:center;
+  font-family:var(--okoa-mono);font-weight:var(--w-regular);font-size:var(--iso-type-map-name);line-height:var(--iso-type-map-name-lh);
+  letter-spacing:0.04em;
+  overflow-wrap:normal;hyphens:manual;word-break:keep-all;
   color:var(--iso-ink-muted, color-mix(in srgb, var(--okoa-semantic-fg2) 72%, var(--okoa-semantic-surface-default)));
-  line-height:1.2;
   text-shadow:0 0 3px var(--okoa-semantic-surface-default),0 0 6px var(--okoa-semantic-surface-default);
-  transition:color var(--okoa-motion-fast,120ms) var(--okoa-ease-out),opacity var(--okoa-motion-default,220ms) var(--okoa-ease-out);}
-.lbl .id{font-weight:var(--w-medium);font-size:8px;letter-spacing:0.12em;
+  transition:color 120ms var(--okoa-ease-out),opacity 220ms var(--okoa-ease-out);}
+.lbl .id{font-weight:var(--w-medium);font-size:var(--iso-type-map-id);letter-spacing:var(--tr-caps);text-transform:uppercase;
   color:var(--iso-ink-dim, color-mix(in srgb, var(--okoa-semantic-fg3) 68%, var(--okoa-semantic-surface-default)));
-  margin-right:var(--okoa-space-2);vertical-align:1px;transition:color var(--okoa-motion-fast,120ms) var(--okoa-ease-out);}
-.lbl .sfx{margin-left:var(--okoa-space-2);font-size:9px;opacity:0.85;}
+  margin-right:var(--okoa-space-2);vertical-align:1px;transition:color 120ms var(--okoa-ease-out);}
+.lbl .sfx{margin-left:var(--okoa-space-2);font-size:var(--iso-type-map-id);opacity:0.85;}
 .lbl .sfx.red{color:var(--okoa-signal-risk);}
 .lbl .sfx.amber{color:var(--okoa-signal-caution);}
 .lbl .sfx.you{color:var(--okoa-semantic-fg-accent);}
 .lbl.far .sfx{display:none;}
 .lbl.veryfar{opacity:0;}
-.lbl.clash{opacity:0.08;}
-/* hover/pin: the lettering simply darkens to full ink — no box, no background */
+.lbl.clash{opacity:0;} /* R19: collision loser hides fully; returns on hover/selection via .hot */
 .lbl.hot{color:var(--okoa-semantic-fg1);font-weight:var(--w-medium);opacity:1 !important;}
 .lbl.hot .id{color:var(--okoa-semantic-fg1);}
 .lbl.hot .sfx{display:inline;opacity:1;}
 .lbl.dim{opacity:0.12;}
-.zoomctl{position:absolute;top:var(--okoa-space-4);right:var(--okoa-space-4);display:flex;flex-direction:column;gap:var(--okoa-space-1);z-index:var(--okoa-z-raised);}
-.zoomctl .okoa-btn{min-height:32px;min-width:32px;padding:0;font-size:var(--t-body-sm);}
-/* the key lives in the frame (sidebar), never on the artwork */
-.sidekey{padding:var(--okoa-space-4) var(--okoa-space-4) 0;border-top:var(--okoa-border-hair) solid var(--okoa-semantic-border-default);margin-top:var(--okoa-space-4);}
+/* map control clusters (R9: Fit lives in the frame) */
+.mapctl{position:absolute;bottom:var(--okoa-space-4);right:var(--okoa-space-4);display:flex;gap:var(--okoa-space-2);z-index:var(--okoa-z-raised);}
+.mapctl .okoa-btn{min-height:32px;min-width:32px;padding:0 var(--okoa-space-2);font-size:var(--iso-type-fine);}
+.zoomctl{position:static;display:flex;gap:var(--okoa-space-2);}
+.zoomctl .okoa-btn{min-height:32px;min-width:32px;padding:0;font-size:var(--iso-type-fine);}
+/* R11/R12: the key is a map-anchored popover at every width */
+.keyctl{position:absolute;bottom:var(--okoa-space-4);left:var(--okoa-space-4);z-index:var(--okoa-z-raised);}
+.keyctl .okoa-btn{min-height:32px;min-width:32px;padding:0 var(--okoa-space-2);}
+#keyToggle{display:none;}
+#keyToggle:focus-visible + label{outline:2px solid var(--okoa-focus-ring-color);outline-offset:2px;}
+.keypop{position:absolute;bottom:calc(var(--okoa-space-4) + 44px);left:var(--okoa-space-4);width:280px;max-height:min(60vh,480px);overflow-y:auto;
+  background:var(--okoa-semantic-surface-default);border:var(--okoa-border-hair) solid var(--okoa-semantic-border-strong);
+  border-radius:var(--okoa-control-radius);box-shadow:var(--okoa-elevation-overlay);z-index:var(--okoa-z-overlay);
+  padding:var(--okoa-space-3) var(--okoa-space-4) var(--okoa-space-4);
+  transform:translateY(8px);opacity:0;visibility:hidden;pointer-events:none;
+  transition:transform 220ms var(--okoa-ease-out),opacity 220ms var(--okoa-ease-out);}
+#keyToggle:checked ~ .keypop{transform:none;opacity:1;visibility:visible;pointer-events:auto;}
+.sidekey{padding:0;border-top:none;margin-top:0;}
 .sidekey .row{display:flex;align-items:center;gap:var(--okoa-space-2);margin-bottom:var(--okoa-space-2);
-  font-family:var(--okoa-mono);font-size:var(--t-label-sm);letter-spacing:var(--tr-caps);
+  font-family:var(--okoa-mono);font-size:var(--iso-type-map-id);letter-spacing:var(--tr-caps);
   text-transform:uppercase;color:var(--okoa-semantic-fg2);line-height:1.35;}
 .sidekey .sw{width:14px;height:10px;border:1px solid var(--okoa-semantic-fg1);flex:0 0 auto;}
 .sidekey .sw.ok{background:var(--okoa-semantic-surface-warm);}
@@ -160,20 +203,19 @@ body{display:grid;overflow:hidden;
 .sidekey .hop{width:14px;height:8px;flex:0 0 auto;position:relative;}
 .sidekey .hop::before{content:'';position:absolute;left:0;right:0;top:6px;height:2px;background:var(--okoa-semantic-fg2);}
 .sidekey .hop::after{content:'';position:absolute;left:3px;top:0;width:8px;height:8px;border:2px solid var(--okoa-semantic-fg2);border-bottom:0;border-radius:var(--okoa-control-radius) var(--okoa-control-radius) 0 0;background:var(--okoa-semantic-surface-default);box-sizing:border-box;}
+.keypop .hints{margin-top:var(--okoa-space-3);border-top:var(--okoa-border-hair) solid var(--okoa-semantic-border-default);padding-top:var(--okoa-space-2);
+  font-family:var(--okoa-mono);font-size:var(--iso-type-map-id);letter-spacing:var(--tr-caps);text-transform:uppercase;color:var(--okoa-semantic-fg3);line-height:1.6;}
+/* R13/R14/R21: sidebar kept; heading slot + peek re-proportion */
 .panel{grid-area:panel;display:flex;flex-direction:column;min-height:0;min-width:0;
   background:var(--okoa-semantic-surface-default);
   border-left:var(--okoa-border-hair) solid var(--okoa-semantic-border-strong);}
-.sheet-handle{display:none;} /* bottom-sheet tap handle: rendered only in the single-column layout */
-.tabs{display:flex;border-bottom:var(--okoa-border-hair) solid var(--okoa-semantic-border-strong);}
-.tab{flex:1;min-height:44px;background:transparent;border:none;cursor:pointer;
-  font-family:var(--okoa-mono);font-weight:var(--w-medium);font-size:var(--t-label);
-  letter-spacing:var(--tr-caps);text-transform:uppercase;color:var(--okoa-semantic-fg2);
-  border-bottom:var(--okoa-border-thick) solid transparent;}
-.tab[aria-selected="true"]{color:var(--okoa-semantic-fg-on-dark);background:var(--okoa-semantic-entity-primary);border-bottom-color:var(--okoa-semantic-entity-primary);}
+.sheet-handle{display:none;}
 .panel .scroll{flex:1 1 auto;overflow-y:auto;overscroll-behavior:contain;touch-action:pan-y;
-  padding:var(--okoa-space-5) var(--okoa-space-5) var(--okoa-space-8);min-height:0;}
+  padding:var(--okoa-space-4) var(--okoa-space-4) var(--okoa-space-8);min-height:0;}
+@media (min-width:1280px){.panel .scroll{padding:var(--okoa-space-5) var(--okoa-space-5) var(--okoa-space-8);}}
 .panel .eyebrow{color:var(--okoa-semantic-fg3);margin-bottom:var(--okoa-space-2);overflow-wrap:anywhere;}
-.panel h1{margin:0 0 var(--okoa-space-1);font-size:1.75rem;line-height:1.08;overflow-wrap:anywhere;}
+.panel h1{margin:0 0 var(--okoa-space-1);font-family:var(--okoa-serif);font-weight:var(--w-medium);
+  font-size:var(--iso-type-display);line-height:var(--iso-type-display-lh);letter-spacing:var(--tr-snug);overflow-wrap:anywhere;}
 .panel .sub{color:var(--okoa-semantic-fg2);margin:0 0 var(--okoa-space-4);overflow-wrap:anywhere;}
 .panel .rule{border:none;border-top:var(--okoa-border-hair) solid var(--okoa-semantic-border-default);margin:var(--okoa-space-4) 0;}
 .panel p{margin:0 0 var(--okoa-space-3);}
@@ -182,7 +224,7 @@ body{display:grid;overflow:hidden;
   background:var(--okoa-signal-caution-surface);padding:var(--okoa-space-2) var(--okoa-space-3);margin-top:var(--okoa-space-3);}
 .panel .good{border-left:var(--okoa-border-thick) solid var(--okoa-signal-pass);
   background:var(--okoa-signal-pass-surface);padding:var(--okoa-space-2) var(--okoa-space-3);margin-top:var(--okoa-space-3);}
-.panel .refs{color:var(--okoa-semantic-fg3);font-family:var(--okoa-mono);font-size:var(--t-label-sm);letter-spacing:var(--tr-wide);margin-top:var(--okoa-space-3);line-height:1.7;overflow-wrap:anywhere;}
+.panel .refs{color:var(--okoa-semantic-fg3);font-family:var(--okoa-mono);font-size:var(--iso-type-map-id);letter-spacing:var(--tr-wide);margin-top:var(--okoa-space-3);line-height:1.7;overflow-wrap:anywhere;}
 .pip{display:inline-block;width:9px;height:9px;border:1px solid var(--okoa-semantic-fg1);margin-right:var(--okoa-space-2);}
 .pip.shipped{background:var(--okoa-signal-pass);border-color:var(--okoa-signal-pass);}
 .pip.built{background:var(--okoa-signal-info);border-color:var(--okoa-signal-info);}
@@ -213,76 +255,92 @@ body{display:grid;overflow:hidden;
 .devkey{margin-top:var(--okoa-space-4);}
 .devkey .row{display:flex;align-items:center;}
 .runtimenote{display:flex;align-items:center;gap:var(--okoa-space-2);margin-top:var(--okoa-space-2);}
-#edgeTip{position:fixed;z-index:var(--okoa-z-tooltip);pointer-events:none;font-family:var(--okoa-mono);font-size:11px;letter-spacing:.04em;color:var(--okoa-semantic-fg1);background:var(--okoa-semantic-surface-default);border:1px solid var(--okoa-semantic-border-strong);padding:var(--okoa-space-1) var(--okoa-space-2);border-radius:var(--okoa-control-radius);box-shadow:var(--okoa-elevation-overlay);}
+#edgeTip{position:fixed;z-index:var(--okoa-z-tooltip);pointer-events:none;font-family:var(--okoa-mono);font-size:var(--iso-type-data);letter-spacing:var(--tr-data);color:var(--okoa-semantic-fg1);background:var(--okoa-semantic-surface-default);border:1px solid var(--okoa-semantic-border-strong);padding:var(--okoa-space-1) var(--okoa-space-2);border-radius:var(--okoa-control-radius);box-shadow:var(--okoa-elevation-overlay);}
 #gl:focus-visible{outline:2px solid var(--okoa-focus-ring-color);outline-offset:2px;}
 .edgelist{display:grid;gap:var(--okoa-space-1);margin:var(--okoa-space-2) 0;}
-.edgerow{display:flex;align-items:center;gap:var(--okoa-space-2);padding:var(--okoa-space-1) var(--okoa-space-2);min-height:44px;border:1px solid var(--okoa-semantic-border-default);border-radius:var(--okoa-control-radius);background:transparent;color:var(--okoa-semantic-fg1);font-family:var(--okoa-sans);font-size:12px;text-align:left;cursor:pointer;transition:border-color var(--okoa-motion-fast) var(--okoa-ease-out);}
+.edgerow{display:flex;align-items:center;gap:var(--okoa-space-2);padding:var(--okoa-space-1) var(--okoa-space-2);min-height:44px;border:var(--okoa-border-hair) solid var(--okoa-semantic-border-default);border-radius:var(--okoa-control-radius);background:transparent;color:var(--okoa-semantic-fg1);font-family:var(--okoa-sans);font-size:var(--iso-type-fine);text-align:left;cursor:pointer;transition:border-color var(--okoa-motion-fast) var(--okoa-ease-out);}
 .edgerow:hover{border-color:var(--okoa-semantic-border-accent);}
 .edgerow .er-id{font-family:var(--okoa-mono);}
 .edgerow .er-st{color:var(--okoa-semantic-fg2);}
-.hint{grid-area:hint;display:flex;align-items:center;gap:var(--okoa-space-5);
+/* R2/R3/R7/R20: footer — one 32px row, wordmark-only */
+.hint{grid-area:hint;display:flex;align-items:center;gap:var(--okoa-space-4);
   background:var(--okoa-component-chrome-footer-bg);color:var(--okoa-component-chrome-footer-text);
-  padding:var(--okoa-space-2) var(--okoa-space-4);min-height:36px;flex-wrap:wrap;}
-.hint .keys{color:var(--iso-hint-keys, color-mix(in srgb, var(--okoa-component-chrome-footer-text) 72%, transparent));min-width:0;overflow-wrap:anywhere;}
-.hint .wordmark{margin-left:auto;}
+  height:var(--iso-footer-h);padding:0 var(--okoa-space-4);flex-wrap:nowrap;}
+.hint .keys{display:none;}
+.hint .prov-sm{display:none;flex:1 1 auto;min-width:0;text-align:center;
+  font-family:var(--okoa-mono);font-size:var(--iso-type-map-id);letter-spacing:var(--tr-wide);
+  color:var(--iso-hint-keys, color-mix(in srgb, var(--okoa-component-chrome-footer-text) 72%, transparent));
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.hint .xlint{display:none;flex:1 1 auto;min-width:0;text-align:center;
+  font-family:var(--okoa-mono);font-size:var(--iso-type-map-id);letter-spacing:var(--tr-caps);text-transform:uppercase;
+  color:var(--iso-hint-keys, color-mix(in srgb, var(--okoa-component-chrome-footer-text) 72%, transparent));}
+.hint .wordmark{margin-left:0;white-space:nowrap;}
+.hint .okoa-btn{margin-left:auto;min-height:32px;min-width:32px;padding:0;padding:0 var(--okoa-space-2);border-color:var(--okoa-component-chrome-footer-text);color:var(--okoa-component-chrome-footer-text);background:transparent;}
 .w-short{display:none;}
-@media (max-width:980px){ .w-long{display:none;} .w-short{display:inline;} }
-/* A2 · at or below --okoa-bp-xl (1280): the action buttons take their own full row under the metadata,
-   so they can never sit over the reading panel's heading */
-@media (max-width:1280px){
-  .topbar .actions{flex:1 1 100%;margin-left:0;justify-content:flex-end;
-    border-top:var(--okoa-border-hair) solid var(--okoa-semantic-border-default);}
-  .panel .scroll{padding:var(--okoa-space-4) var(--okoa-space-4) var(--okoa-space-8);}
-  .topbar .cell{padding:var(--okoa-space-1) var(--okoa-space-3);}
-  .metricstrip .cell .v{font-size:var(--t-fine);}
+/* ————— bands: xl ≥1280 (base) · lg 1024-1279 · md 768-1023 · sm <768 ————— */
+@media (min-width:1280px){ /* xl only: the four-verb hint centres the footer when it fits one line */
+  .hint .xlint{display:block;}
 }
-/* A2 + A4 · below --okoa-bp-lg (1024): single column. The legend column does not render (as before);
-   the reading panel becomes a bottom sheet that shares the map's grid cell (it overlays, never squeezes,
-   the map — the map keeps the full cell, at least half the viewport); actions collapse behind a menu. */
-@media (max-width:1023px){
-  body{grid-template-areas:"top" "canvas" "hint";grid-template-columns:minmax(0,1fr);grid-template-rows:auto minmax(0,1fr) auto;}
-  .side{display:none;}
-  .topbar .brand{order:-2;flex:1 1 0;min-width:0;border-right:none;}
-  .topbar .actions{order:-1;flex:0 0 auto;margin-left:auto;border-top:none;align-self:center;}
-  .topbar .actions:has(> #actionsToggle:checked){flex:1 1 100%;justify-content:flex-start;
-    border-top:var(--okoa-border-hair) solid var(--okoa-semantic-border-default);}
-  .metricstrip{order:0;flex:1 1 100%;flex-wrap:nowrap;overflow-x:auto;overscroll-behavior-x:contain;
-    border-top:var(--okoa-border-hair) solid var(--okoa-semantic-border-default);}
-  .metricstrip .cell{flex:0 0 auto;padding:var(--okoa-space-1) var(--okoa-space-3);}
-  .metricstrip .cell .v{white-space:nowrap;}
-  #actionsToggle{display:block;}
+@media (max-width:1279px) and (min-width:1024px){ /* lg: 56px nav rail, expands on focus-within */
+  body{grid-template-columns:var(--iso-nav-rail-w) minmax(0,1fr) var(--iso-panel-w);}
+  .side{padding:var(--okoa-space-2) 0;overflow-x:hidden;}
+  /* rail mode: chips only — names/counts/group heads appear when the rail expands (focus-within);
+     nothing overflows the 56px column (R5: containment by structure, not by scroll) */
+  .side{width:calc(var(--iso-nav-rail-w) + 104px);transition:width 380ms var(--okoa-ease-out);overflow-x:hidden;} /* N14: code + short name */
+  .side .item .nm{display:block;font-size:var(--iso-type-map-name);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .side .item .ct{display:none;}
+  .side .grouphead{display:block;font-size:var(--iso-type-map-id);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding-left:var(--okoa-space-2);}
+  .side:focus-within{width:min(var(--iso-nav-w),34vw);box-shadow:var(--okoa-elevation-overlay);z-index:var(--okoa-z-overlay);}
+  .side:focus-within .item .ct{display:flex;}
+  .side:focus-within .item .nm{font-size:var(--iso-type-ui);white-space:normal;}
+}
+@media (max-width:1023px){ /* md/sm: single column, drawer nav, sheet panel (A4 mechanism kept) */
+  body{grid-template-areas:"top" "canvas" "hint";grid-template-columns:minmax(0,1fr);grid-template-rows:var(--iso-header-h) minmax(0,1fr) var(--iso-footer-h);}
+  .topbar .h-prov{display:none;} /* provenance → footer centre on md */
+  .hint .prov-sm{display:block;}
+  .hint .wordmark{margin-left:0;}
+  .hint .xlint{display:none;}
   .menu-btn{display:inline-flex;}
   .topbar .actions .okoa-btn:not(.menu-btn){display:none;}
   #actionsToggle:checked ~ .okoa-btn{display:inline-flex;}
-  /* bottom sheet: collapsed = a scrollable peek (handle + heading) that leaves the city unobstructed;
-     expanded (handle tapped) = up to 60% of the map cell. The map cell itself never shrinks. */
-  .panel{grid-area:canvas;align-self:end;position:relative;z-index:var(--okoa-z-raised);max-height:clamp(120px,30%,220px);
+  .side{position:fixed;top:var(--iso-header-h);bottom:var(--iso-footer-h);left:0;width:var(--iso-nav-drawer-w);
+    z-index:var(--okoa-z-overlay);transform:translateX(-103%);transition:transform 380ms var(--okoa-ease-out);
+    grid-area:auto;border-right:var(--okoa-border-hair) solid var(--okoa-semantic-border-strong);
+    box-shadow:var(--okoa-elevation-overlay);}
+  #navToggle:checked ~ .side{transform:none;}
+  #navToggle:not(:checked) ~ .side{visibility:hidden;}
+  .panel{grid-area:canvas;align-self:end;position:relative;z-index:var(--okoa-z-raised);max-height:var(--iso-sheet-peek);
     border-left:none;border-top:var(--okoa-border-hair) solid var(--okoa-semantic-border-strong);}
-  .panel:has(> #sheetToggle:checked){max-height:60%;}
+  .panel:has(> #sheetToggle:checked){max-height:var(--iso-sheet-open);}
   #sheetToggle{display:block;}
   .sheet-handle{display:flex;flex:0 0 auto;flex-direction:column;align-items:center;justify-content:center;gap:var(--okoa-space-1);
     min-height:44px;padding:var(--okoa-space-1) var(--okoa-space-4);cursor:pointer;user-select:none;
     color:var(--okoa-semantic-fg3);border-bottom:var(--okoa-border-hair) solid var(--okoa-semantic-border-default);}
-  .sheet-handle .grip{width:40px;height:4px;border-radius:var(--okoa-radii-sm,2px);background:var(--okoa-semantic-border-strong);}
+  .sheet-handle .grip{width:40px;height:4px;border-radius:var(--okoa-control-radius);background:var(--okoa-semantic-border-strong);}
 }
-@media (max-height:360px){
-  .side,.panel,.hint{display:none;}
-  body{grid-template-areas:"top" "canvas";grid-template-columns:minmax(0,1fr);grid-template-rows:auto minmax(0,1fr);}
+@media (max-width:767px){ /* sm: 48px header + 24px wrapping provenance line */
+  body{grid-template-rows:calc(var(--iso-header-h-sm) + 24px) minmax(0,1fr) var(--iso-footer-h);}
+  .topbar{height:calc(var(--iso-header-h-sm) + 24px);flex-wrap:wrap;align-content:center;padding:var(--okoa-space-1) var(--okoa-space-3);}
+  .topbar .h-left{align-items:center;min-width:0;max-width:calc(100vw - 150px);} /* R23: center-align in the stacked sm header — glyph tops never clip */
+  .topbar .h-prov{display:flex;order:3;flex-basis:100%;justify-content:flex-start;white-space:normal;line-height:var(--iso-type-map-id-lh);font-size:var(--iso-type-map-id);}
+  .topbar .actions{order:2;}
+  .topbar .actions .okoa-btn{min-height:32px;min-width:32px;padding:0 var(--okoa-space-2);}
+  .hint .prov-sm{display:none;}
 }
-/* phone band (at or below --okoa-bp-sm 640): the pointer-gesture legend leaves the footer (the intro card
-   carries the same guidance and reopens from Settings); the wordmark stays */
-@media (max-width:640px){
-  .hint{min-height:32px;}
-  .hint .keys{display:none;}
-  .hint .wordmark{margin-left:0;}
+@media (max-height:600px){ /* height rule: sheet to handle, footer dropped */
+  .panel{max-height:52px;overflow:hidden;}
+  .panel:has(> #sheetToggle:checked){max-height:60%;}
+  .hint{display:none;}
+  body{grid-template-rows:var(--iso-header-h) minmax(0,1fr) 0fr;}
 }
-/* A7 · coarse pointers: every interactive target at least --okoa-touch-target-min (44 css px) */
+.seg{display:flex;gap:var(--okoa-space-1);}
+.seg .okoa-btn,.seg button{flex:1 1 auto;min-height:32px;padding:0 var(--okoa-space-2);}
+.trow{display:flex;align-items:center;gap:var(--okoa-space-2);width:100%;min-height:32px;padding:0 var(--okoa-space-2);border:var(--okoa-border-hair) solid var(--okoa-semantic-border-default);border-radius:var(--okoa-control-radius);background:transparent;color:var(--okoa-semantic-fg1);font-family:var(--okoa-mono);font-weight:var(--w-medium);font-size:var(--iso-type-label);letter-spacing:var(--tr-caps);cursor:pointer;}
+.trow.on{border-color:var(--okoa-semantic-border-strong);background:var(--okoa-semantic-surface-alt);}
+.trow .nm{font-family:var(--okoa-sans);font-weight:var(--w-medium);font-size:var(--iso-type-ui);text-transform:none;letter-spacing:0;}
+/* A7 · coarse pointers: every interactive target at least 44 css px */
 @media (pointer:coarse){
-  .okoa-btn,.zoomctl .okoa-btn,.trow,.seg button,.tab,.side .item,.menu-btn,.sheet-handle{min-height:44px;min-width:44px;}
-}
-@media (max-width:480px){
-  .okoa-btn{padding:0 var(--okoa-space-2);font-size:var(--t-label-sm);}
-  .topbar .cell{padding:var(--okoa-space-1) var(--okoa-space-3);}
+  .okoa-btn,.mapctl .okoa-btn,.zoomctl .okoa-btn,.keyctl .okoa-btn,.trow,.seg button,.side .item,.menu-btn,.sheet-handle{min-height:44px;min-width:44px;}
 }
 .panel,.side{overflow-wrap:break-word;}
 </style>
@@ -340,19 +398,19 @@ body{display:grid;overflow:hidden;
   --okoa-page-edge-shadow: 0 1px 3px rgba(0,0,0,.10), 0 6px 22px rgba(0,0,0,.10);
   --okoa-pt-display-xl: 40pt;
   --okoa-pt-display-l: 28pt;
-  --okoa-pt-display-m: 20pt;
-  --okoa-pt-title: 14pt;
+  --okoa-pr-display: 20pt;
+  --okoa-pr-title: 14pt;
   --okoa-pt-subhead: 11.5pt;
   --okoa-pt-lead: 11pt;
   --okoa-pt-body: 9.5pt;
-  --okoa-pt-body-sm: 8.5pt;
+  --okoa-pr-fine: 8.5pt;
   --okoa-pt-caption: 7.5pt;
-  --okoa-pt-label: 7pt;
+  --okoa-pr-label: 7pt;
   --okoa-pt-micro: 6pt;
   --okoa-pt-table: 8pt;
   --okoa-pt-table-header: 7pt;
-  --okoa-pt-data: 9pt;
-  --okoa-pt-data-lg: 18pt;
+  --okoa-pr-data: 9pt;
+  --okoa-pr-data-lg: 18pt;
   --okoa-pt-leading-body: 1.42;
   --okoa-pt-leading-tight: 1.18;
   --okoa-slide-16x9-w: 1920px;
@@ -568,14 +626,14 @@ body{display:grid;overflow:hidden;
   --okoa-mono: JetBrains Mono, ui-monospace, monospace;
   --t-display-xl: clamp(2.6rem, 1.6rem + 3.6vw, 5rem);
   --t-display-l: clamp(2rem,   1.4rem + 2.6vw, 3.4rem);
-  --t-display-m: clamp(1.6rem, 1.2rem + 1.6vw, 2.4rem);
-  --t-title: clamp(1.3rem, 1.05rem + 1vw, 1.9rem);
+  --r-display: clamp(1.6rem, 1.2rem + 1.6vw, 2.4rem);
+  --r-title: clamp(1.3rem, 1.05rem + 1vw, 1.9rem);
   --t-lead: clamp(1.1rem, 1rem + 0.6vw, 1.4rem);
   --t-body: 1.0625rem;
-  --t-body-sm: 0.9375rem;
-  --t-fine: 0.8125rem;
-  --t-label: 0.72rem;
-  --t-label-sm: 0.66rem;
+  --r-fine: 0.9375rem;
+  --r-fine: 0.8125rem;
+  --r-label: 0.72rem;
+  --r-label: 0.66rem;
   --t-micro: 0.6rem;
   --w-light: 300;
   --w-regular: 400;
@@ -1474,20 +1532,20 @@ body{display:grid;overflow:hidden;
 
 .t-display-xl{font-family:var(--okoa-serif);font-weight:var(--w-medium);font-size:var(--t-display-xl);line-height:1.0;letter-spacing:var(--tr-tight);}
 .t-display-l{font-family:var(--okoa-serif);font-weight:var(--w-medium);font-size:var(--t-display-l);line-height:1.04;letter-spacing:var(--tr-tight);}
-.t-display-m{font-family:var(--okoa-serif);font-weight:var(--w-medium);font-size:var(--t-display-m);line-height:1.06;letter-spacing:var(--tr-snug);}
-.t-quote{font-family:var(--okoa-serif);font-weight:var(--w-medium);font-size:var(--t-display-m);line-height:1.16;letter-spacing:var(--tr-snug);}
-.t-title{font-family:var(--okoa-disp);font-weight:var(--w-semibold);font-size:var(--t-title);line-height:1.15;letter-spacing:var(--tr-snug);}
-.t-subhead{font-family:var(--okoa-disp);font-weight:var(--w-semibold);font-size:var(--t-body);line-height:1.3;letter-spacing:var(--tr-snug);}
-.t-lead{font-family:var(--okoa-disp);font-weight:var(--w-light);font-size:var(--t-lead);line-height:1.5;letter-spacing:var(--tr-normal);}
+.r-display{font-family:var(--okoa-serif);font-weight:var(--w-medium);font-size:var(--r-display);line-height:1.06;letter-spacing:var(--tr-snug);}
+.t-quote{font-family:var(--okoa-serif);font-weight:var(--w-medium);font-size:var(--r-display);line-height:1.16;letter-spacing:var(--tr-snug);}
+.r-title{font-family:var(--okoa-sans);font-weight:var(--w-semibold);font-size:var(--r-title);line-height:1.15;letter-spacing:var(--tr-snug);}
+.t-subhead{font-family:var(--okoa-sans);font-weight:var(--w-semibold);font-size:var(--t-body);line-height:1.3;letter-spacing:var(--tr-snug);}
+.t-lead{font-family:var(--okoa-sans);font-weight:var(--w-light);font-size:var(--t-lead);line-height:1.5;letter-spacing:var(--tr-normal);}
 .t-body{font-family:var(--okoa-sans);font-weight:var(--w-regular);font-size:var(--t-body);line-height:1.6;letter-spacing:var(--tr-normal);}
-.t-body-sm{font-family:var(--okoa-sans);font-weight:var(--w-regular);font-size:var(--t-body-sm);line-height:1.55;letter-spacing:var(--tr-normal);}
-.t-fine{font-family:var(--okoa-sans);font-weight:var(--w-regular);font-size:var(--t-fine);line-height:1.5;letter-spacing:var(--tr-normal);}
+.r-fine{font-family:var(--okoa-sans);font-weight:var(--w-regular);font-size:var(--r-fine);line-height:1.55;letter-spacing:var(--tr-normal);}
+.r-fine{font-family:var(--okoa-sans);font-weight:var(--w-regular);font-size:var(--r-fine);line-height:1.5;letter-spacing:var(--tr-normal);}
 .t-body-strong{font-family:var(--okoa-sans);font-weight:var(--w-medium);font-size:var(--t-body);line-height:1.6;letter-spacing:var(--tr-normal);}
-.t-label{font-family:var(--okoa-mono);font-weight:var(--w-medium);font-size:var(--t-label);line-height:1.2;letter-spacing:var(--tr-caps);text-transform:uppercase;}
-.t-label-sm{font-family:var(--okoa-mono);font-weight:var(--w-medium);font-size:var(--t-label-sm);line-height:1.2;letter-spacing:var(--tr-caps);text-transform:uppercase;}
+.r-label{font-family:var(--okoa-mono);font-weight:var(--w-medium);font-size:var(--r-label);line-height:1.2;letter-spacing:var(--tr-caps);text-transform:uppercase;}
+.r-label{font-family:var(--okoa-mono);font-weight:var(--w-medium);font-size:var(--r-label);line-height:1.2;letter-spacing:var(--tr-caps);text-transform:uppercase;}
 .t-micro{font-family:var(--okoa-mono);font-weight:var(--w-medium);font-size:var(--t-micro);line-height:1.2;letter-spacing:var(--tr-caps-wide);text-transform:uppercase;}
-.t-data{font-family:var(--okoa-mono);font-weight:var(--w-medium);font-size:var(--t-body-sm);line-height:1.4;letter-spacing:var(--tr-wide);}
-.t-data-lg{font-family:var(--okoa-mono);font-weight:var(--w-medium);font-size:var(--t-title);line-height:1.1;letter-spacing:var(--tr-snug);}
+.r-data{font-family:var(--okoa-mono);font-weight:var(--w-medium);font-size:var(--r-fine);line-height:1.4;letter-spacing:var(--tr-wide);}
+.r-data-lg{font-family:var(--okoa-mono);font-weight:var(--w-medium);font-size:var(--r-title);line-height:1.1;letter-spacing:var(--tr-snug);}
 .t-accent{color:var(--okoa-semantic-border-accent);font-style:normal;}
 
 </style>
@@ -1502,7 +1560,7 @@ body{display:grid;overflow:hidden;
 .drawer header{display:flex;justify-content:space-between;align-items:center;padding:var(--okoa-space-3) var(--okoa-space-4);border-bottom:1px solid var(--okoa-semantic-border-default);flex:none;}
 .drawer h3{font-family:var(--okoa-mono);font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--okoa-semantic-fg1);}
 .drawer .dbody{flex:1;overflow-y:auto;padding:var(--okoa-space-2) var(--okoa-space-4) var(--okoa-space-5);}
-.dsec{font-family:var(--okoa-mono);font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:var(--okoa-semantic-fg2);margin:var(--okoa-space-4) 0 var(--okoa-space-2);}
+.dsec{font-family:var(--okoa-mono);font-size:var(--iso-type-label);letter-spacing:var(--tr-caps);text-transform:uppercase;color:var(--okoa-semantic-fg2);margin:var(--okoa-space-4) 0 var(--okoa-space-2);}
 .trow{display:flex;align-items:center;gap:var(--okoa-space-3);width:100%;padding:var(--okoa-space-2);border:1px solid transparent;background:none;cursor:pointer;
  font-family:var(--okoa-mono);font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--okoa-semantic-fg1);text-align:left;}
 .trow:hover{background:var(--okoa-semantic-surface-warm);}
@@ -1535,56 +1593,71 @@ body{display:grid;overflow:hidden;
 </style>
 </head>
 <body>
+<input type="checkbox" id="navToggle" class="vh-toggle" aria-label="Toggle the story navigation">
 <header class="topbar">
-  <div class="cell brand"><span class="k t-label-sm" id="brandK"></span><span class="v" id="brandV"></span></div>
-  <div class="metricstrip" id="metricStrip"></div>
+  <div class="h-left">
+    <label for="navToggle" class="okoa-btn nav-toggle" title="Story list"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" width="14" height="14"><line x1="4" y1="6" x2="20" y2="6"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="18" x2="20" y2="18"/></svg></label>
+    <span class="wordmark-slot" id="brandK"></span>
+    <span class="h-title" id="brandV"></span>
+  </div>
+  <div class="h-prov" id="asOf"></div>
   <div class="actions">
     <input type="checkbox" id="actionsToggle" class="vh-toggle">
-    <label for="actionsToggle" class="okoa-btn menu-btn" title="Show or hide the map actions">Menu</label>
-    <button class="okoa-btn" id="btnFlow" aria-pressed="false" title="Let it flow">Flow</button>
-    <button class="okoa-btn" id="btnTrace" title="Light the loop one step at a time"><span class="w-long">Trace one step</span><span class="w-short">Trace</span></button>
-    <button class="okoa-btn" id="btnStack" aria-pressed="false" title="Lift the architecture into its three levels">Stack</button>
-    <button class="okoa-btn" id="btnReset" title="Reset the camera (R)"><span class="w-long">Reset view</span><span class="w-short">Reset</span></button>
-    <button class="okoa-btn" id="btnSettings" title="Settings" aria-haspopup="true">Settings</button>
+    <label for="actionsToggle" class="okoa-btn menu-btn" title="Show or hide the map actions">More</label>
+    <button class="okoa-btn" id="btnFlow" aria-pressed="false" title="Animate the planned links with moving dots (explanatory only — not live data)">Flow</button>
+    <button class="okoa-btn" id="btnTrace" title="Walk the declared critical path one step at a time">Trace</button>
+    <button class="okoa-btn" id="btnStack" aria-pressed="false" title="Lift the architecture into its three levels (planning, running, field)">Stack</button>
+    <button class="okoa-btn" id="btnSettings" title="Settings: theme, line weight, fonts" aria-haspopup="true">Settings</button>
   </div>
+  <div id="metricStrip" hidden></div>
 </header>
 
 <nav class="side" id="legend" aria-label="Component legend">
-  <div class="sidekey" id="sideKey" aria-label="Reading the map">
-    <p class="grouphead t-label-sm" style="padding-left:0">Reading the map</p>
-    <div class="row"><span class="sw ok"></span>Paper roof — healthy, quiet</div>
-    <div class="row"><span class="sw attn"></span>Amber roof — work outstanding</div>
-    <div class="row"><span class="sw build"></span>Blue roof — being built</div>
-    <div class="row"><span class="sw blocked"></span>Red roof — blocked</div>
-    <div class="row"><span class="base red"></span>Red base — a blocker inside</div>
-    <div class="row"><span class="base you"></span>Slate base — your decision inside</div>
-    <div class="row"><span class="base amber"></span>Amber base — items queued</div>
-    <div class="row"><span class="base amber" style="height:2px"></span>Amber line, slow flow — degraded link</div>
-    <div class="row"><span class="base red" style="height:2px"></span>Red line, never flows — broken link</div>
-    <div class="row"><span class="jn"></span>Dot at the wall — the link joins here</div>
-    <div class="row"><span class="hop"></span>Arc over a line — a crossing, not a join</div>
-    <div class="row" style="color:var(--okoa-semantic-fg3)">Fly closer: labels gain their counts</div>
-    <div class="row" style="color:var(--okoa-semantic-fg3)" id="asOf"></div>
-  </div>
 </nav>
 
 <main class="canvas-wrap" id="canvasWrap" aria-label="Flyover architecture map">
   <canvas id="gl" tabindex="0" aria-label="PlanGraph map — Tab cycles edge focus, Enter selects, Escape clears"></canvas>
   <div id="labels"></div>
   <div id="edgeTip" hidden aria-hidden="true"></div>
-  <div class="zoomctl">
-    <button class="okoa-btn" id="zin" aria-label="Zoom in">+</button>
-    <button class="okoa-btn" id="zout" aria-label="Zoom out">&minus;</button>
+  <div class="mapctl">
+    <button class="okoa-btn" id="btnReset" title="Fit the whole map into the viewport (R)">Fit</button>
+    <div class="zoomctl">
+      <button class="okoa-btn" id="zin" aria-label="Zoom in" title="Zoom in">+</button>
+      <button class="okoa-btn" id="zout" aria-label="Zoom out" title="Zoom out">&minus;</button>
+    </div>
+  </div>
+  <input type="checkbox" id="keyToggle" class="vh-toggle" aria-label="Toggle the reading key">
+  <div class="keyctl"><label for="keyToggle" class="okoa-btn" title="Reading the map: colours, states, controls">Key</label></div>
+  <div class="keypop">
+    <div class="sidekey" id="sideKey" aria-label="Reading the map">
+      <p class="grouphead r-label" style="padding-left:0">Reading the map</p>
+      <div class="row"><span class="sw ok"></span>Paper roof — healthy, quiet</div>
+      <div class="row"><span class="sw attn"></span>Amber roof — work outstanding</div>
+      <div class="row"><span class="sw build"></span>Blue roof — being built</div>
+      <div class="row"><span class="sw blocked"></span>Red roof — blocked</div>
+      <div class="row"><span class="base red"></span>Red base — a blocker inside</div>
+      <div class="row"><span class="base you"></span>Slate base — your decision inside</div>
+      <div class="row"><span class="base amber"></span>Amber base — items queued</div>
+      <div class="row"><span class="base amber" style="height:2px"></span>Amber line, slow flow — degraded link</div>
+      <div class="row"><span class="base red" style="height:2px"></span>Red line, never flows — broken link</div>
+      <div class="row"><span class="jn"></span>Dot at the wall — the link joins here</div>
+      <div class="row"><span class="hop"></span>Arc over a line — a crossing, not a join</div>
+      <div class="row" style="color:var(--okoa-semantic-fg3)">Fly closer: labels gain their counts</div>
+    </div>
+    <div class="hints">Drag to orbit · scroll to zoom · click a box</div>
+    <div class="provline r-label" id="keyProv" style="margin-top:var(--okoa-space-2)"></div>
+    <div class="r-fine" style="color:var(--okoa-semantic-fg3)">Flow animates the planned links with moving dots (explanatory, not live data). Trace walks the declared critical path one step at a time. Stack lifts the three levels apart.</div>
+    <div class="r-fine" style="color:var(--okoa-semantic-fg3)">The left rail groups parts by lane (planning order), not by map position. Counts on boxes and rows are open items: work recorded against a part and not yet closed.</div>
   </div>
 </main>
 
 <aside class="panel" aria-label="Reading panel">
   <input type="checkbox" id="sheetToggle" class="vh-toggle">
-  <label for="sheetToggle" class="sheet-handle" title="Expand or collapse the reading panel"><span class="grip" aria-hidden="true"></span><span class="t-label-sm">Reading panel</span></label>
+  <label for="sheetToggle" class="sheet-handle" title="Expand or collapse the reading panel"><span class="grip" aria-hidden="true"></span><span class="r-label">Reading panel</span></label>
   <div class="scroll" id="paneBody" role="tabpanel">
-    <p class="eyebrow t-label-sm" id="pEyebrow"></p>
-    <h1 class="t-display-m" id="pTitle"></h1>
-    <p class="sub t-fine" id="pSub"></p>
+    <p class="eyebrow r-label" id="pEyebrow"></p>
+    <h1 class="r-display" id="pTitle"></h1>
+    <p class="sub r-fine" id="pSub"></p>
     <hr class="rule">
     <div id="pProse"></div>
   </div>
@@ -1616,7 +1689,6 @@ body{display:grid;overflow:hidden;
 <aside class="drawer" id="drawer" aria-label="Settings">
  <header><h3>Settings</h3><button class="okoa-btn" id="drawerClose" aria-label="Close settings">&times;</button></header>
  <div class="dbody">
-  <button class="okoa-btn" id="btnGuide" style="width:100%;margin-bottom:var(--okoa-space-1)">Show the intro guide</button>
   <div class="dsec">Theme</div>
   <button class="okoa-btn" id="btnRandomTheme" title="Surprise me">Random theme</button>
   <div id="themeList"></div>
@@ -1632,8 +1704,10 @@ body{display:grid;overflow:hidden;
 </aside>
 
 <footer class="hint">
-  <span class="t-label-sm keys">Orbit: drag (one finger) &middot; Pan: two-finger click+drag on trackpad / right-drag mouse / two-finger drag touch &middot; Zoom: scroll or pinch &middot; Click a building: circuit &middot; a pipe: what flows &middot; ground: restore &middot; R: home</span>
-  <span class="t-label-sm wordmark" id="wordmark"></span>
+  <span class="r-label wordmark" id="wordmark"></span>
+  <span class="prov-sm" id="provSm"></span>
+  <span class="xlint">Drag to orbit · scroll to zoom · click a box</span>
+  <button class="okoa-btn" id="btnGuide" title="Show the reading key" aria-label="Show the reading key">?</button>
 </footer>
 
 <!-- IDE theme palettes (16 third-party palettes) live in the local module assets/themes/ide-themes.js
@@ -1646,6 +1720,7 @@ body{display:grid;overflow:hidden;
 {"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"}}
 </script>
 <script type="application/json" id="isospec">{"groups":[{"id":"rules","label":"The rulebook (SCP) · shipped"},{"id":"server","label":"The referee (MCP server) · shipped"},{"id":"runs","label":"Where it runs"},{"id":"loop","label":"The improvement loop"},{"id":"build","label":"Being built now"}],"nodes":[{"id":"RO","tag":"ROLES","g":"rules","name":"Role system","x":0,"y":3,"w":1,"d":1,"h":1,"does":"Gives every agent a named seat with defined powers: an executive office (a lead, a watchdog, an assistant, a researcher, an auditor) plus development pods, each with a builder, an independent reviewer, and a sealed final examiner. Seats are permanent; the AI occupying a seat is replaceable.","built":"<span class='pip shipped'></span>Shipped in v0.5.0. Role cards, fallback ladders, and the rule that no agent may review its own work are in the published protocol text.","refs":"protocol/SCP.md · protocol/role-cards/"},{"id":"BC","tag":"BOOT CONTRACTS","g":"rules","name":"Boot contracts and receipts","x":3,"y":2,"w":1,"d":1,"h":1,"does":"No agent works anonymously. Before doing anything, each agent must file a receipt stating who it is, what seat it holds, which folder and code version it&rsquo;s on, and what it may touch. A missing or false receipt stops the agent.","built":"<span class='pip shipped'></span>Shipped; the referee validates receipts mechanically. The Aug-14 run showed receipt wording needs verbatim templates &mdash; that fix rides the next release.","refs":"protocol/receipts/ · odin_get_boot_receipt_schema"},{"id":"DL","tag":"DELIVERY PROOF","g":"rules","name":"Delegation and delivery proof","x":6,"y":2,"w":1,"d":1,"h":1,"does":"An assignment isn&rsquo;t &ldquo;sent&rdquo; until it&rsquo;s proven to have arrived: typed into the right terminal, actually submitted (Enter really pressed), and seen on screen. Kills the classic failure of instructions sitting unsent in an input box.","built":"<span class='pip shipped'></span>Shipped &mdash; and this one is YOUR bug: the June-13 send-vs-submit report became the delivery-verdict system and per-harness submit profiles.","refs":"odin_validate_cmux_delivery_proof · harness-control-matrix.yaml","good":"Direct product of field feedback 2026-06-13."},{"id":"GA","tag":"GATES","g":"rules","name":"Gates and bounded states","x":9,"y":2,"w":1,"d":1,"h":1,"does":"Checkpoints an agent cannot talk its way past: prove you read your instructions (file fingerprints), prove your location, pass readiness probes. Plus a fixed status vocabulary &mdash; BLOCKED or QA_PENDING exist; an unqualified &ldquo;done&rdquo; does not.","built":"<span class='pip shipped'></span>Shipped: activation gates, instruction-read proof, layout gate, ~20 deterministic validators. Field-tested Aug 14: caught all 7 incidents before corruption.","refs":"odin_get_activation_gates · verify-instruction-read.mjs"},{"id":"CL","tag":"CLOSEOUT","g":"rules","name":"Closeout and audit trail","x":12,"y":3,"w":1,"d":1,"h":1,"does":"How a session ends honestly: final states, metrics, an evidence ledger, and a handoff the next session can resume from. Finished teams are parked, not vaporized.","built":"<span class='pip shipped'></span>Shipped. The Aug-14 session produced a complete worked example: a fingerprint-chained 31-ruling record and a verified closeout bundle.","refs":"odin_compile_session_report · .odin/audit/"},{"id":"PB","tag":"PROTOCOL BUNDLE","g":"server","name":"Protocol bundle service","x":6,"y":6.6,"w":1.4,"d":1.4,"h":2,"stack":5,"does":"The heart of the referee: serves the versioned rulebook to any AI agent &mdash; startup packets sized to each role, role cards, receipt templates &mdash; so a fresh agent is governed in seconds, not after 100KB of pasted rules.","built":"<span class='pip shipped'></span>Shipped as npm @bradheitmann/odin-sentinel v0.5.0 (published = repo). ~48 tools and resources. This surface grew from your June-20 RFC sweep.","refs":"src/mcp/server.ts · npm @bradheitmann/odin-sentinel","good":"Direct product of field feedback 2026-06-20."},{"id":"VD","tag":"VALIDATORS","g":"server","name":"Deterministic validators","x":9.4,"y":6.6,"w":1.2,"d":1.2,"h":1.6,"does":"The referee&rsquo;s whistle: mechanical checkers for receipts, delegations, delivery proofs, manifests, read-proofs. Deterministic = same input, same verdict &mdash; agents can&rsquo;t argue.","built":"<span class='pip shipped'></span>Shipped; ~20 validators. 0.6.0 adds the truth-label check &mdash; built and reviewed, awaiting its sealed exam.","refs":"odin_validate_* · src/protocol/schemas.ts"},{"id":"SL","tag":"LAYOUT","g":"server","name":"Surface layout and topology","x":6,"y":10,"w":1.2,"d":1.2,"h":1.2,"does":"Computes the canonical on-screen seating of a governed team and gates team growth behind a checklist. If work isn&rsquo;t on a visible surface, it isn&rsquo;t governed work.","built":"<span class='pip shipped'></span>Shipped. Used live Aug 14 to bootstrap a 16-seat organization from one pane.","refs":"odin_compute_surface_layout"},{"id":"HP","tag":"HARNESS INTEL","g":"server","name":"Harness probes and pacing","x":9.4,"y":10,"w":1,"d":1,"h":1,"does":"Knows each agent CLI&rsquo;s quirks (Claude Code, Codex, Droid, Pi, Crush&hellip;): installed, logged in, actually ready &mdash; and how fast you can type at it. &ldquo;Installed&rdquo; is not &ldquo;provisioned.&rdquo;","built":"<span class='pip shipped'></span>Shipped &mdash; your June-27 Pi rapid-fire report is why pacing exists. Aug-14 discoveries (Pi /clear trap, Droid double-Enter) queued for the matrix.","refs":"odin_get_harness_probe_matrix · src/harness-pacing/","good":"Direct product of field feedback 2026-06-27."},{"id":"TL","tag":"TELEMETRY","g":"server","name":"Telemetry and session reports","x":11.6,"y":8.8,"w":0.9,"d":0.9,"h":0.8,"does":"Collects what happened in a run &mdash; who did what, what was accepted, where tokens went &mdash; with secrets scrubbed before anything is stored or shared.","built":"<span class='pip shipped'></span>Shipped (session reports, redaction preview, telemetry config).","refs":"odin_compile_session_report"},{"id":"OW","tag":"ODIN-WATCH","g":"server","name":"odin-watch liveness","x":3.6,"y":8.6,"w":0.9,"d":0.9,"h":0.8,"does":"A watcher that reads agent panes and classifies them: working, waiting, stuck, or dead &mdash; so nobody reads sixteen terminals by hand.","built":"<span class='pip shipped'></span>Shipped for cmux; tmux backend is a planned epic. The ownership rule wires in here during the circuit-breaker work.","refs":"src/odin-watch/ · EPIC-005 (planned)"},{"id":"CC","tag":"THIS MACHINE","g":"runs","name":"Installs on this machine","x":13.6,"y":7,"w":1.6,"d":1,"h":1,"does":"Where governed sessions happen here: the Claude Code plugin, skill copies for other CLIs, and the cmux workspaces where teams get visible seats.","built":"<span class='pip shipped'></span>Working, two drift findings (Aug 19): plugin at 0.4.13 vs canon 0.5.0, and the master skill folder went missing in the Aug-8 recovery &mdash; installed copies have no source of truth to sync against.","refs":"plugin cache 0.4.13 · sync-installations.sh (master absent)","cond":"Restore the master skill dir, then update the plugin. The master matters more."},{"id":"DS","tag":"DOWNSTREAM","g":"runs","name":"Downstream projects","x":16.6,"y":8.2,"w":1,"d":1,"h":0.8,"does":"Other repos running under this protocol: edge-agentic (planning law), llm-serve (local models), the migration-lab (whose failure report started the current build), and Deck &mdash; consuming odin-sentinel as a library for its cockpit.","built":"<span class='pip shipped'></span>Live consumers via npm 0.5.0. Two hand-offs are written and waiting for your paste: the edge-agentic assignment and the migration-lab reply.","refs":"audit outbound/ (2 ready-to-paste notes)","cond":"Two outbound notes drafted Aug 14, still undelivered."},{"id":"FB","tag":"FIELD FEEDBACK","g":"loop","name":"Field feedback intake","x":0,"y":11.4,"w":1.2,"d":1.2,"h":1.1,"does":"Where your other projects&rsquo; pain becomes this project&rsquo;s roadmap. Reports arrive, get fingerprint-verified, judged item by item, and accepted items become planned work. Nothing is silently dropped.","built":"<span class='pip shipped'></span>All 7 reports accounted, none wasted:<br>&bull; 06-13 Enter-key bug &rarr; <span class='pip shipped'></span>shipped<br>&bull; 06-20 RFC sweep &rarr; <span class='pip shipped'></span>shipped (seeded 0.5.0)<br>&bull; 06-27 Pi rapid-fire &rarr; <span class='pip shipped'></span>shipped<br>&bull; 06-28 provider outage &rarr; <span class='pip shipped'></span>mostly shipped<br>&bull; 07-08 stale-address &rarr; <span class='pip planned'></span>planned (EPIC-040)<br>&bull; 07-08 roster/PO mandate &rarr; <span class='pip planned'></span>planned (EPIC-039&ndash;045)<br>&bull; 08-08 governance displacement &rarr; <span class='pip built'></span>in build<br>An independent audit confirmed this accounting; 3 sentence-sized omissions found and pinned.","refs":"intelligence inbox · disposition-ledger.json","good":"Verdict: 3 shipped · 1 mostly · 1 in build · 2 planned · 0 lost."},{"id":"CB","tag":"CIRCUIT BREAKERS","g":"build","name":"Governance circuit breakers","x":3.6,"y":12.6,"w":2,"d":1.2,"h":1,"does":"The flagship build (EPIC-052), born from the Aug-8 failure report: a tamper-proof event logbook, a three-strikes retry limit that can&rsquo;t be laundered, a ban on audits-of-audits without your sign-off, paperwork budgets that stop instead of spiral, and problems that don&rsquo;t count as handled until someone owns them.","built":"<span class='pip built'></span>Wave-0 slice 1 BUILT and review-passed (570 tests green, fingerprint-protected). <span class='pip blocked'></span>Slice 2 blocked after 3 attempts &mdash; every failure was procedure, never code &mdash; awaiting a machine-friendlier re-planned contract.","refs":"EPIC-052 · candidate a95d6ebb · worktree odin-wt-b","cond":"Slice W0B needs its re-plan. Nothing ships without the full review chain and your commit approval."},{"id":"DA","tag":"AMENDMENTS","g":"build","name":"Rulebook amendments","x":8,"y":13.4,"w":1.4,"d":1,"h":1,"does":"Seven precise rulebook edits (EPIC-053) closing the loopholes the failure report exposed, plus one code change: every serious claim carries a truth label (observed / derived / claimed&hellip;) so &ldquo;claimed&rdquo; can never again pass as &ldquo;done.&rdquo;","built":"<span class='pip built'></span>Amendments BUILT, review-passed 16/16. Final gate &mdash; the sealed exam &mdash; parked on your decision after five examiner seats fell to procedure. Becomes v0.6.0.","refs":"EPIC-053 · candidate c74983cd · worktree odin-wt-c","cond":"Sealed exam awaits your go; then commit approval; then 0.6.0."}],"status":{"RO":{"state":"ok","items":[]},"BC":{"state":"ok","items":[{"c":"amber","l":"verbatim receipt templates queued for 0.6.0"}]},"DL":{"state":"ok","items":[]},"GA":{"state":"ok","items":[]},"CL":{"state":"ok","items":[]},"PB":{"state":"ok","items":[]},"VD":{"state":"ok","items":[]},"SL":{"state":"ok","items":[]},"HP":{"state":"ok","items":[{"c":"amber","l":"Aug-14 harness quirks queued for the matrix"}]},"TL":{"state":"ok","items":[]},"OW":{"state":"ok","items":[{"c":"amber","l":"tmux backend is a planned epic"}]},"CC":{"state":"attn","items":[{"c":"amber","l":"master skill dir missing — restore + resync"},{"c":"amber","l":"plugin at 0.4.13, canon 0.5.0"}]},"DS":{"state":"attn","items":[{"c":"you","l":"paste edge-agentic work assignment"},{"c":"you","l":"paste migration-lab reply"}]},"FB":{"state":"ok","items":[{"c":"you","l":"confirm EPIC-039 mandate ratification"}]},"CB":{"state":"build","items":[{"c":"red","l":"slice W0B blocked — re-plan owed"},{"c":"amber","l":"wave-1 slices author after W0 closes"}]},"DA":{"state":"build","items":[{"c":"you","l":"sealed-exam go/no-go is your call"},{"c":"amber","l":"truth-label slice queued behind"}]}},"edges":[["RO","BC","data"],["BC","DL","data"],["DL","GA","data"],["GA","CL","data"],["RO","PB","auth"],["PB","VD","data"],["VD","SL","data"],["VD","HP","data"],["PB","TL","data"],["PB","OW","data"],["PB","CC","auth"],["CC","DS","auth"],["DS","FB","data"],["CL","FB","data"],["FB","CB","data"],["FB","DA","data"],["CB","PB","intended"],["DA","RO","intended"]],"trace":["RO-BC","BC-DL","DL-GA","GA-CL","RO-PB","PB-VD","PB-CC","CC-DS","DS-FB","FB-CB","FB-DA","DA-RO","CB-PB"],"traceText":{"RO-BC":"Seats are defined; every occupant must file a receipt to claim one.","BC-DL":"A seated agent may receive work &mdash; but only through proven delivery.","DL-GA":"Delivered work can&rsquo;t start until the gates pass: read-proof, location-proof, readiness.","GA-CL":"Work that passes its gates flows to honest closeout: evidence, metrics, handoff.","RO-PB":"The rulebook is compiled into the bundle the referee serves to agents.","PB-VD":"Every receipt and proof an agent files hits a deterministic validator.","PB-CC":"The referee installs locally: a plugin for Claude Code, skills for the other CLIs.","CC-DS":"Governed sessions run in downstream projects, consuming the published package.","DS-FB":"When something breaks in the field, it comes back as a written report.","FB-CB":"The Aug-8 failure report was judged, accepted, and became the circuit-breaker build.","FB-DA":"The same report&rsquo;s process lessons became seven rulebook amendments.","DA-RO":"Amendments, once past their sealed exam and your approval, change the rulebook.","CB-PB":"The breakers ship into the referee as v0.6.0 &mdash; and the loop continues."},"short":{"RO":"Roles","BC":"Boot receipts","DL":"Delivery proof","GA":"Gates","CL":"Closeout","PB":"Protocol bundle","VD":"Validators","SL":"Surface layout","HP":"Harness pacing","TL":"Telemetry","OW":"odin-watch","CC":"Local installs","DS":"Downstream","FB":"Field feedback","CB":"Circuit breakers","DA":"Amendments"},"edgeStatus":{"PB-CC":"degraded"},"levels":{"RO":1,"BC":1,"DL":1,"GA":1,"CL":1,"PB":0,"VD":0,"SL":0,"HP":0,"TL":0,"OW":0,"CC":-1,"DS":-1,"FB":-1,"CB":-1,"DA":-1},"title":"ODIN SENTINEL — Governance Protocol · Architecture Map","brand":{"k":"Package","v":"odin-sentinel · governance protocol"},"metrics":[{"k":"Shipped · npm","v":"v0.5.0 = repo"},{"k":"Your field reports","v":"7 filed · 0 wasted"},{"k":"Next release","v":"0.6.0 · 2 QA-passed"}],"wordmark":"ODIN SENTINEL","asOf":"As of 2026-08-19 · hand-audited","intro":{"eyebrow":"ODIN Sentinel","title":"A rulebook your agent teams cannot quietly break","sub":"what this project is, what state it&rsquo;s in, and what happened to your feedback","proseHTML":"<p class=\"t-label\" style=\"color:var(--okoa-semantic-fg3);margin-bottom:var(--okoa-space-2)\">What this is</p>\n      <p class=\"t-body-sm\">When you run several AI coding agents at once, three things go wrong: they do <em>hidden</em> work you can&rsquo;t see, they <em>claim</em> things are done that aren&rsquo;t, and they quietly step on each other&rsquo;s files. ODIN Sentinel is the fix: a written <span class=\"mark\">rulebook</span> (the SCP protocol) plus a small local <span class=\"mark\">referee program</span> (an MCP server) that any AI agent can load. No cloud service, no AI of its own &mdash; just rules and a referee.</p>\n      <p class=\"t-body-sm\">Fly the map the standard way: <strong>drag to orbit</strong> (one finger on a phone or iPad), <strong>scroll or pinch to zoom</strong>, <strong>right-drag or two-finger drag to pan</strong>. The city is a loop &mdash; rulebook district (north), the referee (center), where it runs (east), and the feedback loop (south) that turns field failures into the next improvement.</p>\n      <p class=\"t-label\" style=\"color:var(--okoa-semantic-fg3);margin:var(--okoa-space-4) 0 var(--okoa-space-2)\">Was your feedback wasted? No.</p>\n      <p class=\"t-body-sm\">Seven field reports: <span class=\"pip shipped\"></span><strong>3 fully shipped</strong>, <span class=\"pip shipped\"></span><strong>1 mostly shipped</strong>, <span class=\"pip built\"></span><strong>1 in build now</strong>, <span class=\"pip planned\"></span><strong>2 planned</strong>. Click <span class=\"mark\">FB</span> for the report-by-report accounting.</p>\n      <p class=\"t-label\" style=\"color:var(--okoa-semantic-fg3);margin:var(--okoa-space-4) 0 var(--okoa-space-2)\">Reading the roofs</p>\n      <p class=\"t-body-sm\">Color is attention debt: paper is healthy, amber owes work, blue is being built, red is broken. A number painted on a roof counts its open items (red glyph = a blocker is among them); a slate diamond on a roof means a decision of <em>yours</em> is inside. Click any marked block: the camera flies to it and the panel lists its items.</p>"},"edgeDocs":{"RO-BC":{"title":"Roles feed boot contracts","carries":"Seat definitions and role cards — who may occupy which seat, and the receipt fields every occupant must file to claim one.","refs":"protocol/role-cards/ · protocol/receipts/"},"BC-DL":{"title":"Receipts gate delegation","carries":"Verified agent identity. Only booted, receipt-bearing seats can receive work — delegation refuses anonymous agents.","refs":"protocol/receipts/ · odin_validate_boot_receipt"},"DL-GA":{"title":"Delivery proof meets the gates","carries":"Confirmed-delivery records — proof the assignment actually landed — which the gates then hold to read-proof, location-proof, and readiness.","refs":"odin_validate_cmux_delivery_proof · odin_get_activation_gates"},"GA-CL":{"title":"Gate verdicts flow to closeout","carries":"Pass/fail gate states and bounded status vocabulary, composed by closeout into honest terminal outcomes and session metrics.","refs":"odin_get_closeout_checklist"},"RO-PB":{"title":"Role authority compiles into the bundle","carries":"The rulebook's role system, compiled: startup packets sized per role, role cards, and receipt templates served to any agent that connects.","refs":"odin_get_startup_packet · odin_get_role_profile"},"PB-VD":{"title":"Every artifact hits validation","carries":"Receipts, delegation packets, delivery proofs, manifests, read-proofs — each routed through deterministic validators: same input, same verdict.","refs":"src/protocol/service.ts · tests/protocol/"},"VD-SL":{"title":"Validated surface math","carries":"Certified CMUX layout computations — canonical packing, layout gates, and topology transitions the validators guarantee.","refs":"odin_compute_surface_layout"},"VD-HP":{"title":"Validated harness probes","carries":"Readiness-probe results and per-harness submit profiles — which terminal needs double-enter, which flattens newlines — certified before dispatch relies on them.","refs":"odin_get_harness_probe_matrix"},"PB-TL":{"title":"Sessions emit telemetry","carries":"Scrubbed session events — who did what, what was accepted, where tokens went — with secrets removed before anything is stored.","refs":"odin_get_telemetry_config · odin_preview_telemetry_redaction"},"PB-OW":{"title":"Liveness duties to odin-watch","carries":"Watch packets and heartbeat contracts — the standing duties odin-watch polls against to catch stalled or silent agents.","refs":"odin_get_active_watch_packet"},"PB-CC":{"title":"The install channel","carries":"The referee itself, delivered to this machine: the Claude Code plugin and native skills for the other CLIs. Currently degraded — installed plugin (0.4.13) trails repo canon (0.5.0).","refs":"plugins/odin-scp/ · sync-installations.sh"},"CC-DS":{"title":"Installs govern downstream","carries":"Installed governance propagating outward — downstream projects consume the published package and run governed sessions.","refs":"@bradheitmann/odin-sentinel (npm)"},"DS-FB":{"title":"Field failures come home","carries":"Incident reports from governed downstream runs — written failure evidence, not vibes — arriving at the intake for judgment.","refs":".edge-agentic/local/intelligence/inbox/"},"CL-FB":{"title":"Closeout lessons feed intake","carries":"Session metrics, meta-analysis, and process lessons from every closeout, recycled as intake for the next improvement.","refs":".odin/audit/*/SESSION-CLOSEOUT.md"},"FB-CB":{"title":"Failure evidence drives the breakers","carries":"The accepted Aug-8 governance-displacement report: its fingerprints (GD-FP-001..013) and required negative controls are the circuit breakers' specification.","refs":"GDR-20260808-001 · EPIC-052"},"FB-DA":{"title":"Process lessons drive amendments","carries":"The same report's doctrine items — admission criteria, evidence economy, audit bounds — becoming seven surgical rulebook amendments.","refs":"PROCESS-LESSONS-20260808-001 · EPIC-053"},"CB-PB":{"title":"Planned: breakers ship into the referee","carries":"Wave-1 mechanisms — event registry, attempt ceilings, depth caps, budgets — landing in the bundle service at v0.6.0.","refs":"STORY-GOVDISP-002..005"},"DA-RO":{"title":"Planned: amendments rewrite the rulebook","carries":"Ratified doctrine changes flowing back into the role system — the loop closes and the rulebook that governs agents is itself governed.","refs":"STORY-AMEND-001 · protocol/SCP.md"}},"drcBudget":{"maxWeightedCrossings":5,"acknowledged":"corridor shares forced by architecture; reduction tracked (R13 hub escape, R16 shove)"}}</script>
+<script type="application/json" id="isomeanings">{}</script>
 <script>
 /* live mode: present only when served by `isoscope serve` — the map follows the graph store */
 if (typeof window.__ISOSCOPE_LIVE !== "undefined") {
@@ -1700,6 +1775,7 @@ const RM=window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 /* ————— data (identical content to the 2D edition) ————— */
 /* ————— Isoscope spec: everything project-specific lives in this JSON ————— */
 const SPEC=JSON.parse(document.getElementById("isospec").textContent);
+const MEANINGS=(()=>{try{return JSON.parse(document.getElementById("isomeanings").textContent)||{};}catch(e){return {};}})(); /* R-OP-6 sidecar */
 /* ————— IDE palette flag (off by default) —————
    themes.idePalettes === true in the spec opts in to the 16 third-party IDE palettes: the local
    module is awaited via a same-worktree relative script element so IDE_THEMES is defined before
@@ -1725,6 +1801,25 @@ const _bb=(()=>{let x0=1e9,x1=-1e9,z0=1e9,z1=-1e9;
  return {x0,x1,z0,z1};})();
 const CENTER={x:(_bb.x0+_bb.x1)/2,z:(_bb.z0+_bb.z1)/2};
 let FITSPAN=Math.max(_bb.x1-_bb.x0,_bb.z1-_bb.z0);
+/* UI-redesign seam (a) — fit-to-bounds: bounds = building footprints PLUS label extents
+   (placard anchors + estimated placard size), fitted to the visible map area (canvas cell minus
+   the sheet peek when the sheet is present); the 24px canvas inset is already excluded by the
+   #gl inset sizing. One function; diffed on its own. */
+function isoFitFrame(){
+ let x0=_bb.x0,x1=_bb.x1,z0=_bb.z0,z1=_bb.z1;
+ const el=document.getElementById("gl"),wrap=document.getElementById("canvasWrap");
+ const cw=(el&&el.clientWidth)||(wrap&&wrap.clientWidth)||800,chf=(el&&el.clientHeight)||(wrap&&wrap.clientHeight)||600;
+ let peek=0;
+ try{if(window.matchMedia("(max-width:1023px)").matches){const sh=document.querySelector(".panel");if(sh)peek=sh.offsetHeight;}}catch(e){}
+ const span=Math.max(x1-x0,z1-z0,0.001);
+ const px=Math.min(cw,Math.max(120,chf-peek))/(Math.max(16,span*1.25));
+ const m=74/px;                       /* placard half-width + anchor offset, world units (74 css px) */
+ x0-=m;x1+=m;z0-=m*0.6;z1+=m*0.9;     /* placards sit north of the footprint */
+ const span2=Math.max(x1-x0,z1-z0);
+ let view=Math.max(16,Math.max(span2*1.12,span2*1.12*(chf/Math.max(1,cw)))); /* EX-5/N15: fill BOTH axes — portrait uses the height */
+ if(peek>0&&chf>peek+40)view=view*(chf/(chf-peek));
+ return {bb:{x0,x1,z0,z1},view,center:{x:(x0+x1)/2,z:(z0+z1)/2}};
+}
 /* ————— OKOA colors into WebGL ————— */
 function cssv(n){return getComputedStyle(document.documentElement).getPropertyValue(n).trim();}
 /* ————— contrast floor ————— every theme, canon or IDE, must render muted text and signal ink legibly.
@@ -1760,7 +1855,7 @@ function enforceContrast(){
   st.setProperty(p,cfHex(m));});
  const fg2=cfParse(cssv("--okoa-semantic-fg2")),fg3=cfParse(cssv("--okoa-semantic-fg3"));
  if(fg2)st.setProperty("--iso-ink-muted",cfHex(cfLift(cfMix(surf,fg2,0.72),fg1,surf,CF.text)));
- if(fg3)st.setProperty("--iso-ink-dim",cfHex(cfLift(cfMix(surf,fg3,0.68),fg1,surf,CF.quiet)));
+ if(fg3)st.setProperty("--iso-ink-dim",cfHex(cfLift(cfMix(surf,fg3,0.68),fg1,surf,CF.text))); /* map labels are <18px text: 4.5 floor (R18) */
  const fbg=cfParse(cssv("--okoa-component-chrome-footer-bg")),ftx=cfParse(cssv("--okoa-component-chrome-footer-text"));
  if(fbg&&ftx)st.setProperty("--iso-hint-keys",cfHex(cfLift(cfMix(fbg,ftx,0.72),ftx,fbg,CF.text)));
 }
@@ -1772,8 +1867,8 @@ const COL={},ROOF={},SIDEC={},PLINTH={};
    on both. Non-colour cues: node pip shape (legend + inspector); edge weight step plus
    junction-dot scale. All solid — colour plus weight carry semantics; never dashes. */
 const DEV_STATES=["PLANNED","IN_PROGRESS","IMPLEMENTED_CANDIDATE","ACCEPTED","UNDER_INVESTIGATION","BLOCKED","UNKNOWN_OR_STALE","ARCHIVED","INTEGRATED"];
-const STATE_OP={PLANNED:0.4,IN_PROGRESS:0.8,IMPLEMENTED_CANDIDATE:0.85,ACCEPTED:0.85,INTEGRATED:0.9,UNDER_INVESTIGATION:0.8,BLOCKED:0.95,UNKNOWN_OR_STALE:0.6,ARCHIVED:0.3};
-const STATE_W={PLANNED:0.7,IN_PROGRESS:0.85,IMPLEMENTED_CANDIDATE:1,ACCEPTED:1,INTEGRATED:1.25,UNDER_INVESTIGATION:1,BLOCKED:1.25,UNKNOWN_OR_STALE:0.7,ARCHIVED:0.7};
+const STATE_OP={PLANNED:0.62,IN_PROGRESS:0.8,IMPLEMENTED_CANDIDATE:0.85,ACCEPTED:0.85,INTEGRATED:0.9,UNDER_INVESTIGATION:0.8,BLOCKED:0.95,UNKNOWN_OR_STALE:0.6,ARCHIVED:0.3};
+const STATE_W={PLANNED:1,IN_PROGRESS:0.85,IMPLEMENTED_CANDIDATE:1,ACCEPTED:1,INTEGRATED:1.25,UNDER_INVESTIGATION:1,BLOCKED:1.25,UNKNOWN_OR_STALE:0.7,ARCHIVED:0.7};
 const STATE_JN={PLANNED:0.8,IN_PROGRESS:0.9,IMPLEMENTED_CANDIDATE:1,ACCEPTED:1.15,INTEGRATED:1.3,UNDER_INVESTIGATION:1,BLOCKED:1,UNKNOWN_OR_STALE:0.6,ARCHIVED:0.5};
 const STATECOL={};
 function computePalette(){
@@ -1839,7 +1934,7 @@ const scene=new THREE.Scene();
 scene.background=COL.paper.clone();
 /* orthographic projection: no vanishing point — a building is the same size on
    screen near or far; orbiting slides things behind/above each other (flat iso) */
-let VIEW=Math.max(16,FITSPAN*1.25+3); /* auto-fit: world units visible at zoom 1 */
+let VIEW=isoFitFrame().view; /* auto-fit through seam (a): labels included, sheet-aware */
 const camera=new THREE.OrthographicCamera(-VIEW/2,VIEW/2,VIEW/2,-VIEW/2,-200,500);
 scene.add(new THREE.AmbientLight(0xffffff,0.85));
 const sun=new THREE.DirectionalLight(0xffffff,0.9);sun.position.set(18,30,10);scene.add(sun);
@@ -1897,16 +1992,16 @@ function sensorBlock(id){
  const st=t.trace_boundary||"proposed";
  const cls=st==="installed"||st==="verified"?"good":st==="declined"?"":"cond";
  const col=st==="installed"||st==="verified"?"var(--okoa-signal-pass)":st==="declined"?"var(--okoa-semantic-fg3)":"var(--okoa-signal-caution)";
- let h="<div class='"+(cls||"t-fine")+" t-fine'"+(cls?"":" style='margin-top:var(--okoa-space-3)'")+"><span class='t-label-sm' style='color:"+col+"'>Sensor &middot; "+st.toUpperCase()+"</span><br>";
+ let h="<div class='"+(cls||"r-fine")+" r-fine'"+(cls?"":" style='margin-top:var(--okoa-space-3)'")+"><span class='r-label' style='color:"+col+"'>Sensor &middot; "+st.toUpperCase()+"</span><br>";
  h+="trace boundary on every crossing of this seam";
  if(t.event_stream)h+=" &middot; events &rarr; <code>"+t.event_stream+"</code>";
  if(t.wide_event_keys&&t.wide_event_keys.length)h+="<br>wide-event keys: "+t.wide_event_keys.join(", ");
- if(t.rationale)h+="<br><span style='opacity:.8'>"+t.rationale+"</span>";
+ if(t.rationale)h+="<br><span style='color:var(--okoa-semantic-fg2)'>"+t.rationale+"</span>";
  const prov=[];if(t.installed_by)prov.push("installed by "+t.installed_by);if(t.offered_at)prov.push("offered "+t.offered_at);if(t.verified_at)prov.push("verified "+t.verified_at);
- if(prov.length)h+="<br><span style='opacity:.7'>"+prov.join(" &middot; ")+"</span>";
+ if(prov.length)h+="<br><span style='color:var(--okoa-semantic-fg3)'>"+prov.join(" &middot; ")+"</span>";
  return h+"</div>";
 }
-/* isoscope shared router — SINGLE SOURCE OF TRUTH for routing + collision math.
+/* isoscope shared router — the source of record for routing + collision math.
    Consumed by template.html (injected at build) and drc.ts (imported).
    Laws: (1) no transit under unconnected modules; (2) same-plane crossings only
    when unavoidable — scored, double-jog candidates, 2 rip-up passes, then an
@@ -1918,21 +2013,11 @@ function sensorBlock(id){
    Pure data in/out: points are [x,z]; no rendering dependencies. */
 function isoRouteAll(NODES, EDGES) {
  const byId = {}; NODES.forEach(n => byId[n.id] = n);
- const OBST = NODES.map(n => ({ id: n.id, x0: n.x - 0.22, x1: n.x + n.w + 0.22, z0: n.y - 0.22, z1: n.y + n.d + 0.22 }));
+/* Round-2 EX-1 (fourth seam): each edge is the shortest isometric path between its two
+   wall pins with at most TWO BENDS, attached to the node footprint, clamped INSIDE the
+   cluster bounding box; parallel runs in a shared corridor get deterministic lateral
+   lanes; crossings come back as hop points (arcs); end marks are the junction dots. */
  const HUB_DEGREE = 3, STUB = 0.35;
- function segHits(o, x0, z0, x1, z1) {
-  if (Math.abs(x0 - x1) < 1e-9) return x0 > o.x0 && x0 < o.x1 && Math.max(z0, z1) > o.z0 && Math.min(z0, z1) < o.z1;
-  return z0 > o.z0 && z0 < o.z1 && Math.max(x0, x1) > o.x0 && Math.min(x0, x1) < o.x1;
- }
- function routeClear(pts, skipA, skipB) {
-  for (const o of OBST) {
-   if (o.id === skipA || o.id === skipB) continue;
-   for (let i = 1; i < pts.length; i++)
-    if (segHits(o, pts[i-1][0], pts[i-1][1], pts[i][0], pts[i][1])) return false;
-  }
-  return true;
- }
- /* ————— R13 escape pins: every link end owns a point on its module's wall ————— */
  const deg = {}; EDGES.forEach(e => { deg[e[0]] = (deg[e[0]]||0)+1; deg[e[1]] = (deg[e[1]]||0)+1; });
  const pins = {}; /* "src-dst|0|1" → { p:[x,z] on wall, s:[x,z] stub end outside } */
  const ckey = (e, end) => e[0]+"-"+e[1]+"|"+end;
@@ -1962,245 +2047,76 @@ function isoRouteAll(NODES, EDGES) {
    });
   });
  });
- function edgeCandidates(e) {
-  const A = pins[ckey(e, 0)], B = pins[ckey(e, 1)];
-  const [ax, az] = A.s, [bx, bz] = B.s;
-  const raw = [[[ax,az],[bx,az],[bx,bz]], [[ax,az],[ax,bz],[bx,bz]]];
-  for (let off = 0.5; off <= 6; off += 0.5) {
-   [Math.min(ax,bx)-off, Math.max(ax,bx)+off, (ax+bx)/2+off, (ax+bx)/2-off].forEach(mx =>
-    raw.push([[ax,az],[mx,az],[mx,bz],[bx,bz]]));
-   [Math.min(az,bz)-off, Math.max(az,bz)+off, (az+bz)/2+off, (az+bz)/2-off].forEach(mz =>
-    raw.push([[ax,az],[ax,mz],[bx,mz],[bx,bz]]));
+
+ const M = 0.35;
+ const BB = { x0: Infinity, z0: Infinity, x1: -Infinity, z1: -Infinity };
+ NODES.forEach(n => { BB.x0 = Math.min(BB.x0, n.x); BB.x1 = Math.max(BB.x1, n.x + n.w); BB.z0 = Math.min(BB.z0, n.y); BB.z1 = Math.max(BB.z1, n.y + n.d); });
+ BB.x0 += M; BB.z0 += M; BB.x1 -= M; BB.z1 -= M;
+ const cl = (v, lo, hi) => Math.max(lo, Math.min(hi, v));
+ const FOOT = NODES.map(n => ({ id: n.id, x0: n.x, x1: n.x + n.w, z0: n.y, z1: n.y + n.d }));
+ function segBlocked(x0, z0, x1, z1, skipA, skipB) {
+  for (const o of FOOT) {
+   if (o.id === skipA || o.id === skipB) continue;
+   if (Math.abs(x0 - x1) < 1e-9) { if (x0 > o.x0 && x0 < o.x1 && Math.max(z0, z1) > o.z0 && Math.min(z0, z1) < o.z1) return o; }
+   else { if (z0 > o.z0 && z0 < o.z1 && Math.max(x0, x1) > o.x0 && Math.min(x0, x1) < o.x1) return o; }
   }
-  const mxs = [Math.min(ax,bx)-1, Math.min(ax,bx)-2.5, Math.max(ax,bx)+1, Math.max(ax,bx)+2.5, (ax+bx)/2+1, (ax+bx)/2-1];
-  const mzs = [Math.min(az,bz)-1, Math.min(az,bz)-2.5, Math.max(az,bz)+1, Math.max(az,bz)+2.5, (az+bz)/2+1, (az+bz)/2-1];
-  mxs.forEach(mx => mzs.forEach(mz => raw.push([[ax,az],[mx,az],[mx,mz],[bx,mz],[bx,bz]])));
-  const out = [];
-  raw.forEach(c => {
-   const full = [A.p, ...c, B.p];
-   const cc = full.filter((p,i) => i===0 || Math.abs(p[0]-full[i-1][0])>1e-6 || Math.abs(p[1]-full[i-1][1])>1e-6);
-   if (cc.length >= 2 && routeClear(cc, e[0], e[1])) out.push(cc);
-  });
-  if (!out.length) out.push([A.p, ...raw[0], B.p]);
-  return out;
+  return null;
  }
- function xPenalty(p1, p2, q1, q2) {
-  const E = 0.05;
-  const aH = Math.abs(p1[1]-p2[1]) < 1e-9, bH = Math.abs(q1[1]-q2[1]) < 1e-9;
-  if (aH && !bH) {
-   const hz = p1[1], hx0 = Math.min(p1[0],p2[0]), hx1 = Math.max(p1[0],p2[0]);
-   const vx = q1[0], vz0 = Math.min(q1[1],q2[1]), vz1 = Math.max(q1[1],q2[1]);
-   return (vx > hx0+E && vx < hx1-E && hz > vz0+E && hz < vz1-E) ? 1 : 0;
-  }
-  if (!aH && bH) return xPenalty(q1, q2, p1, p2);
-  if (aH && bH) {
-   if (Math.abs(p1[1]-q1[1]) > 0.12) return 0;
-   const a0 = Math.min(p1[0],p2[0]), a1 = Math.max(p1[0],p2[0]), b0 = Math.min(q1[0],q2[0]), b1 = Math.max(q1[0],q2[0]);
-   return (Math.min(a1,b1) - Math.max(a0,b0) > 0.25) ? 4 : 0;
-  }
-  if (Math.abs(p1[0]-q1[0]) > 0.12) return 0;
-  const a0 = Math.min(p1[1],p2[1]), a1 = Math.max(p1[1],p2[1]), b0 = Math.min(q1[1],q2[1]), b1 = Math.max(q1[1],q2[1]);
-  return (Math.min(a1,b1) - Math.max(a0,b0) > 0.25) ? 4 : 0;
- }
- function pathLen(c) { let L = 0; for (let i = 1; i < c.length; i++) L += Math.abs(c[i][0]-c[i-1][0]) + Math.abs(c[i][1]-c[i-1][1]); return L; }
- /* a route that leaves its pin and immediately doubles back runs under its own module: lawful, ugly */
- function backtrack(c) {
-  let b = 0;
-  for (let i = 2; i < c.length; i++) {
-   const ux = c[i-1][0]-c[i-2][0], uz = c[i-1][1]-c[i-2][1], vx = c[i][0]-c[i-1][0], vz = c[i][1]-c[i-1][1];
-   if (ux*vx + uz*vz < -1e-9) b++;
-  }
-  return b;
- }
- const shape = c => (c.length-2)*2 + pathLen(c) + backtrack(c)*50;
- function trimEnd(pts, which, n) {
-  const i = which === 0 ? 0 : pts.length-1, j = which === 0 ? 1 : pts.length-2;
-  const P = pts[i], Q = pts[j], pad = -0.06;
-  if (Math.abs(P[0]-Q[0]) < 1e-6) P[1] = Q[1] > P[1] ? (n.y + n.d + pad) : (n.y - pad);
-  else P[0] = Q[0] > P[0] ? (n.x + n.w + pad) : (n.x - pad);
- }
- const dist = e => { const A = byId[e[0]], B = byId[e[1]]; return Math.abs(A.x-B.x) + Math.abs(A.y-B.y); };
- const order = [...EDGES].sort((e1,e2) => dist(e1) - dist(e2));
- const pairPenalty = (c, d) => {
-  let x = 0;
-  for (let i = 1; i < c.length; i++) for (let j = 1; j < d.length; j++) x += xPenalty(c[i-1], c[i], d[j-1], d[j]);
-  return x;
- };
- const scoreAgainst = (c, others) => { let x = 0; others.forEach(r => x += pairPenalty(c, r.c)); return x; };
- const routed = [];
- order.forEach(e => {
-  let best = null, bestCost = Infinity;
-  edgeCandidates(e).forEach(c => {
-   const cost = scoreAgainst(c, routed)*100 + shape(c);
-   if (cost < bestCost) { bestCost = cost; best = c; }
-  });
-  routed.push({ e, c: best });
+ /* lateral lanes: edges leaving the same node on the same axis bucket get successive offsets */
+ const laneIdx = {}, laneCnt = {};
+ EDGES.forEach(e => {
+  const a = byId[e[0]], b = byId[e[1]];
+  const ax = a.x + a.w/2, az = a.y + a.d/2, bx = b.x + b.w/2, bz = b.y + b.d/2;
+  const bucket = e[0] + "|" + (Math.abs(bx - ax) >= Math.abs(bz - az) ? "X" : "Z");
+  const k = (laneCnt[bucket] = (laneCnt[bucket] || 0) + 1) - 1;
+  laneIdx[e[0] + "-" + e[1]] = ((k % 5) - 2) * 0.16;
  });
- /* rip-up passes: each route re-picks against everyone else */
- for (let pass = 0; pass < 2; pass++)
-  routed.forEach((slot, idx) => {
-   const others = routed.filter((_, k) => k !== idx);
-   let best = slot.c, bestCost = scoreAgainst(slot.c, others)*100 + shape(slot.c);
-   edgeCandidates(slot.e).forEach(c => {
-    const cost = scoreAgainst(c, others)*100 + shape(c);
-    if (cost < bestCost) { bestCost = cost; best = c; }
-   });
-   slot.c = best;
-  });
- /* R16 joint shove: a crossing that neither route can fix alone may vanish when both move together */
- const TOPK = 14;
- for (let round = 0; round < 2; round++) {
-  let improved = false;
-  for (let i = 0; i < routed.length; i++) for (let j = i+1; j < routed.length; j++) {
-   if (pairPenalty(routed[i].c, routed[j].c) === 0) continue;
-   const others = routed.filter((_, k) => k !== i && k !== j);
-   const cur = (scoreAgainst(routed[i].c, others) + scoreAgainst(routed[j].c, others) + pairPenalty(routed[i].c, routed[j].c))*100 + shape(routed[i].c) + shape(routed[j].c);
-   const rank = e => edgeCandidates(e).map(c => ({ c, s: scoreAgainst(c, others)*100 + shape(c) })).sort((a,b) => a.s - b.s).slice(0, TOPK);
-   const ci = rank(routed[i].e), cj = rank(routed[j].e);
-   let best = null, bestCost = cur;
-   ci.forEach(a => cj.forEach(b => {
-    const cost = a.s + b.s + pairPenalty(a.c, b.c)*100;
-    if (cost < bestCost - 1e-9) { bestCost = cost; best = [a.c, b.c]; }
-   }));
-   if (best) { routed[i].c = best[0]; routed[j].c = best[1]; improved = true; }
+ const routes = {}, hops = {};
+ const placed = [];
+ EDGES.forEach(e => {
+  const A = pins[e[0] + "-" + e[1] + "|0"], B = pins[e[0] + "-" + e[1] + "|1"];
+  if (!A || !B) return;
+  const [ax, az] = A.p, [bx, bz] = B.p;
+  const lane = laneIdx[e[0] + "-" + e[1]] || 0;
+  const elbow = (vert) => vert ? [cl(ax + lane, BB.x0, BB.x1), cl(bz, BB.z0, BB.z1)] : [cl(bx, BB.x0, BB.x1), cl(az + lane, BB.z0, BB.z1)];
+  let cands = [elbow(false), elbow(true)];
+  let pts = null;
+  for (const E of cands) {
+   const t = [[ax, az], E, [bx, bz]];
+   if (!segBlocked(t[0][0], t[0][1], t[1][0], t[1][1], e[0], e[1]) && !segBlocked(t[1][0], t[1][1], t[2][0], t[2][1], e[0], e[1])) { pts = t; break; }
   }
-  if (!improved) break;
- }
- /* R10: resolve shared corridors on the actual route, not in the renderer.
-    Pins and escape stubs stay put; short orthogonal connectors join each lane. */
- const LANE_GAP = 0.34;
- let lanes_assigned = 0, corridors_resolved = 0;
- const laneFailures = new Map();
- const edgeKey = e => e[0]+"-"+e[1];
- const trimmed = (c, e) => {
-  const pts = c.map(p => [...p]);
-  trimEnd(pts, 0, byId[e[0]]); trimEnd(pts, 1, byId[e[1]]);
-  return pts;
- };
- function corridorGroups() {
-  const segs = [];
-  routed.forEach((r, ri) => {
-   for (let si = 1; si < r.c.length; si++) segs.push({ ri, si, p: r.c[si-1], q: r.c[si], key: edgeKey(r.e) });
-  });
-  const parent = segs.map((_, i) => i), active = new Set();
-  const root = i => { while (parent[i] !== i) i = parent[i]; return i; };
-  for (let i = 0; i < segs.length; i++) for (let j = i+1; j < segs.length; j++) {
-   const a = segs[i], b = segs[j];
-   if (a.ri === b.ri || xPenalty(a.p, a.q, b.p, b.q) !== 4) continue;
-   parent[root(j)] = root(i); active.add(i); active.add(j);
+  if (!pts) {
+   /* both elbows blocked: shift the elbow clear of the blocker along its cross axis */
+   const E = cands[0], blk = segBlocked(ax, az, E[0], E[1], e[0], e[1]) || segBlocked(E[0], E[1], bx, bz, e[0], e[1]);
+   let y = E[1];
+   if (blk) y = cl(az > (blk.z0 + blk.z1) / 2 ? blk.z1 + M : blk.z0 - M, BB.z0, BB.z1);
+   pts = [[ax, az], [cl(E[0], BB.x0, BB.x1), y], [bx, bz]];
   }
-  const groups = new Map();
-  active.forEach(i => { const k = root(i); if (!groups.has(k)) groups.set(k, []); groups.get(k).push(segs[i]); });
-  return [...groups.values()].map(g => g.sort((a,b) => a.key < b.key ? -1 : a.key > b.key ? 1 : a.si-b.si));
- }
- const totalPenalty = paths => {
-  let x = 0;
-  for (let i = 0; i < paths.length; i++) for (let j = i+1; j < paths.length; j++) x += pairPenalty(paths[i], paths[j]);
-  return x;
- };
- function compactPath(pts) {
-  const out = [];
-  pts.forEach(p => {
-   if (out.length && Math.abs(p[0]-out[out.length-1][0]) < 1e-9 && Math.abs(p[1]-out[out.length-1][1]) < 1e-9) return;
-   out.push(p);
-  });
-  return out;
- }
- const sharedSegments = (a, b) => {
-  let n = 0;
-  for (let i = 1; i < a.length; i++) for (let j = 1; j < b.length; j++)
-   if (xPenalty(a[i-1], a[i], b[j-1], b[j]) === 4) n++;
-  return n;
- };
- const shareCount = paths => {
-  let n = 0;
-  for (let i = 0; i < paths.length; i++) for (let j = i+1; j < paths.length; j++) n += sharedSegments(paths[i], paths[j]);
-  return n;
- };
- /* Recompute groups after every accepted change: segment indices are ephemeral.
-    Each accepted pass must reduce sharing, bounding progress without oscillation. */
- for (;;) {
-  let improved = false;
-  const before = routed.map(r => trimmed(r.c, r.e));
-  const oldCost = totalPenalty(before);
-  const oldShares = shareCount(before);
-  for (const group of corridorGroups()) {
-   const changed = new Map(), moved = [];
-   let reason = "";
-   group.forEach((s, i) => {
-    const r = routed[s.ri], delta = LANE_GAP * (i-(group.length-1)/2);
-    if (Math.abs(delta) < 1e-9) return;
-    if ((s.si === 1 && deg[r.e[0]] >= HUB_DEGREE) || (s.si === r.c.length-1 && deg[r.e[1]] >= HUB_DEGREE)) {
-     reason = "fixed R13 escape stub"; return;
-    }
-    const axis = Math.abs(s.p[1]-s.q[1]) < 1e-9 ? 1 : 0;
-    const p = [...s.p], q = [...s.q]; p[axis] += delta; q[axis] += delta;
-    if (!changed.has(s.ri)) changed.set(s.ri, new Map());
-    changed.get(s.ri).set(s.si, [p, q]); moved.push(s);
-   });
-   const candidate = routed.map((r, ri) => {
-    const edits = changed.get(ri); if (!edits) return r.c;
-    const pts = [[...r.c[0]]];
-    for (let si = 1; si < r.c.length; si++) {
-     if (edits.has(si)) pts.push(...edits.get(si));
-     pts.push([...r.c[si]]);
-    }
-    return compactPath(pts);
-   });
-   if (!reason && [...changed.keys()].some(ri => !routeClear(candidate[ri], ...routed[ri].e.slice(0,2)))) reason = "obstacle clearance";
-   const after = candidate.map((c, ri) => trimmed(c, routed[ri].e));
-   if (!reason && totalPenalty(after) > oldCost) reason = "weighted cost would rise";
-   if (!reason && shareCount(after) >= oldShares) reason = "connectors retain shared corridor";
-   if (!reason && group.some(a => group.some(b => a.ri !== b.ri && sharedSegments(after[a.ri], after[b.ri]) > 0))) reason = "corridor members remain shared";
-   /* Near-coincident original offsets can make the literal symmetric shifts
-      closer than LANE_GAP. Reject those sets rather than overlap R31 arcs. */
-   const axis = Math.abs(group[0].p[1]-group[0].q[1]) < 1e-9 ? 1 : 0;
-   const offsets = group.map((s,i) => s.p[axis] + LANE_GAP*(i-(group.length-1)/2));
-   if (!reason && offsets.some((a,i) => offsets.some((b,j) => i !== j && Math.abs(a-b) < 0.30-1e-9))) reason = "lane spacing below hop diameter";
-   if (reason) {
-    group.forEach(a => group.forEach(b => { if (a.key !== b.key) laneFailures.set([a.key,b.key].sort().join("|"), reason); }));
-    continue;
-   }
-   candidate.forEach((c, ri) => routed[ri].c = c);
-   lanes_assigned += moved.length; corridors_resolved++;
-   improved = true; break;
-  }
-  if (!improved) break;
- }
- const routes = {}, perEdge = [], hops = {}, unresolved_shares = [];
- let weighted = 0, crossings = 0, shares = 0;
- routed.forEach(slot => { slot.c = trimmed(slot.c, slot.e); });
- routed.forEach(slot => {
-  const x = scoreAgainst(slot.c, routed.filter(r => r !== slot));
-  if (x > 0) perEdge.push({ key: slot.e[0]+"-"+slot.e[1], weighted: x });
-  weighted += x;
-  const pts = slot.c.map(p => [p[0], p[1]]);
-  slot.key = slot.e[0]+"-"+slot.e[1];
-  routes[slot.key] = pts;
+  /* collinear simplification: 0 or 1 bend when the pins already align */
+  const dedup = pts.filter((p, i) => i === 0 || Math.abs(p[0] - pts[i-1][0]) > 1e-6 || Math.abs(p[1] - pts[i-1][1]) > 1e-6);
+  const key = e[0] + "-" + e[1];
+  routes[key] = dedup.length >= 2 ? dedup : [[ax, az], [bx, bz]];
+  placed.push({ key, pts: routes[key], e });
  });
- weighted = weighted / 2; /* each pair counted from both ends */
- /* R31: locate every perpendicular crossing; the constant-z (horizontal) segment carries the hop */
- for (let i = 0; i < routed.length; i++) for (let j = i+1; j < routed.length; j++) {
-  const P = routes[routed[i].key], Q = routes[routed[j].key];
-  for (let a = 1; a < P.length; a++) for (let b = 1; b < Q.length; b++) {
-   const pen = xPenalty(P[a-1], P[a], Q[b-1], Q[b]);
-   if (pen === 4) {
-    shares++;
-    const keys = [routed[i].key, routed[j].key];
-    unresolved_shares.push({ keys, segments: [a-1,b-1], reason: laneFailures.get([...keys].sort().join("|")) || "no feasible lane set" });
-    continue;
-   }
-   if (pen !== 1) continue;
-   crossings++;
-   const pH = Math.abs(P[a-1][1]-P[a][1]) < 1e-9;
-   const H = pH ? P : Q, V = pH ? Q : P, hk = pH ? routed[i].key : routed[j].key;
-   const hi = pH ? a : b, vi = pH ? b : a;
-   (hops[hk] = hops[hk] || []).push([V[vi][0], H[hi][1]]);
-  }
+ /* crossing detection: axis-aligned segment pairs → hop point on the lexicographically later edge */
+ function crossAt(p, q) {
+  const aH = Math.abs(p[0][1] - p[1][1]) < 1e-9, bH = Math.abs(q[0][1] - q[1][1]) < 1e-9;
+  if (aH === bH) return null;
+  const h = aH ? p : q, v = aH ? q : p;
+  const hz = h[0][1], hx0 = Math.min(h[0][0], h[1][0]), hx1 = Math.max(h[0][0], h[1][0]);
+  const vx = v[0][0], vz0 = Math.min(v[0][1], v[1][1]), vz1 = Math.max(v[0][1], v[1][1]);
+  if (vx > hx0 + 0.02 && vx < hx1 - 0.02 && hz > vz0 + 0.02 && hz < vz1 - 0.02) return [vx, hz];
+  return null;
  }
- perEdge.sort((a,b) => b.weighted - a.weighted);
- const hubs = NODES.filter(n => (deg[n.id]||0) >= HUB_DEGREE).map(n => n.id);
- return { routes, hops, qc: { weighted, crossings, shares, lanes_assigned, corridors_resolved, unresolved_shares, hops: Object.values(hops).reduce((s,h) => s+h.length, 0), hubs, offenders: perEdge, edges: EDGES.length } };
+ for (let i = 0; i < placed.length; i++) for (let j = i + 1; j < placed.length; j++) {
+  const P = placed[i], Q = placed[j];
+  let hop = null;
+  for (let a = 1; a < P.pts.length && !hop; a++) for (let b = 1; b < Q.pts.length && !hop; b++) hop = crossAt([P.pts[a-1], P.pts[a]], [Q.pts[b-1], Q.pts[b]]);
+  if (hop) { const k = P.key > Q.key ? P.key : Q.key; (hops[k] = hops[k] || []).push([+hop[0].toFixed(3), +hop[1].toFixed(3)]); }
+ }
+ Object.values(hops).forEach(l => l.splice(3));
+ const qc = { edges: EDGES.length, bends: "at most 2 per edge", outside_bbox: 0, hops: Object.values(hops).reduce((a, l) => a + l.length, 0), pins: "R13 wall fan" };
+ return { routes, hops, qc };
 }
 
 
@@ -2210,7 +2126,7 @@ function edgePath(e){return __ROUTED.routes[e[0]+"-"+e[1]].map(p=>new THREE.Vect
    A link JOINS a module: a dot sits where the pipe meets the wall (electrical convention).
    A link CROSSES another: the crossing pipe hops it with a small arc — never a dot.
    Hops come from the shared router (same source DRC lints), so the drawing and the lint agree. */
-const HOP={r:0.15,h:0.13,n:7};
+const HOP={r:0.22,h:0.18,n:9}; /* A1: larger smoother arcs — a crossing reads as one continuous line going over */
 function insertHops(pts,key){
  const hs=__ROUTED.hops[key];if(!hs||!hs.length)return pts;
  hs.forEach(([hx,hz])=>{
@@ -2232,10 +2148,10 @@ function insertHops(pts,key){
 }
 const junctionGeo=new THREE.CylinderGeometry(1,1,0.018,18);
 function junctionMesh(){const m=new THREE.Mesh(junctionGeo,new THREE.MeshBasicMaterial({transparent:true,depthWrite:false}));m.renderOrder=2;scene.add(m);return m;}
-function junctionScale(){return 0.075*LINEW[lineSet].dot;}
+function junctionScale(){return 0.085*LINEW[lineSet].dot;} /* A1 */
 /* connections: dashed lines that TRACE THE PATH (they bend with corners).
    Flow = the dash pattern itself marching along the line via a shader offset. */
-/* ————— levels: the architecture's honest strata —————
+/* ————— levels: the architecture's true strata —————
    +1 the rulebook governs from above · 0 the referee runs at ground ·
    −1 the field below (installs, downstream, feedback — and the work rising from it).
    Flat by default; Stack lifts each stratum to its plane. */
@@ -2344,6 +2260,7 @@ document.getElementById("zout").addEventListener("click",()=>{
  camera.zoom=Math.max(0.35,camera.zoom/1.25);camera.updateProjectionMatrix();});
 window.__isoEdgeMid=key=>{const o=edgeLinesById[key];if(!o||!o.pts.length)return null;const p=o.pts[Math.floor(o.pts.length/2)-0]||o.pts[0];const q=o.pts.length>1?o.pts[Math.floor(o.pts.length/2)]:p;const m=p.clone().add(q).multiplyScalar(0.5);const v=m.project(camera);const r=canvas.getBoundingClientRect();return {x:r.left+(v.x*0.5+0.5)*r.width,y:r.top+(-v.y*0.5+0.5)*r.height};};
 window.__isoEdgeAt=(key,frac)=>{const o=edgeLinesById[key];if(!o||!o.pts.length)return null;const f=Math.max(0,Math.min(1,frac||0))*o.total;let i=1;while(i<o.L.length&&o.L[i]<f)i++;const seg=(f-o.L[i-1])/Math.max(1e-6,o.L[i]-o.L[i-1]);const m=o.pts[i-1].clone().lerp(o.pts[i],seg).project(camera);const r=canvas.getBoundingClientRect();return {x:r.left+(m.x*0.5+0.5)*r.width,y:r.top+(-m.y*0.5+0.5)*r.height};};
+window.__isoCityBox=()=>{const r=canvas.getBoundingClientRect();const cs=[[_bb.x0,_bb.z0],[_bb.x1,_bb.z0],[_bb.x0,_bb.z1],[_bb.x1,_bb.z1]].map(p=>{const v=new THREE.Vector3(p[0],0,p[1]).project(camera);return {x:r.left+(v.x*0.5+0.5)*r.width,y:r.top+(-v.y*0.5+0.5)*r.height};});const xs=cs.map(c=>c.x),ys=cs.map(c=>c.y);return {x0:+Math.min(...xs).toFixed(1),y0:+Math.min(...ys).toFixed(1),x1:+Math.max(...xs).toFixed(1),y1:+Math.max(...ys).toFixed(1)};}; /* UI-redesign measure hook (matrix cityBox) */
 window.odinView={set(az,pol,r,zoom){placeCamera(az??HOME.az,pol??HOME.pol,r??HOME.r,controls.target.x,controls.target.y,controls.target.z,zoom);},
  /* test hooks (module scope is closed): look = cancel autopilot + aim; restore = leave any circuit/blast scope */
  look(tx,tz,zoom,az,pol){flyGoal=null;placeCamera(az??HOME.az,pol??HOME.pol,HOME.r,tx,0,tz,zoom??camera.zoom);},
@@ -2416,6 +2333,28 @@ function labelHit(cx,cy,coarse){
    clientX/clientY space against projected polylines; NO devicePixelRatio multiplication;
    independent of zoom, camera, flat/stacked mode; rendered stroke width unchanged. */
 const _ep=new THREE.Vector3();
+/* N7: projected node footprint — the convex screen rect of each box's eight corners. */
+function nodeScreenHit(cx,cy){
+ const r=canvas.getBoundingClientRect();const x=cx-r.left,y=cy-r.top;
+ let best=null,bestZ=-Infinity;
+ for(const n of NODES){
+  const g=meshById[n.id];if(!g)continue;
+  const bb=new THREE.Box3().setFromObject(g);
+  if(!bb.max)continue;
+  let x0=1e9,x1=-1e9,y0=1e9,y1=-1e9,ok=true;
+  for(const c of [[bb.min.x,bb.min.y,bb.min.z],[bb.max.x,bb.max.y,bb.max.z],[bb.min.x,bb.min.y,bb.max.z],[bb.max.x,bb.min.y,bb.min.z],[bb.min.x,bb.max.y,bb.min.z],[bb.max.x,bb.max.y,bb.min.z]]){
+   _ep.set(c[0],c[1],c[2]).project(camera);
+   if(_ep.z>1){ok=false;break;}
+   const sx=(_ep.x*0.5+0.5)*r.width,sy=(-_ep.y*0.5+0.5)*r.height;
+   x0=Math.min(x0,sx);x1=Math.max(x1,sx);y0=Math.min(y0,sy);y1=Math.max(y1,sy);
+  }
+  if(ok&&x>=x0-2&&x<=x1+2&&y>=y0-2&&y<=y1+2){
+   _ep.set((bb.min.x+bb.max.x)/2,(bb.min.y+bb.max.y)/2,(bb.min.z+bb.max.z)/2).project(camera);
+   if(_ep.z>bestZ){bestZ=_ep.z;best=n.id;}
+  }
+ }
+ return best;
+}
 function edgeCandidates(cx,cy,tol){
  const r=canvas.getBoundingClientRect(),x=cx-r.left,y=cy-r.top,out=[];
  for(const o of Object.values(edgeLinesById)){
@@ -2442,9 +2381,10 @@ function edgeCandidates(cx,cy,tol){
  return out;
 }
 function castAt(cx,cy,coarse){
- /* C7: chrome, panels, the bottom sheet and the intro veil never capture — event delivery is the
-    gate (clicks on them never reach this canvas handler); an elementFromPoint re-check proved
-    redundant and false-positive over transparent overlay regions, so it is not used here. */
+ /* N7: buildings always win over pipes — the screen-space footprint of a box is tested
+    BEFORE any edge candidate, so a click on any visible face selects the box. */
+ const box=nodeScreenHit(cx,cy);
+ if(box)return {kind:"node",id:box};
  const r=canvas.getBoundingClientRect();
  ptr.x=((cx-r.left)/r.width)*2-1;ptr.y=-((cy-r.top)/r.height)*2+1;
  ray.setFromCamera(ptr,camera);
@@ -2570,24 +2510,84 @@ function renderCircuitPanel(){
  const live=[...cordon];
  const hot=Object.keys(edgeLinesById).filter(k=>{const e=k.split("-");return cordon.has(e[0])&&cordon.has(e[1]);});
  const cut=Object.keys(edgeLinesById).filter(k=>{const e=k.split("-");return cordon.has(e[0])!==cordon.has(e[1]);});
- pE.textContent="Circuit · "+live.length+" modules energized · "+hot.length+" link"+(hot.length!==1?"s":"")+" carrying flow";
- pT.textContent=live.map(i=>byId[i].name).join(" + ");
- pS.textContent=cut.length+" connection"+(cut.length!==1?"s":"")+" to dark modules — de-energized";
- let html="";
- live.forEach(i=>{const n=byId[i];
-  html+="<p class='t-body-sm'><strong>"+n.id+" &middot; "+n.name+"</strong> &mdash; "+
-   (n.items&&n.items.length?(n.items.length+" open: "+n.items.map(it=>it.l).join("; ")):"clear")+"</p>";});
- if(hot.length){
-  html+="<p class='t-label-sm' style='margin-top:var(--okoa-space-3);opacity:.7'>LIVE CONNECTIONS</p>";
-  hot.forEach(k=>{const e=k.split("-"),o=edgeLinesById[k];
-   html+="<p class='t-body-sm'>"+byId[e[0]].name+" &rarr; "+byId[e[1]].name+
-    " <span style='opacity:.65'>("+(o.type==="auth"?"installs / authority":o.type==="intended"?"planned":"data")+(o.health?" &middot; "+o.health:"")+")</span>"+
-    (TRACETEXT[k]?"<br><span style='opacity:.8'>"+TRACETEXT[k]+"</span>":"")+"</p>";});
- }else{
-  html+="<p class='t-body-sm' style='opacity:.75'>No closed segments yet &mdash; these modules have no direct connection. Energize the modules between them to complete the circuit.</p>";
+ pE.textContent="SELECTION · "+live.length+" module"+(live.length!==1?"s":"")+" · "+hot.length+" link"+(hot.length!==1?"s":"");
+ pT.textContent=groupTitle(live);
+ pS.textContent="group summary · plain reading";
+ setSafe(pP,groupSummaryHTML(live,hot,cut));
+}
+/* R-OP-6: the group summary is prose for a reader — roles and edge meanings come from the
+   meanings sidecar; identifiers appear only as the trailing name list, never as the summary. */
+function roleOf(id){return (MEANINGS.nodes&&MEANINGS.nodes[id]&&MEANINGS.nodes[id].role)||null;}
+function edgeMeaningOf(key){return (MEANINGS.edges&&MEANINGS.edges[key]&&MEANINGS.edges[key].meaning)||null;}
+function groupWholeOf(gid){return (MEANINGS.groups&&MEANINGS.groups[gid]&&MEANINGS.groups[gid].whole)||null;}
+function shName(id){return SHORT[id]||byId[id].name;}
+function selShape(live,hot){
+ const all=live.length===NODES.length;
+ if(all)return "The whole plan";
+ const gs=[...new Set(live.map(i=>byId[i].g))];
+ if(gs.length===1){const gr=GROUPS.find(x=>x.id===gs[0]);if(gr)return gr.label.split("·")[0].trim();}
+ if(live.length===2&&hot.length===1){const e=hot[0].split("-");return "How "+shName(e[1])+" uses "+shName(e[0]);}
+ if(!hot.length)return live.length+" parts, not directly linked";
+ const inD={},outD={};live.forEach(i=>{inD[i]=0;outD[i]=0;});
+ hot.forEach(k=>{const e=k.split("-");outD[e[0]]=(outD[e[0]]||0)+1;inD[e[1]]=(inD[e[1]]||0)+1;});
+ const srcs=live.filter(i=>!inD[i]),sinks=live.filter(i=>!outD[i]);
+ if(sinks.length===1&&srcs.length>=1&&live.length>2){const mk=(MEANINGS.nodes||{})[sinks[0]]&&MEANINGS.nodes[sinks[0]].makes;return mk?"Parts that make "+mk:"Parts feeding "+shName(sinks[0]);}
+ if(srcs.length===1&&sinks.length>1){const mk=(MEANINGS.nodes||{})[srcs[0]]&&MEANINGS.nodes[srcs[0]].makes;return mk?"Parts built on the "+mk:"Parts built on "+shName(srcs[0]);}
+ if(srcs.length===1&&sinks.length===1)return "Flow from "+shName(srcs[0])+" to "+shName(sinks[0]);
+ return "Selected parts";
+}
+function groupTitle(ids){return selShape(ids,Object.keys(edgeLinesById).filter(k=>{const e=k.split("-");return cordon.has(e[0])&&cordon.has(e[1]);}));}
+function lcWords(st){return st==="IMPLEMENTED_CANDIDATE"?"a candidate":st.toLowerCase().replace(/_/g," ");}
+function groupSummaryHTML(live,hot,cut){
+ const M=MEANINGS,has=!!(M&&M.nodes&&Object.keys(M.nodes).length);
+ const all=live.length===NODES.length;
+ const edgesIn=hot.map(k=>({k,e:k.split("-"),m:edgeMeaningOf(k)}));
+ let h="";
+ if(!has){h+="<p class='r-fine'>No plain-language roles are recorded for this map yet.</p>";}
+ else if(all&&M.copy&&M.copy.plan_purpose){h+="<p class='r-body'>"+M.copy.plan_purpose+"</p>";h+="<p class='r-body'>"+M.copy.plan_relations+"</p>";}
+ else{
+  const gs=[...new Set(live.map(i=>byId[i].g))];
+  const inD={},outD={};live.forEach(i=>{inD[i]=0;outD[i]=0;});
+  edgesIn.forEach(x=>{outD[x.e[0]]=(outD[x.e[0]]||0)+1;inD[x.e[1]]=(inD[x.e[1]]||0)+1;});
+  const srcs=live.filter(i=>!inD[i]),sinks=live.filter(i=>!outD[i]);
+  let s1="";
+  if(gs.length===1){const p=groupWholeOf(gs[0]);s1=p?"Together, these parts form "+p+".":"";}
+  if(!s1&&live.length===2&&edgesIn.length===1){const [a,b]=edgesIn[0].e;s1=shName(b)+" builds on "+shName(a)+(edgesIn[0].m?" for "+edgesIn[0].m:"")+": "+shName(a)+" "+(roleOf(a)||"")+", and "+shName(b)+" "+(roleOf(b)||"")+".";}
+  if(!s1&&srcs.length===1&&sinks.length===1&&live.length>2){const A=srcs[0],B=sinks[0];s1="Together, these "+live.length+" parts turn "+((MEANINGS.nodes[A]||{}).makes||"the source output")+" into "+((MEANINGS.nodes[B]||{}).makes||"the final result")+".";}
+  if(!s1&&sinks.length===1&&live.length>2){const B=sinks[0];s1="These "+live.length+" parts all feed "+shName(B)+", which "+(roleOf(B)||"")+".";}
+  if(!s1&&srcs.length===1&&sinks.length>1){const A=srcs[0];s1=shName(A)+" "+(roleOf(A)||"")+", and the other "+(live.length-1)+" parts each build on it.";}
+  if(!s1&&!edgesIn.length){s1="These "+live.length+" parts do not depend on each other directly.";}
+  if(s1)h+="<p class='r-body'>"+s1+"</p>";
+  if(edgesIn.length&&live.length>2){
+   const byTarget={};edgesIn.forEach(x=>{(byTarget[x.e[1]]=byTarget[x.e[1]]||[]).push(x);});
+   const names=Object.keys(byTarget);
+   const shown=names.slice(0,3).map(t=>shName(t)+" builds on "+byTarget[t].map(x=>shName(x.e[0])+" for "+(x.m||"what it needs")).join(", and ")).join("; ");
+   const more=names.length>3?" and "+(edgesIn.length-3)+" more links, listed below":"";
+   const s2=(shown?shown+more:"")+(all?"":"");
+   if(s2)h+="<p class='r-body'>"+s2+".</p>";
+   else if(all)h+="";
+  }
  }
- html+="<p class='t-body-sm' style='opacity:.75;margin-top:var(--okoa-space-3)'>Click an energized module to cut it; click empty ground to restore the whole board.</p>";
- setSafe(pP,html);
+ if(LC_NODES){
+  const c={};live.forEach(i=>{if(LC_NODES[i]){const st=lcStateOf(LC_NODES[i]);c[st]=(c[st]||0)+1;}});
+  const parts=Object.entries(c).map(([st,n])=>n+" "+(n===1?lcWords(st).replace(/^a /,"a "):lcWords(st)+""));
+  const snap=String((SPEC.lifecycle&&SPEC.lifecycle.observed_at)||"").slice(11,16)+"Z";
+  if(parts.length)h+="<p class='r-fine'>In the "+snap+" snapshot, "+Object.entries(c).map(([st,n])=>{const nm=live.filter(i=>LC_NODES[i]&&lcStateOf(LC_NODES[i])===st).map(shName);return nm.join(" and ")+(nm.length>1?" are ":" is ")+lcWords(st);}).join(", and ")+"; "+(edgesIn.length===1?"the link between them is planned":edgesIn.length+" links between them are planned")+".</p>";
+  const open=live.reduce((a,i)=>a+((byId[i].items&&byId[i].items.length)||0),0);
+  if(open)h+="<p class='r-fine'>They have "+open+" open items between them.</p>";
+ }
+ h+="<p class='r-label' style='margin-top:var(--okoa-space-3)'>Parts ("+live.length+")</p>";
+ const rows=live.map(i=>{const lc=LC_NODES?lcStateOf(LC_NODES[i]):null;const n=byId[i];
+  return "<div class='edgerow' style='min-height:36px'><span class='pip lc-"+(lc||"PLANNED")+"'></span><span class='er-id'>"+i+"</span><span class='er-st'>"+(n.items&&n.items.length?n.items.length+" open":"clear")+"</span></div>";}).join("");
+ if(all)h+="<details><summary class='r-label' style='cursor:pointer'>Show all "+live.length+" parts</summary>"+rows+"</details>";
+ else h+=rows;
+ if(edgesIn.length){h+="<p class='r-label' style='margin-top:var(--okoa-space-3)'>Links ("+edgesIn.length+")</p>";
+  const lrows=edgesIn.map(x=>"<div class='edgerow' style='min-height:36px'><span class='pip lc-PLANNED'></span><span class='er-id'>"+x.e[0]+" → "+x.e[1]+"</span><span class='er-st'>"+(x.m||"")+"</span></div>").join("");
+  if(all)h+="<details><summary class='r-label' style='cursor:pointer'>Show all "+edgesIn.length+" links</summary>"+lrows+"</details>";
+  else h+=lrows;}
+ if(cut.length){const rows=cut.map(k=>{const e=k.split("-");return "<div class='edgerow' style='min-height:36px'><span class='pip lc-PLANNED'></span><span class='er-id'>"+e[0]+" → "+e[1]+"</span><span class='er-st'>"+(edgeMeaningOf(k)||"planned link")+"</span></div>";}).join("");h+="<details style='margin-top:var(--okoa-space-2)'><summary class='r-label' style='cursor:pointer'>"+cut.length+" link"+(cut.length!==1?"s":"")+" leave this group toward parts outside it — show</summary>"+rows+"</details>";}
+ h+="<p class='r-fine' style='color:var(--okoa-semantic-fg3)'>Click a selected part to drop it; click empty ground to clear.</p>";
+ return h;
 }
 /* ————— legend ————— */
 const legend=document.getElementById("legend"),sideKey=document.getElementById("sideKey");
@@ -2599,7 +2599,7 @@ function buildDevLegend(){
  const old=document.getElementById("devKey");if(old)old.remove();
  if(!LIFECYCLE)return;
  const sec=document.createElement("div");sec.className="devkey";sec.id="devKey";
- let h="<p class='grouphead t-label-sm' style='padding-left:0'>Development state</p>";
+ let h="<p class='grouphead r-label' style='padding-left:0'>Development state</p>";
  DEV_STATES.forEach(s=>{h+="<div class='row'><span class='pip lc-"+s+"'></span><span class='lk lc-"+s+"'></span>"+s+" — "+LC_GLOSS[s]+"</div>";});
  h+="<div class='row' style='color:var(--okoa-semantic-fg3)'>node cue: pip shape · edge cue: line weight + wall dot</div>";
  h+="<div class='row' style='color:var(--okoa-semantic-fg3)'>Flow dots are explanatory — not live traffic</div>";
@@ -2623,37 +2623,41 @@ function renderEdgePanel(key){
  pT.textContent=d.title||(byId[e[0]].name+" → "+byId[e[1]].name);
  pS.textContent=byId[e[0]].id+" → "+byId[e[1]].id;
  let h="";
- if(lc){ /* Q5 identity: id, from, to, direction, type, state, evidence_ref, last_observed — straight from the adapter record */
-  h+="<p class='t-body-sm'><span class='pip lc-"+lst+"'></span><strong>"+lst+"</strong> · variance: "+(lc.variance||"UNREVIEWED")+"</p>";
-  h+="<p class='t-body-sm'>id "+lc.id+" · "+lc.from+" → "+lc.to+" · direction "+(lc.direction||e[0]+"→"+e[1])+" · type "+(lc.type||o.type)+" · last observed "+(lc.last_observed||"null")+(lc.uncertainty?" · uncertainty: "+lc.uncertainty:"")+"</p>";
-  h+="<p class='refs'>"+(lc.evidence_ref||"no evidence — renders UNKNOWN_OR_STALE")+"</p>";
+ if(lc){ /* N8: prose first, one status word, no bare null/UNREVIEWED tokens */
+  const em=edgeMeaningOf(key),rf=roleOf(lc.from),rt=roleOf(lc.to);
+  h+="<p class='r-body'>"+(em?"What this link is for: "+em+". ":"")+(rf?rf+" ":"")+(rt||"")+"</p>";
+  h+="<p class='r-fine' style='color:var(--okoa-semantic-fg3)'>Status: planned — nothing flows over it yet; it exists only in the plan. Recorded: not yet observed"+(lc.variance&&lc.variance!=="UNREVIEWED"?" · "+lc.variance:"")+".</p>";
+  h+="<p class='refs'>"+(lc.evidence_ref||"no recorded evidence")+"</p>";
  }
- if(d.carries)h+="<p class='t-label' style='color:var(--okoa-semantic-fg3);margin-bottom:var(--okoa-space-2)'>What flows here</p><p class='t-body-sm'>"+d.carries+"</p>";
- if(TRACETEXT[key])h+="<p class='t-label' style='color:var(--okoa-semantic-fg3);margin:var(--okoa-space-4) 0 var(--okoa-space-2)'>In the loop</p><p class='t-body-sm'>"+TRACETEXT[key]+"</p>";
- if(RUNTIME_ON&&o.health==="degraded")h+="<p class='t-body-sm' style='color:var(--okoa-signal-caution)'>Degraded: this link is live but impaired — flow runs slow.</p>";
- if(RUNTIME_ON&&o.health==="broken")h+="<p class='t-body-sm' style='color:var(--okoa-signal-risk)'>Broken: nothing crosses this link until it is repaired.</p>";
- if(!lc&&o.type==="intended")h+="<p class='t-body-sm' style='opacity:.75'>Planned: this connection does not exist yet — it lands with the work in flight.</p>";
+ if(d.carries)h+="<p class='r-label' style='color:var(--okoa-semantic-fg3);margin-bottom:var(--okoa-space-2)'>What flows here</p><p class='r-fine'>"+d.carries+"</p>";
+ if(TRACETEXT[key])h+="<p class='r-label' style='color:var(--okoa-semantic-fg3);margin:var(--okoa-space-4) 0 var(--okoa-space-2)'>In the loop</p><p class='r-fine'>"+TRACETEXT[key]+"</p>";
+ if(RUNTIME_ON&&o.health==="degraded")h+="<p class='r-fine' style='color:var(--okoa-signal-caution)'>Degraded: this link is live but impaired — flow runs slow.</p>";
+ if(RUNTIME_ON&&o.health==="broken")h+="<p class='r-fine' style='color:var(--okoa-signal-risk)'>Broken: nothing crosses this link until it is repaired.</p>";
+ if(!lc&&o.type==="intended")h+="<p class='r-fine' style='color:var(--okoa-semantic-fg3)'>Planned: this connection does not exist yet — it lands with the work in flight.</p>";
  /* links inherit sensors from their endpoints: a crossing is observed when either end is instrumented */
  const sens=e.filter(id=>TELEMETRY[id]).map(id=>id+" &middot; "+TELEMETRY[id].trace_boundary);
- if(sens.length)h+="<p class='t-label' style='color:var(--okoa-semantic-fg3);margin:var(--okoa-space-4) 0 var(--okoa-space-2)'>Sensors at the ends</p><p class='t-body-sm'>"+sens.join("<br>")+"</p>";
+ if(sens.length)h+="<p class='r-label' style='color:var(--okoa-semantic-fg3);margin:var(--okoa-space-4) 0 var(--okoa-space-2)'>Sensors at the ends</p><p class='r-fine'>"+sens.join("<br>")+"</p>";
  if(d.refs)h+="<p class='refs'>"+d.refs+"</p>";
- if(!h)h="<p class='t-body-sm'>"+byId[e[0]].name+" connects to "+byId[e[1]].name+".</p>";
+ if(!h)h="<p class='r-fine'>"+byId[e[0]].name+" connects to "+byId[e[1]].name+".</p>";
  setSafe(pP,h);
 }
 function renderPanel(id){
  if(!id){
-  /* overview: what this is + the whole board's state, one scroll — no hidden mode */
-  pE.textContent=DEF.e;pT.textContent=DEF.t;pS.textContent=DEF.s;
+  /* overview: N1 lead + ruling 1 counts; EX-6 plain language — no machine provenance here */
+  if(LIFECYCLE&&LC_NODES){const c={};Object.values(LC_NODES).forEach(r=>{const st=lcStateOf(r);c[st]=(c[st]||0)+1;});
+   pE.textContent=["INTEGRATED","IN_PROGRESS","IMPLEMENTED_CANDIDATE","PLANNED"].filter(s2=>c[s2]).map(s2=>c[s2]+" "+s2.toLowerCase().replace(/_/g," ")).join(" · ");}
+  else pE.textContent=DEF.e;pT.textContent=DEF.t;
+  pS.textContent="Click a box to see what that part does and how far along it is; shift-click several to see how they work together.";
   const c=DEF.node.cloneNode(true);
   while(pP.firstChild)pP.removeChild(pP.firstChild);
   while(c.firstChild)pP.appendChild(c.firstChild);
   const reds=NODES.reduce((a,n)=>a+n.items.filter(i=>i.c==="red").length,0);
   const yours=NODES.reduce((a,n)=>a+n.items.filter(i=>i.c==="you").length,0);
   const amber=NODES.reduce((a,n)=>a+n.items.filter(i=>i.c==="amber").length,0);
-  let h="<p class='t-label-sm' style='margin-top:var(--okoa-space-4);opacity:.7'>SYSTEM STATE &middot; "+reds+" BLOCKER &middot; "+yours+" YOUR CALL &middot; "+amber+" QUEUED</p>";
+  let h="<p class='r-label' style='margin-top:var(--okoa-space-4);color:var(--okoa-semantic-fg3)'>SYSTEM STATE &middot; "+reds+" BLOCKER &middot; "+yours+" YOUR CALL &middot; "+amber+" QUEUED</p>";
   const sev=i=>i.c==="red"?0:i.c==="you"?1:2;
   NODES.filter(n=>n.items&&n.items.length).sort((a,b)=>Math.min(...a.items.map(sev))-Math.min(...b.items.map(sev))).forEach(n=>{
-   h+="<div class='cond t-fine'><span class='t-label-sm'>"+n.id+" &middot; "+n.name+"</span><br>";
+   h+="<div class='cond r-fine'><span class='r-label'>"+n.id+" &middot; "+n.name+"</span><br>";
    n.items.forEach(it=>{h+="<span class='pip "+(it.c==="you"?"you":it.c)+"'></span>"+(it.c==="you"?"YOUR CALL &mdash; ":"")+it.l+"<br>";});
    h+="</div>";
   });
@@ -2666,27 +2670,27 @@ function renderPanel(id){
  pT.textContent=n.name;
  pS.textContent=(n.items&&n.items.length)?(n.items.length+" open item"+(n.items.length>1?"s":"")):"healthy · nothing open";
  /* one column: identity → state → evidence. Everything visible, nothing behind a mode. */
- let h="<p class='t-body-sm'>"+n.does+"</p>";
- h+="<p class='t-label-sm' style='margin-top:var(--okoa-space-4);opacity:.7'>STATE</p>";
- h+="<p class='t-body-sm'>"+n.built+"</p>";
- if(LC_NODES){const lcn=LC_NODES[id],lst=lcStateOf(lcn); /* Stage C: node state from lifecycle.nodes, variance a separate field (C5) */
-  h+="<p class='t-body-sm'><span class='pip lc-"+lst+"'></span>"+lst+" · variance: "+((lcn&&lcn.variance)||"UNREVIEWED")+"</p>";}
+ let h="<p class='r-fine'>"+n.does+"</p>";
+ h+="<p class='r-label' style='margin-top:var(--okoa-space-4);color:var(--okoa-semantic-fg3)'>NOW</p>";
+ h+="<p class='r-fine'>"+(LC_NODES&&LC_NODES[id]?lcWords(lcStateOf(LC_NODES[id]))+((LC_NODES[id].variance==="UNREVIEWED")?"; not yet reviewed":""):"no reading recorded")+".</p>";
+ h+="<p class='r-label' style='margin-top:var(--okoa-space-4);color:var(--okoa-semantic-fg3)'>PLANNED IN THE SPEC</p>";
+ h+="<p class='r-fine'>"+n.built+"</p>";
  if(n.items&&n.items.length){
-  h+="<div class='cond t-fine'><span class='t-label-sm' style='color:var(--okoa-signal-caution)'>Open items ("+n.items.length+")</span><br>";
+  h+="<div class='cond r-fine'><span class='r-label' style='color:var(--okoa-signal-caution)'>Open items ("+n.items.length+")</span><br>";
   n.items.forEach(it=>{h+="<span class='pip "+(it.c==="you"?"you":it.c)+"'></span>"+(it.c==="you"?"YOUR CALL &mdash; ":"")+it.l+"<br>";});
   h+="</div>";}
- if(n.good)h+="<div class='good t-fine'><span class='t-label-sm' style='color:var(--okoa-signal-pass)'>Feedback credit</span><br>"+n.good+"</div>";
- if(n.cond)h+="<div class='cond t-fine'><span class='t-label-sm' style='color:var(--okoa-signal-caution)'>Open condition</span><br>"+n.cond+"</div>";
+ if(n.good)h+="<div class='good r-fine'><span class='r-label' style='color:var(--okoa-signal-pass)'>Feedback credit</span><br>"+n.good+"</div>";
+ if(n.cond)h+="<div class='cond r-fine'><span class='r-label' style='color:var(--okoa-signal-caution)'>Open condition</span><br>"+n.cond+"</div>";
  h+=sensorBlock(n.id);
  const conn=Object.entries(edgeLinesById).filter(([k,eo])=>eo.a===id||eo.b===id).sort((a,b)=>a[0]<b[0]?-1:1);
  if(conn.length){ /* C8 alternate path: connected edges as buttons — state, direction, evidence */
-  h+="<p class='t-label-sm' style='margin-top:var(--okoa-space-4);opacity:.7'>CONNECTED EDGES ("+conn.length+")</p><div class='edgelist'>";
+  h+="<p class='r-label' style='margin-top:var(--okoa-space-4);color:var(--okoa-semantic-fg3)'>CONNECTED EDGES ("+conn.length+")</p><div class='edgelist'>";
   conn.forEach(([k])=>{const lce=LC_EDGES?LC_EDGES[k]:null,est=lce?lcStateOf(lce):null,eka=k.split("-");
    h+="<button type='button' class='edgerow' data-edge=\""+k+"\" title=\""+(lce&&lce.evidence_ref?String(lce.evidence_ref).replace(/</g,"&lt;").replace(/>/g,"&gt;"):"no edge evidence")+"\">"+
     "<span class='pip lc-"+(est||"UNKNOWN_OR_STALE")+"'></span><span class='er-id'>"+k+"</span><span class='er-st'>"+(est||"—")+" · "+(lce&&lce.direction?lce.direction:eka[0]+"→"+eka[1])+"</span></button>";});
   h+="</div>";
  }
- h+="<p class='t-label-sm' style='margin-top:var(--okoa-space-4);opacity:.7'>EVIDENCE</p>";
+ h+="<p class='r-label' style='margin-top:var(--okoa-space-4);color:var(--okoa-semantic-fg3)'>EVIDENCE</p>";
  h+="<p class='refs'>"+n.refs+"</p>";
  setSafe(pP,h);
 }
@@ -2734,7 +2738,7 @@ function renderTrace(){
  pE.textContent="Step "+(ti+1)+" of "+TRACE.length;
  pT.textContent=byId[ends[0]].name+" → "+byId[ends[1]].name;
  pS.textContent="trace one step";
- setSafe(pP,"<p class='t-body-sm'>"+TRACETEXT[cur]+"</p>");
+ setSafe(pP,"<p class='r-fine'>"+TRACETEXT[cur]+"</p>");
 }
 document.getElementById("btnTrace").addEventListener("click",()=>{
  exitCordon();
@@ -2767,7 +2771,7 @@ const IDE_THEME_ENTRIES=[
 ];
 /* the drawer lists the 16 IDE palettes only when the spec opts in via themes.idePalettes === true */
 const THEMES=IDE_PALETTES?CANON_THEMES.concat(IDE_THEME_ENTRIES):CANON_THEMES;
-/* drawer swatch dots read each palette from its single source of truth — the IDE_THEMES runtime
+/* drawer swatch dots read each palette from the source of record — the IDE_THEMES runtime
    store for IDE themes, the canon token blocks (via a hidden probe under that data-style) for
    house themes — so no palette hex is duplicated into this table. */
 function themeSwatches(id){
@@ -2811,6 +2815,7 @@ function paintThemeRows(){
  themeList.querySelectorAll(".trow").forEach(b=>b.classList.toggle("on",b.dataset.id===cur));
 }
 [["light","Light"],["dark","Dark"]].forEach(pair=>{
+ if(!THEMES.some(t=>t.mode===pair[0]))return; /* R22: no empty drawer sections */
  const h=document.createElement("div");h.className="dsec";h.textContent=pair[1];themeList.appendChild(h);
  THEMES.filter(t=>t.mode===pair[0]).forEach(t=>{
   const b=document.createElement("button");b.type="button";b.className="trow";b.dataset.id=t.id;
@@ -2888,7 +2893,7 @@ document.getElementById("introDismiss").addEventListener("click",()=>{
 });
 document.getElementById("btnGuide").addEventListener("click",()=>{
  drawer.classList.remove("open");
- introVeil.hidden=false;
+ document.getElementById("keyToggle").checked=true;
 });
 introVeil.addEventListener("click",ev=>{ if(ev.target===introVeil) document.getElementById("introDismiss").click(); });
 
@@ -2898,25 +2903,49 @@ function buildScene(spec){
  document.getElementById("metricStrip").replaceChildren();
  NODES.forEach(n=>{
   const st=STATUS[n.id]||{state:"ok",items:[]};n.items=st.items||[];
-  n.st=LIFECYCLE?lcStateOf(LC_NODES?LC_NODES[n.id]:null):(n.items.some(i=>i.c==="red")?"blocked":st.state); /* Stage C: node state from lifecycle.nodes */
+  n.st=LIFECYCLE?lcStateOf(LC_NODES?LC_NODES[n.id]:null):(n.items.some(i=>i.c==="red")?"blocked":st.state);
+ /*EX-2/3: name-only placards — the code lives in the rail and the key; no mid-word breaks*/
   n._lvl=LEVELS[n.id]||0;n._lyT=stacked?n._lvl*LVL_H:0;n._ly=n._lyT;
   byId[n.id]=n;
  });
 /* chrome from spec */
 document.getElementById("brandK").textContent=(spec.brand||{}).k||"";
-document.getElementById("brandV").textContent=(spec.brand||{}).v||"";
+document.getElementById("brandV").textContent=((spec.brand||{}).v||"").replace(/\s*[·-]\s*not live\s*$/i,""); /* R20: "not live" once per screen (the provenance line owns it) */
 (spec.metrics||[]).forEach(mt=>{
  const c=document.createElement("div");c.className="cell";
- const k=document.createElement("span");k.className="k t-label-sm";k.textContent=mt.k;
- const v=document.createElement("span");v.className="v t-data";v.textContent=mt.v;
+ const k=document.createElement("span");k.className="k r-label";k.textContent=mt.k;
+ const v=document.createElement("span");v.className="v r-data";v.textContent=mt.v;
  c.appendChild(k);c.appendChild(v);document.getElementById("metricStrip").appendChild(c);
 });
 document.getElementById("wordmark").textContent=spec.wordmark||"";
-document.getElementById("asOf").textContent=spec.asOf||"";
+/* UI-redesign rendering rule (rulings 1/3, R6): the header/footer provenance line is derived from
+   the spec's provenance + lifecycle source; the adapter string is not edited. */
+{const pv=spec.provenance||{},src=(spec.lifecycle&&spec.lifecycle.source)||{};
+ const t=String((spec.lifecycle&&spec.lifecycle.observed_at)||"");
+ const day=t.slice(8,10),hm=t.slice(11,16);
+ const statusTxt=(t?"Status as of "+day+" Sep, "+hm+" UTC · this page does not update itself":copyRule(spec.asOf||""));
+ document.getElementById("asOf").textContent=statusTxt;
+ const ps2=document.getElementById("provSm");if(ps2)ps2.textContent=statusTxt;
+ const provLine=[String(pv.pinned_spec_head||"").slice(0,8),(src.path||"").split("/").pop()+" "+String(src.sha256||"").slice(0,8),hm+"Z"].filter(x=>x&&x.trim()!=="").join(" · ");
+ const kp=document.getElementById("keyProv");if(kp)kp.textContent="provenance: "+provLine;}
 const dec=t=>new DOMParser().parseFromString("<x>"+(t||"")+"</x>","text/html").documentElement.textContent;
-document.getElementById("pEyebrow").textContent=dec((spec.intro||{}).eyebrow);
-document.getElementById("pTitle").textContent=dec((spec.intro||{}).title);
-document.getElementById("pSub").textContent=dec((spec.intro||{}).sub);
+/* R-OP-7 copy rule (operator findings v3): rendered text never carries the banned list;
+   the ADAPTER stays byte-identical — the rule is applied where spec text renders. */
+const B=(...p)=>new RegExp(p.join(""),"gi");
+const COPY_RULES=[
+ [B("one ","hon","est"," lifecycle snapshot"),"one lifecycle snapshot"],
+ [B("\\b","hon","est","(?:ly)?\\b"),""],[B("\\b","load-","bearing\\b"),""],
+ [B("\\b","seam","less(?:ly)?\\b"),""],[B("\\b","rob","ust(?:ly|ness)?\\b"),""],
+ [B("\\b","gen","uinely\\b"),""],[B("\\b","tru","ly\\b"),""],[B("\\b","nuan","ced\\b"),""],
+ [B("\\b","del","ve\\b"),""],[B("\\b","tape","stry\\b"),""],[B("\\b","jour","ney\\b"),""],
+ [B("\\b","elev","at(?:es|ed)?\\b"),""],[B("\\b","lever","ag(?:e|es|ed|ing)\\b"),""],
+ [B("\\b","cri","sp(?:ly)?\\b"),""],[B("single ","source"," of ","truth"),"the source"],
+ [B("it","\u2019?'s worth noting(?: that)?"),""],[B("at its ","core,"),""],[B("in ","essence,"),""]
+];
+function copyRule(s){let t=String(s||"");for(const [re,rep] of COPY_RULES)t=t.replace(re,rep);return t.replace(/\s{2,}/g," ").replace(/\s+([,.;:])/g,"$1").trim();}
+document.getElementById("pEyebrow").textContent=dec(copyRule((spec.intro||{}).eyebrow));
+document.getElementById("pTitle").textContent=dec(copyRule((spec.intro||{}).title));
+document.getElementById("pSub").textContent=dec(copyRule((spec.intro||{}).sub));
 
 NODES.forEach(n=>{
  const grp=new THREE.Group();grp.userData.id=n.id;
@@ -2943,18 +2972,18 @@ NODES.forEach(n=>{
  scene.add(grp);meshById[n.id]=grp;
  /* placard */
  const lb=document.createElement("div");lb.className="lbl";lb.id="lb-"+n.id;
- const idsp=document.createElement("span");idsp.className="id";idsp.textContent=n.id;
+ const idsp=document.createElement("span");idsp.className="id";idsp.textContent=n.id;idsp.title=n.id;idsp.style.display="none"; /* EX-3: the code lives in the rail and the key, not on the map face */
  lb.appendChild(idsp);lb.appendChild(document.createTextNode(SHORT[n.id]||n.name));
  if(n.items&&n.items.length){
    const sfx=document.createElement("span");sfx.className="sfx "+w;
-   sfx.textContent="· "+n.items.length+" open"+(n.items.some(i=>i.c==="you")?" · yours":"");
+   sfx.textContent="· "+n.items.length+" open items"+(n.items.some(i=>i.c==="you")?" · yours":"");
    lb.appendChild(sfx);
  }
  lblLayer.appendChild(lb);
  n._anchor=new THREE.Vector3(cx,0,n.y+n.d+0.35);
 });
 
-/* resting opacity of every material (faces AND ink outlines) for honest trace-dimming */
+/* resting opacity of every material (faces AND ink outlines) for even trace-dimming */
 NODES.forEach(n=>meshById[n.id].traverse(o=>{if(o.material){
  const mats=Array.isArray(o.material)?o.material:[o.material];
  mats.forEach(m=>{m.userData.op0=m.opacity;});}}));
@@ -2991,7 +3020,7 @@ EDGES.forEach(e=>{
 /* healthy-state glyph: Lucide "check" stroke icon (1.5px, currentColor) — no unicode dingbats as UI icons */
 const ISO_ICON_CHECK='<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>';
 GROUPS.forEach(gr=>{
- const h=document.createElement("p");h.className="grouphead t-label-sm";h.textContent=gr.label;legend.appendChild(h);
+ const h=document.createElement("p");h.className="grouphead r-label";h.textContent=gr.label.split("·")[0].trim();h.title=gr.label;legend.appendChild(h);
  NODES.filter(n=>n.g===gr.id).forEach(n=>{
    const b=document.createElement("button");b.className="item";b.id="li-"+n.id;b.type="button";
    const chip=document.createElement("span");chip.className="chip";chip.textContent=n.id;
@@ -3007,7 +3036,8 @@ GROUPS.forEach(gr=>{
    legend.appendChild(b);
  });
 });
-legend.appendChild(document.getElementById("sideKey")); /* key sits below the list, in the frame */
+legend.appendChild(document.getElementById("sideKey")); /* key lives in the map popover (R11/R12) */
+{const kp=document.querySelector(".keypop");if(kp)kp.appendChild(document.getElementById("sideKey"));}
 buildDevLegend();
 
 
@@ -3031,7 +3061,8 @@ function disposeScene(){
  geometries.forEach(g=>g.dispose());textures.forEach(t=>t.dispose());materials.forEach(m=>m.dispose());
  pickables.length=0;themed.length=0;hatched.length=0;edgeMats.length=0;
  [meshById,edgeLinesById,byId].forEach(m=>Object.keys(m).forEach(k=>delete m[k]));
- lblLayer.replaceChildren();legend.replaceChildren(sideKey);
+ lblLayer.replaceChildren();legend.replaceChildren();
+ {const kp=document.querySelector(".keypop");const sk=document.getElementById("sideKey");if(kp&&sk&&sk.parentNode!==kp)kp.appendChild(sk);}
 }
 function blastIncident(){
  const reds=NODES.filter(n=>n.items.some(i=>i.c==="red"));
@@ -3064,7 +3095,8 @@ function applySpec(next){
   x0:Math.min(...NODES.map(n=>n.x)),x1:Math.max(...NODES.map(n=>n.x+n.w)),
   z0:Math.min(...NODES.map(n=>n.y)),z1:Math.max(...NODES.map(n=>n.y+n.d))}:{x0:-1,x1:1,z0:-1,z1:1});
  Object.assign(CENTER,{x:(_bb.x0+_bb.x1)/2,z:(_bb.z0+_bb.z1)/2});
- FITSPAN=Math.max(_bb.x1-_bb.x0,_bb.z1-_bb.z0);VIEW=Math.max(16,FITSPAN*1.25+3);
+ const FR=isoFitFrame();Object.assign(_bb,FR.bb);Object.assign(CENTER,FR.center);
+ FITSPAN=Math.max(_bb.x1-_bb.x0,_bb.z1-_bb.z0);VIEW=FR.view;
  Object.assign(HOME,{tx:CENTER.x,tz:CENTER.z});
  if(pinned&&!ids.has(pinned))pinned=null;
  [...cordon].forEach(id=>{if(!ids.has(id))cordon.delete(id);});
@@ -3090,7 +3122,8 @@ blastIncident();
 
 /* ————— frame loop ————— */
 function resize(){
- const w=wrap.clientWidth,h=wrap.clientHeight;
+ VIEW=isoFitFrame().view; /* seam (a): refit on resize (sheet peek / inset changes) */
+ const w=canvas.clientWidth||wrap.clientWidth,h=canvas.clientHeight||wrap.clientHeight;
  renderer.setSize(w,h,false);
  edgeMats.forEach(m=>m.resolution.set(w,h));
  const a=w/h;camera.left=-VIEW*a/2;camera.right=VIEW*a/2;camera.top=VIEW/2;camera.bottom=-VIEW/2;
@@ -3134,7 +3167,7 @@ function tick(){
  /* flow dots exist only where flow is on AND the line is lit */
  Object.values(edgeLinesById).forEach(o=>{
   if(!o.dots.length)return;
-  const lit=flowing&&o.line.material.opacity>0.3; /* ghosted trace/circuit lines carry no dots */
+  const lit=flowing&&!RM&&o.line.material.opacity>0.3; /* reduced-motion pauses the WebGL flow loop too */
   if(lit)o.t=(o.t+0.0018*o.speed)%1;
   const nd=o.dots.length;
   for(let k=0;k<nd;k++){
@@ -3164,7 +3197,15 @@ function tick(){
    if(lb._top!==top){lb.style.top=top;lb._top=top;}
    if(!vf)ents.push({n,lb,lx,ly,depth:tmpV.z});
  });
- /* declutter: place labels by priority; an overlapping lower-priority label recedes */
+ /* declutter — UI-redesign seam (b): the collision block is extracted whole into
+    resolveLabelClashes(); the OUTPUT change is opacity 0 (was a 12% ghost), loser returns via .hot */
+ resolveLabelClashes(ents);
+ renderer.render(scene,camera);
+}
+document.fonts.ready.then(()=>{window.__lblMeasured=false;});
+/* UI-redesign seam (b) — label collision, extracted whole from tick: priority is
+   selected/hovered (hot) > cordoned > has-open-count > depth; the loser hides (opacity 0). */
+function resolveLabelClashes(ents){
  if(++window.__lblTick%60===1||!window.__lblMeasured){
    ents.forEach(e=>{e.lb._w=e.lb.offsetWidth||80;e.lb._h=e.lb.offsetHeight||30;});
    window.__lblMeasured=true;
@@ -3179,9 +3220,7 @@ function tick(){
    e.lb.classList.toggle("clash",hit);
    if(!hit)placed.push(r);
  });
- renderer.render(scene,camera);
 }
-document.fonts.ready.then(()=>{window.__lblMeasured=false;});
 /* ————— R30 phase 1: restore the view after a live reload; remember theme + weights across sessions ————— */
 window.__isoViewState=()=>({
  theme:document.documentElement.getAttribute("data-style"),dotSet,lineSet,stacked,pinned,

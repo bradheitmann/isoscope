@@ -197,7 +197,7 @@ body{display:grid;overflow:hidden;
 .pip.lc-INTEGRATED{background:var(--okoa-signal-pass);border-color:var(--okoa-signal-pass);transform:rotate(45deg);outline:1px solid var(--okoa-signal-pass);outline-offset:2px;}
 .pip.lc-UNDER_INVESTIGATION{border:none;background:var(--okoa-signal-caution);clip-path:polygon(50% 0,100% 100%,0 100%);}
 .pip.lc-BLOCKED{background:var(--okoa-signal-risk);border-color:var(--okoa-signal-risk);}
-.pip.lc-UNKNOWN_OR_STALE{background:transparent;border-style:dashed;border-color:var(--okoa-signal-caution);border-radius:50%;}
+.pip.lc-UNKNOWN_OR_STALE{background:transparent;border-color:var(--okoa-signal-caution);border-width:3px;border-radius:50%;}
 .pip.lc-ARCHIVED{background:transparent;border-color:var(--okoa-semantic-fg3);transform:rotate(45deg);}
 .lk{display:inline-block;width:16px;flex:0 0 auto;margin-right:var(--okoa-space-2);vertical-align:middle;}
 .lk.lc-PLANNED{height:1px;background:var(--okoa-semantic-fg2);}
@@ -2121,7 +2121,7 @@ const _ep=new THREE.Vector3();
 function edgeCandidates(cx,cy,tol){
  const r=canvas.getBoundingClientRect(),x=cx-r.left,y=cy-r.top,out=[];
  for(const o of Object.values(edgeLinesById)){
-  if(o.line.material.opacity<=0.02||!o.pts.length)continue; /* hidden pipes are unpickable */
+  if(!o.pts.length)continue; /* every drawn pipe is pickable — ghosted/dimmed included (forgiving) */
   let best=Infinity;
   for(let i=1;i<o.pts.length;i++){
    _ep.copy(o.pts[i-1]).project(camera);
@@ -2144,8 +2144,9 @@ function edgeCandidates(cx,cy,tol){
  return out;
 }
 function castAt(cx,cy,coarse){
- /* C7: picking never captures chrome, panels, the bottom sheet, or the intro veil */
- if(document.elementFromPoint(cx,cy)!==canvas)return null;
+ /* C7: chrome, panels, the bottom sheet and the intro veil never capture — event delivery is the
+    gate (clicks on them never reach this canvas handler); an elementFromPoint re-check proved
+    redundant and false-positive over transparent overlay regions, so it is not used here. */
  const r=canvas.getBoundingClientRect();
  ptr.x=((cx-r.left)/r.width)*2-1;ptr.y=-((cy-r.top)/r.height)*2+1;
  ray.setFromCamera(ptr,camera);
@@ -2153,7 +2154,7 @@ function castAt(cx,cy,coarse){
  const hit=ray.intersectObjects(pickables,false);
  if(hit.length)return {kind:"node",id:hit[0].object.userData.id};
  const byLabel=labelHit(cx,cy,coarse);if(byLabel)return byLabel; /* a name under the pointer beats a pipe — a node footprint always beats an edge */
- const cands=edgeCandidates(cx,cy,coarse?22:12); /* 12 css px fine · 22 css px coarse */
+ const cands=edgeCandidates(cx,cy,coarse?24:12); /* 12 css px fine · 24 css px coarse (QA v3 derived) */
  if(cands.length)return {kind:"edge",key:cands[0].key,cands};
  return null;
 }
@@ -2204,7 +2205,7 @@ function pickAt(cx,cy,shift,meta,coarse){
   applyCircuit();return;
  }
  if(hit&&hit.kind==="edge"){
-  const cands=hit.cands&&hit.cands.length?hit.cands:edgeCandidates(cx,cy,coarse?22:12);
+  const cands=hit.cands&&hit.cands.length?hit.cands:edgeCandidates(cx,cy,coarse?24:12);
   const now=performance.now();
   let key=hit.key;
   if(lastEdgeClick&&now-lastEdgeClick.t<600&&Math.abs(cx-lastEdgeClick.x)<=12&&Math.abs(cy-lastEdgeClick.y)<=12&&cands.length>1){
@@ -2304,7 +2305,7 @@ function buildDevLegend(){
  DEV_STATES.forEach(s=>{h+="<div class='row'><span class='pip lc-"+s+"'></span><span class='lk lc-"+s+"'></span>"+s+" — "+LC_GLOSS[s]+"</div>";});
  h+="<div class='row' style='color:var(--okoa-semantic-fg3)'>node cue: pip shape · edge cue: line weight + wall dot</div>";
  h+="<div class='row' style='color:var(--okoa-semantic-fg3)'>Flow dots are explanatory — not live traffic</div>";
- h+="<div class='runtimenote'><button type='button' class='okoa-btn' disabled aria-disabled='true'>Runtime telemetry</button><span class='t-label-sm' style='color:var(--okoa-semantic-fg3)'>no fresh telemetry</span></div>";
+ h+="<div class='runtimenote'><button type='button' class='okoa-btn' disabled aria-disabled='true' title='no fresh telemetry'>Runtime telemetry — no fresh telemetry</button></div>";
  sec.innerHTML=h;
  const asOf=document.getElementById("asOf");
  sideKey.insertBefore(sec,asOf&&asOf.parentNode===sideKey?asOf:null);
@@ -2312,6 +2313,8 @@ function buildDevLegend(){
 /* ————— panel ————— */
 const pE=document.getElementById("pEyebrow"),pT=document.getElementById("pTitle"),
       pS=document.getElementById("pSub"),pP=document.getElementById("pProse");
+/* connected-edge buttons select through one delegated listener — immune to panel re-renders (F-C) */
+pP.addEventListener("click",e=>{const b=e.target.closest(".edgerow");if(b&&b.dataset.edge)selectEdge(b.dataset.edge);});
 const DEF={};
 function edgeTypeLabel(o){return o.type==="auth"?"installs / authority":o.type==="intended"?"planned":"data flow";}
 function renderEdgePanel(key){
@@ -2388,7 +2391,6 @@ function renderPanel(id){
  h+="<p class='t-label-sm' style='margin-top:var(--okoa-space-4);opacity:.7'>EVIDENCE</p>";
  h+="<p class='refs'>"+n.refs+"</p>";
  setSafe(pP,h);
- pP.querySelectorAll(".edgerow").forEach(b=>b.addEventListener("click",()=>selectEdge(b.dataset.edge)));
 }
 
 /* ————— flow + trace ————— */

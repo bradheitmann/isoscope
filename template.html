@@ -189,6 +189,36 @@ body{display:grid;overflow:hidden;
 .pip.blocked,.pip.red{background:var(--okoa-signal-risk);border-color:var(--okoa-signal-risk);}
 .pip.amber{background:var(--okoa-signal-caution);border-color:var(--okoa-signal-caution);}
 .pip.you{background:var(--okoa-semantic-fg-accent);border-color:var(--okoa-semantic-fg-accent);transform:rotate(45deg);}
+/* Stage C · development-state pips (non-colour cue: shape) and edge-weight swatches (non-colour cue: weight + wall dot) */
+.pip.lc-PLANNED{background:transparent;border-color:var(--okoa-semantic-fg2);}
+.pip.lc-IN_PROGRESS{background:transparent;border-color:var(--okoa-signal-info);border-radius:50%;}
+.pip.lc-IMPLEMENTED_CANDIDATE{background:var(--okoa-signal-info);border-color:var(--okoa-signal-info);border-radius:50%;}
+.pip.lc-ACCEPTED{background:var(--okoa-signal-pass);border-color:var(--okoa-signal-pass);transform:rotate(45deg);}
+.pip.lc-INTEGRATED{background:var(--okoa-signal-pass);border-color:var(--okoa-signal-pass);transform:rotate(45deg);outline:1px solid var(--okoa-signal-pass);outline-offset:2px;}
+.pip.lc-UNDER_INVESTIGATION{border:none;background:var(--okoa-signal-caution);clip-path:polygon(50% 0,100% 100%,0 100%);}
+.pip.lc-BLOCKED{background:var(--okoa-signal-risk);border-color:var(--okoa-signal-risk);}
+.pip.lc-UNKNOWN_OR_STALE{background:transparent;border-style:dashed;border-color:var(--okoa-signal-caution);border-radius:50%;}
+.pip.lc-ARCHIVED{background:transparent;border-color:var(--okoa-semantic-fg3);transform:rotate(45deg);}
+.lk{display:inline-block;width:16px;flex:0 0 auto;margin-right:var(--okoa-space-2);vertical-align:middle;}
+.lk.lc-PLANNED{height:1px;background:var(--okoa-semantic-fg2);}
+.lk.lc-IN_PROGRESS{height:2px;background:var(--okoa-signal-info);}
+.lk.lc-IMPLEMENTED_CANDIDATE{height:3px;background:var(--okoa-signal-info);}
+.lk.lc-ACCEPTED{height:3px;background:var(--okoa-signal-pass);}
+.lk.lc-INTEGRATED{height:4px;background:var(--okoa-signal-pass);}
+.lk.lc-UNDER_INVESTIGATION{height:3px;background:var(--okoa-signal-caution);}
+.lk.lc-BLOCKED{height:4px;background:var(--okoa-signal-risk);}
+.lk.lc-UNKNOWN_OR_STALE{height:2px;background:var(--okoa-signal-caution);}
+.lk.lc-ARCHIVED{height:1px;background:var(--okoa-semantic-fg3);}
+.devkey{margin-top:var(--okoa-space-4);}
+.devkey .row{display:flex;align-items:center;}
+.runtimenote{display:flex;align-items:center;gap:var(--okoa-space-2);margin-top:var(--okoa-space-2);}
+#edgeTip{position:fixed;z-index:var(--okoa-z-tooltip);pointer-events:none;font-family:var(--okoa-mono);font-size:11px;letter-spacing:.04em;color:var(--okoa-semantic-fg1);background:var(--okoa-semantic-surface-default);border:1px solid var(--okoa-semantic-border-strong);padding:var(--okoa-space-1) var(--okoa-space-2);border-radius:var(--okoa-control-radius);box-shadow:var(--okoa-elevation-overlay);}
+#gl:focus-visible{outline:2px solid var(--okoa-focus-ring-color);outline-offset:2px;}
+.edgelist{display:grid;gap:var(--okoa-space-1);margin:var(--okoa-space-2) 0;}
+.edgerow{display:flex;align-items:center;gap:var(--okoa-space-2);padding:var(--okoa-space-1) var(--okoa-space-2);min-height:44px;border:1px solid var(--okoa-semantic-border-default);border-radius:var(--okoa-control-radius);background:transparent;color:var(--okoa-semantic-fg1);font-family:var(--okoa-sans);font-size:12px;text-align:left;cursor:pointer;transition:border-color var(--okoa-motion-fast) var(--okoa-ease-out);}
+.edgerow:hover{border-color:var(--okoa-semantic-border-accent);}
+.edgerow .er-id{font-family:var(--okoa-mono);}
+.edgerow .er-st{color:var(--okoa-semantic-fg2);}
 .hint{grid-area:hint;display:flex;align-items:center;gap:var(--okoa-space-5);
   background:var(--okoa-component-chrome-footer-bg);color:var(--okoa-component-chrome-footer-text);
   padding:var(--okoa-space-2) var(--okoa-space-4);min-height:36px;flex-wrap:wrap;}
@@ -1538,8 +1568,9 @@ body{display:grid;overflow:hidden;
 </nav>
 
 <main class="canvas-wrap" id="canvasWrap" aria-label="Flyover architecture map">
-  <canvas id="gl"></canvas>
+  <canvas id="gl" tabindex="0" aria-label="PlanGraph map — Tab cycles edge focus, Enter selects, Escape clears"></canvas>
   <div id="labels"></div>
+  <div id="edgeTip" hidden aria-hidden="true"></div>
   <div class="zoomctl">
     <button class="okoa-btn" id="zin" aria-label="Zoom in">+</button>
     <button class="okoa-btn" id="zout" aria-label="Zoom out">&minus;</button>
@@ -1735,6 +1766,15 @@ function enforceContrast(){
 function mix(a,b,t){return a.clone().lerp(b,t);}
 /* mutable palette so the theme switch re-reads OKOA tokens and repaints the scene */
 const COL={},ROOF={},SIDEC={},PLINTH={};
+/* ————— Stage C (C1/C4): development-state vocabulary and non-colour channels —————
+   One core ink per state, shared by node roofs and edge lines, so colour reads the same
+   on both. Non-colour cues: node pip shape (legend + inspector); edge weight step plus
+   junction-dot scale. All solid — colour plus weight carry semantics; never dashes. */
+const DEV_STATES=["PLANNED","IN_PROGRESS","IMPLEMENTED_CANDIDATE","ACCEPTED","UNDER_INVESTIGATION","BLOCKED","UNKNOWN_OR_STALE","ARCHIVED","INTEGRATED"];
+const STATE_OP={PLANNED:0.4,IN_PROGRESS:0.8,IMPLEMENTED_CANDIDATE:0.85,ACCEPTED:0.85,INTEGRATED:0.9,UNDER_INVESTIGATION:0.8,BLOCKED:0.95,UNKNOWN_OR_STALE:0.6,ARCHIVED:0.3};
+const STATE_W={PLANNED:0.7,IN_PROGRESS:0.85,IMPLEMENTED_CANDIDATE:1,ACCEPTED:1,INTEGRATED:1.25,UNDER_INVESTIGATION:1,BLOCKED:1.25,UNKNOWN_OR_STALE:0.7,ARCHIVED:0.7};
+const STATE_JN={PLANNED:0.8,IN_PROGRESS:0.9,IMPLEMENTED_CANDIDATE:1,ACCEPTED:1.15,INTEGRATED:1.3,UNDER_INVESTIGATION:1,BLOCKED:1,UNKNOWN_OR_STALE:0.6,ARCHIVED:0.5};
+const STATECOL={};
 function computePalette(){
  COL.paper=new THREE.Color(cssv('--okoa-semantic-surface-default'));
  COL.warm=new THREE.Color(cssv('--okoa-semantic-surface-warm'));
@@ -1753,12 +1793,24 @@ function computePalette(){
  SIDEC.ok=base;SIDEC.attn=mix(COL.paper,COL.caution,0.55);
  SIDEC.build=mix(COL.paper,COL.info,0.55);SIDEC.blocked=mix(COL.paper,COL.risk,0.55);
  PLINTH.red=COL.risk;PLINTH.you=COL.accent;PLINTH.amber=COL.caution;
+ COL.pass=new THREE.Color(cssv('--okoa-signal-pass'));
+ const STATE_CORE={
+  PLANNED:()=>mix(COL.fg1,COL.paper,0.45),
+  IN_PROGRESS:()=>COL.info,
+  IMPLEMENTED_CANDIDATE:()=>COL.info,
+  ACCEPTED:()=>COL.pass,
+  INTEGRATED:()=>mix(COL.pass,COL.fg1,0.30),
+  UNDER_INVESTIGATION:()=>COL.caution,
+  BLOCKED:()=>COL.risk,
+  UNKNOWN_OR_STALE:()=>mix(COL.caution,COL.paper,0.35),
+  ARCHIVED:()=>mix(COL.fg2,COL.paper,0.35)};
+ DEV_STATES.forEach(s=>{STATECOL[s]=STATE_CORE[s]();ROOF[s]=mix(COL.paper,STATECOL[s],0.30);SIDEC[s]=mix(COL.paper,STATECOL[s],0.55);});
 }
 enforceContrast();computePalette();
 const themed=[]; /* {m: material, get: () => THREE.Color} — repainted on theme switch */
 const hatched=[]; /* hatch-textured side materials, regenerated on theme switch */
 function hatchColors(st){
- const sig=st==="attn"?COL.caution:st==="build"?COL.info:st==="blocked"?COL.risk:null;
+ const sig=DEV_STATES.indexOf(st)>=0?STATECOL[st]:(st==="attn"?COL.caution:st==="build"?COL.info:st==="blocked"?COL.risk:null);
  return {paper:sig?mix(COL.paper,sig,0.20):COL.paper,
          ink:sig?mix(sig,COL.fg1,0.30):mix(COL.fg1,COL.paper,0.15)};
 }
@@ -1830,6 +1882,13 @@ function worstOf(n){
 /* connection health: a link can be broken/degraded independent of its modules.
    broken = risk red, gapped, and flow refuses to cross. degraded = amber, slow flow. */
 const EDGESTATUS=SPEC.edgeStatus||{};
+/* Stage C (C3): the development view reads node and edge state from SPEC.lifecycle only.
+   EDGESTATUS (broken/degraded runtime health) stays a separate deferred runtime dimension —
+   its branches remain present but sit behind RUNTIME_ON, which is false: the runtime toggle
+   in the legend is disabled with a "no fresh telemetry" notice. Nothing deletes health. */
+let LIFECYCLE=SPEC.lifecycle||null,LC_NODES=LIFECYCLE?LIFECYCLE.nodes:null,LC_EDGES=LIFECYCLE?LIFECYCLE.edges:null;
+const RUNTIME_ON=false;
+function lcStateOf(rec){return rec&&rec.state&&rec.evidence_ref?rec.state:"UNKNOWN_OR_STALE";}
 /* seams → sensors: per-module telemetry binding (docs/INSTRUMENTATION.md) */
 const TELEMETRY=SPEC.telemetry||{};
 function sensorBlock(id){
@@ -1891,7 +1950,21 @@ let dotSet=1;
 const LINEW=[{label:"Hairline",w:1.25,dot:0.8},{label:"Regular",w:2,dot:1},{label:"Heavy",w:3.25,dot:1.35}];
 let lineSet=1;
 const edgeMats=[];
-function baseOp(o){return o.type==="auth"?0.95:o.health==="broken"?0.95:o.health==="degraded"?0.9:o.type==="intended"?0.4:0.75;}
+function baseOp(o){if(o.lc)return STATE_OP[o.lc];return o.type==="auth"?0.95:RUNTIME_ON&&o.health==="broken"?0.95:RUNTIME_ON&&o.health==="degraded"?0.9:o.type==="intended"?0.4:0.75;}
+function edgeWidth(o){return LINEW[lineSet].w*(o.lc?STATE_W[o.lc]:1);}
+function edgeBaseColor(o){
+ if(o.lc)return STATECOL[o.lc];
+ if(o.type==="auth")return COL.accent;
+ if(RUNTIME_ON&&o.health==="broken")return COL.risk;
+ if(RUNTIME_ON&&o.health==="degraded")return COL.caution;
+ if(o.type==="intended")return mix(COL.fg1,COL.paper,0.45);
+ return COL.fg2;
+}
+function setEdgeLook(o,emph){
+ o.line.material.linewidth=edgeWidth(o)*(emph?1.6:1)+(selEdge===o.key?1.4:0);
+ o.line.material.color.copy(edgeBaseColor(o));
+ if(emph)o.line.material.color.lerp(COL.paper,0.25);
+}
 function edgeMat(colGet,op){
  const m=new LineMaterial({color:colGet().getHex(),transparent:true,opacity:op,linewidth:LINEW[lineSet].w});
  themed.push({m,get:colGet});edgeMats.push(m);
@@ -1919,9 +1992,10 @@ function edgePts3D(o){
  }
  return insertHops(pts,o.key);
 }
+function junctionScaleFor(o){return junctionScale()*(o.lc?STATE_JN[o.lc]:1);}
 function rebuildEdge(o){
  o.pts=edgePts3D(o);
- const sc=junctionScale();
+ const sc=junctionScaleFor(o);
  o.jn[0].position.copy(o.pts[0]);o.jn[1].position.copy(o.pts[o.pts.length-1]);
  o.jn.forEach(j=>j.scale.set(sc,1,sc));
  o.line.geometry.dispose();
@@ -1971,6 +2045,7 @@ document.getElementById("zin").addEventListener("click",()=>{
 document.getElementById("zout").addEventListener("click",()=>{
  camera.zoom=Math.max(0.35,camera.zoom/1.25);camera.updateProjectionMatrix();});
 window.__isoEdgeMid=key=>{const o=edgeLinesById[key];if(!o||!o.pts.length)return null;const p=o.pts[Math.floor(o.pts.length/2)-0]||o.pts[0];const q=o.pts.length>1?o.pts[Math.floor(o.pts.length/2)]:p;const m=p.clone().add(q).multiplyScalar(0.5);const v=m.project(camera);const r=canvas.getBoundingClientRect();return {x:r.left+(v.x*0.5+0.5)*r.width,y:r.top+(-v.y*0.5+0.5)*r.height};};
+window.__isoEdgeAt=(key,frac)=>{const o=edgeLinesById[key];if(!o||!o.pts.length)return null;const f=Math.max(0,Math.min(1,frac||0))*o.total;let i=1;while(i<o.L.length&&o.L[i]<f)i++;const seg=(f-o.L[i-1])/Math.max(1e-6,o.L[i]-o.L[i-1]);const m=o.pts[i-1].clone().lerp(o.pts[i],seg).project(camera);const r=canvas.getBoundingClientRect();return {x:r.left+(m.x*0.5+0.5)*r.width,y:r.top+(-m.y*0.5+0.5)*r.height};};
 window.odinView={set(az,pol,r,zoom){placeCamera(az??HOME.az,pol??HOME.pol,r??HOME.r,controls.target.x,controls.target.y,controls.target.z,zoom);},
  /* test hooks (module scope is closed): look = cancel autopilot + aim; restore = leave any circuit/blast scope */
  look(tx,tz,zoom,az,pol){flyGoal=null;placeCamera(az??HOME.az,pol??HOME.pol,HOME.r,tx,0,tz,zoom??camera.zoom);},
@@ -1993,6 +2068,35 @@ canvas.addEventListener("pointerup",ev=>{
 });
 canvas.addEventListener("pointercancel",()=>{gesturePointers=0;downPt=null;multiTouch=false;});
 
+/* ————— Stage C feedback (C8): tooltip, keyboard focus, focus ring ————— */
+const edgeTip=document.getElementById("edgeTip");
+function edgeDirLabel(key){const r=LC_EDGES?LC_EDGES[key]:null,e=key.split("-");return r&&r.direction?r.direction:(e[0]+"→"+e[1]);}
+function showEdgeTip(key,x,y,extra){
+ edgeTip.hidden=false;
+ edgeTip.textContent=key+" · "+edgeDirLabel(key)+(extra||"");
+ if(x!=null){edgeTip.style.left=Math.max(8,Math.min(window.innerWidth-180,x+14))+"px";edgeTip.style.top=Math.max(8,y-30)+"px";}
+}
+function hideEdgeTip(){edgeTip.hidden=true;}
+function setEdgeFocus(key){
+ if(focusEdge&&edgeLinesById[focusEdge])setEdgeLook(edgeLinesById[focusEdge],false);
+ focusEdge=key;
+ if(key){
+  const o=edgeLinesById[key];
+  if(o){setEdgeLook(o,true);o.line.material.opacity=Math.max(o.line.material.opacity,0.9);
+   const m=window.__isoEdgeMid(key);showEdgeTip(key,m?m.x:window.innerWidth/2,m?m.y:40," · focused");}
+ }else if(!hoverEdgeKey)hideEdgeTip();
+}
+canvas.addEventListener("keydown",ev=>{
+ if(ev.key==="Escape"){setEdgeFocus(null);clearEdgeSel();renderPanel(pinned);return;}
+ const keys=Object.keys(edgeLinesById).sort();
+ if(!keys.length)return;
+ if(ev.key==="Tab"){ /* the focus ring travels the pipes: Tab cycles, Shift+Tab goes back */
+  ev.preventDefault();
+  const i=focusEdge?keys.indexOf(focusEdge):-1;
+  setEdgeFocus(keys[(i+(ev.shiftKey?-1:1)+keys.length)%keys.length]);
+ }else if((ev.key==="Enter"||ev.key===" ")&&focusEdge){ev.preventDefault();selectEdge(focusEdge);}
+});
+
 /* ————— picking, hover, selection ————— */
 const ray=new THREE.Raycaster(),ptr=new THREE.Vector2();
 let hoverId=null,pinned=null;
@@ -2010,23 +2114,60 @@ function labelHit(cx,cy,coarse){
  }
  return best?{kind:"node",id:best}:null;
 }
+/* ————— Stage C picking (C6): screen-space polyline distance in CSS px —————
+   clientX/clientY space against projected polylines; NO devicePixelRatio multiplication;
+   independent of zoom, camera, flat/stacked mode; rendered stroke width unchanged. */
+const _ep=new THREE.Vector3();
+function edgeCandidates(cx,cy,tol){
+ const r=canvas.getBoundingClientRect(),x=cx-r.left,y=cy-r.top,out=[];
+ for(const o of Object.values(edgeLinesById)){
+  if(o.line.material.opacity<=0.02||!o.pts.length)continue; /* hidden pipes are unpickable */
+  let best=Infinity;
+  for(let i=1;i<o.pts.length;i++){
+   _ep.copy(o.pts[i-1]).project(camera);
+   const ax=(_ep.x*0.5+0.5)*r.width,ay=(-_ep.y*0.5+0.5)*r.height;
+   _ep.copy(o.pts[i]).project(camera);
+   const bx=(_ep.x*0.5+0.5)*r.width,by=(-_ep.y*0.5+0.5)*r.height;
+   const dx=bx-ax,dy=by-ay,l2=dx*dx+dy*dy;
+   let d;
+   if(l2===0)d=Math.hypot(x-ax,y-ay);
+   else{let t=((x-ax)*dx+(y-ay)*dy)/l2;t=Math.max(0,Math.min(1,t));d=Math.hypot(x-ax-t*dx,y-ay-t*dy);}
+   if(d<best)best=d;
+  }
+  if(best<=tol){
+   _ep.copy(o.pts[Math.floor(o.pts.length/2)]).project(camera);
+   out.push({key:o.key,d:best,mx:(_ep.x*0.5+0.5)*r.width,my:(-_ep.y*0.5+0.5)*r.height});
+  }
+ }
+ /* C7 deterministic disambiguation: nearest distance, then nearest midpoint, then lowest edge id */
+ out.sort((p,q)=>p.d-q.d||Math.hypot(x-p.mx,y-p.my)-Math.hypot(x-q.mx,y-q.my)||(p.key<q.key?-1:p.key>q.key?1:0));
+ return out;
+}
 function castAt(cx,cy,coarse){
+ /* C7: picking never captures chrome, panels, the bottom sheet, or the intro veil */
+ if(document.elementFromPoint(cx,cy)!==canvas)return null;
  const r=canvas.getBoundingClientRect();
  ptr.x=((cx-r.left)/r.width)*2-1;ptr.y=-((cy-r.top)/r.height)*2+1;
  ray.setFromCamera(ptr,camera);
  ray.camera=camera; /* required for fat-line (Line2) raycast */
  const hit=ray.intersectObjects(pickables,false);
  if(hit.length)return {kind:"node",id:hit[0].object.userData.id};
- const byLabel=labelHit(cx,cy,false);if(byLabel)return byLabel; /* a name under the pointer beats a pipe */
- const lines=Object.values(edgeLinesById).map(o=>o.line);
- const lh=ray.intersectObjects(lines,false);
- if(lh.length&&lh[0].object.userData.edgeKey)return {kind:"edge",key:lh[0].object.userData.edgeKey};
- return coarse?labelHit(cx,cy,true):null;
+ const byLabel=labelHit(cx,cy,coarse);if(byLabel)return byLabel; /* a name under the pointer beats a pipe — a node footprint always beats an edge */
+ const cands=edgeCandidates(cx,cy,coarse?22:12); /* 12 css px fine · 22 css px coarse */
+ if(cands.length)return {kind:"edge",key:cands[0].key,cands};
+ return null;
 }
 canvas.addEventListener("pointermove",ev=>{
  if(downPt)return; /* mid-gesture: let OrbitControls own it */
  const hit=castAt(ev.clientX,ev.clientY);
  const hid=hit?(hit.kind==="node"?hit.id:"E:"+hit.key):null;
+ const hovE=hit&&hit.kind==="edge"?hit.key:null;
+ if(hovE!==hoverEdgeKey){ /* C8: hover thickens + lightens the candidate; tooltip shows id + direction */
+  if(hoverEdgeKey&&edgeLinesById[hoverEdgeKey])setEdgeLook(edgeLinesById[hoverEdgeKey],false);
+  hoverEdgeKey=hovE;
+  if(hovE&&edgeLinesById[hovE])setEdgeLook(edgeLinesById[hovE],true);
+  if(hovE)showEdgeTip(hovE,ev.clientX,ev.clientY);else if(!focusEdge)hideEdgeTip();
+ }
  if(hid!==hoverId){hoverId=hid;
    if(!pinned&&!cordon.size&&!selEdge){
      if(hit&&hit.kind==="node"){NODES.forEach(n=>mark(n.id,n.id===hit.id));renderPanel(hit.id);}
@@ -2035,19 +2176,19 @@ canvas.addEventListener("pointermove",ev=>{
    }
    canvas.style.cursor=hit?"pointer":"grab";}
 });
-let selEdge=null;
+let selEdge=null,hoverEdgeKey=null,focusEdge=null,lastEdgeClick=null;
 function clearEdgeSel(){
  if(!selEdge)return;
  const o=edgeLinesById[selEdge];
- if(o)o.line.material.linewidth=LINEW[lineSet].w;
+ if(o)setEdgeLook(o,false); /* restore state weight + colour (selection step removed) */
  selEdge=null;
 }
 function selectEdge(key){
  clearEdgeSel();
  selEdge=key;
  const o=edgeLinesById[key];
- o.line.material.opacity=baseOp(o);
- o.line.material.linewidth=LINEW[lineSet].w+1.4; /* selected link reads heavier */
+ o.line.material.opacity=baseOp(o); /* a selected pipe never ghosts away */
+ setEdgeLook(o,false); /* base colour + state weight, plus the +1.4 selection step */
  const e=key.split("-");
  NODES.forEach(n=>mark(n.id,e.indexOf(n.id)>=0));
  renderEdgePanel(key);
@@ -2062,7 +2203,16 @@ function pickAt(cx,cy,shift,meta,coarse){
   if(coarse){pinned=hit.id;NODES.forEach(n=>mark(n.id,n.id===pinned));} /* touch/pen have no hover: the pick itself selects in the inspector (visible in __isoViewState().pinned) */
   applyCircuit();return;
  }
- if(hit&&hit.kind==="edge"){selectEdge(hit.key);return;}
+ if(hit&&hit.kind==="edge"){
+  const cands=hit.cands&&hit.cands.length?hit.cands:edgeCandidates(cx,cy,coarse?22:12);
+  const now=performance.now();
+  let key=hit.key;
+  if(lastEdgeClick&&now-lastEdgeClick.t<600&&Math.abs(cx-lastEdgeClick.x)<=12&&Math.abs(cy-lastEdgeClick.y)<=12&&cands.length>1){
+   const i=Math.max(0,cands.findIndex(c=>c.key===lastEdgeClick.key));
+   key=cands[(i+1)%cands.length].key; /* C7: second click within 600 ms on the same spot cycles the crossing */
+  }
+  lastEdgeClick={key,x:cx,y:cy,t:now};
+  selectEdge(key);return;}
  clearEdgeSel();
  cordon.clear();                                  /* empty ground: board back to live */
  pinned=null;NODES.forEach(n=>mark(n.id,false));
@@ -2096,8 +2246,8 @@ function paintCircuit(){
   const live=allLive||(cordon.has(e[0])&&cordon.has(e[1]));
   const m=o.line.material;
   m.opacity=live?baseOp(o):0;
-  const base=o.type==="auth"?COL.accent:(o.health==="broken"?COL.risk:
-    o.health==="degraded"?COL.caution:o.type==="intended"?mix(COL.fg1,COL.paper,0.45):COL.fg2);
+  const base=o.lc?STATECOL[o.lc]:(o.type==="auth"?COL.accent:(RUNTIME_ON&&o.health==="broken"?COL.risk:
+    RUNTIME_ON&&o.health==="degraded"?COL.caution:o.type==="intended"?mix(COL.fg1,COL.paper,0.45):COL.fg2));
   m.color.copy(live&&!allLive&&!o.health?COL.accent:base);
  });
  NODES.forEach(n=>{
@@ -2142,6 +2292,23 @@ function renderCircuitPanel(){
 }
 /* ————— legend ————— */
 const legend=document.getElementById("legend"),sideKey=document.getElementById("sideKey");
+/* Stage C (C4/C3): every lifecycle state gets a legend row — pip shape (node cue) + weight
+   swatch (edge cue); the animated traces are labelled explanatory; the runtime telemetry
+   toggle stays present but disabled (no fresh telemetry). */
+const LC_GLOSS={PLANNED:"not started",IN_PROGRESS:"work underway",IMPLEMENTED_CANDIDATE:"built — independent review pending",ACCEPTED:"independently accepted",INTEGRATED:"accepted + integration record (label carries “not pushed” when true)",UNDER_INVESTIGATION:"issue under investigation",BLOCKED:"blocked",UNKNOWN_OR_STALE:"no evidence, or evidence stale",ARCHIVED:"archived — out of the active plan"};
+function buildDevLegend(){
+ const old=document.getElementById("devKey");if(old)old.remove();
+ if(!LIFECYCLE)return;
+ const sec=document.createElement("div");sec.className="devkey";sec.id="devKey";
+ let h="<p class='grouphead t-label-sm' style='padding-left:0'>Development state</p>";
+ DEV_STATES.forEach(s=>{h+="<div class='row'><span class='pip lc-"+s+"'></span><span class='lk lc-"+s+"'></span>"+s+" — "+LC_GLOSS[s]+"</div>";});
+ h+="<div class='row' style='color:var(--okoa-semantic-fg3)'>node cue: pip shape · edge cue: line weight + wall dot</div>";
+ h+="<div class='row' style='color:var(--okoa-semantic-fg3)'>Flow dots are explanatory — not live traffic</div>";
+ h+="<div class='runtimenote'><button type='button' class='okoa-btn' disabled aria-disabled='true'>Runtime telemetry</button><span class='t-label-sm' style='color:var(--okoa-semantic-fg3)'>no fresh telemetry</span></div>";
+ sec.innerHTML=h;
+ const asOf=document.getElementById("asOf");
+ sideKey.insertBefore(sec,asOf&&asOf.parentNode===sideKey?asOf:null);
+}
 /* ————— panel ————— */
 const pE=document.getElementById("pEyebrow"),pT=document.getElementById("pTitle"),
       pS=document.getElementById("pSub"),pP=document.getElementById("pProse");
@@ -2150,15 +2317,21 @@ function edgeTypeLabel(o){return o.type==="auth"?"installs / authority":o.type==
 function renderEdgePanel(key){
  const o=edgeLinesById[key],e=key.split("-");
  const d=EDGEDOCS[key]||{};
- pE.textContent="LINK · "+edgeTypeLabel(o)+(o.health?" · "+o.health.toUpperCase():"");
+ const lc=LC_EDGES?LC_EDGES[key]:null,lst=lc?lcStateOf(lc):null;
+ pE.textContent="LINK · "+edgeTypeLabel(o)+(lst?" · "+lst:(RUNTIME_ON&&o.health?" · "+o.health.toUpperCase():""));
  pT.textContent=d.title||(byId[e[0]].name+" → "+byId[e[1]].name);
  pS.textContent=byId[e[0]].id+" → "+byId[e[1]].id;
  let h="";
+ if(lc){ /* Q5 identity: id, from, to, direction, type, state, evidence_ref, last_observed — straight from the adapter record */
+  h+="<p class='t-body-sm'><span class='pip lc-"+lst+"'></span><strong>"+lst+"</strong> · variance: "+(lc.variance||"UNREVIEWED")+"</p>";
+  h+="<p class='t-body-sm'>id "+lc.id+" · "+lc.from+" → "+lc.to+" · direction "+(lc.direction||e[0]+"→"+e[1])+" · type "+(lc.type||o.type)+" · last observed "+(lc.last_observed||"null")+(lc.uncertainty?" · uncertainty: "+lc.uncertainty:"")+"</p>";
+  h+="<p class='refs'>"+(lc.evidence_ref||"no evidence — renders UNKNOWN_OR_STALE")+"</p>";
+ }
  if(d.carries)h+="<p class='t-label' style='color:var(--okoa-semantic-fg3);margin-bottom:var(--okoa-space-2)'>What flows here</p><p class='t-body-sm'>"+d.carries+"</p>";
  if(TRACETEXT[key])h+="<p class='t-label' style='color:var(--okoa-semantic-fg3);margin:var(--okoa-space-4) 0 var(--okoa-space-2)'>In the loop</p><p class='t-body-sm'>"+TRACETEXT[key]+"</p>";
- if(o.health==="degraded")h+="<p class='t-body-sm' style='color:var(--okoa-signal-caution)'>Degraded: this link is live but impaired — flow runs slow.</p>";
- if(o.health==="broken")h+="<p class='t-body-sm' style='color:var(--okoa-signal-risk)'>Broken: nothing crosses this link until it is repaired.</p>";
- if(o.type==="intended")h+="<p class='t-body-sm' style='opacity:.75'>Planned: this connection does not exist yet — it lands with the work in flight.</p>";
+ if(RUNTIME_ON&&o.health==="degraded")h+="<p class='t-body-sm' style='color:var(--okoa-signal-caution)'>Degraded: this link is live but impaired — flow runs slow.</p>";
+ if(RUNTIME_ON&&o.health==="broken")h+="<p class='t-body-sm' style='color:var(--okoa-signal-risk)'>Broken: nothing crosses this link until it is repaired.</p>";
+ if(!lc&&o.type==="intended")h+="<p class='t-body-sm' style='opacity:.75'>Planned: this connection does not exist yet — it lands with the work in flight.</p>";
  /* links inherit sensors from their endpoints: a crossing is observed when either end is instrumented */
  const sens=e.filter(id=>TELEMETRY[id]).map(id=>id+" &middot; "+TELEMETRY[id].trace_boundary);
  if(sens.length)h+="<p class='t-label' style='color:var(--okoa-semantic-fg3);margin:var(--okoa-space-4) 0 var(--okoa-space-2)'>Sensors at the ends</p><p class='t-body-sm'>"+sens.join("<br>")+"</p>";
@@ -2195,6 +2368,8 @@ function renderPanel(id){
  let h="<p class='t-body-sm'>"+n.does+"</p>";
  h+="<p class='t-label-sm' style='margin-top:var(--okoa-space-4);opacity:.7'>STATE</p>";
  h+="<p class='t-body-sm'>"+n.built+"</p>";
+ if(LC_NODES){const lcn=LC_NODES[id],lst=lcStateOf(lcn); /* Stage C: node state from lifecycle.nodes, variance a separate field (C5) */
+  h+="<p class='t-body-sm'><span class='pip lc-"+lst+"'></span>"+lst+" · variance: "+((lcn&&lcn.variance)||"UNREVIEWED")+"</p>";}
  if(n.items&&n.items.length){
   h+="<div class='cond t-fine'><span class='t-label-sm' style='color:var(--okoa-signal-caution)'>Open items ("+n.items.length+")</span><br>";
   n.items.forEach(it=>{h+="<span class='pip "+(it.c==="you"?"you":it.c)+"'></span>"+(it.c==="you"?"YOUR CALL &mdash; ":"")+it.l+"<br>";});
@@ -2202,9 +2377,18 @@ function renderPanel(id){
  if(n.good)h+="<div class='good t-fine'><span class='t-label-sm' style='color:var(--okoa-signal-pass)'>Feedback credit</span><br>"+n.good+"</div>";
  if(n.cond)h+="<div class='cond t-fine'><span class='t-label-sm' style='color:var(--okoa-signal-caution)'>Open condition</span><br>"+n.cond+"</div>";
  h+=sensorBlock(n.id);
+ const conn=Object.entries(edgeLinesById).filter(([k,eo])=>eo.a===id||eo.b===id).sort((a,b)=>a[0]<b[0]?-1:1);
+ if(conn.length){ /* C8 alternate path: connected edges as buttons — state, direction, evidence */
+  h+="<p class='t-label-sm' style='margin-top:var(--okoa-space-4);opacity:.7'>CONNECTED EDGES ("+conn.length+")</p><div class='edgelist'>";
+  conn.forEach(([k])=>{const lce=LC_EDGES?LC_EDGES[k]:null,est=lce?lcStateOf(lce):null,eka=k.split("-");
+   h+="<button type='button' class='edgerow' data-edge=\""+k+"\" title=\""+(lce&&lce.evidence_ref?String(lce.evidence_ref).replace(/</g,"&lt;").replace(/>/g,"&gt;"):"no edge evidence")+"\">"+
+    "<span class='pip lc-"+(est||"UNKNOWN_OR_STALE")+"'></span><span class='er-id'>"+k+"</span><span class='er-st'>"+(est||"—")+" · "+(lce&&lce.direction?lce.direction:eka[0]+"→"+eka[1])+"</span></button>";});
+  h+="</div>";
+ }
  h+="<p class='t-label-sm' style='margin-top:var(--okoa-space-4);opacity:.7'>EVIDENCE</p>";
  h+="<p class='refs'>"+n.refs+"</p>";
  setSafe(pP,h);
+ pP.querySelectorAll(".edgerow").forEach(b=>b.addEventListener("click",()=>selectEdge(b.dataset.edge)));
 }
 
 /* ————— flow + trace ————— */
@@ -2361,8 +2545,7 @@ LINEW.forEach((p,i)=>{
  b.addEventListener("click",()=>{
   lineSet=i;
   edgeMats.forEach(m=>{m.linewidth=p.w;});
-  const sc=junctionScale();
-  Object.values(edgeLinesById).forEach(o=>{buildDots(o);o.jn.forEach(j=>j.scale.set(sc,1,sc));});
+  Object.values(edgeLinesById).forEach(o=>{buildDots(o);o.line.material.linewidth=edgeWidth(o)+(selEdge===o.key?1.4:0);const sc=junctionScaleFor(o);o.jn.forEach(j=>j.scale.set(sc,1,sc));});
   weightSeg.querySelectorAll("button").forEach((x,xi)=>x.classList.toggle("on",xi===i));
  });
  weightSeg.appendChild(b);
@@ -2415,7 +2598,7 @@ function buildScene(spec){
  document.getElementById("metricStrip").replaceChildren();
  NODES.forEach(n=>{
   const st=STATUS[n.id]||{state:"ok",items:[]};n.items=st.items||[];
-  n.st=n.items.some(i=>i.c==="red")?"blocked":st.state;
+  n.st=LIFECYCLE?lcStateOf(LC_NODES?LC_NODES[n.id]:null):(n.items.some(i=>i.c==="red")?"blocked":st.state); /* Stage C: node state from lifecycle.nodes */
   n._lvl=LEVELS[n.id]||0;n._lyT=stacked?n._lvl*LVL_H:0;n._ly=n._lyT;
   byId[n.id]=n;
  });
@@ -2481,20 +2664,26 @@ NODES.forEach(n=>meshById[n.id].traverse(o=>{if(o.material){
  Object.assign(__ROUTED,isoRouteAll(NODES,EDGES));window.__isoRouteQC=__ROUTED.qc;
 EDGES.forEach(e=>{
  const key=e[0]+"-"+e[1];
- const health=EDGESTATUS[key]||null;
+ const health=EDGESTATUS[key]||null; /* runtime dimension — read only under RUNTIME_ON (C3) */
+ const lcRec=LC_EDGES?LC_EDGES[key]:null;
+ const lc=lcRec?lcStateOf(lcRec):null; /* development state from lifecycle.edges */
  const basePts=edgePath(e);
  /* ALL SOLID: color + weight carry the semantics — no dashes anywhere.
-    planned = faint · degraded = amber · broken = red and never carries flow */
+    planned = faint · degraded = amber · broken = red and never carries flow.
+    Stage C: the development view colours by lifecycle state; the health branches stay
+    present but disabled behind RUNTIME_ON (runtime toggle off — no fresh telemetry). */
  let mat,dotted=true,speed=1;
- if(health==="broken"){mat=edgeMat(()=>COL.risk,0.95);dotted=false;}
- else if(health==="degraded"){mat=edgeMat(()=>COL.caution,0.9);speed=0.45;}
+ if(RUNTIME_ON&&health==="broken"){mat=edgeMat(()=>COL.risk,0.95);dotted=false;}
+ else if(RUNTIME_ON&&health==="degraded"){mat=edgeMat(()=>COL.caution,0.9);speed=0.45;}
+ else if(lc){mat=edgeMat(()=>STATECOL[lc],STATE_OP[lc]);speed=0.35;}
  else if(e[2]==="auth"){mat=edgeMat(()=>COL.accent,0.95);}
  else if(e[2]==="intended"){mat=edgeMat(()=>mix(COL.fg1,COL.paper,0.45),0.4);speed=0.35;}
  else{mat=edgeMat(()=>COL.fg2,0.75);}
  const line=new Line2(new LineGeometry(),mat);
  line.userData.edgeKey=key;
  scene.add(line);
- edgeLinesById[key]={key,line,type:e[2],health,basePts,a:e[0],b:e[1],dotted,speed,t:0,dots:[],pts:[],L:[0],total:1,jn:[junctionMesh(),junctionMesh()]};
+ edgeLinesById[key]={key,line,type:e[2],health,lc,basePts,a:e[0],b:e[1],dotted,speed,t:0,dots:[],pts:[],L:[0],total:1,jn:[junctionMesh(),junctionMesh()]};
+ edgeLinesById[key].line.material.linewidth=edgeWidth(edgeLinesById[key]); /* state weight step (non-colour cue) */
 });
 
  themed.push({m:dotMatN,get:()=>COL.accent},{m:dotMatW,get:()=>COL.caution});
@@ -2519,6 +2708,7 @@ GROUPS.forEach(gr=>{
  });
 });
 legend.appendChild(document.getElementById("sideKey")); /* key sits below the list, in the frame */
+buildDevLegend();
 
 
  setSafe(pP,(spec.intro||{}).proseHTML||"");
@@ -2580,7 +2770,8 @@ function applySpec(next){
  [...cordon].forEach(id=>{if(!ids.has(id))cordon.delete(id);});
  if(selEdge&&!EDGES.some(e=>e[0]+"-"+e[1]===selEdge))selEdge=null;
  if(ti>=TRACE.length||ti<0||!EDGES.some(e=>e[0]+"-"+e[1]===TRACE[ti]))ti=-1;
- hoverId=null;flyGoal=null;
+ hoverId=null;flyGoal=null;hoverEdgeKey=null;focusEdge=null;lastEdgeClick=null;hideEdgeTip();
+ LIFECYCLE=SPEC.lifecycle||null;LC_NODES=LIFECYCLE?LIFECYCLE.nodes:null;LC_EDGES=LIFECYCLE?LIFECYCLE.edges:null;
  buildScene(SPEC);refreshTheme();resize();
  const reds=NODES.filter(n=>n.items.some(i=>i.c==="red"));
  if(reds.some(n=>!oldReds.has(n.id))){blastIncident();return;}

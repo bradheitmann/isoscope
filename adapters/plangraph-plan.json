@@ -593,33 +593,77 @@
   },
   "observed_at": "2026-09-22T03:56:47Z",
   "stale_rule": "stale when exec-pm-status.json sha256 differs from source.sha256 or observed_at is older than 24h",
-  "mapping": "Status text to states, disclosed: an explicit acceptance-plus-integration record (m0_isolation.state, A/INTEGRATOR delivery) → INTEGRATED; an in-flight correction/QA/gate chain in active_assignments or status → ACTIVE_WORK; a frozen candidate awaiting independent re-verify/GUARD/HOLDOUT → IMPLEMENTED_CANDIDATE; an acceptance record with no integration record → ACCEPTED; a blockers entry against the node → BLOCKED; no record in the source, or a stale source → UNKNOWN_OR_STALE; everything else → PLANNED. ACCEPTED and INTEGRATED are never inferred from file presence, self-report, or absence of telemetry — only from an explicit quoted record. Engine rendering (template unchanged): INTEGRATED → ok roof + shipped pip; ACCEPTED → ok roof + shipped pip; ACTIVE_WORK → build roof + built pip; IMPLEMENTED_CANDIDATE → build roof + amber pip; PLANNED → attn roof + hollow planned pip; BLOCKED → blocked roof + red pip; UNKNOWN_OR_STALE → attn roof + hollow pip with exact stale text. Limitation: four roof colours for seven lifecycle states, so IMPLEMENTED_CANDIDATE shares the blue roof with ACTIVE_WORK and UNKNOWN_OR_STALE would share amber with PLANNED; the exact state text and the inspector pip carry the distinction.",
+  "schema": {
+   "version": 1,
+   "finalized_by": "Stage C (d65-stage-c-delegate-v1.md, C1/C2/C5)",
+   "node_fields": {
+    "state": "one of states/extensions below",
+    "label": "human gloss, verbatim from the evidence",
+    "evidence_ref": "quoted source record(s) that justify the state",
+    "observed_at": "UTC timestamp of the evidence read",
+    "uncertainty": "declared caveats",
+    "variance": "separate dimension from state (C5): architectural variance disposition, never conflated with progress; default UNREVIEWED"
+   },
+   "edge_fields": {
+    "id": "from + \"-\" + to, exactly as the engine keys edge lines (edgeLinesById / line.userData.edgeKey / selectEdge key.split(\"-\"))",
+    "from": "upstream node id as drawn",
+    "to": "downstream node id as drawn",
+    "direction": "\"from→to\" as drawn; \"undirected\" only if the tuple is drawn so",
+    "type": "the edges tuple's third element (e.g. intended)",
+    "state": "one of states/extensions below",
+    "evidence_ref": "quoted record(s); a record with no evidence renders UNKNOWN_OR_STALE",
+    "last_observed": "UTC timestamp or null",
+    "uncertainty": "declared caveats",
+    "variance": "separate dimension from state (C5); default UNREVIEWED"
+   },
+   "states": ["PLANNED", "IN_PROGRESS", "IMPLEMENTED_CANDIDATE", "ACCEPTED", "UNDER_INVESTIGATION", "BLOCKED", "UNKNOWN_OR_STALE", "ARCHIVED"],
+   "extensions": {
+    "INTEGRATED": "documented extension already in use: ACCEPTED with an integration record; the label carries \"not pushed\" when true"
+   },
+   "rules": [
+    "completed endpoints never imply a completed edge",
+    "folder names alone never yield ACCEPTED",
+    "no evidence renders UNKNOWN_OR_STALE",
+    "variance is a separate field and visual channel from progress state",
+    "edgeStatus (broken/degraded runtime health) is a separate deferred runtime dimension, unread by the development view"
+   ],
+   "renames": "see lifecycle.mapping.renames — the mapping is authoritative",
+   "renderer_contract": "Stage C engine: node state is read from lifecycle.nodes and edge state from lifecycle.edges; colour is consistent between node and edge for the same state; every state has a non-colour cue (node pip shape; edge weight step plus junction glyph) and a legend entry; the legend lists every state that can occur; animated traces are labelled explanatory; the runtime telemetry toggle stays present but disabled with a no-fresh-telemetry notice"
+  },
+  "mapping": {
+   "text": "Status text to states, disclosed: an explicit acceptance-plus-integration record (m0_isolation.state, A/INTEGRATOR delivery) → INTEGRATED; an in-flight correction/QA/gate chain in active_assignments or status → ACTIVE_WORK; a frozen candidate awaiting independent re-verify/GUARD/HOLDOUT → IMPLEMENTED_CANDIDATE; an acceptance record with no integration record → ACCEPTED; a blockers entry against the node → BLOCKED; no record in the source, or a stale source → UNKNOWN_OR_STALE; everything else → PLANNED. ACCEPTED and INTEGRATED are never inferred from file presence, self-report, or absence of telemetry — only from an explicit quoted record. Engine rendering (template unchanged): INTEGRATED → ok roof + shipped pip; ACCEPTED → ok roof + shipped pip; ACTIVE_WORK → build roof + built pip; IMPLEMENTED_CANDIDATE → build roof + amber pip; PLANNED → attn roof + hollow planned pip; BLOCKED → blocked roof + red pip; UNKNOWN_OR_STALE → attn roof + hollow pip with exact stale text. Limitation: four roof colours for seven lifecycle states, so IMPLEMENTED_CANDIDATE shares the blue roof with ACTIVE_WORK and UNKNOWN_OR_STALE would share amber with PLANNED; the exact state text and the inspector pip carry the distinction.",
+   "renames": {"ACTIVE_WORK": "IN_PROGRESS", "note": "Stage C schema finalization; every label and evidence_ref kept verbatim"}
+  },
   "nodes": {
    "M0": {
     "state": "INTEGRATED",
     "label": "integrated to local main b5dd18b1 (not pushed); acceptance record present",
     "evidence_ref": "m0_isolation.state: \"ACCEPTED_AND_INTEGRATED_TO_LOCAL_MAIN_NOT_PUSHED\"; active_assignments[A/INTEGRATOR surface:35].delivery: \"M0 integrated to local main b5dd18b1dcfa at about 03:20Z; acceptance record written\"; status: \"M0_ON_LOCAL_MAIN\"",
     "observed_at": "2026-09-22T03:56:47Z",
-    "uncertainty": "Push to origin outstanding (publication is a user action); FULL-008 review status noted 'to confirm' in the same delivery record."
+    "uncertainty": "Push to origin outstanding (publication is a user action); FULL-008 review status noted 'to confirm' in the same delivery record.",
+    "variance": "UNREVIEWED"
    },
    "IIC": {
     "state": "IMPLEMENTED_CANDIDATE",
     "label": "refrozen candidate 49b40cb9; QA re-verify, GUARD, HOLDOUT pending",
     "evidence_ref": "active_assignments[B/TEAM-PM surface:71].delivery: \"B/QA SLICE_QA_FAIL 1 HIGH (fmt main.rs:257-259) at about 03:14Z; B/DEV corrected and REFROZEN candidate 49b40cb9 at about 03:23Z; B/QA re-verify next; B/HOLDOUT s22 (Grok) dispatched; GUARD by B/TEAM-ODIN pending\"",
     "observed_at": "2026-09-22T03:56:47Z",
-    "uncertainty": "Re-verify not yet recorded; the candidate may change again. Authority line says NO_PUSH_OR_ACCEPTANCE."
+    "uncertainty": "Re-verify not yet recorded; the candidate may change again. Authority line says NO_PUSH_OR_ACCEPTANCE.",
+    "variance": "UNREVIEWED"
    },
    "CORE": {
-    "state": "ACTIVE_WORK",
+    "state": "IN_PROGRESS",
     "label": "correction in progress; C/QA SLICE_QA_PASS on binding 34ab25a1 ledgered, not accepted; GUARD/HOLDOUT/EXEC_VERIFY pending",
     "evidence_ref": "active_assignments[C/TEAM-PM surface:30 -> C64 surface:64].delivery: \"C/QA SLICE_QA_PASS on binding 34ab25a1 (0 residual) at about 03:23Z, ledgered not accepted; correction round 1 (whitespace rule predicate.rs:648 + payload-root rebind to a8ef2f3 root, drop superseded root) dispatched to C64\"; status: \"C_PGCORE_ROUND_2_TO_C_DEV_41 (walk_inventory root .git fix; FULL-008 closable)\"; next_action: \"Await C64 round-1 [DONE] then C/QA re-verify, GUARD-68, HOLDOUT-69, EXEC_VERIFY\"",
     "observed_at": "2026-09-22T03:56:47Z",
-    "uncertainty": "The source is internally inconsistent on round numbering and assignee: active_assignments says round 1 dispatched to C64 while the status field and tracks.M0.next name round 2 to C/DEV-41. Both are quoted; the discrepancy is reported to D/ISOSCOPE-PM, not resolved here."
+    "uncertainty": "The source is internally inconsistent on round numbering and assignee: active_assignments says round 1 dispatched to C64 while the status field and tracks.M0.next name round 2 to C/DEV-41. Both are quoted; the discrepancy is reported to D/ISOSCOPE-PM, not resolved here.",
+    "variance": "UNREVIEWED"
    },
    "CONT": {
     "state": "PLANNED",
     "label": "planned; not started — downstream of pg-core in the build DAG",
     "evidence_ref": "No active_assignment, gate, or delivery record names pg-contract in exec-pm-status.json; ordering evidence tracks.M0.next: \"…then C/QA re-verify, GUARD-68, HOLDOUT-69, EXEC_VERIFY, then integration with the spec re-pin; then PGCORE-M0-BODIES to C/DEV-41…\"",
+    "variance": "UNREVIEWED",
     "observed_at": "2026-09-22T03:56:47Z",
     "uncertainty": "PLANNED rests on absence of any implementation record plus DAG ordering; the source has no explicit not-started statement for this node."
    },
@@ -627,6 +671,7 @@
     "state": "PLANNED",
     "label": "planned; not started — downstream of pg-core in the build DAG",
     "evidence_ref": "No active_assignment, gate, or delivery record names pg-compile in exec-pm-status.json; ordering evidence tracks.M0.next: \"…then integration with the spec re-pin; then PGCORE-M0-BODIES to C/DEV-41…\"",
+    "variance": "UNREVIEWED",
     "observed_at": "2026-09-22T03:56:47Z",
     "uncertainty": "PLANNED rests on absence of any implementation record plus DAG ordering; the source has no explicit not-started statement for this node."
    },
@@ -634,6 +679,7 @@
     "state": "PLANNED",
     "label": "planned; not started — downstream of pg-core in the build DAG",
     "evidence_ref": "No active_assignment, gate, or delivery record names pg-evidence in exec-pm-status.json; ordering evidence tracks.M0.next: \"…then integration with the spec re-pin; then PGCORE-M0-BODIES to C/DEV-41…\"",
+    "variance": "UNREVIEWED",
     "observed_at": "2026-09-22T03:56:47Z",
     "uncertainty": "PLANNED rests on absence of any implementation record plus DAG ordering; the source has no explicit not-started statement for this node."
    },
@@ -641,6 +687,7 @@
     "state": "PLANNED",
     "label": "planned; not started — downstream of pg-core in the build DAG",
     "evidence_ref": "No active_assignment, gate, or delivery record names pg-ledger in exec-pm-status.json; ordering evidence tracks.M0.next: \"…then integration with the spec re-pin; then PGCORE-M0-BODIES to C/DEV-41…\"",
+    "variance": "UNREVIEWED",
     "observed_at": "2026-09-22T03:56:47Z",
     "uncertainty": "PLANNED rests on absence of any implementation record plus DAG ordering; the source has no explicit not-started statement for this node."
    },
@@ -648,6 +695,7 @@
     "state": "PLANNED",
     "label": "planned; not started — downstream of pg-core in the build DAG",
     "evidence_ref": "No active_assignment, gate, or delivery record names pg-admit in exec-pm-status.json; ordering evidence tracks.M0.next: \"…then integration with the spec re-pin; then PGCORE-M0-BODIES to C/DEV-41…\"",
+    "variance": "UNREVIEWED",
     "observed_at": "2026-09-22T03:56:47Z",
     "uncertainty": "PLANNED rests on absence of any implementation record plus DAG ordering; the source has no explicit not-started statement for this node."
    },
@@ -655,6 +703,7 @@
     "state": "PLANNED",
     "label": "planned; not started — deepest crate, downstream of pg-core in the build DAG",
     "evidence_ref": "No active_assignment, gate, or delivery record names planctl in exec-pm-status.json; ordering evidence tracks.M0.next: \"…then integration with the spec re-pin; then PGCORE-M0-BODIES to C/DEV-41…\"",
+    "variance": "UNREVIEWED",
     "observed_at": "2026-09-22T03:56:47Z",
     "uncertainty": "PLANNED rests on absence of any implementation record plus DAG ordering; the source has no explicit not-started statement for this node."
    },
@@ -662,6 +711,7 @@
     "state": "PLANNED",
     "label": "planned; not started — integration story, assembles only after all eight crates land",
     "evidence_ref": "No active_assignment, gate, or delivery record names STORY-V4-BOOTSTRAP-001 in exec-pm-status.json; ordering evidence tracks.M0.next ends the crate sequence before any bootstrap work (\"…then integrator lands identity-checker…\")",
+    "variance": "UNREVIEWED",
     "observed_at": "2026-09-22T03:56:47Z",
     "uncertainty": "PLANNED rests on absence of any implementation record plus DAG ordering; the source has no explicit not-started statement for this node."
    },
@@ -669,9 +719,39 @@
     "state": "PLANNED",
     "label": "planned; not started — external release gate behind the bootstrap story",
     "evidence_ref": "No active_assignment, gate, or delivery record names STAGE-7-EXTERNAL-VERIFICATION in exec-pm-status.json; next_action names no verification-gate work",
+    "variance": "UNREVIEWED",
     "observed_at": "2026-09-22T03:56:47Z",
     "uncertainty": "PLANNED rests on absence of any implementation record plus DAG ordering; the source has no explicit not-started statement for this node."
    }
+  },
+  "edges": {
+   "M0-IIC": {"id": "M0-IIC", "from": "M0", "to": "IIC", "direction": "M0→IIC", "type": "intended", "state": "PLANNED", "evidence_ref": "planned projection from pinned baseline; no observed edge evidence", "last_observed": null, "uncertainty": "no observed edge evidence; state rests on the pinned planned baseline only", "variance": "UNREVIEWED"},
+   "M0-CORE": {"id": "M0-CORE", "from": "M0", "to": "CORE", "direction": "M0→CORE", "type": "intended", "state": "PLANNED", "evidence_ref": "planned projection from pinned baseline; no observed edge evidence", "last_observed": null, "uncertainty": "no observed edge evidence; state rests on the pinned planned baseline only", "variance": "UNREVIEWED"},
+   "CORE-CONT": {"id": "CORE-CONT", "from": "CORE", "to": "CONT", "direction": "CORE→CONT", "type": "intended", "state": "PLANNED", "evidence_ref": "planned projection from pinned baseline; no observed edge evidence", "last_observed": null, "uncertainty": "no observed edge evidence; state rests on the pinned planned baseline only", "variance": "UNREVIEWED"},
+   "CORE-COMP": {"id": "CORE-COMP", "from": "CORE", "to": "COMP", "direction": "CORE→COMP", "type": "intended", "state": "PLANNED", "evidence_ref": "planned projection from pinned baseline; no observed edge evidence", "last_observed": null, "uncertainty": "no observed edge evidence; state rests on the pinned planned baseline only", "variance": "UNREVIEWED"},
+   "CORE-EVID": {"id": "CORE-EVID", "from": "CORE", "to": "EVID", "direction": "CORE→EVID", "type": "intended", "state": "PLANNED", "evidence_ref": "planned projection from pinned baseline; no observed edge evidence", "last_observed": null, "uncertainty": "no observed edge evidence; state rests on the pinned planned baseline only", "variance": "UNREVIEWED"},
+   "CORE-LEDG": {"id": "CORE-LEDG", "from": "CORE", "to": "LEDG", "direction": "CORE→LEDG", "type": "intended", "state": "PLANNED", "evidence_ref": "planned projection from pinned baseline; no observed edge evidence", "last_observed": null, "uncertainty": "no observed edge evidence; state rests on the pinned planned baseline only", "variance": "UNREVIEWED"},
+   "CORE-ADMT": {"id": "CORE-ADMT", "from": "CORE", "to": "ADMT", "direction": "CORE→ADMT", "type": "intended", "state": "PLANNED", "evidence_ref": "planned projection from pinned baseline; no observed edge evidence", "last_observed": null, "uncertainty": "no observed edge evidence; state rests on the pinned planned baseline only", "variance": "UNREVIEWED"},
+   "CORE-PLCT": {"id": "CORE-PLCT", "from": "CORE", "to": "PLCT", "direction": "CORE→PLCT", "type": "intended", "state": "PLANNED", "evidence_ref": "planned projection from pinned baseline; no observed edge evidence", "last_observed": null, "uncertainty": "no observed edge evidence; state rests on the pinned planned baseline only", "variance": "UNREVIEWED"},
+   "CONT-COMP": {"id": "CONT-COMP", "from": "CONT", "to": "COMP", "direction": "CONT→COMP", "type": "intended", "state": "PLANNED", "evidence_ref": "planned projection from pinned baseline; no observed edge evidence", "last_observed": null, "uncertainty": "no observed edge evidence; state rests on the pinned planned baseline only", "variance": "UNREVIEWED"},
+   "CONT-EVID": {"id": "CONT-EVID", "from": "CONT", "to": "EVID", "direction": "CONT→EVID", "type": "intended", "state": "PLANNED", "evidence_ref": "planned projection from pinned baseline; no observed edge evidence", "last_observed": null, "uncertainty": "no observed edge evidence; state rests on the pinned planned baseline only", "variance": "UNREVIEWED"},
+   "CONT-LEDG": {"id": "CONT-LEDG", "from": "CONT", "to": "LEDG", "direction": "CONT→LEDG", "type": "intended", "state": "PLANNED", "evidence_ref": "planned projection from pinned baseline; no observed edge evidence", "last_observed": null, "uncertainty": "no observed edge evidence; state rests on the pinned planned baseline only", "variance": "UNREVIEWED"},
+   "CONT-ADMT": {"id": "CONT-ADMT", "from": "CONT", "to": "ADMT", "direction": "CONT→ADMT", "type": "intended", "state": "PLANNED", "evidence_ref": "planned projection from pinned baseline; no observed edge evidence", "last_observed": null, "uncertainty": "no observed edge evidence; state rests on the pinned planned baseline only", "variance": "UNREVIEWED"},
+   "CONT-PLCT": {"id": "CONT-PLCT", "from": "CONT", "to": "PLCT", "direction": "CONT→PLCT", "type": "intended", "state": "PLANNED", "evidence_ref": "planned projection from pinned baseline; no observed edge evidence", "last_observed": null, "uncertainty": "no observed edge evidence; state rests on the pinned planned baseline only", "variance": "UNREVIEWED"},
+   "LEDG-ADMT": {"id": "LEDG-ADMT", "from": "LEDG", "to": "ADMT", "direction": "LEDG→ADMT", "type": "intended", "state": "PLANNED", "evidence_ref": "planned projection from pinned baseline; no observed edge evidence", "last_observed": null, "uncertainty": "no observed edge evidence; state rests on the pinned planned baseline only", "variance": "UNREVIEWED"},
+   "LEDG-PLCT": {"id": "LEDG-PLCT", "from": "LEDG", "to": "PLCT", "direction": "LEDG→PLCT", "type": "intended", "state": "PLANNED", "evidence_ref": "planned projection from pinned baseline; no observed edge evidence", "last_observed": null, "uncertainty": "no observed edge evidence; state rests on the pinned planned baseline only", "variance": "UNREVIEWED"},
+   "ADMT-PLCT": {"id": "ADMT-PLCT", "from": "ADMT", "to": "PLCT", "direction": "ADMT→PLCT", "type": "intended", "state": "PLANNED", "evidence_ref": "planned projection from pinned baseline; no observed edge evidence", "last_observed": null, "uncertainty": "no observed edge evidence; state rests on the pinned planned baseline only", "variance": "UNREVIEWED"},
+   "COMP-PLCT": {"id": "COMP-PLCT", "from": "COMP", "to": "PLCT", "direction": "COMP→PLCT", "type": "intended", "state": "PLANNED", "evidence_ref": "planned projection from pinned baseline; no observed edge evidence", "last_observed": null, "uncertainty": "no observed edge evidence; state rests on the pinned planned baseline only", "variance": "UNREVIEWED"},
+   "EVID-PLCT": {"id": "EVID-PLCT", "from": "EVID", "to": "PLCT", "direction": "EVID→PLCT", "type": "intended", "state": "PLANNED", "evidence_ref": "planned projection from pinned baseline; no observed edge evidence", "last_observed": null, "uncertainty": "no observed edge evidence; state rests on the pinned planned baseline only", "variance": "UNREVIEWED"},
+   "IIC-BOOT": {"id": "IIC-BOOT", "from": "IIC", "to": "BOOT", "direction": "IIC→BOOT", "type": "intended", "state": "PLANNED", "evidence_ref": "planned projection from pinned baseline; no observed edge evidence", "last_observed": null, "uncertainty": "no observed edge evidence; state rests on the pinned planned baseline only", "variance": "UNREVIEWED"},
+   "CORE-BOOT": {"id": "CORE-BOOT", "from": "CORE", "to": "BOOT", "direction": "CORE→BOOT", "type": "intended", "state": "PLANNED", "evidence_ref": "planned projection from pinned baseline; no observed edge evidence", "last_observed": null, "uncertainty": "no observed edge evidence; state rests on the pinned planned baseline only", "variance": "UNREVIEWED"},
+   "CONT-BOOT": {"id": "CONT-BOOT", "from": "CONT", "to": "BOOT", "direction": "CONT→BOOT", "type": "intended", "state": "PLANNED", "evidence_ref": "planned projection from pinned baseline; no observed edge evidence", "last_observed": null, "uncertainty": "no observed edge evidence; state rests on the pinned planned baseline only", "variance": "UNREVIEWED"},
+   "COMP-BOOT": {"id": "COMP-BOOT", "from": "COMP", "to": "BOOT", "direction": "COMP→BOOT", "type": "intended", "state": "PLANNED", "evidence_ref": "planned projection from pinned baseline; no observed edge evidence", "last_observed": null, "uncertainty": "no observed edge evidence; state rests on the pinned planned baseline only", "variance": "UNREVIEWED"},
+   "EVID-BOOT": {"id": "EVID-BOOT", "from": "EVID", "to": "BOOT", "direction": "EVID→BOOT", "type": "intended", "state": "PLANNED", "evidence_ref": "planned projection from pinned baseline; no observed edge evidence", "last_observed": null, "uncertainty": "no observed edge evidence; state rests on the pinned planned baseline only", "variance": "UNREVIEWED"},
+   "LEDG-BOOT": {"id": "LEDG-BOOT", "from": "LEDG", "to": "BOOT", "direction": "LEDG→BOOT", "type": "intended", "state": "PLANNED", "evidence_ref": "planned projection from pinned baseline; no observed edge evidence", "last_observed": null, "uncertainty": "no observed edge evidence; state rests on the pinned planned baseline only", "variance": "UNREVIEWED"},
+   "ADMT-BOOT": {"id": "ADMT-BOOT", "from": "ADMT", "to": "BOOT", "direction": "ADMT→BOOT", "type": "intended", "state": "PLANNED", "evidence_ref": "planned projection from pinned baseline; no observed edge evidence", "last_observed": null, "uncertainty": "no observed edge evidence; state rests on the pinned planned baseline only", "variance": "UNREVIEWED"},
+   "PLCT-BOOT": {"id": "PLCT-BOOT", "from": "PLCT", "to": "BOOT", "direction": "PLCT→BOOT", "type": "intended", "state": "PLANNED", "evidence_ref": "planned projection from pinned baseline; no observed edge evidence", "last_observed": null, "uncertainty": "no observed edge evidence; state rests on the pinned planned baseline only", "variance": "UNREVIEWED"},
+   "BOOT-S7": {"id": "BOOT-S7", "from": "BOOT", "to": "S7", "direction": "BOOT→S7", "type": "intended", "state": "PLANNED", "evidence_ref": "planned projection from pinned baseline; no observed edge evidence", "last_observed": null, "uncertainty": "no observed edge evidence; state rests on the pinned planned baseline only", "variance": "UNREVIEWED"}
   }
  },
  "provenance": {

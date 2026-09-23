@@ -2,9 +2,11 @@
 
 A decision explainer is an Isoscope map built to help the operator make one decision. It shows where the evidence
 comes from, how the options or cases split, and what each choice unblocks or affects. The intro prose then says what
-reply is needed. The worked example is `examples/decision-explainer.spec.json`: a real explainer that let the
-operator answer a spec question that had gone unanswered while it was asked in internal jargon. Build it with
-`node build.mjs examples/decision-explainer.spec.json out/decision-explainer.html` and read it next to this page.
+reply is needed. The worked example is `../examples/decision-explainer.spec.json`, in this skill's `examples/`
+folder: a real explainer that let the operator answer a spec question that had gone unanswered while it was asked in
+internal jargon. Build it with `node <isoscope>/build.mjs <skill>/examples/decision-explainer.spec.json <out.html>`
+(from an Isoscope checkout: `node build.mjs skills/isoscope/examples/decision-explainer.spec.json
+out/decision-explainer.html`) and read it next to this page.
 
 ## Layout: three groups, left to right
 

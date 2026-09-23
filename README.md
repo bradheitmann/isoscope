@@ -95,7 +95,7 @@ scale auto-fit whatever spec is loaded.
 
 ## Presentation layer
 
-To explain a system or a decision to the operator with a static map, follow the agent skill in [skills/isoscope/SKILL.md](skills/isoscope/SKILL.md) and its worked example `examples/decision-explainer.spec.json`.
+To explain a system or a decision to the operator with a static map, follow the agent skill in [skills/isoscope/SKILL.md](skills/isoscope/SKILL.md) and its worked example `skills/isoscope/examples/decision-explainer.spec.json`.
 
 ## Layout
 

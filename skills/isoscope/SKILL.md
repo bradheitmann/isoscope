@@ -24,8 +24,8 @@ JSON spec; the spec keys are listed in `<isoscope>/SPEC.md`.
    could go (`iso_propose_sensor`). The map shows where the running system is broken.
 3. **Presentation layer.** A static map, built from a spec you write for one purpose, explains a system or a decision
    to the operator. It is not tied to a store and it changes nothing. The main form is the decision explainer:
-   `references/decision-explainer.md` describes its anatomy, and `<isoscope>/examples/decision-explainer.spec.json` is a
-   worked example the operator approved.
+   `references/decision-explainer.md` describes its anatomy, and `examples/decision-explainer.spec.json` is a worked
+   example the operator approved. Both files sit in this skill's folder and travel with it when the skill is installed.
 
 ## When you must use the presentation layer
 

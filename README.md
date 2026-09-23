@@ -93,6 +93,10 @@ scale auto-fit whatever spec is loaded.
   queued / `you` decision) paint whole buildings; the overview panel lists every
   open item worst-first; circuit mode isolates any subsystem's live flow.
 
+## Presentation layer
+
+To explain a system or a decision to the operator with a static map, follow the agent skill in [skills/isoscope/SKILL.md](skills/isoscope/SKILL.md) and its worked example `examples/decision-explainer.spec.json`.
+
 ## Layout
 
 ```

@@ -1,0 +1,448 @@
+{
+  "title": "The label question: which kind of record does each reference point to?",
+  "wordmark": "PLANGRAPH",
+  "asOf": "Worked example: a real decision explainer from 23 Sep 2026, 03:50 UTC · numbers are a snapshot of that analysis",
+  "brand": {
+    "k": "Decision",
+    "v": "field-domain table in the spec"
+  },
+  "metrics": [
+    {
+      "k": "Fields in question",
+      "v": "141 reference fields"
+    },
+    {
+      "k": "Would become rules",
+      "v": "32 (5 stated or near-stated, 27 strong)"
+    },
+    {
+      "k": "Would stay refused",
+      "v": "109 (85 weak, 10 vary, 14 unknown)"
+    }
+  ],
+  "intro": {
+    "eyebrow": "Decision explainer",
+    "title": "Which kind of record does each reference point to?",
+    "sub": "Click any box. Left column: where answers come from. Middle: the four groups of fields. Right: what the answer unblocks.",
+    "proseHTML": "<p><b>What a reference is.</b> A PlanGraph record points at other records by a content ID, which is a fingerprint of the other record&#39;s bytes. The fingerprint is computed with a label in front, such as <i>proposal</i> or <i>source record</i>, so a proposal can never be passed off as a source record.</p><p><b>The gap.</b> To check a reference, the code must know which label the field uses. The spec never says so for 141 fields. pg-core (the foundation that checks every record) therefore refuses those references, and records that contain them cannot be built.</p><p><b>What the evidence shows.</b> The spec states the label for 3 fields. Its worked examples use one label consistently for about 115 more. For 12 fields the label depends on what the record carries. 14 fields have no example at all.</p><p><b>The plan now, after an independent review by a second agent on a different model.</b> Write labels into the spec only where the evidence is strong: stated by the spec, or seen consistently in at least two independent example families. Everything weaker, including the 12 variable fields and the 14 with no example, stays as a clear refusal that names the field, until someone decides it. Nothing is guessed, and any entry can be changed later.</p><p><b>The numbers.</b> Of 141 fields, <b>32</b> would become rules in the spec (5 stated or near-stated, 27 with strong evidence) and <b>109</b> would keep refusing by name (85 weak, 10 that vary, 14 with no example). That is deliberately cautious: it adds only what the evidence can carry.</p><p><b>What I need from you.</b> Reply in chat: <b>OK</b> to proceed with this safer plan, or <b>stop</b> to leave the spec unchanged (pg-core keeps refusing those fields and this item stays open).</p>"
+  },
+  "groups": [
+    {
+      "id": "src",
+      "label": "Where answers come from"
+    },
+    {
+      "id": "fld",
+      "label": "The 141 reference fields"
+    },
+    {
+      "id": "use",
+      "label": "What an answer unblocks"
+    }
+  ],
+  "nodes": [
+    {
+      "id": "TXT",
+      "tag": "SPEC TEXT",
+      "g": "src",
+      "name": "The spec text",
+      "x": 0,
+      "y": 0,
+      "w": 1.2,
+      "d": 1,
+      "h": 1,
+      "does": "The written rules in the spec. They name the label for only 3 of the 141 fields.",
+      "built": "Normative: whatever it says is binding."
+    },
+    {
+      "id": "EX",
+      "tag": "EXAMPLES",
+      "g": "src",
+      "name": "The spec worked examples",
+      "x": 0,
+      "y": 3,
+      "w": 1.2,
+      "d": 1,
+      "h": 1,
+      "does": "Thousands of example records with exact expected fingerprints. Recomputing the fingerprints shows which label each field actually used.",
+      "built": "Evidence, not law: almost all examples came from one generator, so a field seen only once or twice is weak evidence."
+    },
+    {
+      "id": "REV",
+      "tag": "REVIEW",
+      "g": "src",
+      "name": "Independent second opinion",
+      "x": 0,
+      "y": 6,
+      "w": 1.2,
+      "d": 1,
+      "h": 1,
+      "does": "A second agent on a different model reviewed the plan and asked for it to be tiered: strong evidence becomes a rule, weak evidence stays a refusal.",
+      "built": "Adopted before any change is committed."
+    },
+    {
+      "id": "F3",
+      "tag": "5 STATED",
+      "g": "fld",
+      "name": "5 stated or near-stated",
+      "x": 4,
+      "y": 0,
+      "w": 1.2,
+      "d": 1,
+      "h": 1,
+      "does": "The spec text states the label, or states the rule the label follows (edges, file contents, fingerprints, signatures, and the check on typed references).",
+      "built": "Written into the table as rules. Lowest risk."
+    },
+    {
+      "id": "FB",
+      "tag": "STRONG",
+      "g": "fld",
+      "name": "27 strong",
+      "x": 4,
+      "y": 2,
+      "w": 1.2,
+      "d": 1,
+      "h": 1,
+      "does": "At least three distinct examples, from at least two independent example families, all agreeing, with the matching authoring and final schemas in agreement.",
+      "built": "Written into the table as rules. 27 of the roughly 115 fields that the examples settle meet this bar."
+    },
+    {
+      "id": "FC",
+      "tag": "WEAK",
+      "g": "fld",
+      "name": "85 weak",
+      "x": 4,
+      "y": 4,
+      "w": 1.2,
+      "d": 1,
+      "h": 1,
+      "does": "Seen in the examples but too thinly: one or two examples, or one example family only.",
+      "built": "Recorded as provisional: pg-core still refuses them, with a message that names the field, until someone decides."
+    },
+    {
+      "id": "F12",
+      "tag": "10 VARY",
+      "g": "fld",
+      "name": "10 vary",
+      "x": 4,
+      "y": 6,
+      "w": 1.2,
+      "d": 1,
+      "h": 1,
+      "does": "The label depends on what the record carries. The observed labels are listed for checking; building these records stays refused.",
+      "built": "Not guessed. The allowed labels are listed for checking, and building such records stays refused until the spec states the rule."
+    },
+    {
+      "id": "F14",
+      "tag": "14 UNKNOWN",
+      "g": "fld",
+      "name": "14 unknown",
+      "x": 4,
+      "y": 8,
+      "w": 1.2,
+      "d": 1,
+      "h": 1,
+      "does": "Nothing in the spec shows which label these use.",
+      "built": "Stay refused, with a message that names the field."
+    },
+    {
+      "id": "PGC",
+      "tag": "PG-CORE",
+      "g": "use",
+      "name": "pg-core reference check",
+      "x": 8,
+      "y": 3,
+      "w": 1.2,
+      "d": 1,
+      "h": 1,
+      "does": "The foundation that checks every incoming record. It needs the label to check a reference.",
+      "built": "Can check every field with a rule; refuses the rest by name."
+    },
+    {
+      "id": "REC",
+      "tag": "RECORDS",
+      "g": "use",
+      "name": "Typed records the other parts use",
+      "x": 8,
+      "y": 6,
+      "w": 1.2,
+      "d": 1,
+      "h": 1,
+      "does": "Ledger events, validated changes and other records built through pg-core.",
+      "built": "Each record whose references all have rules becomes buildable. The analysis reports exactly which."
+    },
+    {
+      "id": "LEDG",
+      "tag": "PG-LEDGER",
+      "g": "use",
+      "name": "pg-ledger storage test",
+      "x": 8,
+      "y": 9,
+      "w": 1.2,
+      "d": 1,
+      "h": 1,
+      "does": "The end-to-end test of pg-ledger saving and loading through pg-core.",
+      "built": "Runs if the records it needs become buildable; otherwise it stays skipped and this item stays open."
+    }
+  ],
+  "short": {
+    "TXT": "Spec text",
+    "EX": "Examples",
+    "REV": "Review",
+    "F3": "Stated",
+    "FB": "Strong",
+    "FC": "Weak",
+    "F12": "Varies",
+    "F14": "Unknown",
+    "PGC": "pg-core",
+    "REC": "Records",
+    "LEDG": "pg-ledger"
+  },
+  "status": {
+    "TXT": {
+      "state": "ok",
+      "items": []
+    },
+    "EX": {
+      "state": "ok",
+      "items": []
+    },
+    "REV": {
+      "state": "ok",
+      "items": []
+    },
+    "F3": {
+      "state": "ok",
+      "items": [
+        {
+          "c": "shipped",
+          "l": "Becomes a rule"
+        }
+      ]
+    },
+    "FB": {
+      "state": "ok",
+      "items": [
+        {
+          "c": "shipped",
+          "l": "Becomes a rule"
+        }
+      ]
+    },
+    "FC": {
+      "state": "build",
+      "items": [
+        {
+          "c": "amber",
+          "l": "Provisional: still refused, named"
+        }
+      ]
+    },
+    "F12": {
+      "state": "attn",
+      "items": [
+        {
+          "c": "planned",
+          "l": "Refused until the spec states a rule"
+        }
+      ]
+    },
+    "F14": {
+      "state": "attn",
+      "items": [
+        {
+          "c": "planned",
+          "l": "Refused until decided"
+        }
+      ]
+    },
+    "PGC": {
+      "state": "build",
+      "items": [
+        {
+          "c": "built",
+          "l": "Being finished"
+        }
+      ]
+    },
+    "REC": {
+      "state": "build",
+      "items": [
+        {
+          "c": "amber",
+          "l": "Some become buildable"
+        }
+      ]
+    },
+    "LEDG": {
+      "state": "build",
+      "items": [
+        {
+          "c": "amber",
+          "l": "Depends on which records become buildable"
+        }
+      ]
+    }
+  },
+  "levels": {},
+  "paths": {},
+  "ci": {
+    "jobs": {},
+    "default": "PGC"
+  },
+  "edges": [
+    [
+      "TXT",
+      "F3",
+      "data"
+    ],
+    [
+      "EX",
+      "FB",
+      "data"
+    ],
+    [
+      "EX",
+      "FC",
+      "data"
+    ],
+    [
+      "EX",
+      "F12",
+      "data"
+    ],
+    [
+      "REV",
+      "FC",
+      "auth"
+    ],
+    [
+      "REV",
+      "F12",
+      "auth"
+    ],
+    [
+      "F3",
+      "PGC",
+      "data"
+    ],
+    [
+      "FB",
+      "PGC",
+      "data"
+    ],
+    [
+      "FC",
+      "PGC",
+      "intended"
+    ],
+    [
+      "F12",
+      "PGC",
+      "intended"
+    ],
+    [
+      "F14",
+      "PGC",
+      "intended"
+    ],
+    [
+      "PGC",
+      "REC",
+      "data"
+    ],
+    [
+      "REC",
+      "LEDG",
+      "data"
+    ]
+  ],
+  "edgeStatus": {},
+  "edgeDocs": {
+    "TXT-F3": {
+      "title": "Stated",
+      "carries": "The spec names the label.",
+      "refs": "spec text"
+    },
+    "EX-FB": {
+      "title": "Strong evidence",
+      "carries": "Same label in every example, two or more example families.",
+      "refs": "recomputed fingerprints"
+    },
+    "EX-FC": {
+      "title": "Weak evidence",
+      "carries": "One or two examples, or one family only.",
+      "refs": "recomputed fingerprints"
+    },
+    "EX-F12": {
+      "title": "Varies",
+      "carries": "Different labels depending on the payload.",
+      "refs": "recomputed fingerprints"
+    },
+    "REV-FC": {
+      "title": "Keep weak ones refused",
+      "carries": "The reviewer asked that weak evidence not become a rule.",
+      "refs": "independent opinion"
+    },
+    "REV-F12": {
+      "title": "No guessed rules",
+      "carries": "The reviewer asked that no selection rule be guessed from examples.",
+      "refs": "independent opinion"
+    },
+    "F3-PGC": {
+      "title": "Checkable",
+      "carries": "pg-core can check these.",
+      "refs": ""
+    },
+    "FB-PGC": {
+      "title": "Checkable",
+      "carries": "pg-core can check these.",
+      "refs": ""
+    },
+    "FC-PGC": {
+      "title": "Refused by name",
+      "carries": "pg-core refuses and names the field.",
+      "refs": ""
+    },
+    "F12-PGC": {
+      "title": "Refused by name",
+      "carries": "pg-core refuses and names the field.",
+      "refs": ""
+    },
+    "F14-PGC": {
+      "title": "Refused by name",
+      "carries": "pg-core refuses and names the field.",
+      "refs": ""
+    },
+    "PGC-REC": {
+      "title": "Builds records",
+      "carries": "Records whose references are all checkable can be built.",
+      "refs": ""
+    },
+    "REC-LEDG": {
+      "title": "Enables the test",
+      "carries": "pg-ledger storage runs if its records can be built.",
+      "refs": ""
+    }
+  },
+  "trace": [
+    "TXT-F3",
+    "EX-FB",
+    "F3-PGC",
+    "FB-PGC",
+    "PGC-REC",
+    "REC-LEDG"
+  ],
+  "traceText": {
+    "TXT-F3": "The spec names a few labels.",
+    "EX-FB": "The examples settle more, where the evidence is strong.",
+    "F3-PGC": "Those become checkable.",
+    "FB-PGC": "So do the strong ones.",
+    "PGC-REC": "Records built only from checkable references become buildable.",
+    "REC-LEDG": "That is what pg-ledger&#39;s storage test needs."
+  },
+  "drcBudget": {
+    "maxWeightedCrossings": 0,
+    "acknowledged": "explainer page"
+  }
+}

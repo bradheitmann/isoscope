@@ -96,7 +96,7 @@ pub fn serve(state: &Path, assets: &Path, port: u16) -> Result<()> {
         };
         let mut response =
             Response::from_data(body).with_status_code(if not_modified { 304 } else { status });
-        if let Ok(header) = Header::from_bytes("ETag", &etag) {
+        if let Ok(header) = Header::from_bytes("ETag", etag.as_str()) {
             response.add_header(header);
         }
         if gzip && let Ok(header) = Header::from_bytes("Content-Encoding", "gzip") {

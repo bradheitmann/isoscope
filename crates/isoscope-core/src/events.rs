@@ -33,7 +33,7 @@ pub fn parse(e: &Evidence) -> Vec<ProcessEvent> {
                 Some(ts)=>if DateTime::parse_from_rfc3339(&e.at).is_ok_and(|source|ts>source){warnings.push("Embedded timestamp is later than forge creation timestamp; not used as authority".into());},
                 None=>warnings.push("Embedded timestamp unavailable or malformed".into()),
             }
-            for key in ["duration_ms","rounds","tokens"]{if let Some(value)=v.get(key){if !value.is_null()&&!value.is_u64(){warnings.push(format!("{key} must be unsigned integer or explicit null"));}}}
+            for key in ["duration_ms","rounds","tokens"]{if let Some(value)=v.get(key)&& !value.is_null()&&!value.is_u64(){warnings.push(format!("{key} must be unsigned integer or explicit null"));}}
             if v["head"].as_str().is_some_and(|s|s.len()!=40||!s.bytes().all(|b|b.is_ascii_hexdigit())){warnings.push("Reported head is not an exact 40-hex binding".into());}
         }
         Some(ProcessEvent{source_id:e.id.clone(),source_url:e.source_url.clone(),source_created_at:e.at.clone(),source_edited_at:e.edited_at.clone(),source_body_sha256:e.sha256.clone(),event_line_sha256:hash(line.as_bytes()),reported,raw_line:line.into(),warnings,authority:"forge_reported_observation_only; no native runtime or acceptance proof".into()})

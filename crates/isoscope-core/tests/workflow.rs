@@ -189,7 +189,11 @@ fn contradictory_dev_claims_require_pm_resolution() {
 #[test]
 fn disconnected_source_retains_last_good_visibly_stale() {
     let d = tempfile::tempdir().unwrap();
-    let s = store::publish(d.path(), &raw(vec![pr()]), &Config::default()).unwrap();
+    let fixture_config = Config {
+        repository: "fixture/test".into(),
+        ..Config::default()
+    };
+    let s = store::publish(d.path(), &raw(vec![pr()]), &fixture_config).unwrap();
     store::fail(d.path(), "offline").unwrap();
     let failed = store::read_snapshot(d.path()).unwrap();
     assert_eq!(failed.status, "stale");
@@ -219,4 +223,146 @@ fn deletion_is_unknown_and_receipts_bind_source_bytes() {
     let two = reduce(&raw(vec![]), &Config::default(), Some(&one)).unwrap();
     assert!(two.warnings[0].contains("absent"));
     assert_ne!(hash(b"a"), hash(b"b"));
+}
+
+#[test]
+fn old_head_qa_claim_does_not_claim_new_candidate() {
+    let mut p = pr();
+    p["comments"] = json!([comment(
+        "old",
+        &format!("CLAIM PR#3 seat=QA head={}", "a".repeat(40)),
+        "2026-10-01T01:00:00Z"
+    )]);
+    let s = reduce(&raw(vec![p]), &Config::default(), None).unwrap();
+    assert_eq!(s.items[0].stage, Stage::Delivered);
+}
+#[test]
+fn conflicting_same_timestamp_event_versions_suppress_pass() {
+    let mut p = pr();
+    p["comments"] = json!([
+        comment(
+            "same",
+            &format!("VERDICT: PASS\nHead reviewed: {}", "b".repeat(40)),
+            "2026-10-01T01:00:00Z"
+        ),
+        comment(
+            "same",
+            &format!("VERDICT: FAIL\nHead reviewed: {}", "b".repeat(40)),
+            "2026-10-01T01:00:00Z"
+        )
+    ]);
+    let s = reduce(&raw(vec![p]), &Config::default(), None).unwrap();
+    assert!(!s.items[0].current_head_pass);
+    assert_eq!(s.items[0].stage, Stage::Unknown);
+}
+#[test]
+fn structured_dimensions_are_reported_not_native_observations() {
+    let mut p = pr();
+    p["comments"] = json!([comment(
+        "config",
+        "CLAIM PR#3 seat=DEV\nAgent: droid/luna/nonce\nProvider: OpenAI\nReasoning: high",
+        "2026-10-01T01:00:00Z"
+    )]);
+    let s = reduce(&raw(vec![p]), &Config::default(), None).unwrap();
+    let dimensions = &s.items[0].observed_dimensions;
+    assert_eq!(dimensions.len(), 5);
+    assert!(dimensions.iter().all(|d| d.provenance == "forge_reported"));
+}
+#[test]
+fn graph_validation_and_directed_blast_radius_cover_cycles() {
+    use isoscope_core::graph;
+    let graph = json!({"nodes":[{"id":"a"},{"id":"b"},{"id":"c"}],"edges":[["a","b","data"],["b","a","data"],["c","a","data"]],"status":{"a":{"state":"attn","items":[{"c":"red","l":"failure"}]}}});
+    graph::validate(&graph).unwrap();
+    assert_eq!(
+        graph::blast_radius(&graph)["affected_nodes"],
+        json!(["a", "b"])
+    );
+    let mut malformed = graph.clone();
+    malformed["status"] = json!(1);
+    assert!(graph::validate(&malformed).is_err());
+    malformed = graph.clone();
+    malformed["edges"] = json!([["a", "missing", "data"]]);
+    assert!(graph::validate(&malformed).is_err());
+    malformed = graph;
+    malformed["nodes"] = json!([{"id":"a"},{"id":"a"}]);
+    assert!(graph::validate(&malformed).is_err());
+}
+#[test]
+fn malformed_existing_graph_is_preserved_and_refused() {
+    use isoscope_core::graph;
+    let d = tempfile::tempdir().unwrap();
+    std::fs::write(d.path().join("graph.json"), "broken").unwrap();
+    assert!(graph::run(d.path(), graph::Action::Export).is_err());
+    assert_eq!(
+        std::fs::read_to_string(d.path().join("graph.json")).unwrap(),
+        "broken"
+    );
+}
+#[test]
+fn mcp_initializes_and_updates_with_clean_jsonrpc_output() {
+    use std::{
+        io::Write,
+        process::{Command, Stdio},
+    };
+    let d = tempfile::tempdir().unwrap();
+    let mut child = Command::new(env!("CARGO_BIN_EXE_isoscope-core"))
+        .current_dir(d.path())
+        .args(["--state", "state", "mcp"])
+        .stdin(Stdio::piped())
+        .stdout(Stdio::piped())
+        .spawn()
+        .unwrap();
+    let mut input = child.stdin.take().unwrap();
+    for request in [
+        json!({"jsonrpc":"2.0","id":1,"method":"initialize"}),
+        json!({"jsonrpc":"2.0","id":2,"method":"tools/list"}),
+        json!({"jsonrpc":"2.0","id":3,"method":"tools/call","params":{"name":"iso_upsert_node","arguments":{"id":"a","name":"Architecture","g":"test","x":0,"y":0}}}),
+        json!({"jsonrpc":"2.0","id":4,"method":"tools/call","params":{"name":"iso_get_spec","arguments":{}}}),
+    ] {
+        writeln!(input, "{request}").unwrap();
+    }
+    drop(input);
+    let out = child.wait_with_output().unwrap();
+    assert!(out.status.success());
+    let responses: Vec<Value> = String::from_utf8(out.stdout)
+        .unwrap()
+        .lines()
+        .map(|line| serde_json::from_str(line).unwrap())
+        .collect();
+    assert_eq!(responses.len(), 4);
+    assert_eq!(responses[1]["result"]["tools"].as_array().unwrap().len(), 9);
+    let spec: Value = serde_json::from_str(
+        responses[3]["result"]["content"][0]["text"]
+            .as_str()
+            .unwrap(),
+    )
+    .unwrap();
+    assert_eq!(spec["nodes"][0]["id"], "a");
+}
+
+#[test]
+fn edited_older_fail_supersedes_newer_created_pass() {
+    let mut p = pr();
+    let mut fail = comment(
+        "old-fail",
+        &format!("VERDICT: FAIL\nHead reviewed: {}", "b".repeat(40)),
+        "2026-10-01T00:00:00Z",
+    );
+    fail["updatedAt"] = json!("2026-10-01T03:00:00Z");
+    let pass = comment(
+        "new-pass",
+        &format!("VERDICT: PASS\nHead reviewed: {}", "b".repeat(40)),
+        "2026-10-01T02:00:00Z",
+    );
+    p["comments"] = json!([fail, pass]);
+    let s = reduce(&raw(vec![p]), &Config::default(), None).unwrap();
+    assert!(!s.items[0].current_head_pass);
+    assert_eq!(s.items[0].stage, Stage::Blocked);
+}
+#[test]
+fn foreign_repository_replay_cannot_publish_or_create_receipts() {
+    let d = tempfile::tempdir().unwrap();
+    assert!(store::publish(d.path(), &raw(vec![pr()]), &Config::default()).is_err());
+    assert!(!d.path().join("current.json").exists());
+    assert!(!d.path().join("receipts").exists());
 }

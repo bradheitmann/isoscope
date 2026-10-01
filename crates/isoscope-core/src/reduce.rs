@@ -118,6 +118,13 @@ fn evidence(v: &Value, kind: &str) -> Evidence {
         body: s(v, "body"),
     }
 }
+fn effective_at(e: &Evidence) -> &str {
+    if e.edited_at.as_str() > e.at.as_str() {
+        &e.edited_at
+    } else {
+        &e.at
+    }
+}
 fn stage_key(stage: &Stage) -> String {
     serde_json::to_value(stage)
         .ok()
@@ -229,11 +236,17 @@ pub fn reduce(raw: &Raw, config: &Config, previous: Option<&Snapshot>) -> Result
         history.sort_by(|a, b| (&a.at, &a.id, &a.sha256).cmp(&(&b.at, &b.id, &b.sha256)));
         let head = v["headRefOid"].as_str().map(str::to_string);
         let mut local_warnings = Vec::new();
-        let latest_verdict = history.iter().rfind(|e| {
-            verdict(&e.body).is_some()
-                && head_field(&e.body).as_ref() == head.as_ref()
-                && head.is_some()
-        });
+        let latest_verdict = history
+            .iter()
+            .filter(|e| {
+                verdict(&e.body).is_some()
+                    && head_field(&e.body).as_ref() == head.as_ref()
+                    && head.is_some()
+                    && e.kind != "body"
+            })
+            .max_by(|a, b| {
+                (effective_at(a), &a.id, &a.sha256).cmp(&(effective_at(b), &b.id, &b.sha256))
+            });
         let current_pass = !conflicting_versions
             && latest_verdict.is_some_and(|e| verdict(&e.body) == Some("PASS"));
         if conflicting_versions {
@@ -353,7 +366,7 @@ pub fn reduce(raw: &Raw, config: &Config, previous: Option<&Snapshot>) -> Result
         let stage_since = match stage {
             Stage::Delivered => candidate_ready.clone(),
             Stage::Qa | Stage::Claimed => latest_claim.map(|e| e.at.clone()),
-            Stage::Guard => latest_verdict.map(|e| e.at.clone()),
+            Stage::Guard => latest_verdict.map(|e| effective_at(e).to_string()),
             Stage::Merged => v["mergedAt"].as_str().map(str::to_string),
             _ => None,
         };
@@ -407,7 +420,7 @@ pub fn reduce(raw: &Raw, config: &Config, previous: Option<&Snapshot>) -> Result
         }
         if current_pass
             && let Some(e) = latest_verdict
-            && let Some(n) = seconds(&e.at, &raw.collected_at)
+            && let Some(n) = seconds(effective_at(e), &raw.collected_at)
         {
             metrics.insert("pass_to_guard_wait".into(), n);
         }

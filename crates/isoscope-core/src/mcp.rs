@@ -49,6 +49,11 @@ const TOOLS: &[(&str, &str)] = &[
     ),
 ];
 fn read(state: &Path) -> Result<Value> {
+    if !state.join("graph.json").exists() {
+        return Ok(
+            json!({"title":"Architecture","nodes":[],"edges":[],"groups":[],"status":{},"paths":{},"telemetry":{}}),
+        );
+    }
     serde_json::from_slice(&fs::read(state.join("graph.json")).map_err(|e| e.to_string())?)
         .map_err(|e| e.to_string())
 }
@@ -89,6 +94,7 @@ fn call(state: &Path, name: &str, args: &Value) -> Result<Value> {
     }
     let _lock = RefreshLock::acquire(state)?;
     let mut v = read(state)?;
+    graph::validate(&v)?;
     let before = v.clone();
     match name {
         "iso_get_spec" => return Ok(v),

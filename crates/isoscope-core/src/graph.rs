@@ -61,6 +61,24 @@ fn id(v: &Value) -> String {
     v["id"].as_str().unwrap_or_default().into()
 }
 pub fn validate(v: &Value) -> Result<()> {
+    if !v.is_object() {
+        return Err("graph must be object".into());
+    }
+    for key in [
+        "status",
+        "paths",
+        "telemetry",
+        "edgeDocs",
+        "edgeStatus",
+        "short",
+        "levels",
+    ] {
+        if let Some(value) = v.get(key)
+            && !value.is_object()
+        {
+            return Err(format!("{key} must be object"));
+        }
+    }
     let nodes = v["nodes"].as_array().ok_or("graph nodes must be array")?;
     let mut ids = BTreeSet::new();
     for n in nodes {
@@ -151,7 +169,12 @@ pub fn blast_radius(v: &Value) -> Value {
 pub fn run(state: &Path, action: Action) -> Result<()> {
     let _lock = RefreshLock::acquire(state)?;
     let path = state.join("graph.json");
-    let mut v=read(&path).unwrap_or_else(|_|json!({"title":"Architecture","nodes":[],"edges":[],"groups":[],"status":{},"paths":{},"telemetry":{}}));
+    let mut v = if path.exists() {
+        read(&path)?
+    } else {
+        json!({"title":"Architecture","nodes":[],"edges":[],"groups":[],"status":{},"paths":{},"telemetry":{}})
+    };
+    validate(&v)?;
     let before = v.clone();
     let kind = match action {
         Action::Import { file } => {

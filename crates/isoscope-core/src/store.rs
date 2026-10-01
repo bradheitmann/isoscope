@@ -73,7 +73,20 @@ impl Drop for RefreshLock {
     }
 }
 pub fn publish(state: &Path, raw: &Raw, config: &Config) -> Result<Snapshot> {
+    if raw.repository != config.repository {
+        return Err(
+            "receipt repository does not match configured repository; publication refused".into(),
+        );
+    }
     let previous = read_snapshot(state).ok();
+    if previous
+        .as_ref()
+        .is_some_and(|p| p.repository != config.repository)
+    {
+        return Err(
+            "state is bound to a different repository; use a separate state directory".into(),
+        );
+    }
     let snapshot = reduce(raw, config, previous.as_ref())?;
     let raw_value = serde_json::to_value(raw).map_err(|e| e.to_string())?;
     let digest = hash(&canonical(&raw_value)?);

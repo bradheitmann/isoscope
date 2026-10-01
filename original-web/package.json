@@ -6,7 +6,8 @@
     "dev": "vite --host 127.0.0.1",
     "build": "tsc --noEmit && vite build",
     "typecheck": "tsc --noEmit",
-    "test": "vitest run"
+    "test": "vitest run",
+    "enforce": "node --experimental-strip-types enforcement/verify.ts"
   },
   "dependencies": {
     "three": "0.180.0"

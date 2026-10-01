@@ -10,7 +10,9 @@ import { presentedThemes } from "./theme-order";
 import { pageNavigation, type NavigationNode } from "./navigation";
 import iconPlay from "../vendor/desert-pants/icons/svg/play.svg?raw";
 import iconTrace from "../vendor/desert-pants/icons/svg/arrow-right.svg?raw";
+import iconDraw from "../vendor/desert-pants/icons/svg/pen.svg?raw";
 import iconLayers from "../vendor/desert-pants/icons/svg/layers.svg?raw";
+import iconGrid from "../vendor/desert-pants/icons/svg/grid.svg?raw";
 import iconStop from "../vendor/desert-pants/icons/svg/stop.svg?raw";
 import iconReset from "../vendor/desert-pants/icons/svg/rotate-ccw.svg?raw";
 import iconSettings from "../vendor/desert-pants/icons/svg/settings.svg?raw";
@@ -28,6 +30,7 @@ type Group = { id: string; label: string };
 type MapNode = {
   id: string; tag?: string; g: string; name: string; x: number; y: number; w: number; d: number; h: number;
   does?: string; built?: string; refs?: string; good?: string; cond?: string; items: Item[]; st: string;
+  media?: { src: string; face?: "front" | "roof" | "left" | "right"; fit?: "cover" | "contain" };
   stack?: number; _lvl: number; _ly: number; _lyT: number; _anchor: THREE.Vector3;
 };
 type EdgeTuple = [string, string, string?];
@@ -92,7 +95,9 @@ function setCanonicalIcon(button: HTMLElement, source: string, withClass=true): 
 setCanonicalIcon($<HTMLButtonElement>("btnReset"),iconReset);
 setCanonicalIcon($<HTMLButtonElement>("btnFlow"),iconPlay);
 setCanonicalIcon($<HTMLButtonElement>("btnTrace"),iconTrace);
+setCanonicalIcon($<HTMLButtonElement>("btnDraw"),iconDraw);
 setCanonicalIcon($<HTMLButtonElement>("btnStack"),iconLayers);
+setCanonicalIcon($<HTMLButtonElement>("btnGrid"),iconGrid);
 setCanonicalIcon($<HTMLButtonElement>("btnSettings"),iconSettings);
 setCanonicalIcon($<HTMLButtonElement>("btnReadMap"),iconOverview);
 setCanonicalIcon($<HTMLButtonElement>("drawerClose"),iconClose);
@@ -214,11 +219,15 @@ function computePalette(): void {
 }
 computePalette();
 /* ————— advisory gradient language (the art's living signal) —————
-   Brand discipline: the palette's gradient fill families, translucent so the hatch
-   shows through; a wash at the crown easing to its deep at the foot; no neon.
-   Multi-category modules blend every category evenly. The band is a live shader
-   plane masked to the face; it moves only while Flow is pressed and the module is
-   energized, else it holds a quiet frame. Deselected keeps a lighter veil. */
+   Brand discipline, learned from the tokens: a brand gradient is ONE fill color
+   dissolving to transparent at a hand-tuned, non-uniform distance (card-bleed
+   holds 3% then is gone by 38%; hero-side fades by 54%). Never a color-to-color
+   diagonal band — that reads contrived. So each advisory wash is the fill color
+   bleeding off the crown and fading out partway down, and the charm comes from
+   the fade being uneven: a per-module seed drifts the direction and reach, and a
+   low-frequency mottle keeps the edge from ever being a straight ruled line.
+   It moves only while Flow is pressed and the module is energized; deselected
+   keeps a lighter veil. No neon. */
 const ADVISORY_FILL: Record<string, { wash: string; deep: string }> = {
  red:   { wash: "--dp-color-fill-clay-red-bg",  deep: "--dp-color-signal-danger-text" },
  amber: { wash: "--dp-color-fill-terracotta-bg", deep: "--dp-color-signal-warning-text" },
@@ -236,6 +245,11 @@ function computeAdvisory(): void {
  for(const [cat,f] of Object.entries(ADVISORY_FILL)) ADVISORY[cat]={wash:probeVar(f.wash),deep:probeVar(f.deep)};
 }
 computeAdvisory();
+/* a stable per-module seed so every face bleeds a little differently, forever */
+function seedOf(id: string): number {
+ let h=2166136261;for(let i=0;i<id.length;i++){h^=id.charCodeAt(i);h=Math.imul(h,16777619);}
+ return ((h>>>0)%1000)/1000;
+}
 const themed: ThemedMaterial[] = []; /* Original scene materials repaint from live theme tokens. */
 const hatched: Array<{ m: THREE.MeshBasicMaterial; st: string }> = [];
 function hatchColors(st: string){
@@ -315,22 +329,64 @@ const ADVISORY_VERT=`
  varying vec2 vUv;
  void main(){ vUv=uv; gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.0); }
 `;
+/* Mist rising off the base of each module. Not a wrapped phase (that snaps);
+   an fbm fog field scrolled slowly upward and billowed, so the motion is a
+   sampled continuum — it never resets, it just keeps drifting. The fog pools at
+   the foot, thins with height, and is lit by the category color with a warm-lit
+   crest and a cooler shadowed floor (value + saturation shift, the way light
+   actually moves through vapor). A per-module seed offsets the noise domain so
+   no two objects ever share a shape. Deselected keeps a low, thin veil. */
 const ADVISORY_FRAG=`
  uniform vec3 uColors[3]; uniform int uCount;
- uniform float uPhase; uniform float uMotion; uniform float uVeil;
+ uniform float uTime; uniform float uMotion; uniform float uVeil; uniform float uSeed;
  varying vec2 vUv;
+ float hash(vec2 p){ return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453123); }
+ float vnoise(vec2 p){
+  vec2 i=floor(p),f=fract(p); vec2 u=f*f*(3.0-2.0*f);
+  return mix(mix(hash(i),hash(i+vec2(1.0,0.0)),u.x),
+             mix(hash(i+vec2(0.0,1.0)),hash(i+vec2(1.0,1.0)),u.x),u.y);
+ }
+ float fbm(vec2 p){
+  float v=0.0,a=0.5;
+  for(int k=0;k<4;k++){ v+=a*vnoise(p); p=p*2.03+vec2(11.3,7.7); a*=0.5; }
+  return v;
+ }
  void main(){
-  float t=clamp(vUv.y+uPhase*uMotion,0.0,1.0);
-  vec3 col=uColors[0];
-  if(uCount>1){
-   float f=t*float(uCount-1); int i=int(floor(f)); float fr=f-float(i);
-   col=mix(uColors[min(i,2)],uColors[min(i+1,2)],smoothstep(0.0,1.0,fr));
-  }
-  /* translucent wash: strong at the crown, easing to clear at the foot, hatch shows through */
-  float band=smoothstep(1.05,0.25,vUv.y);
-  float shade=0.9+0.1*sin((vUv.x+vUv.y)*6.28318+uPhase*6.28318*uMotion);
-  float alpha=band*mix(0.42,0.2,uVeil); /* energized ~42%, deselected veil ~20% */
-  gl_FragColor=vec4(col*shade,alpha);
+  /* fog domain: per-module offset, stretched horizontally so billows are broad */
+  vec2 q=vec2(vUv.x*2.2+uSeed*17.0, vUv.y*2.6-uSeed*9.0);
+  float t=uTime*(0.05+0.03*uSeed)*uMotion;      /* slow drift; still unless flowing */
+  q.y-=t*3.0;                                    /* the rise: fog lifts off the base */
+  /* domain-warped fbm = billowing vapor, not banding */
+  float w=fbm(q+vec2(fbm(q+t), fbm(q-t))*0.6);
+  /* the color fills the WHOLE face: density modulates the wash, not its extent.
+     Only a whisper of pooling toward the foot; coverage runs edge to edge. */
+  float pool=1.0-0.28*smoothstep(0.55,1.0,vUv.y);  /* slightly denser low, never empty high */
+  float density=clamp(w*0.9+0.28,0.0,1.0)*pool;
+  /* a thin feather only at the extreme edges so it keys onto the face cleanly */
+  float edge=smoothstep(0.0,0.03,vUv.x)*smoothstep(1.0,0.97,vUv.x)
+            *smoothstep(0.0,0.03,vUv.y)*smoothstep(1.0,0.97,vUv.y);
+  density*=0.35+0.65*edge;
+  /* extradimensionality without touching the geometry: derive a pseudo-normal from
+     the fog's own density gradient and light it, so the vapor reads as a volume
+     with a lit ridge and a shadowed lee — depth from shading, not from a mesh */
+  float e=0.012;
+  float wX=fbm(q+vec2(e,0.0)+vec2(fbm(q+vec2(e,0.0)+t),fbm(q+vec2(e,0.0)-t))*0.6);
+  float wY=fbm(q+vec2(0.0,e)+vec2(fbm(q+vec2(0.0,e)+t),fbm(q+vec2(0.0,e)-t))*0.6);
+  vec2 grad=vec2(wX-w,wY-w)/e;
+  vec3 nrm=normalize(vec3(-grad*0.9,1.0));
+  vec3 lightDir=normalize(vec3(0.4,0.75,0.6));
+  float shade=clamp(dot(nrm,lightDir),0.0,1.0);
+  /* color: category fill, warmed toward the light where the fog is thickest,
+     cooled toward the paper where it thins — light moving through vapor */
+  vec3 base=uColors[0];
+  vec3 deep=(uCount>1)?uColors[1]:base;
+  vec3 col=mix(deep,base,clamp(density*1.3,0.0,1.0));
+  float lit=pow(density,1.6);
+  col=mix(col,col*1.18+vec3(0.04),lit);          /* crest catches light */
+  col*=(0.66+0.5*shade);                          /* volumetric self-shadow/highlight */
+  /* coverage floor: the wash is always present across the face; density deepens it */
+  float alpha=(0.34+0.6*density)*mix(1.0,0.42,uVeil);
+  gl_FragColor=vec4(col,alpha);
  }
 `;
 function advisoryPlane(n: MapNode,cats: string[]): THREE.Mesh<THREE.PlaneGeometry, THREE.ShaderMaterial> | null {
@@ -342,7 +398,7 @@ function advisoryPlane(n: MapNode,cats: string[]): THREE.Mesh<THREE.PlaneGeometr
  const uColors=[cols[0],cols[1]??cols[0],cols[2]??cols[cols.length-1]??cols[0]];
  const mat=new THREE.ShaderMaterial({
   vertexShader:ADVISORY_VERT,fragmentShader:ADVISORY_FRAG,transparent:true,depthWrite:false,
-  uniforms:{uColors:{value:uColors},uCount:{value:Math.min(3,cols.length)},uPhase:{value:0},uMotion:{value:0},uVeil:{value:0}}
+  uniforms:{uColors:{value:uColors},uCount:{value:Math.min(3,cols.length)},uTime:{value:Math.random()},uMotion:{value:0},uVeil:{value:0},uSeed:{value:seedOf(n.id)}}
  });
  const h=Math.max(n.h,0.6);
  const plane=new THREE.Mesh(new THREE.PlaneGeometry(n.w,h),mat);
@@ -357,6 +413,36 @@ function refreshAdvisory(n: MapNode): void {
  advisoryById[n.id]=[];
  const plane=advisoryPlane(n,cats);
  if(plane){meshById[n.id].add(plane);advisoryById[n.id]=[plane];}
+}
+
+/* ————— media surfaces: a module face can be a live screen —————
+   Declare `media:{src}` on a node and that face plays a muted, looping video
+   mapped to the same face plane the advisory mist uses. The screen dims with the
+   circuit like any other face, and honors reduced-motion by holding the first
+   frame. Playback is user/media-driven, independent of the Flow toggle — a screen
+   is a screen. */
+const mediaById: Record<string, { plane: THREE.Mesh<THREE.PlaneGeometry, THREE.MeshBasicMaterial>; video: HTMLVideoElement; tex: THREE.VideoTexture }> = {};
+function refreshMedia(n: MapNode): void {
+ const old=mediaById[n.id];
+ if(old){const par=old.plane.parent;if(par)par.remove(old.plane);old.plane.geometry.dispose();old.plane.material.dispose();old.tex.dispose();old.video.pause();old.video.src="";delete mediaById[n.id];}
+ if(!n.media||!n.media.src)return;
+ const video=document.createElement("video");
+ video.src=n.media.src;video.muted=true;video.loop=true;video.playsInline=true;video.crossOrigin="anonymous";
+ video.autoplay=!RM;
+ const tex=new THREE.VideoTexture(video);tex.colorSpace=THREE.SRGBColorSpace;
+ const mat=new THREE.MeshBasicMaterial({map:tex,transparent:true,toneMapped:false});
+ const h=Math.max(n.h,0.6);
+ const plane=new THREE.Mesh(new THREE.PlaneGeometry(n.w,h),mat);
+ plane.position.set(n.x+n.w/2,h/2+0.02,n.y+n.d+0.016); /* proud of the mist so the screen reads on top */
+ plane.renderOrder=2;
+ meshById[n.id].add(plane);
+ mediaById[n.id]={plane,video,tex};
+ if(!RM)video.play().catch(()=>{/* autoplay may wait for a gesture; the poster frame still shows */});
+}
+function setMediaDim(id: string,on: boolean): void {
+ const m=mediaById[id];if(!m)return;
+ m.plane.material.opacity=on?1:0.28;
+ m.plane.material.transparent=true;
 }
 /* graph edges on the ground */
 /* connection health: a link can be broken/degraded independent of its modules.
@@ -505,6 +591,12 @@ document.addEventListener("keydown",ev=>{
  if(readerModalOpen||drawer.classList.contains("open"))return; /* a modal owns the screen */
  resetView();
 });
+document.addEventListener("keydown",ev=>{
+ if(ev.key!=="w"&&ev.key!=="W")return;
+ if(isEditableTarget(ev.target))return;
+ if(readerModalOpen||drawer.classList.contains("open"))return;
+ brush.setActive(!brush.isActive());
+});
 /* zoom bounds are communicated, not silent: buttons report aria-disabled at the limits */
 const ZOOM_MIN=0.35,ZOOM_MAX=6;
 function syncZoomButtons(): void {
@@ -532,6 +624,7 @@ function flyTo(n: MapNode): void {flyGoal={tx:n.x+n.w/2,ty:(n._lyT||0)+0.5,tz:n.
 let downPt: { x: number; y: number } | null = null;
 canvas.addEventListener("pointerdown",ev=>{downPt={x:ev.clientX,y:ev.clientY};});
 canvas.addEventListener("pointerup",ev=>{
+ if(brush.isActive()){downPt=null;return;} /* the brush owns the pointer while drawing */
  if(downPt&&Math.abs(ev.clientX-downPt.x)<5&&Math.abs(ev.clientY-downPt.y)<5&&ev.button===0)
    pickAt(ev.clientX,ev.clientY,ev.shiftKey,ev.metaKey||ev.ctrlKey);
  downPt=null;
@@ -604,15 +697,32 @@ function mark(id: string,on: boolean): void {
  if(li){li.classList.toggle("is-pressed",on);li.setAttribute("aria-pressed",String(on));}
  if(g){g.traverse((o: THREE.Object3D)=>{if(o instanceof THREE.LineSegments){const material=o.material;if(!Array.isArray(material)&&"color" in material)material.color=on?COL.accent:COL.fg1;}});}
 }
-/* peek = title-only resting state (~16vh); medium/large = canonical sheet detents */
+/* peek = title-only resting state (~16vh); medium/large are starting heights.
+   The tray is free-draggable: drag the head to any height and the body scrolls. */
 type SheetDetent="peek"|"medium"|"large";
 let sheetDetent: SheetDetent="medium";
+function detentHeight(detent: SheetDetent): number {
+ const vh=window.innerHeight;
+ if(detent==="peek")return Math.min(Math.max(0.16*vh,5.6*16),8.4*16);
+ if(detent==="medium")return 0.46*vh;
+ return 0.88*vh;
+}
 function setSheetDetent(detent: SheetDetent): void {
  sheetDetent=detent;
+ readingPanel.classList.remove("free");
  readingPanel.classList.toggle("is-peek",detent==="peek");
  readingPanel.classList.toggle("is-medium",detent==="medium");
  readingPanel.classList.toggle("is-large",detent==="large");
+ readingPanel.style.height=""; /* let the detent class own the height */
  sheetGrabber.setAttribute("aria-label",detent==="large"?"Collapse reading panel":"Expand reading panel");
+}
+/* free drag: any height between peek and nearly-full; content stays live+scrollable */
+function setSheetHeight(px: number): void {
+ const min=detentHeight("peek"),max=window.innerHeight*0.94;
+ const h=Math.round(Math.min(max,Math.max(min,px)));
+ readingPanel.classList.add("free");
+ readingPanel.classList.remove("is-peek","is-medium","is-large");
+ readingPanel.style.height=h+"px";
 }
 function openReadingPanel(focusSearch=false): void {
  if(!compactReader.matches)return;
@@ -696,7 +806,12 @@ panelResizer.addEventListener("keydown",ev=>{
  if(ev.key==="ArrowLeft"){ev.preventDefault();applyPanelWidth(w+24);}
  else if(ev.key==="ArrowRight"){ev.preventDefault();applyPanelWidth(w-24);}
 });
-window.addEventListener("resize",()=>{if(panelWidthPx!==null&&!compactReader.matches)applyPanelWidth(panelWidthPx);});
+window.addEventListener("resize",()=>{
+ if(panelWidthPx!==null&&!compactReader.matches)applyPanelWidth(panelWidthPx);
+ /* clamp a free-dragged sheet height if the window shrank under it */
+ if(compactReader.matches&&readingPanel.classList.contains("free"))
+  setSheetHeight(readingPanel.getBoundingClientRect().height);
+});
 syncReaderLayout();
 btnReadMap.addEventListener("click",()=>{
  renderPanel(null);
@@ -726,10 +841,10 @@ $("closeReadingPanel").addEventListener("click",()=>setSheetDetent("peek"));
 (function sheetDrag(){
  const css=getComputedStyle(readingPanel);
  const num=(name: string,fallback: number): number=>{const v=parseFloat(css.getPropertyValue(name));return Number.isFinite(v)?v:fallback;};
- const dismissRatio=num("--dp-component-bottom-sheet-dismiss-ratio",0.25);
  const dismissVelocity=num("--dp-component-bottom-sheet-dismiss-velocity",0.5);
  const slop=num("--dp-component-bottom-sheet-drag-slop",4);
  let drag: { y: number; h: number; t: number; vy: number; moved: boolean } | null=null;
+ /* drag the whole sheet head (grabber strip) to set any height; body keeps scrolling */
  sheetGrabber.addEventListener("pointerdown",ev=>{
   if(!compactReader.matches||!readerModalOpen)return;
   drag={y:ev.clientY,h:readingPanel.getBoundingClientRect().height,t:performance.now(),vy:0,moved:false};
@@ -737,25 +852,23 @@ $("closeReadingPanel").addEventListener("click",()=>setSheetDetent("peek"));
  });
  sheetGrabber.addEventListener("pointermove",ev=>{
   if(!drag)return;
-  const dy=Math.max(0,ev.clientY-drag.y);
-  if(dy>slop)drag.moved=true;
-  drag.vy=(ev.clientY-drag.y)/Math.max(1,performance.now()-drag.t);
-  if(drag.moved){readingPanel.classList.add("is-dragging");readingPanel.style.transform=`translateY(${dy}px)`;}
+  const dy=ev.clientY-drag.y; /* up = taller, down = shorter */
+  if(Math.abs(dy)>slop)drag.moved=true;
+  drag.vy=dy/Math.max(1,performance.now()-drag.t);
+  if(drag.moved){readingPanel.classList.add("is-dragging");setSheetHeight(drag.h-dy);}
  });
  const settle=(ev: PointerEvent)=>{
   if(!drag)return;
-  const h=drag.h;
-  const dy=Math.max(0,ev.clientY-drag.y),vy=drag.vy,moved=drag.moved;
-  drag=null;readingPanel.classList.remove("is-dragging");readingPanel.style.transform="";
+  const vy=drag.vy,moved=drag.moved;
+  drag=null;readingPanel.classList.remove("is-dragging");
   if(!moved)return; /* below slop: let the click cycle the detent */
   suppressGrabberClick=true;
   ev.preventDefault();
-  /* strong pull-down rests the tray at peek; otherwise step down one detent */
-  if(vy>dismissVelocity||(dy>dismissRatio*h&&sheetDetent!=="peek"))setSheetDetent(sheetDetent==="large"?"medium":"peek");
-  else if(dy>readingPanel.getBoundingClientRect().height*0.2&&sheetDetent==="large")setSheetDetent("medium");
+  /* a hard flick down rests the tray at peek; otherwise it stays exactly where dropped */
+  if(vy>dismissVelocity&&readingPanel.getBoundingClientRect().height<=detentHeight("medium"))setSheetDetent("peek");
  };
  sheetGrabber.addEventListener("pointerup",settle);
- sheetGrabber.addEventListener("pointercancel",()=>{if(drag){drag=null;readingPanel.classList.remove("is-dragging");readingPanel.style.transform="";}});
+ sheetGrabber.addEventListener("pointercancel",()=>{if(drag){drag=null;readingPanel.classList.remove("is-dragging");}});
 })();
 function pin(id: string): void {
  if(pinned===id){pinned=null;NODES.forEach(n=>mark(n.id,false));renderPanel(null);updateNavigatorSelection();return;}
@@ -797,6 +910,7 @@ function paintCircuit(){
    p.material.uniforms.uMotion.value=on?1:0;
    p.material.uniforms.uVeil.value=on?0:1;
   });
+  setMediaDim(n.id,on);
  });
 }
 function applyCircuit(){
@@ -960,6 +1074,14 @@ btnStack.addEventListener("click",()=>{
  makeGrid();
  rebuildDotsAfterLevelMotion=true;
 });
+/* the ground grid is a reading aid, not a fixture — a toggle turns it off for a clean page */
+const btnGrid=$<HTMLButtonElement>("btnGrid");
+let gridOn=true;
+btnGrid.addEventListener("click",()=>{
+ gridOn=!gridOn;
+ btnGrid.setAttribute("aria-pressed",String(gridOn));
+ grids.forEach(g=>{g.visible=gridOn;});
+});
 let ti=-1;
 function clearTrace(){
  ti=-1;
@@ -1011,8 +1133,9 @@ function refreshTheme(): void {
   });
  });
  paintCircuit();
- /* the redline repaints to the theme's risk ink */
+ /* the redline repaints to the theme's risk ink; your sketches take the new pencil */
  try{redline.rebuild();}catch(e){if(e instanceof ReferenceError){/* not yet initialised on first build */}else throw e;}
+ try{brush.repaint();}catch(e){if(e instanceof ReferenceError){/* not yet initialised on first build */}else throw e;}
  /* browser chrome follows the canvas (token color.chrome.theme = bg-canvas) */
  const chromeMeta=document.querySelector('meta[name="theme-color"]');
  if(chromeMeta)chromeMeta.setAttribute("content","#"+COL.paper.getHexString());
@@ -1158,6 +1281,7 @@ NODES.forEach(n=>{
  else box(0,n.h);
  scene.add(grp);meshById[n.id]=grp;
  refreshAdvisory(n);
+ refreshMedia(n);
  /* placard */
  const lb=document.createElement("div");lb.className="lbl";lb.id="lb-"+n.id;
  const idsp=document.createElement("span");idsp.className="id";idsp.textContent=n.id;
@@ -1221,6 +1345,8 @@ function disposeScene(){
  });
  geometries.forEach(g=>g.dispose());textures.forEach(t=>t.dispose());materials.forEach(m=>m.dispose());
  pickables.length=0;themed.length=0;hatched.length=0;edgeMats.length=0;
+ Object.keys(mediaById).forEach(id=>{const m=mediaById[id];m.video.pause();m.video.src="";m.tex.dispose();delete mediaById[id];});
+ Object.keys(advisoryById).forEach(k=>delete advisoryById[k]);
  [meshById,edgeLinesById,byId].forEach(m=>Object.keys(m).forEach(k=>delete m[k]));
  lblLayer.replaceChildren();legend.replaceChildren();
 }
@@ -1272,7 +1398,7 @@ function applySpec(next: Spec): void{
  if(ti>=TRACE.length||ti<0||!EDGES.some(e=>e[0]+"-"+e[1]===TRACE[ti]))ti=-1;
  hoverId=null;flyGoal=null;
  buildScene(SPEC);refreshTheme();resize();
- redline.rebuild();
+ redline.rebuild();brush.clear(); /* a new map is a new page; old sketches don't carry over */
  const reds=NODES.filter(n=>n.items.some(i=>i.c==="red"));
  if(reds.some(n=>!oldReds.has(n.id))){blastIncident();return;}
  if(incidentActive&&!reds.length){cordon.clear();incidentActive=false;}
@@ -1345,6 +1471,77 @@ const redline=(()=>{
 })();
 redline.rebuild();
 
+/* ————— the brush (static ink you own) —————
+   Toggle Draw (or press W) and orbit/pick are suspended: every drag lays a
+   hand-drawn stroke on the ground plane. Strokes are static — they persist,
+   ride the scene's transforms, and can be undone one at a time or cleared.
+   Ink is the primary text color: a pencil line, quiet and on-brand. */
+const brush=(()=>{
+ const group=new THREE.Group();group.renderOrder=4;scene.add(group);
+ type Stroke={line: THREE.Line; pts: THREE.Vector3[]};
+ const strokes: Stroke[]=[];
+ let active=false;let drawing=false;let current: Stroke | null=null;
+ const btnDraw=$<HTMLButtonElement>("btnDraw");
+ const count=$<HTMLElement>("drawCount");
+ const ground=new THREE.Plane(new THREE.Vector3(0,1,0),0); /* y=0 work surface */
+ const hitP=new THREE.Vector3();
+ function toGround(cx: number,cy: number): THREE.Vector3 | null {
+  const r=canvas.getBoundingClientRect();
+  ptr.x=((cx-r.left)/r.width)*2-1;ptr.y=-((cy-r.top)/r.height)*2+1;
+  ray.setFromCamera(ptr,camera);
+  return ray.ray.intersectPlane(ground,hitP)?hitP.clone():null;
+ }
+ function ink(): THREE.Color { return mix(COL.fg1,COL.accent,0.22); } /* pencil with a whisper of accent */
+ function syncCount(){count.textContent=strokes.length+" stroke"+(strokes.length===1?"":"s");}
+ function begin(cx: number,cy: number): void {
+  const p=toGround(cx,cy);if(!p)return;
+  const m=new THREE.LineBasicMaterial({color:ink(),transparent:true,opacity:0.9});
+  const line=new THREE.Line(new THREE.BufferGeometry(),m);
+  line.userData.seg=0;group.add(line);
+  current={line,pts:[p]};drawing=true;
+ }
+ function extend(cx: number,cy: number): void {
+  if(!drawing||!current)return;
+  const p=toGround(cx,cy);if(!p)return;
+  const last=current.pts[current.pts.length-1];
+  if(last.distanceToSquared(p)<0.0016)return; /* ignore sub-pixel jitter */
+  current.pts.push(p);
+  current.line.geometry.dispose();
+  current.line.geometry=new THREE.BufferGeometry().setFromPoints(current.pts);
+ }
+ function end(): void {
+  if(!drawing||!current)return;
+  drawing=false;
+  if(current.pts.length>1){strokes.push(current);syncCount();}
+  else{group.remove(current.line);current.line.geometry.dispose();(current.line.material as THREE.Material).dispose();}
+  current=null;
+ }
+ function setActive(on: boolean): void {
+  active=on;
+  btnDraw.setAttribute("aria-pressed",String(on));
+  controls.enabled=!on; /* drawing owns the pointer; orbit resumes when you lift the pen */
+  canvas.style.cursor=on?"crosshair":"";
+  if(!on)end();
+ }
+ function undo(): void {
+  const s=strokes.pop();if(!s)return;
+  group.remove(s.line);s.line.geometry.dispose();(s.line.material as THREE.Material).dispose();syncCount();
+ }
+ function clear(): void {
+  while(strokes.length){const s=strokes.pop();if(!s)break;group.remove(s.line);s.line.geometry.dispose();(s.line.material as THREE.Material).dispose();}
+  syncCount();
+ }
+ function repaint(): void { strokes.forEach(s=>{(s.line.material as THREE.LineBasicMaterial).color.copy(ink());}); }
+ btnDraw.addEventListener("click",()=>setActive(!active));
+ $("btnDrawUndo").addEventListener("click",undo);
+ $("btnDrawClear").addEventListener("click",clear);
+ canvas.addEventListener("pointerdown",ev=>{if(active&&ev.button===0){ev.preventDefault();begin(ev.clientX,ev.clientY);}},true);
+ canvas.addEventListener("pointermove",ev=>{if(active)extend(ev.clientX,ev.clientY);},true);
+ window.addEventListener("pointerup",()=>{if(active)end();},true);
+ syncCount();
+ return {setActive,undo,clear,repaint,isActive:()=>active};
+})();
+
 /* ————— frame loop ————— */
 function resize(){
  const w=wrap.clientWidth,h=wrap.clientHeight;
@@ -1388,12 +1585,14 @@ function tick(){
  });
  if(lvlMoving)Object.values(edgeLinesById).forEach(o=>rebuildEdge(o));
  if(!lvlMoving&&rebuildDotsAfterLevelMotion){Object.values(edgeLinesById).forEach(o=>buildDots(o));rebuildDotsAfterLevelMotion=false;}
- /* advisory bands move only while Flow is on, and only on energized modules */
+ /* advisory mist drifts only while Flow is on, and only on energized modules.
+    Time is a free-running accumulator — never wrapped — so the fog field is a
+    sampled continuum with no snap-back. */
  Object.keys(advisoryById).forEach(id=>{
   const on=cordon.size===0||cordon.has(id);
   advisoryById[id].forEach(p=>{
    const live=flowing&&on&&!RM;
-   if(live)p.material.uniforms.uPhase.value=(p.material.uniforms.uPhase.value+0.004)%1;
+   if(live)p.material.uniforms.uTime.value+=0.016;
   });
  });
  /* junction dots read exactly as their pipe: same ink, same opacity — ghosted pipe, ghosted join */

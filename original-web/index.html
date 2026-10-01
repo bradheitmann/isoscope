@@ -27,7 +27,9 @@
       <button class="dp-button dp-button--sm dp-button--outline" id="btnReset" type="button" aria-label="Reset camera" aria-keyshortcuts="r" title="Reset camera (R)"></button>
       <button class="dp-button dp-button--sm" id="btnFlow" type="button" aria-label="Flow: animate data connections" aria-pressed="false" title="Flow"></button>
       <button class="dp-button dp-button--sm dp-button--outline" id="btnTrace" type="button" aria-label="Trace: light the loop one step at a time" title="Trace"></button>
+      <button class="dp-button dp-button--sm dp-button--outline" id="btnDraw" type="button" aria-label="Draw: sketch ink on the canvas (W)" aria-pressed="false" aria-keyshortcuts="w" title="Draw (W)"></button>
       <button class="dp-button dp-button--sm dp-button--outline" id="btnStack" type="button" aria-label="Stack: lift the architecture into three levels" aria-pressed="false" title="Stack"></button>
+      <button class="dp-button dp-button--sm dp-button--outline" id="btnGrid" type="button" aria-label="Grid: show or hide the ground grid" aria-pressed="true" title="Grid"></button>
       <button class="dp-button dp-button--sm dp-button--outline" id="btnSettings" type="button" aria-label="Settings" aria-haspopup="dialog" aria-controls="drawer" aria-expanded="false" title="Settings"></button>
       <button class="dp-button dp-button--sm dp-button--outline" id="btnReadMap" type="button" aria-label="Open map overview" aria-expanded="false" aria-controls="readingPanel" title="Map overview"></button>
       <button class="dp-button dp-button--sm dp-button--outline" id="zin" type="button" aria-label="Zoom in" title="Zoom in"></button>
@@ -115,6 +117,12 @@
       <div id="themeList" class="theme-list"></div>
       <h3 class="dp-type-label-sm">Flow character</h3><div class="dp-segmented" id="dashSeg"></div>
       <h3 class="dp-type-label-sm">Line weight</h3><div class="dp-segmented" id="weightSeg"></div>
+      <h3 class="dp-type-label-sm">Ink layer</h3>
+      <div class="draw-tools">
+        <p class="dp-type-body-xs">Your sketches stay on the canvas as static ink. <span id="drawCount">0 strokes</span></p>
+        <button class="dp-button dp-button--outline" id="btnDrawUndo" type="button">Undo last stroke</button>
+        <button class="dp-button dp-button--outline" id="btnDrawClear" type="button">Clear all ink</button>
+      </div>
     </div>
   </aside>
   <script type="module" src="/src/main.ts"></script>

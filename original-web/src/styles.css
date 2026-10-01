@@ -61,15 +61,25 @@ body { display: grid; grid-template-rows: auto minmax(0, 1fr); background: var(-
 .lbl.dim { opacity: var(--dp-component-scene-node-muted-opacity); }
 
 /* ————— reading panel: bottom tray on small screens (canonical .dp-sheet anatomy) ————— */
-.panel { position: fixed; inset-inline: 0; inset-block-end: 0; margin-inline: auto; max-inline-size: var(--dp-component-bottom-sheet-max-width); z-index: var(--dp-z-sheet); min-height: 0; }
+/* the whole tray is a column flex box so the grabber stays pinned and the body
+   scrolls at ANY height — free drag, not just fixed detents. */
+.panel { position: fixed; inset-inline: 0; inset-block-end: 0; margin-inline: auto; max-inline-size: var(--dp-component-bottom-sheet-max-width); z-index: var(--dp-z-sheet); min-height: 0; display: flex; flex-direction: column; touch-action: none; }
 .panel[hidden] { display: none; }
-.sheet-head { position: sticky; top: 0; z-index: var(--dp-z-raised); display: flex; align-items: center; justify-content: center; padding-block-end: var(--dp-space-2); background: var(--dp-component-bottom-sheet-bg); }
+.panel .scroll { flex: 1 1 auto; min-height: 0; overflow-y: auto; overscroll-behavior: contain; -webkit-overflow-scrolling: touch; touch-action: pan-y; }
+.sheet-head { position: relative; flex: none; z-index: var(--dp-z-raised); display: flex; align-items: center; justify-content: center; padding-block-end: var(--dp-space-2); background: var(--dp-component-bottom-sheet-bg); cursor: grab; touch-action: none; }
+.sheet-head:active { cursor: grabbing; }
 .sheet-head .dp-sheet__grabber { margin: 0; }
 .close-reading { position: absolute; inset-inline-end: var(--dp-space-2); top: 0; color: var(--dp-color-text-secondary); }
-/* peek: only the grabber + current title show (~16% of a phone screen); one tap lifts the rest */
+/* detents are starting heights only; the user can drag freely past them. */
+.panel.is-medium { block-size: 46vh; }
+.panel.is-large { block-size: 88vh; }
+/* peek: only the grabber + current title show (~16% of a phone screen); one tap lifts the rest.
+   A suppressed flag keeps the body's scroll region live even at peek when the user drags up. */
 .panel.is-peek { block-size: clamp(5.6rem, 16vh, 8.4rem); }
-.panel.is-peek .scroll { display: none; }
-.panel.is-peek .close-reading { display: none; }
+.panel.is-peek:not(.free) .scroll { display: none; }
+.panel.is-peek:not(.free) .close-reading { display: none; }
+/* while dragging, kill the sheet's transition so it tracks the finger 1:1 */
+.panel.is-dragging { transition: none; }
 /* summon handle: right-edge strip, always there when the tray is away (both form factors) */
 .tray-handle { position: fixed; inset-inline-end: 0; inset-block: var(--dp-space-6); z-index: var(--dp-z-raised); inline-size: var(--dp-space-5); padding: 0; border: 0; border-inline-start: var(--dp-border-width-hair) solid var(--dp-color-border-subtle); border-radius: var(--dp-radius-md) 0 0 var(--dp-radius-md); background: var(--dp-color-bg-raised); cursor: pointer; }
 .tray-handle::after { content: ""; position: absolute; inset-inline-start: 50%; inset-block-start: 50%; translate: -50% -50%; inline-size: var(--dp-border-width-thick); block-size: var(--dp-layout-size-touch-min); border-radius: var(--dp-radius-full); background: var(--dp-color-border-default); }
@@ -174,7 +184,7 @@ details > summary { cursor: pointer; }
 @media (min-width: 1181px) {
   .workbench { display: flex; }
   .canvas-wrap { flex: 1 1 auto; }
-  .panel { position: relative; inset: auto; flex: 0 0 var(--panel-w, var(--dp-layout-grid-component-visualization-workbench-reading-preferred-width)); min-inline-size: 0; max-inline-size: none; overflow: auto; z-index: auto; background: var(--dp-color-bg-surface); border-inline-start: var(--dp-border-width-hair) solid var(--dp-color-border-subtle); border-radius: 0; box-shadow: none; }
+  .panel { position: relative; inset: auto; flex: 0 0 var(--panel-w, var(--dp-layout-grid-component-visualization-workbench-reading-preferred-width)); block-size: auto; min-inline-size: 0; max-inline-size: none; overflow: hidden; z-index: auto; background: var(--dp-color-bg-surface); border-inline-start: var(--dp-border-width-hair) solid var(--dp-color-border-subtle); border-radius: 0; box-shadow: none; touch-action: auto; }
   .sheet-head { display: none; }
   .scroll { padding: var(--dp-space-6) var(--dp-space-5); }
   .reading-section { margin-block-start: var(--dp-space-6); }

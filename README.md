@@ -22,6 +22,8 @@ does not prove dependency eligibility.
 See [replacement architecture](replacement/ARCHITECTURE.md),
 [operations and scheduled execution evidence](replacement/OPERATIONS.md), and
 [independent backend delta review](replacement/validation/backend-independent-delta.md).
+The [current dependency upgrade review](replacement/validation/core-upgrade-independent.md)
+also verifies the locked core on Rust 1.85.1.
 The legacy implementation below remains available for existing consumers. Its
 roadmap statements are not guarantees of the replacement; the architecture note
 records migrated behavior and remaining gaps.

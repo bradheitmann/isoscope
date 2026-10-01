@@ -92,6 +92,20 @@ Its SHA-256 is
 The saved prompt checks the hash before execution. This ignored runtime file is
 preserved locally; subsequent builds do not overwrite it. Future source updates
 require a new versioned filename/hash and purpose-built automation update.
+
+Receipt storage currently preserves complete per-run captures without automatic
+pruning or cross-run chunk deduplication. The measured real capture is about
+7.1 MB; at a five-minute cadence, 288 captures/day would retain approximately
+2 GB/day of raw receipts before filesystem compression (a sizing estimate,
+not measured daily growth). A retention/archive policy and chunk reuse are not
+implemented. Do not describe this prototype's receipt store as storage-bounded
+or delete provenance automatically; operational custody must account for this
+growth while the automation remains active.
+The proposed next storage change is lossless content-addressed source chunks and
+an immutable per-run manifest, retaining exact reconstruction and the original
+raw SHA. Whole-capture `collected_at` changes prevent naive whole-blob reuse.
+This storage improvement is a proposal, not current enforcement.
+
 The versioned executable completed an actual scheduled refresh at
 2026-10-01T05:05:11.104233Z, verified by the scheduler's completed receipt and
 `refresh-status.json`: source 54ecdda, the matching executable hash above,
@@ -102,3 +116,24 @@ snapshot content hash:
 This proves corrected-release scheduled execution. The scheduler agent's model
 overhead remains separate from the deterministic collector and is not included
 in product token/cost coverage.
+
+### Current upgraded runtime
+
+After independent bounded dependency QA passed at source
+`16b64cd6e5f8862a71963b7b10a4330969a62d24` (including 25 tests on Rust 1.85.1),
+the automation was updated through the purpose-built Codex tool to:
+
+`replacement/runtime/isoscope-core-16b64cd6e5f8862a71963b7b10a4330969a62d24`
+
+Executable SHA-256:
+`e10caf2134c805c4b90309e857903ffd1cc47243699e59d3027b8183744941bd`.
+The first actual scheduled run of this immutable upgraded binary collected at
+2026-10-01T05:40:11.045673Z, with matching scheduler memory and status receipt:
+296 items, plan `353e2edf47f40b024a06c314c82b9d5b617b4c6a`, host mac.lan/PID
+12028, no consecutive failures. Raw source SHA:
+`9a1f5df9a7ca8a8f472d461873cb6787d42f2cccba874b685ec303e68b6dfc59`;
+snapshot SHA:
+`34540eab13cfe9cc3779249cc19394019b1fc00b88838b208051260d4171dc69`.
+The earlier 54ecdda executable and receipts remain preserved. See the exact
+[bounded upgrade review](validation/core-upgrade-independent.md); it does not
+accept the clients or whole product.

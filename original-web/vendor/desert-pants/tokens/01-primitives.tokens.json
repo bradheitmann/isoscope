@@ -1,0 +1,5736 @@
+{
+  "$description": "Primitives: palette, alpha colours, font, space, radius, stroke, shadow, blur, opacity, z-index, duration, easing, breakpoints, aspect ratios.",
+  "$extensions": {
+    "com.desertpants": {
+      "system": "desert-pants",
+      "format": "DTCG 2025.10",
+      "source": "Visual language derived from desertant.com (brand/index.css, assets/site.css, captured 2026-09-23/24). Logos, marks, product names, photography and copy are not included.",
+      "modes": [
+        "light",
+        "dark"
+      ]
+    }
+  },
+  "color": {
+    "palette": {
+      "$description": "Raw palette. Every distinct opaque colour the system uses. Consume semantic tokens (color.bg, color.text, color.fill) in product code; palette tokens are for building those and for print specification.",
+      "cream": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.984314,
+            0.980392,
+            0.956863
+          ],
+          "alpha": 1.0,
+          "hex": "#fbfaf4"
+        },
+        "$description": "Paper-cream page ground (light canvas) and the light ink on dark fills.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css --color-cream",
+            "print": {
+              "lab-d50": [
+                98.23,
+                -0.43,
+                3.01
+              ],
+              "cmyk-fogra39": [
+                2,
+                2,
+                5,
+                0
+              ]
+            }
+          }
+        }
+      },
+      "cream-dark": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.94902,
+            0.945098,
+            0.921569
+          ],
+          "alpha": 1.0,
+          "hex": "#f2f1eb"
+        },
+        "$description": "Card and use-case ground on cream.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css --color-cream-dark",
+            "print": {
+              "lab-d50": [
+                95.1,
+                -0.43,
+                3.03
+              ],
+              "cmyk-fogra39": [
+                6,
+                5,
+                9,
+                0
+              ]
+            }
+          }
+        }
+      },
+      "paper": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.988235,
+            0.984314,
+            0.968627
+          ],
+          "alpha": 1.0,
+          "hex": "#fcfbf7"
+        },
+        "$description": "Surface for inputs, code blocks and menus in light mode.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css --color-paper",
+            "print": {
+              "lab-d50": [
+                98.61,
+                -0.17,
+                2.04
+              ],
+              "cmyk-fogra39": [
+                2,
+                2,
+                4,
+                0
+              ]
+            }
+          }
+        }
+      },
+      "white": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            1.0,
+            1.0,
+            1.0
+          ],
+          "alpha": 1.0,
+          "hex": "#ffffff"
+        },
+        "$description": "Raised surface (menus) in light mode; dark-mode hover for the cream accent.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css --color-white",
+            "print": {
+              "lab-d50": [
+                100.0,
+                -0.0,
+                0.0
+              ],
+              "cmyk-fogra39": [
+                0,
+                0,
+                0,
+                0
+              ]
+            }
+          }
+        }
+      },
+      "black": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "alpha": 1.0,
+          "hex": "#000000"
+        },
+        "$description": "Pressed state of the ink accent; shadow base.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css --color-black",
+            "print": {
+              "lab-d50": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "cmyk-fogra39": [
+                85,
+                79,
+                54,
+                98
+              ]
+            }
+          }
+        }
+      },
+      "ink": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.054902,
+            0.066667,
+            0.07451
+          ],
+          "alpha": 1.0,
+          "hex": "#0e1113"
+        },
+        "$description": "Near-black ink: primary text, the accent fill, focus ring and strong borders in light mode.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css --color-ink",
+            "print": {
+              "lab-d50": [
+                4.87,
+                -0.78,
+                -1.53
+              ],
+              "cmyk-fogra39": [
+                84,
+                74,
+                56,
+                94
+              ]
+            }
+          }
+        }
+      },
+      "graphite": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.172549,
+            0.192157,
+            0.203922
+          ],
+          "alpha": 1.0,
+          "hex": "#2c3134"
+        },
+        "$description": "Secondary text and the accent hover fill in light mode.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css --color-text-secondary / --color-accent-hover",
+            "print": {
+              "lab-d50": [
+                19.92,
+                -1.67,
+                -2.7
+              ],
+              "cmyk-fogra39": [
+                79,
+                64,
+                57,
+                64
+              ]
+            }
+          }
+        }
+      },
+      "mist": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.341176,
+            0.376471,
+            0.415686
+          ],
+          "alpha": 1.0,
+          "hex": "#57606a"
+        },
+        "$description": "Muted text in light mode.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css --color-mist",
+            "print": {
+              "lab-d50": [
+                40.21,
+                -1.85,
+                -6.96
+              ],
+              "cmyk-fogra39": [
+                65,
+                49,
+                41,
+                32
+              ]
+            }
+          }
+        }
+      },
+      "pebble": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.603922,
+            0.631373,
+            0.647059
+          ],
+          "alpha": 1.0,
+          "hex": "#9aa1a5"
+        },
+        "$description": "Faint text in light mode. Decorative and disabled content only (2.5:1 on cream).",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css --color-text-faint",
+            "print": {
+              "lab-d50": [
+                65.76,
+                -1.99,
+                -3.0
+              ],
+              "cmyk-fogra39": [
+                42,
+                29,
+                28,
+                9
+              ]
+            }
+          }
+        }
+      },
+      "cream-sunken": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.94902,
+            0.945098,
+            0.917647
+          ],
+          "alpha": 1.0,
+          "hex": "#f2f1ea"
+        },
+        "$description": "Sunken wells in light mode.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css --color-bg-sunken",
+            "print": {
+              "lab-d50": [
+                95.08,
+                -0.56,
+                3.51
+              ],
+              "cmyk-fogra39": [
+                6,
+                5,
+                9,
+                0
+              ]
+            }
+          }
+        }
+      },
+      "cream-inset": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.913725,
+            0.909804,
+            0.878431
+          ],
+          "alpha": 1.0,
+          "hex": "#e9e8e0"
+        },
+        "$description": "Inset areas and photo placeholders in light mode.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css --color-bg-inset",
+            "print": {
+              "lab-d50": [
+                91.91,
+                -0.69,
+                4.03
+              ],
+              "cmyk-fogra39": [
+                10,
+                7,
+                13,
+                0
+              ]
+            }
+          }
+        }
+      },
+      "placeholder-grey": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.929412,
+            0.929412,
+            0.929412
+          ],
+          "alpha": 1.0,
+          "hex": "#ededed"
+        },
+        "$description": "Placeholder feature-card ground.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css --color-bg-placeholder",
+            "print": {
+              "lab-d50": [
+                93.75,
+                -0.0,
+                0.0
+              ],
+              "cmyk-fogra39": [
+                8,
+                6,
+                6,
+                0
+              ]
+            }
+          }
+        }
+      },
+      "sage": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.678431,
+            0.705882,
+            0.611765
+          ],
+          "alpha": 1.0,
+          "hex": "#adb49c"
+        },
+        "$description": "Fill theme: sage. Default section theme; table highlight accent and marker ink.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css --color-sage",
+            "print": {
+              "lab-d50": [
+                72.25,
+                -5.77,
+                11.41
+              ],
+              "cmyk-fogra39": [
+                37,
+                21,
+                41,
+                4
+              ]
+            }
+          }
+        }
+      },
+      "teal": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.764706,
+            0.827451,
+            0.807843
+          ],
+          "alpha": 1.0,
+          "hex": "#c3d3ce"
+        },
+        "$description": "Fill theme: teal. Also the light-mode text selection ground and the dark-mode accent pressed fill.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css --color-teal",
+            "print": {
+              "lab-d50": [
+                83.22,
+                -6.31,
+                0.53
+              ],
+              "cmyk-fogra39": [
+                28,
+                11,
+                20,
+                0
+              ]
+            }
+          }
+        }
+      },
+      "forest": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.094118,
+            0.117647,
+            0.113725
+          ],
+          "alpha": 1.0,
+          "hex": "#181e1d"
+        },
+        "$description": "Fill theme: forest. Dark-mode canvas and the dark surface context.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css --color-forest",
+            "print": {
+              "lab-d50": [
+                10.62,
+                -3.07,
+                -0.29
+              ],
+              "cmyk-fogra39": [
+                82,
+                66,
+                62,
+                85
+              ]
+            }
+          }
+        }
+      },
+      "terracotta": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.858824,
+            0.439216,
+            0.298039
+          ],
+          "alpha": 1.0,
+          "hex": "#db704c"
+        },
+        "$description": "Fill theme: terracotta.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css --color-terracotta",
+            "print": {
+              "lab-d50": [
+                59.72,
+                40.72,
+                39.76
+              ],
+              "cmyk-fogra39": [
+                4,
+                63,
+                69,
+                8
+              ]
+            }
+          }
+        }
+      },
+      "sand": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.839216,
+            0.815686,
+            0.764706
+          ],
+          "alpha": 1.0,
+          "hex": "#d6d0c3"
+        },
+        "$description": "Fill theme: sand.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css --color-sand",
+            "print": {
+              "lab-d50": [
+                83.7,
+                0.48,
+                7.25
+              ],
+              "cmyk-fogra39": [
+                20,
+                17,
+                25,
+                0
+              ]
+            }
+          }
+        }
+      },
+      "warm-grey": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.717647,
+            0.713725,
+            0.705882
+          ],
+          "alpha": 1.0,
+          "hex": "#b7b6b4"
+        },
+        "$description": "Fill theme: warm grey.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css --color-warm-grey",
+            "print": {
+              "lab-d50": [
+                74.09,
+                0.09,
+                1.15
+              ],
+              "cmyk-fogra39": [
+                33,
+                25,
+                27,
+                1
+              ]
+            }
+          }
+        }
+      },
+      "clay-red": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.835294,
+            0.215686,
+            0.070588
+          ],
+          "alpha": 1.0,
+          "hex": "#d53712"
+        },
+        "$description": "Fill theme: clay red. Cream text only.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css --color-clay-red",
+            "print": {
+              "lab-d50": [
+                48.98,
+                60.85,
+                56.89
+              ],
+              "cmyk-fogra39": [
+                0,
+                89,
+                97,
+                10
+              ]
+            }
+          }
+        }
+      },
+      "dark-teal": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.109804,
+            0.321569,
+            0.364706
+          ],
+          "alpha": 1.0,
+          "hex": "#1c525d"
+        },
+        "$description": "Fill theme: dark teal. Cream text only.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css --color-dark-teal",
+            "print": {
+              "lab-d50": [
+                31.74,
+                -15.41,
+                -12.0
+              ],
+              "cmyk-fogra39": [
+                85,
+                42,
+                42,
+                45
+              ]
+            }
+          }
+        }
+      },
+      "dusty-pink": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.713725,
+            0.588235,
+            0.615686
+          ],
+          "alpha": 1.0,
+          "hex": "#b6969d"
+        },
+        "$description": "Fill theme: dusty pink.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css --color-dusty-pink",
+            "print": {
+              "lab-d50": [
+                65.21,
+                13.18,
+                1.04
+              ],
+              "cmyk-fogra39": [
+                29,
+                42,
+                28,
+                7
+              ]
+            }
+          }
+        }
+      },
+      "light-peach": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.972549,
+            0.858824,
+            0.792157
+          ],
+          "alpha": 1.0,
+          "hex": "#f8dbca"
+        },
+        "$description": "Fill theme: light peach.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css --color-light-peach",
+            "print": {
+              "lab-d50": [
+                89.51,
+                8.42,
+                12.26
+              ],
+              "cmyk-fogra39": [
+                5,
+                17,
+                20,
+                0
+              ]
+            }
+          }
+        }
+      },
+      "faun": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.807843,
+            0.768627,
+            0.733333
+          ],
+          "alpha": 1.0,
+          "hex": "#cec4bb"
+        },
+        "$description": "Fill theme: faun.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css --color-faun",
+            "print": {
+              "lab-d50": [
+                79.79,
+                2.46,
+                5.85
+              ],
+              "cmyk-fogra39": [
+                23,
+                22,
+                26,
+                0
+              ]
+            }
+          }
+        }
+      },
+      "cool-grey": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.862745,
+            0.870588,
+            0.87451
+          ],
+          "alpha": 1.0,
+          "hex": "#dcdedf"
+        },
+        "$description": "Fill theme: cool grey.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css --color-cool-grey",
+            "print": {
+              "lab-d50": [
+                88.33,
+                -0.57,
+                -0.74
+              ],
+              "cmyk-fogra39": [
+                16,
+                11,
+                11,
+                0
+              ]
+            }
+          }
+        }
+      },
+      "stone": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.705882,
+            0.682353,
+            0.65098
+          ],
+          "alpha": 1.0,
+          "hex": "#b4aea6"
+        },
+        "$description": "Fill theme: stone.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css --color-stone",
+            "print": {
+              "lab-d50": [
+                71.43,
+                1.15,
+                4.92
+              ],
+              "cmyk-fogra39": [
+                33,
+                27,
+                32,
+                5
+              ]
+            }
+          }
+        }
+      },
+      "dark-grey": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.4,
+            0.411765,
+            0.403922
+          ],
+          "alpha": 1.0,
+          "hex": "#666967"
+        },
+        "$description": "Fill theme: dark grey. Cream text only.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css --color-dark-grey",
+            "print": {
+              "lab-d50": [
+                44.1,
+                -1.51,
+                0.7
+              ],
+              "cmyk-fogra39": [
+                59,
+                47,
+                49,
+                27
+              ]
+            }
+          }
+        }
+      },
+      "signal-green": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.235294,
+            0.541176,
+            0.321569
+          ],
+          "alpha": 1.0,
+          "hex": "#3c8a52"
+        },
+        "$description": "Success signal fill (dots, icons, soft tints). Not for small text: 4.06:1 on cream.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css --color-signal-success",
+            "print": {
+              "lab-d50": [
+                51.54,
+                -34.96,
+                22.48
+              ],
+              "cmyk-fogra39": [
+                75,
+                15,
+                80,
+                19
+              ]
+            }
+          }
+        }
+      },
+      "signal-amber": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.760784,
+            0.411765,
+            0.101961
+          ],
+          "alpha": 1.0,
+          "hex": "#c2691a"
+        },
+        "$description": "Warning signal fill. Not for small text: 3.77:1 on cream.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css --color-signal-warning",
+            "print": {
+              "lab-d50": [
+                54.23,
+                32.71,
+                55.87
+              ],
+              "cmyk-fogra39": [
+                4,
+                58,
+                92,
+                23
+              ]
+            }
+          }
+        }
+      },
+      "signal-red": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.745098,
+            0.227451,
+            0.180392
+          ],
+          "alpha": 1.0,
+          "hex": "#be3a2e"
+        },
+        "$description": "Danger signal fill and light-mode danger text (5.24:1 on cream).",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css --color-signal-danger",
+            "print": {
+              "lab-d50": [
+                45.16,
+                52.96,
+                38.61
+              ],
+              "cmyk-fogra39": [
+                1,
+                87,
+                78,
+                24
+              ]
+            }
+          }
+        }
+      },
+      "signal-cyan": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.117647,
+            0.54902,
+            0.54902
+          ],
+          "alpha": 1.0,
+          "hex": "#1e8c8c"
+        },
+        "$description": "Info signal fill. Not for small text: 3.87:1 on cream.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css --color-signal-info",
+            "print": {
+              "lab-d50": [
+                52.6,
+                -30.29,
+                -9.06
+              ],
+              "cmyk-fogra39": [
+                77,
+                14,
+                40,
+                20
+              ]
+            }
+          }
+        }
+      },
+      "forest-surface": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.121569,
+            0.14902,
+            0.141176
+          ],
+          "alpha": 1.0,
+          "hex": "#1f2624"
+        },
+        "$description": "Dark-mode surface and card ground.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css [data-theme=dark] --color-bg-surface",
+            "print": {
+              "lab-d50": [
+                14.41,
+                -3.64,
+                0.23
+              ],
+              "cmyk-fogra39": [
+                80,
+                63,
+                64,
+                76
+              ]
+            }
+          }
+        }
+      },
+      "forest-raised": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.14902,
+            0.180392,
+            0.172549
+          ],
+          "alpha": 1.0,
+          "hex": "#262e2c"
+        },
+        "$description": "Dark-mode raised surface (menus, dialogs).",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css [data-theme=dark] --color-bg-raised",
+            "print": {
+              "lab-d50": [
+                18.11,
+                -3.98,
+                0.07
+              ],
+              "cmyk-fogra39": [
+                80,
+                62,
+                64,
+                68
+              ]
+            }
+          }
+        }
+      },
+      "forest-sunken": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.070588,
+            0.090196,
+            0.086275
+          ],
+          "alpha": 1.0,
+          "hex": "#121716"
+        },
+        "$description": "Dark-mode sunken wells.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css [data-theme=dark] --color-bg-sunken",
+            "print": {
+              "lab-d50": [
+                7.2,
+                -2.44,
+                -0.12
+              ],
+              "cmyk-fogra39": [
+                82,
+                69,
+                61,
+                91
+              ]
+            }
+          }
+        }
+      },
+      "forest-inset": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.168627,
+            0.2,
+            0.192157
+          ],
+          "alpha": 1.0,
+          "hex": "#2b3331"
+        },
+        "$description": "Dark-mode inset areas.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css [data-theme=dark] --color-bg-inset",
+            "print": {
+              "lab-d50": [
+                20.43,
+                -3.93,
+                0.06
+              ],
+              "cmyk-fogra39": [
+                80,
+                62,
+                64,
+                63
+              ]
+            }
+          }
+        }
+      },
+      "forest-selection": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.196078,
+            0.258824,
+            0.27451
+          ],
+          "alpha": 1.0,
+          "hex": "#324246"
+        },
+        "$description": "Dark-mode text selection ground.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css [data-theme=dark] --color-selection-bg",
+            "print": {
+              "lab-d50": [
+                26.7,
+                -5.84,
+                -4.66
+              ],
+              "cmyk-fogra39": [
+                79,
+                55,
+                53,
+                52
+              ]
+            }
+          }
+        }
+      },
+      "fog": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.843137,
+            0.858824,
+            0.85098
+          ],
+          "alpha": 1.0,
+          "hex": "#d7dbd9"
+        },
+        "$description": "Dark-mode secondary text.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css [data-theme=dark] --color-text-secondary",
+            "print": {
+              "lab-d50": [
+                87.05,
+                -1.67,
+                0.49
+              ],
+              "cmyk-fogra39": [
+                19,
+                11,
+                15,
+                0
+              ]
+            }
+          }
+        }
+      },
+      "lichen": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.603922,
+            0.647059,
+            0.631373
+          ],
+          "alpha": 1.0,
+          "hex": "#9aa5a1"
+        },
+        "$description": "Dark-mode muted text.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css [data-theme=dark] --color-text-muted",
+            "print": {
+              "lab-d50": [
+                66.77,
+                -4.63,
+                0.67
+              ],
+              "cmyk-fogra39": [
+                42,
+                26,
+                32,
+                9
+              ]
+            }
+          }
+        }
+      },
+      "moss-grey": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.431373,
+            0.47451,
+            0.458824
+          ],
+          "alpha": 1.0,
+          "hex": "#6e7975"
+        },
+        "$description": "Dark-mode faint text; decorative and disabled content only (3.75:1 on forest).",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css [data-theme=dark] --color-text-faint",
+            "print": {
+              "lab-d50": [
+                49.8,
+                -4.89,
+                0.72
+              ],
+              "cmyk-fogra39": [
+                56,
+                38,
+                45,
+                23
+              ]
+            }
+          }
+        }
+      },
+      "ink-72-cream": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.313725,
+            0.321569,
+            0.321569
+          ],
+          "alpha": 1.0,
+          "hex": "#505252"
+        },
+        "$description": "Muted-strong text on light grounds: 72% ink over cream (site.css --muted-text). 7.52:1 on cream.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "derived",
+            "source": "assets/site.css --muted-text color-mix(in srgb, text-primary 72%, canvas)",
+            "print": {
+              "lab-d50": [
+                34.69,
+                -0.84,
+                -0.3
+              ],
+              "cmyk-fogra39": [
+                66,
+                55,
+                54,
+                39
+              ]
+            }
+          }
+        }
+      },
+      "cream-72-forest": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.733333,
+            0.737255,
+            0.721569
+          ],
+          "alpha": 1.0,
+          "hex": "#bbbcb8"
+        },
+        "$description": "Muted-strong text on dark grounds: 72% cream over forest (--muted-text resolved in dark mode). 8.85:1 on forest.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "derived",
+            "source": "assets/site.css --muted-text color-mix(in srgb, text-primary 72%, canvas)",
+            "print": {
+              "lab-d50": [
+                76.08,
+                -0.91,
+                1.9
+              ],
+              "cmyk-fogra39": [
+                32,
+                23,
+                27,
+                0
+              ]
+            }
+          }
+        }
+      },
+      "signal-green-deep": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.109804,
+            0.431373,
+            0.219608
+          ],
+          "alpha": 1.0,
+          "hex": "#1c6e38"
+        },
+        "$description": "Success text on light grounds. Signal green darkened in OKLab to 4.6:1 minimum on every light ground and on its 16% tint.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "addition",
+            "print": {
+              "lab-d50": [
+                40.7,
+                -35.04,
+                22.74
+              ],
+              "cmyk-fogra39": [
+                82,
+                19,
+                90,
+                36
+              ]
+            }
+          }
+        }
+      },
+      "signal-amber-deep": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.615686,
+            0.282353,
+            0.0
+          ],
+          "alpha": 1.0,
+          "hex": "#9d4800"
+        },
+        "$description": "Warning text on light grounds (OKLab-darkened signal amber, 4.6:1 minimum).",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "addition",
+            "print": {
+              "lab-d50": [
+                41.45,
+                33.82,
+                51.64
+              ],
+              "cmyk-fogra39": [
+                5,
+                68,
+                96,
+                41
+              ]
+            }
+          }
+        }
+      },
+      "signal-red-deep": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.690196,
+            0.168627,
+            0.129412
+          ],
+          "alpha": 1.0,
+          "hex": "#b02b21"
+        },
+        "$description": "Danger text on light grounds (OKLab-darkened signal red, 4.6:1 minimum on grounds and tint).",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "addition",
+            "print": {
+              "lab-d50": [
+                40.38,
+                53.33,
+                40.06
+              ],
+              "cmyk-fogra39": [
+                2,
+                91,
+                84,
+                30
+              ]
+            }
+          }
+        }
+      },
+      "signal-cyan-deep": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.0,
+            0.423529,
+            0.427451
+          ],
+          "alpha": 1.0,
+          "hex": "#006c6d"
+        },
+        "$description": "Info text on light grounds (OKLab-darkened signal cyan, 4.6:1 minimum).",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "addition",
+            "print": {
+              "lab-d50": [
+                40.7,
+                -26.66,
+                -8.51
+              ],
+              "cmyk-fogra39": [
+                85,
+                29,
+                47,
+                31
+              ]
+            }
+          }
+        }
+      },
+      "signal-green-light": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.368627,
+            0.670588,
+            0.443137
+          ],
+          "alpha": 1.0,
+          "hex": "#5eab71"
+        },
+        "$description": "Success text on dark grounds (OKLab-lightened, 4.6:1 minimum on forest grounds).",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "addition",
+            "print": {
+              "lab-d50": [
+                63.91,
+                -34.67,
+                22.24
+              ],
+              "cmyk-fogra39": [
+                64,
+                3,
+                66,
+                8
+              ]
+            }
+          }
+        }
+      },
+      "signal-amber-light": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.878431,
+            0.517647,
+            0.235294
+          ],
+          "alpha": 1.0,
+          "hex": "#e0843c"
+        },
+        "$description": "Warning text on dark grounds (OKLab-lightened, 4.6:1 minimum).",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "addition",
+            "print": {
+              "lab-d50": [
+                64.48,
+                32.22,
+                53.01
+              ],
+              "cmyk-fogra39": [
+                4,
+                54,
+                81,
+                7
+              ]
+            }
+          }
+        }
+      },
+      "signal-red-light": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.976471,
+            0.439216,
+            0.376471
+          ],
+          "alpha": 1.0,
+          "hex": "#f97060"
+        },
+        "$description": "Danger text on dark grounds (OKLab-lightened, 4.6:1 minimum).",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "addition",
+            "print": {
+              "lab-d50": [
+                64.49,
+                52.69,
+                35.84
+              ],
+              "cmyk-fogra39": [
+                0,
+                68,
+                58,
+                0
+              ]
+            }
+          }
+        }
+      },
+      "signal-cyan-light": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.270588,
+            0.666667,
+            0.662745
+          ],
+          "alpha": 1.0,
+          "hex": "#45aaa9"
+        },
+        "$description": "Info text on dark grounds (OKLab-lightened, 4.6:1 minimum).",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "addition",
+            "print": {
+              "lab-d50": [
+                63.79,
+                -30.5,
+                -8.76
+              ],
+              "cmyk-fogra39": [
+                68,
+                5,
+                34,
+                8
+              ]
+            }
+          }
+        }
+      }
+    },
+    "alpha": {
+      "$description": "Translucent colours. Each is a base palette colour at a fixed alpha, exactly as the source declares them (rgba(), #rrggbbaa or color-mix with transparent).",
+      "ink-5": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.054902,
+            0.066667,
+            0.07451
+          ],
+          "alpha": 0.05,
+          "hex": "#0e1113"
+        },
+        "$description": "Tint wells, card kind chip ground, hover ground (light).",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css --color-ink-5",
+            "print": {
+              "cmyk-fogra39": [
+                5,
+                4,
+                4,
+                0
+              ]
+            }
+          }
+        }
+      },
+      "ink-6": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.054902,
+            0.066667,
+            0.07451
+          ],
+          "alpha": 0.06,
+          "hex": "#0e1113"
+        },
+        "$description": "Shadow colour (xs, sm) and dusty-pink feature tag ground.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css --shadow-xs / feature-card--dusty-pink --fc-tag",
+            "print": {
+              "cmyk-fogra39": [
+                6,
+                5,
+                5,
+                0
+              ]
+            }
+          }
+        }
+      },
+      "ink-8": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.054902,
+            0.066667,
+            0.07451
+          ],
+          "alpha": 0.08,
+          "hex": "#0e1113"
+        },
+        "$description": "Terracotta feature tag ground; outline-on-fill hover ground.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css feature-card--terracotta --fc-tag",
+            "print": {
+              "cmyk-fogra39": [
+                9,
+                6,
+                7,
+                0
+              ]
+            }
+          }
+        }
+      },
+      "ink-10": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.054902,
+            0.066667,
+            0.07451
+          ],
+          "alpha": 0.1,
+          "hex": "#0e1113"
+        },
+        "$description": "Card hover ground, selected ground, subtle borders, status badge ground (light).",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css --color-ink-10",
+            "print": {
+              "cmyk-fogra39": [
+                11,
+                8,
+                9,
+                0
+              ]
+            }
+          }
+        }
+      },
+      "ink-12": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.054902,
+            0.066667,
+            0.07451
+          ],
+          "alpha": 0.12,
+          "hex": "#0e1113"
+        },
+        "$description": "Hairlines on dusty-pink fills.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css --color-theme-dusty-pink-line",
+            "print": {
+              "cmyk-fogra39": [
+                13,
+                10,
+                10,
+                0
+              ]
+            }
+          }
+        }
+      },
+      "ink-14": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.054902,
+            0.066667,
+            0.07451
+          ],
+          "alpha": 0.14,
+          "hex": "#0e1113"
+        },
+        "$description": "Playing transcript line on light fills.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css site.css .replay-lines p.is-active color-mix(ink 14%)",
+            "print": {
+              "cmyk-fogra39": [
+                16,
+                11,
+                12,
+                0
+              ]
+            }
+          }
+        }
+      },
+      "ink-15": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.054902,
+            0.066667,
+            0.07451
+          ],
+          "alpha": 0.15,
+          "hex": "#0e1113"
+        },
+        "$description": "Hairlines on terracotta fills.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css --color-theme-terracotta-line",
+            "print": {
+              "cmyk-fogra39": [
+                17,
+                12,
+                12,
+                0
+              ]
+            }
+          }
+        }
+      },
+      "ink-16": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.054902,
+            0.066667,
+            0.07451
+          ],
+          "alpha": 0.16,
+          "hex": "#0e1113"
+        },
+        "$description": "Photo scrim midpoint (video bar).",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css post video bar gradient",
+            "print": {
+              "cmyk-fogra39": [
+                18,
+                13,
+                14,
+                0
+              ]
+            }
+          }
+        }
+      },
+      "ink-20": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.054902,
+            0.066667,
+            0.07451
+          ],
+          "alpha": 0.2,
+          "hex": "#0e1113"
+        },
+        "$description": "Default borders and input outlines (light).",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css --color-border-default",
+            "print": {
+              "cmyk-fogra39": [
+                23,
+                16,
+                17,
+                0
+              ]
+            }
+          }
+        }
+      },
+      "ink-35": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.054902,
+            0.066667,
+            0.07451
+          ],
+          "alpha": 0.35,
+          "hex": "#0e1113"
+        },
+        "$description": "Placeholder illustration ink.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css feature-card placeholder icon #0e111359",
+            "print": {
+              "cmyk-fogra39": [
+                35,
+                26,
+                27,
+                7
+              ]
+            }
+          }
+        }
+      },
+      "ink-42": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.054902,
+            0.066667,
+            0.07451
+          ],
+          "alpha": 0.42,
+          "hex": "#0e1113"
+        },
+        "$description": "Photo scrim start (video bar).",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css post video bar gradient",
+            "print": {
+              "cmyk-fogra39": [
+                42,
+                32,
+                32,
+                9
+              ]
+            }
+          }
+        }
+      },
+      "ink-50": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.054902,
+            0.066667,
+            0.07451
+          ],
+          "alpha": 0.5,
+          "hex": "#0e1113"
+        },
+        "$description": "Placeholder feature-card text; modal scrim.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css feature-card--placeholder --fc-ink",
+            "print": {
+              "cmyk-fogra39": [
+                49,
+                38,
+                38,
+                14
+              ]
+            }
+          }
+        }
+      },
+      "ink-55": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.054902,
+            0.066667,
+            0.07451
+          ],
+          "alpha": 0.55,
+          "hex": "#0e1113"
+        },
+        "$description": "Photo scrim midpoint.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css photo scrim gradient",
+            "print": {
+              "cmyk-fogra39": [
+                52,
+                42,
+                41,
+                19
+              ]
+            }
+          }
+        }
+      },
+      "ink-60": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.054902,
+            0.066667,
+            0.07451
+          ],
+          "alpha": 0.6,
+          "hex": "#0e1113"
+        },
+        "$description": "Dialog and bottom-sheet scrim.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css --color-ink-60",
+            "print": {
+              "cmyk-fogra39": [
+                56,
+                45,
+                45,
+                24
+              ]
+            }
+          }
+        }
+      },
+      "ink-62": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.054902,
+            0.066667,
+            0.07451
+          ],
+          "alpha": 0.62,
+          "hex": "#0e1113"
+        },
+        "$description": "Secondary text on light-peach fills.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css --color-theme-light-peach-sub",
+            "print": {
+              "cmyk-fogra39": [
+                58,
+                47,
+                45,
+                26
+              ]
+            }
+          }
+        }
+      },
+      "ink-63": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.054902,
+            0.066667,
+            0.07451
+          ],
+          "alpha": 0.63,
+          "hex": "#0e1113"
+        },
+        "$description": "Secondary text on cool-grey fills.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css --color-theme-cool-grey-sub",
+            "print": {
+              "cmyk-fogra39": [
+                59,
+                47,
+                47,
+                27
+              ]
+            }
+          }
+        }
+      },
+      "ink-65": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.054902,
+            0.066667,
+            0.07451
+          ],
+          "alpha": 0.65,
+          "hex": "#0e1113"
+        },
+        "$description": "Secondary text on teal and sand fills.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css --color-theme-teal-sub / sand-sub",
+            "print": {
+              "cmyk-fogra39": [
+                61,
+                49,
+                47,
+                29
+              ]
+            }
+          }
+        }
+      },
+      "ink-66": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.054902,
+            0.066667,
+            0.07451
+          ],
+          "alpha": 0.66,
+          "hex": "#0e1113"
+        },
+        "$description": "Secondary text on faun fills.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css --color-theme-faun-sub",
+            "print": {
+              "cmyk-fogra39": [
+                62,
+                50,
+                49,
+                30
+              ]
+            }
+          }
+        }
+      },
+      "ink-70": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.054902,
+            0.066667,
+            0.07451
+          ],
+          "alpha": 0.7,
+          "hex": "#0e1113"
+        },
+        "$description": "Secondary text on sage, warm-grey and stone fills.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css --color-theme-sage-sub / warm-grey / stone",
+            "print": {
+              "cmyk-fogra39": [
+                64,
+                53,
+                50,
+                36
+              ]
+            }
+          }
+        }
+      },
+      "ink-74": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.054902,
+            0.066667,
+            0.07451
+          ],
+          "alpha": 0.74,
+          "hex": "#0e1113"
+        },
+        "$description": "Secondary text on dusty-pink fills.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css --color-theme-dusty-pink-sub",
+            "print": {
+              "cmyk-fogra39": [
+                67,
+                56,
+                54,
+                41
+              ]
+            }
+          }
+        }
+      },
+      "ink-82": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.054902,
+            0.066667,
+            0.07451
+          ],
+          "alpha": 0.82,
+          "hex": "#0e1113"
+        },
+        "$description": "Photo scrim start (strongest).",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css photo scrim gradient",
+            "print": {
+              "cmyk-fogra39": [
+                75,
+                62,
+                59,
+                54
+              ]
+            }
+          }
+        }
+      },
+      "ink-85": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.054902,
+            0.066667,
+            0.07451
+          ],
+          "alpha": 0.85,
+          "hex": "#0e1113"
+        },
+        "$description": "Secondary text on terracotta fills.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css --color-theme-terracotta-sub",
+            "print": {
+              "cmyk-fogra39": [
+                77,
+                65,
+                60,
+                59
+              ]
+            }
+          }
+        }
+      },
+      "cream-5": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.984314,
+            0.980392,
+            0.956863
+          ],
+          "alpha": 0.05,
+          "hex": "#fbfaf4"
+        },
+        "$description": "Forest and dark-grey feature tag ground.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css --color-cream-5",
+            "print": {
+              "cmyk-fogra39": [
+                0,
+                0,
+                0,
+                0
+              ]
+            }
+          }
+        }
+      },
+      "cream-8": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.984314,
+            0.980392,
+            0.956863
+          ],
+          "alpha": 0.08,
+          "hex": "#fbfaf4"
+        },
+        "$description": "Tint wells and hover ground (dark); inverse tag ground.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css dark --color-bg-tint / #fbfaf414",
+            "print": {
+              "cmyk-fogra39": [
+                0,
+                0,
+                0,
+                0
+              ]
+            }
+          }
+        }
+      },
+      "cream-10": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.984314,
+            0.980392,
+            0.956863
+          ],
+          "alpha": 0.1,
+          "hex": "#fbfaf4"
+        },
+        "$description": "Selected ground (dark).",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css --color-cream-10",
+            "print": {
+              "cmyk-fogra39": [
+                0,
+                0,
+                0,
+                0
+              ]
+            }
+          }
+        }
+      },
+      "cream-12": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.984314,
+            0.980392,
+            0.956863
+          ],
+          "alpha": 0.12,
+          "hex": "#fbfaf4"
+        },
+        "$description": "Hairlines on dark fills; subtle borders (dark); clay-red feature tag ground.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css --color-theme-forest-line / dark border-subtle",
+            "print": {
+              "cmyk-fogra39": [
+                0,
+                0,
+                0,
+                0
+              ]
+            }
+          }
+        }
+      },
+      "cream-14": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.984314,
+            0.980392,
+            0.956863
+          ],
+          "alpha": 0.14,
+          "hex": "#fbfaf4"
+        },
+        "$description": "Playing transcript line on dark fills.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css site.css .replay-lines p.is-active color-mix(ink 14%) on dark fills",
+            "print": {
+              "cmyk-fogra39": [
+                0,
+                0,
+                1,
+                0
+              ]
+            }
+          }
+        }
+      },
+      "cream-20": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.984314,
+            0.980392,
+            0.956863
+          ],
+          "alpha": 0.2,
+          "hex": "#fbfaf4"
+        },
+        "$description": "Inverse borders; hairlines on clay-red fills.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css --color-border-inverse / clay-red line",
+            "print": {
+              "cmyk-fogra39": [
+                0,
+                0,
+                1,
+                0
+              ]
+            }
+          }
+        }
+      },
+      "cream-24": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.984314,
+            0.980392,
+            0.956863
+          ],
+          "alpha": 0.24,
+          "hex": "#fbfaf4"
+        },
+        "$description": "Default borders (dark).",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css dark --color-border-default",
+            "print": {
+              "cmyk-fogra39": [
+                1,
+                0,
+                2,
+                0
+              ]
+            }
+          }
+        }
+      },
+      "cream-35": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.984314,
+            0.980392,
+            0.956863
+          ],
+          "alpha": 0.35,
+          "hex": "#fbfaf4"
+        },
+        "$description": "Unplayed portion of media progress on dark fills.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css replay progress gradient",
+            "print": {
+              "cmyk-fogra39": [
+                1,
+                1,
+                2,
+                0
+              ]
+            }
+          }
+        }
+      },
+      "cream-42": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.984314,
+            0.980392,
+            0.956863
+          ],
+          "alpha": 0.42,
+          "hex": "#fbfaf4"
+        },
+        "$description": "Control boundaries on dark grounds (3:1 on every dark ground in color.bg).",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "derived",
+            "source": "raised from --color-border-default for WCAG 1.4.11",
+            "print": {
+              "cmyk-fogra39": [
+                1,
+                1,
+                2,
+                0
+              ]
+            }
+          }
+        }
+      },
+      "cream-55": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.984314,
+            0.980392,
+            0.956863
+          ],
+          "alpha": 0.55,
+          "hex": "#fbfaf4"
+        },
+        "$description": "Secondary text on forest and ink fills; eyebrow on dark surface.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css --color-theme-forest-sub / #fbfaf48c",
+            "print": {
+              "cmyk-fogra39": [
+                2,
+                1,
+                3,
+                0
+              ]
+            }
+          }
+        }
+      },
+      "cream-60": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.984314,
+            0.980392,
+            0.956863
+          ],
+          "alpha": 0.6,
+          "hex": "#fbfaf4"
+        },
+        "$description": "Secondary marks on dark fills.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css --color-cream-60",
+            "print": {
+              "cmyk-fogra39": [
+                2,
+                1,
+                4,
+                0
+              ]
+            }
+          }
+        }
+      },
+      "cream-70": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.984314,
+            0.980392,
+            0.956863
+          ],
+          "alpha": 0.7,
+          "hex": "#fbfaf4"
+        },
+        "$description": "Secondary text on dark-teal fills.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css --color-theme-dark-teal-sub",
+            "print": {
+              "cmyk-fogra39": [
+                2,
+                2,
+                4,
+                0
+              ]
+            }
+          }
+        }
+      },
+      "cream-90": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.984314,
+            0.980392,
+            0.956863
+          ],
+          "alpha": 0.9,
+          "hex": "#fbfaf4"
+        },
+        "$description": "Secondary text on dark-grey fills.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css --color-theme-dark-grey-sub",
+            "print": {
+              "cmyk-fogra39": [
+                2,
+                2,
+                5,
+                0
+              ]
+            }
+          }
+        }
+      },
+      "black-5": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "alpha": 0.05,
+          "hex": "#000000"
+        },
+        "$description": "Sage feature tag ground.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css feature-card--sage --fc-tag",
+            "print": {
+              "cmyk-fogra39": [
+                6,
+                4,
+                5,
+                0
+              ]
+            }
+          }
+        }
+      },
+      "black-8": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "alpha": 0.08,
+          "hex": "#000000"
+        },
+        "$description": "Hover overlay on clay-red and dark-grey fills (darkens the ground so cream text keeps 4.5:1).",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css derived for clay-red and dark-grey overlays",
+            "print": {
+              "cmyk-fogra39": [
+                9,
+                7,
+                7,
+                0
+              ]
+            }
+          }
+        }
+      },
+      "black-10": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "alpha": 0.1,
+          "hex": "#000000"
+        },
+        "$description": "Feature-card border; post, pin and hero shadows; pressed overlay on clay-red and dark-grey fills.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css feature-card border rgba(0,0,0,.1) / #0000001a",
+            "print": {
+              "cmyk-fogra39": [
+                11,
+                8,
+                9,
+                0
+              ]
+            }
+          }
+        }
+      },
+      "black-14": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "alpha": 0.14,
+          "hex": "#000000"
+        },
+        "$description": "Playing transcript line on clay-red and dark-grey fills (darkens the ground).",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css derived for clay-red and dark-grey overlays",
+            "print": {
+              "cmyk-fogra39": [
+                17,
+                12,
+                13,
+                0
+              ]
+            }
+          }
+        }
+      },
+      "black-15": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "alpha": 0.15,
+          "hex": "#000000"
+        },
+        "$description": "Large and card shadow colour.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css --shadow-lg / --shadow-card",
+            "print": {
+              "cmyk-fogra39": [
+                18,
+                13,
+                14,
+                0
+              ]
+            }
+          }
+        }
+      },
+      "black-20": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "alpha": 0.2,
+          "hex": "#000000"
+        },
+        "$description": "Round control hover on clay-red and dark-grey fills (darkens the ground).",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css derived for clay-red and dark-grey overlays",
+            "print": {
+              "cmyk-fogra39": [
+                24,
+                18,
+                19,
+                0
+              ]
+            }
+          }
+        }
+      },
+      "black-25": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "alpha": 0.25,
+          "hex": "#000000"
+        },
+        "$description": "Photo shadow colour.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css --shadow-photo",
+            "print": {
+              "cmyk-fogra39": [
+                30,
+                22,
+                23,
+                0
+              ]
+            }
+          }
+        }
+      },
+      "black-32": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "alpha": 0.32,
+          "hex": "#000000"
+        },
+        "$description": "Feature-card hover shadow colour.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css feature-card:hover #00000052",
+            "print": {
+              "cmyk-fogra39": [
+                34,
+                26,
+                26,
+                7
+              ]
+            }
+          }
+        }
+      },
+      "transparent": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.054902,
+            0.066667,
+            0.07451
+          ],
+          "alpha": 0.0,
+          "hex": "#0e1113"
+        },
+        "$description": "Fully transparent (ink at 0%): quiet button grounds, invisible borders that keep layout stable.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css transparent"
+          }
+        }
+      }
+    }
+  },
+  "font": {
+    "$description": "Font primitives. Families ship in /fonts (SIL OFL 1.1).",
+    "family": {
+      "display": {
+        "$type": "fontFamily",
+        "$value": [
+          "Inclusive Sans",
+          "Helvetica Neue",
+          "Helvetica",
+          "Arial",
+          "system-ui",
+          "sans-serif"
+        ],
+        "$description": "Headings, titles, buttons, navigation, claims and inputs. Variable 300-700, roman and italic.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css --font-family-display",
+            "files": [
+              {
+                "style": "normal",
+                "weight": [
+                  300,
+                  700
+                ],
+                "ttf": "fonts/InclusiveSans-Variable.ttf",
+                "woff2": "fonts/InclusiveSans-Variable.woff2"
+              },
+              {
+                "style": "italic",
+                "weight": [
+                  300,
+                  700
+                ],
+                "ttf": "fonts/InclusiveSans-Italic-Variable.ttf",
+                "woff2": "fonts/InclusiveSans-Italic-Variable.woff2"
+              }
+            ],
+            "licence": "fonts/OFL-InclusiveSans.txt"
+          }
+        }
+      },
+      "mono": {
+        "$type": "fontFamily",
+        "$value": [
+          "JetBrains Mono",
+          "SFMono-Regular",
+          "ui-monospace",
+          "Menlo",
+          "monospace"
+        ],
+        "$description": "Body copy, ledes, labels, tags, eyebrows, data, tables and code. Weights 400-700.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css --font-family-mono",
+            "files": [
+              {
+                "style": "normal",
+                "weight": [
+                  100,
+                  800
+                ],
+                "ttf": "fonts/JetBrainsMono-Variable.ttf",
+                "woff2": "fonts/JetBrainsMono-Variable.woff2"
+              },
+              {
+                "style": "italic",
+                "weight": [
+                  100,
+                  800
+                ],
+                "ttf": "fonts/JetBrainsMono-Italic-Variable.ttf",
+                "woff2": "fonts/JetBrainsMono-Italic-Variable.woff2"
+              }
+            ],
+            "licence": "fonts/OFL-JetBrainsMono.txt"
+          }
+        }
+      },
+      "ui": {
+        "$type": "fontFamily",
+        "$value": [
+          "-apple-system",
+          "BlinkMacSystemFont",
+          "Inter",
+          "Segoe UI",
+          "system-ui",
+          "sans-serif"
+        ],
+        "$description": "Native control text only where the platform draws the control (date pickers, native selects). Never for brand copy.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css --font-family-ui"
+          }
+        }
+      },
+      "arabic": {
+        "$type": "fontFamily",
+        "$value": [
+          "Noto Sans Arabic",
+          "system-ui",
+          "sans-serif"
+        ],
+        "$description": "Arabic-script text (Arabic, Persian, Urdu and the rest): the letters Inclusive Sans and JetBrains Mono lack. A humanist sans with Inclusive Sans's open forms; variable 100-900.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "addition",
+            "files": [
+              {
+                "style": "normal",
+                "weight": [
+                  100,
+                  900
+                ],
+                "ttf": "fonts/NotoSansArabic-Variable.ttf",
+                "woff2": "fonts/NotoSansArabic-Variable.woff2",
+                "unicodeRange": "U+0600-06FF, U+0750-077F, U+0870-088E, U+0890-0891, U+0898-08E1, U+08E3-08FF, U+200C-200E, U+2010-2011, U+204F, U+2E41, U+FB50-FDFF, U+FE70-FE74, U+FE76-FEFC, U+10EFD-10EFF"
+              }
+            ],
+            "covers": [
+              "font.family.display",
+              "font.family.mono"
+            ],
+            "licence": "fonts/OFL-NotoSansArabic.txt"
+          }
+        }
+      },
+      "hebrew": {
+        "$type": "fontFamily",
+        "$value": [
+          "Noto Sans Hebrew",
+          "system-ui",
+          "sans-serif"
+        ],
+        "$description": "Hebrew text: the letters Inclusive Sans and JetBrains Mono lack. Variable 100-900.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "addition",
+            "files": [
+              {
+                "style": "normal",
+                "weight": [
+                  100,
+                  900
+                ],
+                "ttf": "fonts/NotoSansHebrew-Variable.ttf",
+                "woff2": "fonts/NotoSansHebrew-Variable.woff2",
+                "unicodeRange": "U+0591-05C7, U+05D0-05EA, U+05EF-05F4, U+200C-2010, U+20AA, U+25CC, U+FB1D-FB4F"
+              }
+            ],
+            "covers": [
+              "font.family.display",
+              "font.family.mono"
+            ],
+            "licence": "fonts/OFL-NotoSansHebrew.txt"
+          }
+        }
+      }
+    },
+    "weight": {
+      "light": {
+        "$type": "fontWeight",
+        "$value": 300,
+        "$description": "Light. Reserved; no source component uses it.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css --font-weight-light"
+          }
+        }
+      },
+      "regular": {
+        "$type": "fontWeight",
+        "$value": 400,
+        "$description": "Mono body, data, small tags and prose emphasis (strong renders regular in prose).",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css --font-weight-regular"
+          }
+        }
+      },
+      "medium": {
+        "$type": "fontWeight",
+        "$value": 500,
+        "$description": "Claims, captions, eyebrows, tags, footer links and table highlight rows.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css --font-weight-medium"
+          }
+        }
+      },
+      "semibold": {
+        "$type": "fontWeight",
+        "$value": 600,
+        "$description": "All display headings, titles, buttons, navigation and stat values.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css --font-weight-semibold"
+          }
+        }
+      },
+      "bold": {
+        "$type": "fontWeight",
+        "$value": 700,
+        "$description": "Bold uppercase text links (example apps).",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css --font-weight-bold"
+          }
+        }
+      }
+    },
+    "size": {
+      "3xs": {
+        "$type": "dimension",
+        "$value": {
+          "value": 9,
+          "unit": "px"
+        },
+        "$description": "Compact chart labels only.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css --  (.5625rem, columns--compact .column-label)"
+          }
+        }
+      },
+      "2xs": {
+        "$type": "dimension",
+        "$value": {
+          "value": 11,
+          "unit": "px"
+        },
+        "$description": "Table heads, meta lines, specs, status badges and micro copy.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css --font-size-2xs (.6875rem)"
+          }
+        }
+      },
+      "xs": {
+        "$type": "dimension",
+        "$value": {
+          "value": 12,
+          "unit": "px"
+        },
+        "$description": "Eyebrows, tags, labels, breadcrumbs, captions of data.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css --font-size-xs (.75rem)"
+          }
+        }
+      },
+      "note": {
+        "$type": "dimension",
+        "$value": {
+          "value": 13,
+          "unit": "px"
+        },
+        "$description": "Button notes beside actions.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css btn-note (.8125rem)"
+          }
+        }
+      },
+      "sm": {
+        "$type": "dimension",
+        "$value": {
+          "value": 14,
+          "unit": "px"
+        },
+        "$description": "Secondary body, table cells, code.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css --font-size-sm (.875rem)"
+          }
+        }
+      },
+      "base": {
+        "$type": "dimension",
+        "$value": {
+          "value": 16,
+          "unit": "px"
+        },
+        "$description": "Body copy, card claims, navigation and small buttons.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css --font-size-base (1rem)"
+          }
+        }
+      },
+      "lg": {
+        "$type": "dimension",
+        "$value": {
+          "value": 18,
+          "unit": "px"
+        },
+        "$description": "Ledes, large buttons, labels, inputs and model names.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css --font-size-lg (1.125rem)"
+          }
+        }
+      },
+      "xl": {
+        "$type": "dimension",
+        "$value": {
+          "value": 24,
+          "unit": "px"
+        },
+        "$description": "h3, card titles and media stats.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css --font-size-xl (1.5rem)"
+          }
+        }
+      },
+      "2xl": {
+        "$type": "dimension",
+        "$value": {
+          "value": 32,
+          "unit": "px"
+        },
+        "$description": "Narrow stat values, docs h2, large wordmark.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css --font-size-2xl (2rem)"
+          }
+        }
+      },
+      "3xl": {
+        "$type": "dimension",
+        "$value": {
+          "value": 40,
+          "unit": "px"
+        },
+        "$description": "h2 maximum.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css --font-size-3xl (2.5rem)"
+          }
+        }
+      },
+      "4xl": {
+        "$type": "dimension",
+        "$value": {
+          "value": 56,
+          "unit": "px"
+        },
+        "$description": "Stat value maximum.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css --font-size-4xl (3.5rem)"
+          }
+        }
+      },
+      "5xl": {
+        "$type": "dimension",
+        "$value": {
+          "value": 72,
+          "unit": "px"
+        },
+        "$description": "Large stat and about-page numerals maximum.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css --font-size-5xl (4.5rem)"
+          }
+        }
+      },
+      "6xl": {
+        "$type": "dimension",
+        "$value": {
+          "value": 96,
+          "unit": "px"
+        },
+        "$description": "Oversized numerals maximum.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css --font-size-6xl (6rem)"
+          }
+        }
+      },
+      "7xl": {
+        "$type": "dimension",
+        "$value": {
+          "value": 120,
+          "unit": "px"
+        },
+        "$description": "Display and h1 maximum.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css --font-size-7xl (7.5rem)"
+          }
+        }
+      }
+    },
+    "leading": {
+      "hero-model": {
+        "$type": "number",
+        "$value": 0.73,
+        "$description": "Line height of the fill-hero title (tight stacked display).",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css .hero-model-title"
+          }
+        }
+      },
+      "model": {
+        "$type": "number",
+        "$value": 0.82,
+        "$description": "Line height of the model page title.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css .model-title h1"
+          }
+        }
+      },
+      "hero": {
+        "$type": "number",
+        "$value": 0.85,
+        "$description": "Line height of display / hero headlines.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css .display, .hero-h1"
+          }
+        }
+      },
+      "display": {
+        "$type": "number",
+        "$value": 0.9,
+        "$description": "Line height of h1.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css --font-leading-display"
+          }
+        }
+      },
+      "none": {
+        "$type": "number",
+        "$value": 1,
+        "$description": "Single-line numerals (stat values, glyph chips).",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css --font-leading-none"
+          }
+        }
+      },
+      "tight": {
+        "$type": "number",
+        "$value": 1.06,
+        "$description": "Reserved tight heading leading.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css --font-leading-tight",
+            "reserved": true
+          }
+        }
+      },
+      "compact": {
+        "$type": "number",
+        "$value": 1.1,
+        "$description": "Result headlines.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "assets/site.css .dt-primary"
+          }
+        }
+      },
+      "heading": {
+        "$type": "number",
+        "$value": 1.15,
+        "$description": "Feature titles and featured post titles.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css .fc-name"
+          }
+        }
+      },
+      "snug": {
+        "$type": "number",
+        "$value": 1.2,
+        "$description": "h2-h4, buttons, navigation, card titles, labels.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css --font-leading-snug"
+          }
+        }
+      },
+      "cozy": {
+        "$type": "number",
+        "$value": 1.25,
+        "$description": "Pin text and language names.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css .pin-text"
+          }
+        }
+      },
+      "label": {
+        "$type": "number",
+        "$value": 1.3,
+        "$description": "Tags and chart labels.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css .tag"
+          }
+        }
+      },
+      "normal": {
+        "$type": "number",
+        "$value": 1.4,
+        "$description": "Claims, hero sub, inputs, table heads.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css --font-leading-normal"
+          }
+        }
+      },
+      "caption": {
+        "$type": "number",
+        "$value": 1.5,
+        "$description": "Spec micro copy.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css .spec"
+          }
+        }
+      },
+      "data": {
+        "$type": "number",
+        "$value": 1.6,
+        "$description": "Table cells, spec values, notes.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css .specs dd"
+          }
+        }
+      },
+      "relaxed": {
+        "$type": "number",
+        "$value": 1.7,
+        "$description": "Mono body copy, ledes and code.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css --font-leading-relaxed"
+          }
+        }
+      },
+      "loose": {
+        "$type": "number",
+        "$value": 1.9,
+        "$description": "Highlighted result text with inline entity marks.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "assets/site.css .demo-result"
+          }
+        }
+      }
+    },
+    "tracking": {
+      "display": {
+        "$type": "number",
+        "$value": -0.06,
+        "$description": "Display, h1 and hero titles. Unit: em.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css --font-tracking-display",
+            "unit": "em"
+          }
+        }
+      },
+      "tighter": {
+        "$type": "number",
+        "$value": -0.04,
+        "$description": "h2, h4, buttons, labels, stat values, wordmark. Unit: em.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css --font-tracking-tighter",
+            "unit": "em"
+          }
+        }
+      },
+      "tight": {
+        "$type": "number",
+        "$value": -0.03,
+        "$description": "h3, card titles, navigation, row headers. Unit: em.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css --font-tracking-tight",
+            "unit": "em"
+          }
+        }
+      },
+      "snug": {
+        "$type": "number",
+        "$value": -0.01,
+        "$description": "Claims, captions, footer links, input text. Unit: em.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css .card-claim / .caption (-.01em)",
+            "unit": "em"
+          }
+        }
+      },
+      "normal": {
+        "$type": "number",
+        "$value": 0,
+        "$description": "Mono body copy and notes. Unit: em.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css --font-tracking-normal",
+            "unit": "em"
+          }
+        }
+      },
+      "wide": {
+        "$type": "number",
+        "$value": 0.04,
+        "$description": "Breadcrumbs, meta, segmented controls, chips. Unit: em.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css --font-tracking-wide",
+            "unit": "em"
+          }
+        }
+      },
+      "wider": {
+        "$type": "number",
+        "$value": 0.06,
+        "$description": "Eyebrows, tags, table heads, labels. Unit: em.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css --font-tracking-wider",
+            "unit": "em"
+          }
+        }
+      },
+      "loose": {
+        "$type": "number",
+        "$value": 0.08,
+        "$description": "Benchmark chart titles. Unit: em.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css (.08em, site.css .bench-title)",
+            "unit": "em"
+          }
+        }
+      },
+      "widest": {
+        "$type": "number",
+        "$value": 0.18,
+        "$description": "Reserved widest caps. Unit: em.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css --font-tracking-widest",
+            "unit": "em",
+            "reserved": true
+          }
+        }
+      }
+    },
+    "ratio": {
+      "inline-code": {
+        "$type": "number",
+        "$value": 0.9,
+        "$description": "Inline code font-size relative to surrounding text (em).",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css :not(pre)>code",
+            "unit": "em"
+          }
+        }
+      },
+      "code-block": {
+        "$type": "number",
+        "$value": 0.95,
+        "$description": "Code, kbd, samp and docs inline code relative size (em).",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css code,kbd,samp,pre",
+            "unit": "em"
+          }
+        }
+      }
+    },
+    "measure": {
+      "$type": "dimension",
+      "$value": {
+        "value": 736,
+        "unit": "px"
+      },
+      "$description": "Maximum line length for reading copy (46rem).",
+      "$extensions": {
+        "com.desertpants": {
+          "origin": "source",
+          "source": "desertant.com brand/index.css --font-measure"
+        }
+      }
+    },
+    "scale": {
+      "display-max": {
+        "$type": "number",
+        "$value": 1.3,
+        "$description": "When the reader enlarges text, type roles of 32px and above (and the wordmark) grow to at most this multiple of their design size, so headlines keep fitting their columns; smaller roles scale without limit. Web: the browser default font size (clamp in each role). iOS: DPTextStyle.maxScale and .dynamicTypeSize(...style.dynamicTypeCap), the largest Dynamic Type size within the cap. Android: DpTextStyle.maxScale, fontScale() and sizeDp().",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "addition"
+          }
+        }
+      },
+      "support": {
+        "$type": "number",
+        "$value": 2,
+        "$description": "Every layout stays readable at this text-size multiplier without clipping, overlap or horizontal scrolling (WCAG 1.4.4). The specimen screenshots test it.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "addition"
+          }
+        }
+      }
+    }
+  },
+  "space": {
+    "$description": "Spacing scale (4px base, source rem values converted at 16px). Web output writes rem.",
+    "0": {
+      "$type": "dimension",
+      "$value": {
+        "value": 0,
+        "unit": "px"
+      },
+      "$description": "No space (explicit zero).",
+      "$extensions": {
+        "com.desertpants": {
+          "origin": "source",
+          "source": "desertant.com brand/index.css --space-0"
+        }
+      }
+    },
+    "px": {
+      "$type": "dimension",
+      "$value": {
+        "value": 1,
+        "unit": "px"
+      },
+      "$description": "Hairline offsets.",
+      "$extensions": {
+        "com.desertpants": {
+          "origin": "source",
+          "source": "desertant.com brand/index.css --space-px"
+        }
+      }
+    },
+    "1": {
+      "$type": "dimension",
+      "$value": {
+        "value": 4,
+        "unit": "px"
+      },
+      "$description": "Icon-to-text micro gaps, stat--narrow gap.",
+      "$extensions": {
+        "com.desertpants": {
+          "origin": "source",
+          "source": "desertant.com brand/index.css --space-1"
+        }
+      }
+    },
+    "2": {
+      "$type": "dimension",
+      "$value": {
+        "value": 8,
+        "unit": "px"
+      },
+      "$description": "Tag and button icon gaps, list gaps.",
+      "$extensions": {
+        "com.desertpants": {
+          "origin": "source",
+          "source": "desertant.com brand/index.css --space-2"
+        }
+      }
+    },
+    "3": {
+      "$type": "dimension",
+      "$value": {
+        "value": 12,
+        "unit": "px"
+      },
+      "$description": "Card internal gap, table cell block padding.",
+      "$extensions": {
+        "com.desertpants": {
+          "origin": "source",
+          "source": "desertant.com brand/index.css --space-3"
+        }
+      }
+    },
+    "4": {
+      "$type": "dimension",
+      "$value": {
+        "value": 16,
+        "unit": "px"
+      },
+      "$description": "Card-grid gap, button-row gap, code block padding.",
+      "$extensions": {
+        "com.desertpants": {
+          "origin": "source",
+          "source": "desertant.com brand/index.css --space-4"
+        }
+      }
+    },
+    "5": {
+      "$type": "dimension",
+      "$value": {
+        "value": 20,
+        "unit": "px"
+      },
+      "$description": "Pin padding, spec row padding.",
+      "$extensions": {
+        "com.desertpants": {
+          "origin": "source",
+          "source": "desertant.com brand/index.css --space-5"
+        }
+      }
+    },
+    "6": {
+      "$type": "dimension",
+      "$value": {
+        "value": 24,
+        "unit": "px"
+      },
+      "$description": "Card padding, compact gutter, stat-row gap.",
+      "$extensions": {
+        "com.desertpants": {
+          "origin": "source",
+          "source": "desertant.com brand/index.css --space-6"
+        }
+      }
+    },
+    "7": {
+      "$type": "dimension",
+      "$value": {
+        "value": 28,
+        "unit": "px"
+      },
+      "$description": "Reserved step between 24px and 32px; no source component uses it.",
+      "$extensions": {
+        "com.desertpants": {
+          "origin": "source",
+          "source": "desertant.com brand/index.css --space-7",
+          "reserved": true
+        }
+      }
+    },
+    "8": {
+      "$type": "dimension",
+      "$value": {
+        "value": 32,
+        "unit": "px"
+      },
+      "$description": "Section gap, panel padding, compact stat padding.",
+      "$extensions": {
+        "com.desertpants": {
+          "origin": "source",
+          "source": "desertant.com brand/index.css --space-8"
+        }
+      }
+    },
+    "10": {
+      "$type": "dimension",
+      "$value": {
+        "value": 40,
+        "unit": "px"
+      },
+      "$description": "Use-case and post-body padding, site-nav gap.",
+      "$extensions": {
+        "com.desertpants": {
+          "origin": "source",
+          "source": "desertant.com brand/index.css --space-10"
+        }
+      }
+    },
+    "12": {
+      "$type": "dimension",
+      "$value": {
+        "value": 48,
+        "unit": "px"
+      },
+      "$description": "Stat block padding, model hero gap.",
+      "$extensions": {
+        "com.desertpants": {
+          "origin": "source",
+          "source": "desertant.com brand/index.css --space-12"
+        }
+      }
+    },
+    "14": {
+      "$type": "dimension",
+      "$value": {
+        "value": 56,
+        "unit": "px"
+      },
+      "$description": "Hero offsets.",
+      "$extensions": {
+        "com.desertpants": {
+          "origin": "source",
+          "source": "desertant.com brand/index.css --space-14"
+        }
+      }
+    },
+    "16": {
+      "$type": "dimension",
+      "$value": {
+        "value": 64,
+        "unit": "px"
+      },
+      "$description": "Wide gaps, feature-card head top padding.",
+      "$extensions": {
+        "com.desertpants": {
+          "origin": "source",
+          "source": "desertant.com brand/index.css --space-16"
+        }
+      }
+    },
+    "18": {
+      "$type": "dimension",
+      "$value": {
+        "value": 72,
+        "unit": "px"
+      },
+      "$description": "Section stacks, featured post padding.",
+      "$extensions": {
+        "com.desertpants": {
+          "origin": "source",
+          "source": "desertant.com brand/index.css --space-18"
+        }
+      }
+    },
+    "20": {
+      "$type": "dimension",
+      "$value": {
+        "value": 80,
+        "unit": "px"
+      },
+      "$description": "Hero content padding.",
+      "$extensions": {
+        "com.desertpants": {
+          "origin": "source",
+          "source": "desertant.com brand/index.css --space-20"
+        }
+      }
+    },
+    "24": {
+      "$type": "dimension",
+      "$value": {
+        "value": 96,
+        "unit": "px"
+      },
+      "$description": "Large page rhythm.",
+      "$extensions": {
+        "com.desertpants": {
+          "origin": "source",
+          "source": "desertant.com brand/index.css --space-24"
+        }
+      }
+    },
+    "25": {
+      "$type": "dimension",
+      "$value": {
+        "value": 100,
+        "unit": "px"
+      },
+      "$description": "Article gap maximum.",
+      "$extensions": {
+        "com.desertpants": {
+          "origin": "source",
+          "source": "desertant.com brand/index.css --space-25"
+        }
+      }
+    },
+    "28": {
+      "$type": "dimension",
+      "$value": {
+        "value": 112,
+        "unit": "px"
+      },
+      "$description": "Home column gap maximum.",
+      "$extensions": {
+        "com.desertpants": {
+          "origin": "source",
+          "source": "desertant.com brand/index.css --space-28"
+        }
+      }
+    },
+    "32": {
+      "$type": "dimension",
+      "$value": {
+        "value": 128,
+        "unit": "px"
+      },
+      "$description": "Reserved large rhythm.",
+      "$extensions": {
+        "com.desertpants": {
+          "origin": "source",
+          "source": "desertant.com brand/index.css --space-32",
+          "reserved": true
+        }
+      }
+    },
+    "40": {
+      "$type": "dimension",
+      "$value": {
+        "value": 160,
+        "unit": "px"
+      },
+      "$description": "Reserved large rhythm.",
+      "$extensions": {
+        "com.desertpants": {
+          "origin": "source",
+          "source": "desertant.com brand/index.css --space-40",
+          "reserved": true
+        }
+      }
+    },
+    "48": {
+      "$type": "dimension",
+      "$value": {
+        "value": 192,
+        "unit": "px"
+      },
+      "$description": "Reserved large rhythm.",
+      "$extensions": {
+        "com.desertpants": {
+          "origin": "source",
+          "source": "desertant.com brand/index.css --space-48",
+          "reserved": true
+        }
+      }
+    }
+  },
+  "radius": {
+    "$description": "Corner radii.",
+    "none": {
+      "$type": "dimension",
+      "$value": {
+        "value": 0,
+        "unit": "px"
+      },
+      "$description": "Square corners (quiet stats, full-bleed media).",
+      "$extensions": {
+        "com.desertpants": {
+          "origin": "source",
+          "source": "desertant.com brand/index.css --radius-none"
+        }
+      }
+    },
+    "xs": {
+      "$type": "dimension",
+      "$value": {
+        "value": 2,
+        "unit": "px"
+      },
+      "$description": "Entity highlights, compact bar feet.",
+      "$extensions": {
+        "com.desertpants": {
+          "origin": "source",
+          "source": "desertant.com brand/index.css --radius-xs"
+        }
+      }
+    },
+    "sm": {
+      "$type": "dimension",
+      "$value": {
+        "value": 4,
+        "unit": "px"
+      },
+      "$description": "Inline code, copy buttons, focus-ring corners, bar feet.",
+      "$extensions": {
+        "com.desertpants": {
+          "origin": "source",
+          "source": "desertant.com brand/index.css --radius-sm"
+        }
+      }
+    },
+    "md": {
+      "$type": "dimension",
+      "$value": {
+        "value": 8,
+        "unit": "px"
+      },
+      "$description": "Menu items, nav thumbnails.",
+      "$extensions": {
+        "com.desertpants": {
+          "origin": "source",
+          "source": "desertant.com brand/index.css --radius-md"
+        }
+      }
+    },
+    "lg": {
+      "$type": "dimension",
+      "$value": {
+        "value": 12,
+        "unit": "px"
+      },
+      "$description": "Small buttons, inputs, tabs, nav items, menus, chart bar tops.",
+      "$extensions": {
+        "com.desertpants": {
+          "origin": "source",
+          "source": "desertant.com brand/index.css --radius-lg"
+        }
+      }
+    },
+    "xl": {
+      "$type": "dimension",
+      "$value": {
+        "value": 16,
+        "unit": "px"
+      },
+      "$description": "Buttons, code blocks, toasts.",
+      "$extensions": {
+        "com.desertpants": {
+          "origin": "source",
+          "source": "desertant.com brand/index.css --radius-xl"
+        }
+      }
+    },
+    "2xl": {
+      "$type": "dimension",
+      "$value": {
+        "value": 24,
+        "unit": "px"
+      },
+      "$description": "Cards, prompt cards, bottom-sheet tops.",
+      "$extensions": {
+        "com.desertpants": {
+          "origin": "source",
+          "source": "desertant.com brand/index.css --radius-2xl"
+        }
+      }
+    },
+    "3xl": {
+      "$type": "dimension",
+      "$value": {
+        "value": 32,
+        "unit": "px"
+      },
+      "$description": "Feature cards, panels, stats, photos, post cards, tabs container, dialogs.",
+      "$extensions": {
+        "com.desertpants": {
+          "origin": "source",
+          "source": "desertant.com brand/index.css --radius-3xl"
+        }
+      }
+    },
+    "pill": {
+      "$type": "dimension",
+      "$value": {
+        "value": 40,
+        "unit": "px"
+      },
+      "$description": "Tags, chips, segmented controls, search fields.",
+      "$extensions": {
+        "com.desertpants": {
+          "origin": "source",
+          "source": "desertant.com brand/index.css --radius-pill"
+        }
+      }
+    },
+    "full": {
+      "$type": "dimension",
+      "$value": {
+        "value": 9999,
+        "unit": "px"
+      },
+      "$description": "Circles and capsules (dots, avatars, progress, toggle lines).",
+      "$extensions": {
+        "com.desertpants": {
+          "origin": "source",
+          "source": "desertant.com brand/index.css --radius-full"
+        }
+      }
+    },
+    "status": {
+      "$type": "dimension",
+      "$value": {
+        "value": 10,
+        "unit": "px"
+      },
+      "$description": "Card status badge.",
+      "$extensions": {
+        "com.desertpants": {
+          "origin": "source",
+          "source": "desertant.com brand/index.css .card-status"
+        }
+      }
+    },
+    "pin": {
+      "$type": "dimension",
+      "$value": {
+        "value": 20,
+        "unit": "px"
+      },
+      "$description": "Pinboard notes.",
+      "$extensions": {
+        "com.desertpants": {
+          "origin": "source",
+          "source": "desertant.com brand/index.css .pin"
+        }
+      }
+    },
+    "hero-fill": {
+      "$type": "dimension",
+      "$value": {
+        "value": 64,
+        "unit": "px"
+      },
+      "$description": "Bottom corners of the full-bleed fill hero (regular layout).",
+      "$extensions": {
+        "com.desertpants": {
+          "origin": "source",
+          "source": "desertant.com brand/index.css .hero-model"
+        }
+      }
+    },
+    "hero-fill-compact": {
+      "$type": "dimension",
+      "$value": {
+        "value": 40,
+        "unit": "px"
+      },
+      "$description": "Bottom corners of the fill hero at compact widths.",
+      "$extensions": {
+        "com.desertpants": {
+          "origin": "source",
+          "source": "desertant.com brand/index.css .hero-model @860"
+        }
+      }
+    }
+  },
+  "border-width": {
+    "$description": "Stroke widths for borders, rings and drawn marks.",
+    "hair": {
+      "$type": "dimension",
+      "$value": {
+        "value": 1,
+        "unit": "px"
+      },
+      "$description": "Hairlines, card and input borders, dividers.",
+      "$extensions": {
+        "com.desertpants": {
+          "origin": "source",
+          "source": "desertant.com brand/index.css --border-hair"
+        }
+      }
+    },
+    "thin": {
+      "$type": "dimension",
+      "$value": {
+        "value": 1.5,
+        "unit": "px"
+      },
+      "$description": "Compact chart bars; outlined text stroke.",
+      "$extensions": {
+        "com.desertpants": {
+          "origin": "source",
+          "source": "desertant.com brand/index.css --border-thin"
+        }
+      }
+    },
+    "thick": {
+      "$type": "dimension",
+      "$value": {
+        "value": 2,
+        "unit": "px"
+      },
+      "$description": "Outline buttons, stat and versus frames, chart marks, blockquote rule.",
+      "$extensions": {
+        "com.desertpants": {
+          "origin": "source",
+          "source": "desertant.com brand/index.css --border-thick"
+        }
+      }
+    },
+    "quote": {
+      "$type": "dimension",
+      "$value": {
+        "value": 3,
+        "unit": "px"
+      },
+      "$description": "Accent rule of blog pull quotes.",
+      "$extensions": {
+        "com.desertpants": {
+          "origin": "source",
+          "source": "assets/site.css .blog-quote"
+        }
+      }
+    },
+    "focus": {
+      "$type": "dimension",
+      "$value": {
+        "value": 2,
+        "unit": "px"
+      },
+      "$description": "Focus ring width on every interactive element.",
+      "$extensions": {
+        "com.desertpants": {
+          "origin": "source",
+          "source": "desertant.com brand/index.css :focus-visible"
+        }
+      }
+    },
+    "marker": {
+      "$type": "dimension",
+      "$value": {
+        "value": 6.5,
+        "unit": "px"
+      },
+      "$description": "Hand-drawn strike decoration on titles.",
+      "$extensions": {
+        "com.desertpants": {
+          "origin": "source",
+          "source": "desertant.com brand/index.css .title-deco--strike path"
+        }
+      }
+    }
+  },
+  "shadow": {
+    "$description": "Elevation. Surfaces are flat by default; shadows are for floating layers, photos and feature cards.",
+    "xs": {
+      "$type": "shadow",
+      "$value": {
+        "color": "{color.alpha.ink-6}",
+        "offsetX": {
+          "value": 0,
+          "unit": "px"
+        },
+        "offsetY": {
+          "value": 1,
+          "unit": "px"
+        },
+        "blur": {
+          "value": 2,
+          "unit": "px"
+        },
+        "spread": {
+          "value": 0,
+          "unit": "px"
+        }
+      },
+      "$description": "Barely raised controls.",
+      "$extensions": {
+        "com.desertpants": {
+          "origin": "source",
+          "source": "desertant.com brand/index.css --shadow-xs"
+        }
+      }
+    },
+    "sm": {
+      "$type": "shadow",
+      "$value": [
+        {
+          "color": "{color.alpha.ink-6}",
+          "offsetX": {
+            "value": 0,
+            "unit": "px"
+          },
+          "offsetY": {
+            "value": 1,
+            "unit": "px"
+          },
+          "blur": {
+            "value": 2,
+            "unit": "px"
+          },
+          "spread": {
+            "value": 0,
+            "unit": "px"
+          }
+        },
+        {
+          "color": "{color.alpha.ink-5}",
+          "offsetX": {
+            "value": 0,
+            "unit": "px"
+          },
+          "offsetY": {
+            "value": 2,
+            "unit": "px"
+          },
+          "blur": {
+            "value": 4,
+            "unit": "px"
+          },
+          "spread": {
+            "value": 0,
+            "unit": "px"
+          }
+        }
+      ],
+      "$description": "Hovered prompt cards; drawing surface.",
+      "$extensions": {
+        "com.desertpants": {
+          "origin": "source",
+          "source": "desertant.com brand/index.css --shadow-sm"
+        }
+      }
+    },
+    "md": {
+      "$type": "shadow",
+      "$value": [
+        {
+          "color": "{color.alpha.ink-5}",
+          "offsetX": {
+            "value": 0,
+            "unit": "px"
+          },
+          "offsetY": {
+            "value": 2,
+            "unit": "px"
+          },
+          "blur": {
+            "value": 4,
+            "unit": "px"
+          },
+          "spread": {
+            "value": 0,
+            "unit": "px"
+          }
+        },
+        {
+          "color": "{color.alpha.ink-10}",
+          "offsetX": {
+            "value": 0,
+            "unit": "px"
+          },
+          "offsetY": {
+            "value": 6,
+            "unit": "px"
+          },
+          "blur": {
+            "value": 14,
+            "unit": "px"
+          },
+          "spread": {
+            "value": -3,
+            "unit": "px"
+          }
+        }
+      ],
+      "$description": "Play button; active drawing surface.",
+      "$extensions": {
+        "com.desertpants": {
+          "origin": "source",
+          "source": "desertant.com brand/index.css --shadow-md"
+        }
+      }
+    },
+    "lg": {
+      "$type": "shadow",
+      "$value": {
+        "color": "{color.alpha.black-15}",
+        "offsetX": {
+          "value": 0,
+          "unit": "px"
+        },
+        "offsetY": {
+          "value": 12,
+          "unit": "px"
+        },
+        "blur": {
+          "value": 30,
+          "unit": "px"
+        },
+        "spread": {
+          "value": 0,
+          "unit": "px"
+        }
+      },
+      "$description": "Menus, dropdown panels, bottom sheets, dialogs, toasts.",
+      "$extensions": {
+        "com.desertpants": {
+          "origin": "source",
+          "source": "desertant.com brand/index.css --shadow-lg"
+        }
+      }
+    },
+    "card": {
+      "$type": "shadow",
+      "$value": {
+        "color": "{color.alpha.black-15}",
+        "offsetX": {
+          "value": 0,
+          "unit": "px"
+        },
+        "offsetY": {
+          "value": 20,
+          "unit": "px"
+        },
+        "blur": {
+          "value": 76,
+          "unit": "px"
+        },
+        "spread": {
+          "value": 0,
+          "unit": "px"
+        }
+      },
+      "$description": "Feature cards at rest.",
+      "$extensions": {
+        "com.desertpants": {
+          "origin": "source",
+          "source": "desertant.com brand/index.css --shadow-card"
+        }
+      }
+    },
+    "card-hover": {
+      "$type": "shadow",
+      "$value": {
+        "color": "{color.alpha.black-32}",
+        "offsetX": {
+          "value": 0,
+          "unit": "px"
+        },
+        "offsetY": {
+          "value": 32,
+          "unit": "px"
+        },
+        "blur": {
+          "value": 100,
+          "unit": "px"
+        },
+        "spread": {
+          "value": 0,
+          "unit": "px"
+        }
+      },
+      "$description": "Feature cards on hover.",
+      "$extensions": {
+        "com.desertpants": {
+          "origin": "source",
+          "source": "desertant.com brand/index.css .feature-card:hover"
+        }
+      }
+    },
+    "photo": {
+      "$type": "shadow",
+      "$value": {
+        "color": "{color.alpha.black-25}",
+        "offsetX": {
+          "value": 0,
+          "unit": "px"
+        },
+        "offsetY": {
+          "value": 20,
+          "unit": "px"
+        },
+        "blur": {
+          "value": 100,
+          "unit": "px"
+        },
+        "spread": {
+          "value": 0,
+          "unit": "px"
+        }
+      },
+      "$description": "Photographs.",
+      "$extensions": {
+        "com.desertpants": {
+          "origin": "source",
+          "source": "desertant.com brand/index.css --shadow-photo"
+        }
+      }
+    },
+    "pin-hover": {
+      "$type": "shadow",
+      "$value": {
+        "color": "{color.alpha.black-10}",
+        "offsetX": {
+          "value": 0,
+          "unit": "px"
+        },
+        "offsetY": {
+          "value": 16,
+          "unit": "px"
+        },
+        "blur": {
+          "value": 32,
+          "unit": "px"
+        },
+        "spread": {
+          "value": 0,
+          "unit": "px"
+        }
+      },
+      "$description": "Pinboard note on hover.",
+      "$extensions": {
+        "com.desertpants": {
+          "origin": "source",
+          "source": "desertant.com brand/index.css .pin:hover"
+        }
+      }
+    },
+    "post": {
+      "$type": "shadow",
+      "$value": {
+        "color": "{color.alpha.black-10}",
+        "offsetX": {
+          "value": 0,
+          "unit": "px"
+        },
+        "offsetY": {
+          "value": 28,
+          "unit": "px"
+        },
+        "blur": {
+          "value": 108,
+          "unit": "px"
+        },
+        "spread": {
+          "value": 0,
+          "unit": "px"
+        }
+      },
+      "$description": "Post cards at rest.",
+      "$extensions": {
+        "com.desertpants": {
+          "origin": "source",
+          "source": "desertant.com brand/index.css .post-card"
+        }
+      }
+    },
+    "hero-fill": {
+      "$type": "shadow",
+      "$value": {
+        "color": "{color.alpha.black-10}",
+        "offsetX": {
+          "value": 0,
+          "unit": "px"
+        },
+        "offsetY": {
+          "value": 48,
+          "unit": "px"
+        },
+        "blur": {
+          "value": 160,
+          "unit": "px"
+        },
+        "spread": {
+          "value": 0,
+          "unit": "px"
+        }
+      },
+      "$description": "Full-bleed fill hero.",
+      "$extensions": {
+        "com.desertpants": {
+          "origin": "source",
+          "source": "desertant.com brand/index.css .hero-model"
+        }
+      }
+    },
+    "ring-default": {
+      "$type": "shadow",
+      "$value": {
+        "color": "{color.border.default}",
+        "offsetX": {
+          "value": 0,
+          "unit": "px"
+        },
+        "offsetY": {
+          "value": 0,
+          "unit": "px"
+        },
+        "blur": {
+          "value": 0,
+          "unit": "px"
+        },
+        "spread": {
+          "value": 1,
+          "unit": "px"
+        },
+        "inset": true
+      },
+      "$description": "Inset 1px ring for outline and dot tags.",
+      "$extensions": {
+        "com.desertpants": {
+          "origin": "source",
+          "source": "desertant.com brand/index.css .tag--outline"
+        }
+      }
+    },
+    "ring-strong": {
+      "$type": "shadow",
+      "$value": {
+        "color": "{color.border.strong}",
+        "offsetX": {
+          "value": 0,
+          "unit": "px"
+        },
+        "offsetY": {
+          "value": 0,
+          "unit": "px"
+        },
+        "blur": {
+          "value": 0,
+          "unit": "px"
+        },
+        "spread": {
+          "value": 1,
+          "unit": "px"
+        },
+        "inset": true
+      },
+      "$description": "Inset 1px ring for the selected tag.",
+      "$extensions": {
+        "com.desertpants": {
+          "origin": "source",
+          "source": "desertant.com brand/index.css .tag.is-on"
+        }
+      }
+    }
+  },
+  "blur": {
+    "sm": {
+      "$type": "dimension",
+      "$value": {
+        "value": 6,
+        "unit": "px"
+      },
+      "$description": "Backdrop blur, small.",
+      "$extensions": {
+        "com.desertpants": {
+          "origin": "source",
+          "source": "desertant.com brand/index.css --blur-sm"
+        }
+      }
+    },
+    "md": {
+      "$type": "dimension",
+      "$value": {
+        "value": 14,
+        "unit": "px"
+      },
+      "$description": "Backdrop blur behind floating bars and sheets.",
+      "$extensions": {
+        "com.desertpants": {
+          "origin": "source",
+          "source": "desertant.com brand/index.css --blur-md"
+        }
+      }
+    },
+    "lg": {
+      "$type": "dimension",
+      "$value": {
+        "value": 28,
+        "unit": "px"
+      },
+      "$description": "Backdrop blur, large.",
+      "$extensions": {
+        "com.desertpants": {
+          "origin": "source",
+          "source": "desertant.com brand/index.css --blur-lg"
+        }
+      }
+    },
+    "fx": {
+      "$type": "dimension",
+      "$value": {
+        "value": 4,
+        "unit": "px"
+      },
+      "$description": "Maximum blur of the text blur effect.",
+      "$extensions": {
+        "com.desertpants": {
+          "origin": "source",
+          "source": "desertant.com brand/index.css --fx-blur-max"
+        }
+      }
+    }
+  },
+  "opacity": {
+    "$description": "Opacity steps. Unitless 0-1.",
+    "0": {
+      "$type": "number",
+      "$value": 0,
+      "$description": "Hidden (revealed by state).",
+      "$extensions": {
+        "com.desertpants": {
+          "origin": "source",
+          "source": "desertant.com brand/index.css opacity:0"
+        }
+      }
+    },
+    "6": {
+      "$type": "number",
+      "$value": 0.06,
+      "$description": "Twinkle loader minimum.",
+      "$extensions": {
+        "com.desertpants": {
+          "origin": "source",
+          "source": "desertant.com brand/index.css loader-twinkle"
+        }
+      }
+    },
+    "8": {
+      "$type": "number",
+      "$value": 0.08,
+      "$description": "Loader cell at rest.",
+      "$extensions": {
+        "com.desertpants": {
+          "origin": "source",
+          "source": "desertant.com brand/index.css .loader-px"
+        }
+      }
+    },
+    "10": {
+      "$type": "number",
+      "$value": 0.1,
+      "$description": "Loader plate; brandmark plate.",
+      "$extensions": {
+        "com.desertpants": {
+          "origin": "source",
+          "source": "desertant.com brand/index.css .loader-plate"
+        }
+      }
+    },
+    "18": {
+      "$type": "number",
+      "$value": 0.18,
+      "$description": "Chase loader resting cell.",
+      "$extensions": {
+        "com.desertpants": {
+          "origin": "source",
+          "source": "desertant.com brand/index.css .loader--chase"
+        }
+      }
+    },
+    "28": {
+      "$type": "number",
+      "$value": 0.28,
+      "$description": "Fill loader non-mark cells.",
+      "$extensions": {
+        "com.desertpants": {
+          "origin": "source",
+          "source": "desertant.com brand/index.css --on:.28"
+        }
+      }
+    },
+    "30": {
+      "$type": "number",
+      "$value": 0.3,
+      "$description": "Heading anchor revealed on heading hover; heartbeat start.",
+      "$extensions": {
+        "com.desertpants": {
+          "origin": "source",
+          "source": "desertant.com brand/index.css .has-anchor:hover>.heading-anchor"
+        }
+      }
+    },
+    "50": {
+      "$type": "number",
+      "$value": 0.5,
+      "$description": "Coming-soon card title and claim.",
+      "$extensions": {
+        "com.desertpants": {
+          "origin": "source",
+          "source": "desertant.com brand/index.css .card--soon"
+        }
+      }
+    },
+    "60": {
+      "$type": "number",
+      "$value": 0.6,
+      "$description": "Hovered navigation link; grain paper; anchor on direct hover.",
+      "$extensions": {
+        "com.desertpants": {
+          "origin": "source",
+          "source": "desertant.com brand/index.css .site-nav>a:hover"
+        }
+      }
+    },
+    "65": {
+      "$type": "number",
+      "$value": 0.65,
+      "$description": "Menu caret.",
+      "$extensions": {
+        "com.desertpants": {
+          "origin": "source",
+          "source": "desertant.com brand/index.css .lang-switch-caret"
+        }
+      }
+    },
+    "88": {
+      "$type": "number",
+      "$value": 0.88,
+      "$description": "Hovered on-fill primary button.",
+      "$extensions": {
+        "com.desertpants": {
+          "origin": "source",
+          "source": "desertant.com brand/index.css .hero-model .btn:hover"
+        }
+      }
+    },
+    "90": {
+      "$type": "number",
+      "$value": 0.9,
+      "$description": "Marker ink.",
+      "$extensions": {
+        "com.desertpants": {
+          "origin": "source",
+          "source": "desertant.com brand/index.css .fx-marker-ink"
+        }
+      }
+    },
+    "100": {
+      "$type": "number",
+      "$value": 1,
+      "$description": "Fully opaque (resting state of revealed elements).",
+      "$extensions": {
+        "com.desertpants": {
+          "origin": "source",
+          "source": "desertant.com brand/index.css opacity:1"
+        }
+      }
+    }
+  },
+  "z": {
+    "$description": "Stacking order. Use only these levels.",
+    "behind": {
+      "$type": "number",
+      "$value": -1,
+      "$description": "Decorative layers behind content (marker ink, pulse ring).",
+      "$extensions": {
+        "com.desertpants": {
+          "origin": "source",
+          "source": "desertant.com brand/index.css .fx-mark--marker"
+        }
+      }
+    },
+    "base": {
+      "$type": "number",
+      "$value": 0,
+      "$description": "Default flow.",
+      "$extensions": {
+        "com.desertpants": {
+          "origin": "source",
+          "source": "desertant.com brand/index.css z-index:0"
+        }
+      }
+    },
+    "raised": {
+      "$type": "number",
+      "$value": 1,
+      "$description": "Hovered pin; stage above background.",
+      "$extensions": {
+        "com.desertpants": {
+          "origin": "source",
+          "source": "desertant.com brand/index.css .pin:hover"
+        }
+      }
+    },
+    "content": {
+      "$type": "number",
+      "$value": 2,
+      "$description": "Card content above media and gradient scrims.",
+      "$extensions": {
+        "com.desertpants": {
+          "origin": "source",
+          "source": "desertant.com brand/index.css .fc-head"
+        }
+      }
+    },
+    "overlay-local": {
+      "$type": "number",
+      "$value": 3,
+      "$description": "Hovered fan card; copied overlay inside a card.",
+      "$extensions": {
+        "com.desertpants": {
+          "origin": "source",
+          "source": "desertant.com brand/index.css .feature-cards--fan>*:hover"
+        }
+      }
+    },
+    "header": {
+      "$type": "number",
+      "$value": 5,
+      "$description": "Site header / app bar.",
+      "$extensions": {
+        "com.desertpants": {
+          "origin": "source",
+          "source": "desertant.com brand/index.css .site-head"
+        }
+      }
+    },
+    "popover": {
+      "$type": "number",
+      "$value": 10,
+      "$description": "Navigation dropdown panel.",
+      "$extensions": {
+        "com.desertpants": {
+          "origin": "source",
+          "source": "desertant.com brand/index.css .nav-panel"
+        }
+      }
+    },
+    "dropdown": {
+      "$type": "number",
+      "$value": 20,
+      "$description": "Menus (language switch, selects).",
+      "$extensions": {
+        "com.desertpants": {
+          "origin": "source",
+          "source": "desertant.com brand/index.css .lang-switch-menu"
+        }
+      }
+    },
+    "nav-sheet": {
+      "$type": "number",
+      "$value": 29,
+      "$description": "Full-screen compact navigation.",
+      "$extensions": {
+        "com.desertpants": {
+          "origin": "source",
+          "source": "desertant.com brand/index.css .site-nav @860"
+        }
+      }
+    },
+    "nav-header": {
+      "$type": "number",
+      "$value": 30,
+      "$description": "Header while compact navigation is open.",
+      "$extensions": {
+        "com.desertpants": {
+          "origin": "source",
+          "source": "desertant.com brand/index.css .site-head.nav-open"
+        }
+      }
+    },
+    "sheet": {
+      "$type": "number",
+      "$value": 40,
+      "$description": "Bottom sheets.",
+      "$extensions": {
+        "com.desertpants": {
+          "origin": "addition"
+        }
+      }
+    },
+    "dialog": {
+      "$type": "number",
+      "$value": 50,
+      "$description": "Dialogs and their scrim.",
+      "$extensions": {
+        "com.desertpants": {
+          "origin": "addition"
+        }
+      }
+    },
+    "toast": {
+      "$type": "number",
+      "$value": 60,
+      "$description": "Toasts above everything.",
+      "$extensions": {
+        "com.desertpants": {
+          "origin": "addition"
+        }
+      }
+    }
+  },
+  "duration": {
+    "$description": "Durations. Animation durations collapse to 0ms under prefers-reduced-motion (see motion.reduced); dwell times (how long feedback stays) do not.",
+    "instant": {
+      "$type": "duration",
+      "$value": {
+        "value": 80,
+        "unit": "ms"
+      },
+      "$description": "Instant feedback (reserved).",
+      "$extensions": {
+        "com.desertpants": {
+          "origin": "source",
+          "source": "desertant.com brand/index.css --duration-instant",
+          "reserved": true
+        }
+      }
+    },
+    "fast": {
+      "$type": "duration",
+      "$value": {
+        "value": 140,
+        "unit": "ms"
+      },
+      "$description": "Colour, background and border changes; carets; opacity toggles.",
+      "$extensions": {
+        "com.desertpants": {
+          "origin": "source",
+          "source": "desertant.com brand/index.css --duration-fast"
+        }
+      }
+    },
+    "base": {
+      "$type": "duration",
+      "$value": {
+        "value": 220,
+        "unit": "ms"
+      },
+      "$description": "Card lift, surface change, toggle lines, copied overlay, stat reveal.",
+      "$extensions": {
+        "com.desertpants": {
+          "origin": "source",
+          "source": "desertant.com brand/index.css --duration-base"
+        }
+      }
+    },
+    "slow": {
+      "$type": "duration",
+      "$value": {
+        "value": 340,
+        "unit": "ms"
+      },
+      "$description": "Feature-card float and tilt.",
+      "$extensions": {
+        "com.desertpants": {
+          "origin": "source",
+          "source": "desertant.com brand/index.css --duration-slow"
+        }
+      }
+    },
+    "slower": {
+      "$type": "duration",
+      "$value": {
+        "value": 520,
+        "unit": "ms"
+      },
+      "$description": "Sheet entrance, video bar fade.",
+      "$extensions": {
+        "com.desertpants": {
+          "origin": "source",
+          "source": "desertant.com brand/index.css --duration-slower"
+        }
+      }
+    },
+    "reveal": {
+      "$type": "duration",
+      "$value": {
+        "value": 400,
+        "unit": "ms"
+      },
+      "$description": "Rise-in reveal of page sections; progress fills.",
+      "$extensions": {
+        "com.desertpants": {
+          "origin": "source",
+          "source": "desertant.com brand/index.css .rise / .dt-fill"
+        }
+      }
+    },
+    "anchor": {
+      "$type": "duration",
+      "$value": {
+        "value": 200,
+        "unit": "ms"
+      },
+      "$description": "Heading-anchor fade.",
+      "$extensions": {
+        "com.desertpants": {
+          "origin": "source",
+          "source": "desertant.com brand/index.css .heading-anchor"
+        }
+      }
+    },
+    "anchor-delay": {
+      "$type": "duration",
+      "$value": {
+        "value": 180,
+        "unit": "ms"
+      },
+      "$description": "Heading-anchor reveal delay while the heading is hovered (drops to 0 on direct hover; 0 under reduced motion).",
+      "$extensions": {
+        "com.desertpants": {
+          "origin": "source",
+          "source": "desertant.com brand/index.css .heading-anchor transition-delay"
+        }
+      }
+    },
+    "fx-blur-hover": {
+      "$type": "duration",
+      "$value": {
+        "value": 500,
+        "unit": "ms"
+      },
+      "$description": "Blur effect release on hover.",
+      "$extensions": {
+        "com.desertpants": {
+          "origin": "source",
+          "source": "desertant.com brand/index.css .fx-blur.is-hover-only"
+        }
+      }
+    },
+    "fx-blur": {
+      "$type": "duration",
+      "$value": {
+        "value": 600,
+        "unit": "ms"
+      },
+      "$description": "Blur effect fade.",
+      "$extensions": {
+        "com.desertpants": {
+          "origin": "source",
+          "source": "desertant.com brand/index.css .fx-blur"
+        }
+      }
+    },
+    "settle": {
+      "$type": "duration",
+      "$value": {
+        "value": 700,
+        "unit": "ms"
+      },
+      "$description": "Tilted cards settling on hover (straightening part-way, lifting and scaling up slightly).",
+      "$extensions": {
+        "com.desertpants": {
+          "origin": "source",
+          "source": "desertant.com brand/index.css effects.js settle"
+        }
+      }
+    },
+    "fx-fill": {
+      "$type": "duration",
+      "$value": {
+        "value": 900,
+        "unit": "ms"
+      },
+      "$description": "Outlined text fill sweep; effect ramps.",
+      "$extensions": {
+        "com.desertpants": {
+          "origin": "source",
+          "source": "desertant.com brand/index.css --fx-fill-ms"
+        }
+      }
+    },
+    "feedback-copied": {
+      "$type": "duration",
+      "$value": {
+        "value": 1400,
+        "unit": "ms"
+      },
+      "$description": "How long the copied confirmation stays.",
+      "$extensions": {
+        "com.desertpants": {
+          "origin": "source",
+          "source": "desertant.com brand/index.css copy.js",
+          "dwell": true
+        }
+      }
+    },
+    "pulse": {
+      "$type": "duration",
+      "$value": {
+        "value": 1800,
+        "unit": "ms"
+      },
+      "$description": "Heartbeat pulse cycle.",
+      "$extensions": {
+        "com.desertpants": {
+          "origin": "source",
+          "source": "desertant.com brand/index.css --fx-pulse-ms"
+        }
+      }
+    },
+    "loader": {
+      "$type": "duration",
+      "$value": {
+        "value": 2200,
+        "unit": "ms"
+      },
+      "$description": "Loader cycle.",
+      "$extensions": {
+        "com.desertpants": {
+          "origin": "source",
+          "source": "desertant.com brand/index.css --duration-loader"
+        }
+      }
+    },
+    "feedback-active": {
+      "$type": "duration",
+      "$value": {
+        "value": 2500,
+        "unit": "ms"
+      },
+      "$description": "Auto-reset of an activated demo state.",
+      "$extensions": {
+        "com.desertpants": {
+          "origin": "source",
+          "source": "desertant.com brand/index.css main.js",
+          "dwell": true
+        }
+      }
+    },
+    "toast": {
+      "$type": "duration",
+      "$value": {
+        "value": 4000,
+        "unit": "ms"
+      },
+      "$description": "Toast visible time before auto-dismiss.",
+      "$extensions": {
+        "com.desertpants": {
+          "origin": "addition",
+          "dwell": true
+        }
+      }
+    },
+    "stagger": {
+      "$description": "Staggered reveal delays for sequential items d0-d7.",
+      "0": {
+        "$type": "duration",
+        "$value": {
+          "value": 30,
+          "unit": "ms"
+        },
+        "$description": "Reveal delay for the 1th staggered block.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css html.js .d0"
+          }
+        }
+      },
+      "1": {
+        "$type": "duration",
+        "$value": {
+          "value": 80,
+          "unit": "ms"
+        },
+        "$description": "Reveal delay for the 2th staggered block.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css html.js .d1"
+          }
+        }
+      },
+      "2": {
+        "$type": "duration",
+        "$value": {
+          "value": 130,
+          "unit": "ms"
+        },
+        "$description": "Reveal delay for the 3th staggered block.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css html.js .d2"
+          }
+        }
+      },
+      "3": {
+        "$type": "duration",
+        "$value": {
+          "value": 180,
+          "unit": "ms"
+        },
+        "$description": "Reveal delay for the 4th staggered block.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css html.js .d3"
+          }
+        }
+      },
+      "4": {
+        "$type": "duration",
+        "$value": {
+          "value": 230,
+          "unit": "ms"
+        },
+        "$description": "Reveal delay for the 5th staggered block.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css html.js .d4"
+          }
+        }
+      },
+      "5": {
+        "$type": "duration",
+        "$value": {
+          "value": 290,
+          "unit": "ms"
+        },
+        "$description": "Reveal delay for the 6th staggered block.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css html.js .d5"
+          }
+        }
+      },
+      "6": {
+        "$type": "duration",
+        "$value": {
+          "value": 360,
+          "unit": "ms"
+        },
+        "$description": "Reveal delay for the 7th staggered block.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css html.js .d6"
+          }
+        }
+      },
+      "7": {
+        "$type": "duration",
+        "$value": {
+          "value": 460,
+          "unit": "ms"
+        },
+        "$description": "Reveal delay for the 8th staggered block.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css html.js .d7"
+          }
+        }
+      }
+    }
+  },
+  "easing": {
+    "$description": "Easing curves (cubic-bezier control points).",
+    "standard": {
+      "$type": "cubicBezier",
+      "$value": [
+        0.2,
+        0,
+        0,
+        1
+      ],
+      "$description": "Default for colour, surface and small movements.",
+      "$extensions": {
+        "com.desertpants": {
+          "origin": "source",
+          "source": "desertant.com brand/index.css --ease-standard"
+        }
+      }
+    },
+    "out": {
+      "$type": "cubicBezier",
+      "$value": [
+        0.16,
+        1,
+        0.3,
+        1
+      ],
+      "$description": "Entrances, lifts, reveals, float.",
+      "$extensions": {
+        "com.desertpants": {
+          "origin": "source",
+          "source": "desertant.com brand/index.css --ease-out"
+        }
+      }
+    },
+    "in": {
+      "$type": "cubicBezier",
+      "$value": [
+        0.5,
+        0,
+        0.9,
+        0.2
+      ],
+      "$description": "Exits and dismissals (sheets leaving, toasts fading).",
+      "$extensions": {
+        "com.desertpants": {
+          "origin": "source",
+          "source": "desertant.com brand/index.css --ease-in"
+        }
+      }
+    },
+    "in-out": {
+      "$type": "cubicBezier",
+      "$value": [
+        0.65,
+        0,
+        0.35,
+        1
+      ],
+      "$description": "Sweeps (outlined text fill).",
+      "$extensions": {
+        "com.desertpants": {
+          "origin": "source",
+          "source": "desertant.com brand/index.css --ease-in-out"
+        }
+      }
+    },
+    "scroll-lift": {
+      "$type": "cubicBezier",
+      "$value": [
+        0.4,
+        0,
+        0.6,
+        1
+      ],
+      "$description": "Scroll-driven hero lift.",
+      "$extensions": {
+        "com.desertpants": {
+          "origin": "source",
+          "source": "desertant.com brand/index.css .hero-model animation"
+        }
+      }
+    },
+    "drop": {
+      "$type": "cubicBezier",
+      "$value": [
+        0.3,
+        0,
+        0.2,
+        1
+      ],
+      "$description": "Drop loader cells.",
+      "$extensions": {
+        "com.desertpants": {
+          "origin": "source",
+          "source": "desertant.com brand/index.css .loader--drop"
+        }
+      }
+    },
+    "draw": {
+      "$type": "cubicBezier",
+      "$value": [
+        0.45,
+        0,
+        0.2,
+        1
+      ],
+      "$description": "Hand-drawn stroke draw-in.",
+      "$extensions": {
+        "com.desertpants": {
+          "origin": "source",
+          "source": "desertant.com brand/index.css effects.js draw"
+        }
+      }
+    },
+    "draw-mark": {
+      "$type": "cubicBezier",
+      "$value": [
+        0.4,
+        0,
+        0.2,
+        1
+      ],
+      "$description": "Marker and underline draw-in.",
+      "$extensions": {
+        "com.desertpants": {
+          "origin": "source",
+          "source": "desertant.com brand/index.css effects.js mark"
+        }
+      }
+    },
+    "settle": {
+      "$type": "cubicBezier",
+      "$value": [
+        0.2,
+        0.8,
+        0.2,
+        1
+      ],
+      "$description": "Tilted cards settling on hover (straightening part-way, lifting and scaling up slightly).",
+      "$extensions": {
+        "com.desertpants": {
+          "origin": "source",
+          "source": "desertant.com brand/index.css effects.js settle"
+        }
+      }
+    },
+    "css-ease": {
+      "$type": "cubicBezier",
+      "$value": [
+        0.25,
+        0.1,
+        0.25,
+        1
+      ],
+      "$description": "CSS 'ease' keyword (heading anchor, video bar).",
+      "$extensions": {
+        "com.desertpants": {
+          "origin": "source",
+          "source": "desertant.com brand/index.css ease"
+        }
+      }
+    },
+    "css-ease-in-out": {
+      "$type": "cubicBezier",
+      "$value": [
+        0.42,
+        0,
+        0.58,
+        1
+      ],
+      "$description": "CSS 'ease-in-out' keyword (loaders).",
+      "$extensions": {
+        "com.desertpants": {
+          "origin": "source",
+          "source": "desertant.com brand/index.css ease-in-out"
+        }
+      }
+    },
+    "css-ease-out": {
+      "$type": "cubicBezier",
+      "$value": [
+        0,
+        0,
+        0.58,
+        1
+      ],
+      "$description": "CSS 'ease-out' keyword (heartbeat).",
+      "$extensions": {
+        "com.desertpants": {
+          "origin": "source",
+          "source": "desertant.com brand/index.css ease-out"
+        }
+      }
+    },
+    "linear": {
+      "$type": "cubicBezier",
+      "$value": [
+        0,
+        0,
+        1,
+        1
+      ],
+      "$description": "Linear (loader fill and chase).",
+      "$extensions": {
+        "com.desertpants": {
+          "origin": "source",
+          "source": "desertant.com brand/index.css linear"
+        }
+      }
+    },
+    "decelerate": {
+      "$type": "cubicBezier",
+      "$value": [
+        0.33,
+        1,
+        0.68,
+        1
+      ],
+      "$description": "Cubic ease-out 1-(1-t)^3 (pixelate and noise settling).",
+      "$extensions": {
+        "com.desertpants": {
+          "origin": "source",
+          "source": "desertant.com brand/index.css effects.js pixelate / noise"
+        }
+      }
+    },
+    "accelerate": {
+      "$type": "cubicBezier",
+      "$value": [
+        0.32,
+        0,
+        0.67,
+        0
+      ],
+      "$description": "Cubic ease-in t^3 (dissolve particles leaving).",
+      "$extensions": {
+        "com.desertpants": {
+          "origin": "source",
+          "source": "desertant.com brand/index.css effects.js dissolve"
+        }
+      }
+    }
+  },
+  "breakpoint": {
+    "$description": "Canonical viewport breakpoints (max-width of the narrower layout; the wider layout starts at value + 1px). Source one-off breakpoints are normalised to these (see docs/coverage-report.md).",
+    "xs": {
+      "$type": "dimension",
+      "$value": {
+        "value": 440,
+        "unit": "px"
+      },
+      "$description": "Narrow phones: single-column everything, stacked footers.",
+      "$extensions": {
+        "com.desertpants": {
+          "origin": "source",
+          "source": "desertant.com brand/index.css @media (max-width: 440px)"
+        }
+      }
+    },
+    "sm": {
+      "$type": "dimension",
+      "$value": {
+        "value": 640,
+        "unit": "px"
+      },
+      "$description": "Phones: compact tables, single-column forms and versus, board rows collapse.",
+      "$extensions": {
+        "com.desertpants": {
+          "origin": "source",
+          "source": "desertant.com brand/index.css @media (max-width: 640px) / 40rem"
+        }
+      }
+    },
+    "md": {
+      "$type": "dimension",
+      "$value": {
+        "value": 860,
+        "unit": "px"
+      },
+      "$description": "Primary switch: compact navigation, stacked heroes, fan becomes a column.",
+      "$extensions": {
+        "com.desertpants": {
+          "origin": "source",
+          "source": "desertant.com brand/index.css @media (max-width: 860px)"
+        }
+      }
+    },
+    "lg": {
+      "$type": "dimension",
+      "$value": {
+        "value": 1180,
+        "unit": "px"
+      },
+      "$description": "Laptops: feature cards shrink to 340px.",
+      "$extensions": {
+        "com.desertpants": {
+          "origin": "source",
+          "source": "desertant.com brand/index.css @media (max-width: 1180px)"
+        }
+      }
+    },
+    "xl": {
+      "$type": "dimension",
+      "$value": {
+        "value": 1480,
+        "unit": "px"
+      },
+      "$description": "Wide screens: container-2xl limit.",
+      "$extensions": {
+        "com.desertpants": {
+          "origin": "derived",
+          "source": "desertant.com brand/index.css --container-2xl"
+        }
+      }
+    }
+  },
+  "breakpoint-height": {
+    "$description": "Viewport height breakpoints (max-height of the shorter layout; the taller layout starts at value + 1px).",
+    "short": {
+      "$type": "dimension",
+      "$value": {
+        "value": 500,
+        "unit": "px"
+      },
+      "$description": "Short viewports: phones in landscape and split screens. Headers and app bars use their compact height, heroes drop their minimum heights and bottom sheets may use the full height.",
+      "$extensions": {
+        "com.desertpants": {
+          "origin": "addition"
+        }
+      }
+    }
+  },
+  "aspect": {
+    "$description": "Aspect ratios (width / height).",
+    "square": {
+      "$type": "number",
+      "$value": 1.0,
+      "$description": "Square photos and icon tiles. (1:1)",
+      "$extensions": {
+        "com.desertpants": {
+          "origin": "source",
+          "source": "desertant.com brand/index.css .photo--square",
+          "ratio": "1:1"
+        }
+      }
+    },
+    "landscape": {
+      "$type": "number",
+      "$value": 1.333333,
+      "$description": "Drawing surfaces and landscape photos. (4:3)",
+      "$extensions": {
+        "com.desertpants": {
+          "origin": "source",
+          "source": "desertant.com brand/index.css .demo-canvas-wrap",
+          "ratio": "4:3"
+        }
+      }
+    },
+    "video": {
+      "$type": "number",
+      "$value": 1.777778,
+      "$description": "Video and slides. (16:9)",
+      "$extensions": {
+        "com.desertpants": {
+          "origin": "source",
+          "source": "desertant.com brand/index.css aspect-ratio:16/9",
+          "ratio": "16:9"
+        }
+      }
+    },
+    "post": {
+      "$type": "number",
+      "$value": 1.538462,
+      "$description": "Post card media. (400:260)",
+      "$extensions": {
+        "com.desertpants": {
+          "origin": "source",
+          "source": "desertant.com brand/index.css .post-card-media",
+          "ratio": "400:260"
+        }
+      }
+    },
+    "feature-card": {
+      "$type": "number",
+      "$value": 0.685455,
+      "$description": "Feature cards. (377:550)",
+      "$extensions": {
+        "com.desertpants": {
+          "origin": "source",
+          "source": "desertant.com brand/index.css .feature-card",
+          "ratio": "377:550"
+        }
+      }
+    },
+    "portrait-card": {
+      "$type": "number",
+      "$value": 0.792308,
+      "$description": "Portrait photo cards. (412:520)",
+      "$extensions": {
+        "com.desertpants": {
+          "origin": "source",
+          "source": "desertant.com brand/index.css aspect-ratio:412/520",
+          "ratio": "412:520"
+        }
+      }
+    },
+    "portrait-photo": {
+      "$type": "number",
+      "$value": 0.919355,
+      "$description": "Portrait editorial photos. (570:620)",
+      "$extensions": {
+        "com.desertpants": {
+          "origin": "source",
+          "source": "desertant.com brand/index.css aspect-ratio:570/620",
+          "ratio": "570:620"
+        }
+      }
+    },
+    "editorial": {
+      "$type": "number",
+      "$value": 1.345059,
+      "$description": "Editorial landscape photos. (803:597)",
+      "$extensions": {
+        "com.desertpants": {
+          "origin": "source",
+          "source": "desertant.com brand/index.css aspect-ratio:803/597",
+          "ratio": "803:597"
+        }
+      }
+    },
+    "wide-photo": {
+      "$type": "number",
+      "$value": 1.933993,
+      "$description": "Full-width photos in the xl container. (1172:606)",
+      "$extensions": {
+        "com.desertpants": {
+          "origin": "source",
+          "source": "desertant.com brand/index.css .intel-photo",
+          "ratio": "1172:606"
+        }
+      }
+    }
+  }
+}

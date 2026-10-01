@@ -1,0 +1,2413 @@
+{
+  "$description": "Motion: transitions, keyframe animations, reduced motion.",
+  "$extensions": {
+    "com.desertpants": {
+      "system": "desert-pants",
+      "format": "DTCG 2025.10",
+      "source": "Visual language derived from desertant.com (brand/index.css, assets/site.css, captured 2026-09-23/24). Logos, marks, product names, photography and copy are not included.",
+      "modes": [
+        "light",
+        "dark"
+      ]
+    }
+  },
+  "motion": {
+    "$description": "Motion. Transitions are DTCG transition composites; keyframe animations extend a transition with keyframes, iteration and direction.",
+    "transition": {
+      "$description": "Named transitions and the properties they animate.",
+      "color": {
+        "$type": "transition",
+        "$value": {
+          "duration": "{duration.fast}",
+          "delay": {
+            "value": 0,
+            "unit": "ms"
+          },
+          "timingFunction": "{easing.standard}"
+        },
+        "$description": "Colour, ground and border changes on controls.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css .btn",
+            "properties": [
+              "color",
+              "background-color",
+              "border-color"
+            ]
+          }
+        }
+      },
+      "press": {
+        "$type": "transition",
+        "$value": {
+          "duration": "{duration.fast}",
+          "delay": {
+            "value": 0,
+            "unit": "ms"
+          },
+          "timingFunction": "{easing.out}"
+        },
+        "$description": "Pressed offset of buttons.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css .btn",
+            "properties": [
+              "transform"
+            ]
+          }
+        }
+      },
+      "surface": {
+        "$type": "transition",
+        "$value": {
+          "duration": "{duration.base}",
+          "delay": {
+            "value": 0,
+            "unit": "ms"
+          },
+          "timingFunction": "{easing.standard}"
+        },
+        "$description": "Card ground and text colour on hover.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css .card",
+            "properties": [
+              "background-color",
+              "color"
+            ]
+          }
+        }
+      },
+      "lift": {
+        "$type": "transition",
+        "$value": {
+          "duration": "{duration.base}",
+          "delay": {
+            "value": 0,
+            "unit": "ms"
+          },
+          "timingFunction": "{easing.out}"
+        },
+        "$description": "Card, pin and prompt-card lift.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css .card / .prompt-card",
+            "properties": [
+              "transform",
+              "box-shadow"
+            ]
+          }
+        }
+      },
+      "float": {
+        "$type": "transition",
+        "$value": {
+          "duration": "{duration.slow}",
+          "delay": {
+            "value": 0,
+            "unit": "ms"
+          },
+          "timingFunction": "{easing.out}"
+        },
+        "$description": "Feature-card float and tilt changes.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css .feature-card / .tilt",
+            "properties": [
+              "transform",
+              "box-shadow"
+            ]
+          }
+        }
+      },
+      "fade": {
+        "$type": "transition",
+        "$value": {
+          "duration": "{duration.fast}",
+          "delay": {
+            "value": 0,
+            "unit": "ms"
+          },
+          "timingFunction": "{easing.standard}"
+        },
+        "$description": "Opacity toggles (pin actions, nav hover).",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css .pin-actions",
+            "properties": [
+              "opacity"
+            ]
+          }
+        }
+      },
+      "toggle": {
+        "$type": "transition",
+        "$value": {
+          "duration": "{duration.base}",
+          "delay": {
+            "value": 0,
+            "unit": "ms"
+          },
+          "timingFunction": "{easing.standard}"
+        },
+        "$description": "Hamburger lines crossing.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css .nav-toggle>span",
+            "properties": [
+              "transform"
+            ]
+          }
+        }
+      },
+      "caret": {
+        "$type": "transition",
+        "$value": {
+          "duration": "{duration.fast}",
+          "delay": {
+            "value": 0,
+            "unit": "ms"
+          },
+          "timingFunction": "{easing.standard}"
+        },
+        "$description": "Caret and chevron rotation.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css .site-nav summary:after",
+            "properties": [
+              "transform"
+            ]
+          }
+        }
+      },
+      "copied": {
+        "$type": "transition",
+        "$value": {
+          "duration": "{duration.base}",
+          "delay": {
+            "value": 0,
+            "unit": "ms"
+          },
+          "timingFunction": "{easing.standard}"
+        },
+        "$description": "Copied overlay entrance.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css .prompt-card-copied",
+            "properties": [
+              "opacity",
+              "transform"
+            ]
+          }
+        }
+      },
+      "reveal": {
+        "$type": "transition",
+        "$value": {
+          "duration": "{duration.reveal}",
+          "delay": {
+            "value": 0,
+            "unit": "ms"
+          },
+          "timingFunction": "{easing.out}"
+        },
+        "$description": "Rise-in of page blocks (with a stagger delay).",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css html.js .rise",
+            "properties": [
+              "opacity",
+              "transform"
+            ]
+          }
+        }
+      },
+      "progress": {
+        "$type": "transition",
+        "$value": {
+          "duration": "{duration.reveal}",
+          "delay": {
+            "value": 0,
+            "unit": "ms"
+          },
+          "timingFunction": "{easing.standard}"
+        },
+        "$description": "Meter width changes.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com assets/site.css .gt-fill",
+            "properties": [
+              "width"
+            ]
+          }
+        }
+      },
+      "bar": {
+        "$type": "transition",
+        "$value": {
+          "duration": "{duration.reveal}",
+          "delay": {
+            "value": 0,
+            "unit": "ms"
+          },
+          "timingFunction": "{easing.out}"
+        },
+        "$description": "Result bar growth (scaleX).",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com assets/site.css .dt-fill",
+            "properties": [
+              "transform"
+            ]
+          }
+        }
+      },
+      "anchor": {
+        "$type": "transition",
+        "$value": {
+          "duration": "{duration.anchor}",
+          "delay": "{duration.anchor-delay}",
+          "timingFunction": "{easing.css-ease}"
+        },
+        "$description": "Heading anchor reveal (delay drops to 0 on direct hover).",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com assets/site.css .heading-anchor",
+            "properties": [
+              "opacity"
+            ]
+          }
+        }
+      },
+      "settle": {
+        "$type": "transition",
+        "$value": {
+          "duration": "{duration.settle}",
+          "delay": {
+            "value": 0,
+            "unit": "ms"
+          },
+          "timingFunction": "{easing.settle}"
+        },
+        "$description": "Tilted cards settling on hover: they straighten to interaction.tilt.settle-factor of their tilt, lift interaction.lift.settle and scale to interaction.scale.settle.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "brand/js/effects.js",
+            "properties": [
+              "transform"
+            ]
+          }
+        }
+      },
+      "fx-blur": {
+        "$type": "transition",
+        "$value": {
+          "duration": "{duration.fx-blur}",
+          "delay": {
+            "value": 0,
+            "unit": "ms"
+          },
+          "timingFunction": "{easing.out}"
+        },
+        "$description": "Blur effect fade.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css .fx-blur",
+            "properties": [
+              "opacity"
+            ]
+          }
+        }
+      },
+      "fx-blur-hover": {
+        "$type": "transition",
+        "$value": {
+          "duration": "{duration.fx-blur-hover}",
+          "delay": {
+            "value": 0,
+            "unit": "ms"
+          },
+          "timingFunction": "{easing.out}"
+        },
+        "$description": "Blur effect released on hover.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css .fx-blur.is-hover-only",
+            "properties": [
+              "filter",
+              "text-shadow"
+            ]
+          }
+        }
+      },
+      "outline-fill": {
+        "$type": "transition",
+        "$value": {
+          "duration": "{duration.fx-fill}",
+          "delay": {
+            "value": 0,
+            "unit": "ms"
+          },
+          "timingFunction": "{easing.in-out}"
+        },
+        "$description": "Outlined text filling in.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css .fx-outline",
+            "properties": [
+              "background-position"
+            ]
+          }
+        }
+      },
+      "stat": {
+        "$type": "transition",
+        "$value": {
+          "duration": "{duration.base}",
+          "delay": {
+            "value": 0,
+            "unit": "ms"
+          },
+          "timingFunction": "{easing.out}"
+        },
+        "$description": "Media stat reveal.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com assets/site.css .replay-rtf",
+            "properties": [
+              "opacity",
+              "transform"
+            ]
+          }
+        }
+      },
+      "video-bar": {
+        "$type": "transition",
+        "$value": {
+          "duration": "{duration.slower}",
+          "delay": {
+            "value": 0,
+            "unit": "ms"
+          },
+          "timingFunction": "{easing.css-ease}"
+        },
+        "$description": "Video control bar fade.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com assets/site.css .post-video-bar",
+            "properties": [
+              "opacity"
+            ]
+          }
+        }
+      },
+      "play": {
+        "$type": "transition",
+        "$value": {
+          "duration": "{duration.base}",
+          "delay": {
+            "value": 0,
+            "unit": "ms"
+          },
+          "timingFunction": "{easing.out}"
+        },
+        "$description": "Play button scale on hover.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com assets/site.css .replay-preview",
+            "properties": [
+              "transform"
+            ]
+          }
+        }
+      },
+      "drawing": {
+        "$type": "transition",
+        "$value": {
+          "duration": "{duration.base}",
+          "delay": {
+            "value": 0,
+            "unit": "ms"
+          },
+          "timingFunction": "{easing.standard}"
+        },
+        "$description": "Drawing surface activation.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com assets/site.css .demo-canvas-wrap",
+            "properties": [
+              "box-shadow",
+              "border-color"
+            ]
+          }
+        }
+      },
+      "sheet-enter": {
+        "$type": "transition",
+        "$value": {
+          "duration": "{duration.slower}",
+          "delay": {
+            "value": 0,
+            "unit": "ms"
+          },
+          "timingFunction": "{easing.out}"
+        },
+        "$description": "Bottom sheet and full-screen menu entering.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "addition",
+            "properties": [
+              "transform",
+              "opacity"
+            ]
+          }
+        }
+      },
+      "sheet-exit": {
+        "$type": "transition",
+        "$value": {
+          "duration": "{duration.base}",
+          "delay": {
+            "value": 0,
+            "unit": "ms"
+          },
+          "timingFunction": "{easing.in}"
+        },
+        "$description": "Bottom sheet leaving.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "addition",
+            "properties": [
+              "transform",
+              "opacity"
+            ]
+          }
+        }
+      },
+      "sheet-settle": {
+        "$type": "transition",
+        "$value": {
+          "duration": "{duration.slow}",
+          "delay": {
+            "value": 0,
+            "unit": "ms"
+          },
+          "timingFunction": "{easing.out}"
+        },
+        "$description": "Bottom sheet settling after a drag: back to its detent when the drag does not dismiss it, or up to the large detent.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "addition",
+            "properties": [
+              "transform",
+              "height"
+            ]
+          }
+        }
+      },
+      "dialog-enter": {
+        "$type": "transition",
+        "$value": {
+          "duration": "{duration.base}",
+          "delay": {
+            "value": 0,
+            "unit": "ms"
+          },
+          "timingFunction": "{easing.out}"
+        },
+        "$description": "Dialog entering (scale from 0.97).",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "addition",
+            "properties": [
+              "transform",
+              "opacity"
+            ]
+          }
+        }
+      },
+      "toast-enter": {
+        "$type": "transition",
+        "$value": {
+          "duration": "{duration.base}",
+          "delay": {
+            "value": 0,
+            "unit": "ms"
+          },
+          "timingFunction": "{easing.out}"
+        },
+        "$description": "Toast entering from below.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "addition",
+            "properties": [
+              "transform",
+              "opacity"
+            ]
+          }
+        }
+      },
+      "toast-exit": {
+        "$type": "transition",
+        "$value": {
+          "duration": "{duration.fast}",
+          "delay": {
+            "value": 0,
+            "unit": "ms"
+          },
+          "timingFunction": "{easing.in}"
+        },
+        "$description": "Toast leaving.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "addition",
+            "properties": [
+              "opacity"
+            ]
+          }
+        }
+      },
+      "switch": {
+        "$type": "transition",
+        "$value": {
+          "duration": "{duration.fast}",
+          "delay": {
+            "value": 0,
+            "unit": "ms"
+          },
+          "timingFunction": "{easing.standard}"
+        },
+        "$description": "Switch thumb and track.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "addition",
+            "properties": [
+              "transform",
+              "background-color"
+            ]
+          }
+        }
+      },
+      "gesture-settle": {
+        "$type": "transition",
+        "$value": {
+          "duration": "{duration.base}",
+          "delay": {
+            "value": 0,
+            "unit": "ms"
+          },
+          "timingFunction": "{easing.out}"
+        },
+        "$description": "A released swipe row or pull-to-refresh indicator settling: back to rest, open at its actions, or held at the refresh position.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "addition",
+            "properties": [
+              "transform"
+            ]
+          }
+        }
+      },
+      "badge-enter": {
+        "$type": "transition",
+        "$value": {
+          "duration": "{duration.fast}",
+          "delay": {
+            "value": 0,
+            "unit": "ms"
+          },
+          "timingFunction": "{easing.out}"
+        },
+        "$description": "A badge appearing on its host (it scales up from component.badge.enter-scale as it fades in).",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "addition",
+            "properties": [
+              "transform",
+              "opacity"
+            ]
+          }
+        }
+      }
+    },
+    "animation": {
+      "$description": "Keyframe animations. Keyframe values are identity literals (opacity 0 or 1, scale 1, translate and rotate 0), token references (\"-{...}\" negates) or per-cell slots (on, p1, p2) that the component fills from the tokens in the animation's on / peaks extension.",
+      "heartbeat": {
+        "$type": "transition",
+        "$value": {
+          "duration": "{duration.pulse}",
+          "delay": {
+            "value": 0,
+            "unit": "ms"
+          },
+          "timingFunction": "{easing.css-ease-out}"
+        },
+        "$description": "Pulse ring behind a live element, scaled from the pulse origin.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css @keyframes fx-heartbeat",
+            "keyframes": [
+              {
+                "offset": 0,
+                "opacity": "{effect.pulse.start-opacity}",
+                "scale": 1
+              },
+              {
+                "offset": 14,
+                "opacity": "{effect.pulse.beat-opacity}",
+                "scale": "{effect.pulse.beat-scale}"
+              },
+              {
+                "offset": 26,
+                "opacity": "{effect.pulse.echo-opacity}",
+                "scale": "{effect.pulse.echo-scale}"
+              },
+              {
+                "offset": 42,
+                "opacity": 0,
+                "scale": "{effect.pulse.peak-scale}"
+              },
+              {
+                "offset": 100,
+                "opacity": 0,
+                "scale": "{effect.pulse.peak-scale}"
+              }
+            ],
+            "iterations": "infinite",
+            "direction": "normal",
+            "fill-mode": "none",
+            "transform-origin": [
+              "{effect.pulse.origin-x}",
+              "{effect.pulse.origin-y}"
+            ]
+          }
+        }
+      },
+      "loader-fill": {
+        "$type": "transition",
+        "$value": {
+          "duration": "{duration.loader}",
+          "delay": {
+            "value": 0,
+            "unit": "ms"
+          },
+          "timingFunction": "{easing.linear}"
+        },
+        "$description": "Loader: cells fill and empty in sequence (reading, spiral or rise order; motion.loader.fill-step apart). 'on' is fill-on for pattern cells, fill-other for the rest.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css @keyframes loader-fill",
+            "keyframes": [
+              {
+                "offset": 0,
+                "opacity": "{motion.loader.rest}"
+              },
+              {
+                "offset": 3,
+                "opacity": "on"
+              },
+              {
+                "offset": 50,
+                "opacity": "on"
+              },
+              {
+                "offset": 53,
+                "opacity": "{motion.loader.rest}"
+              },
+              {
+                "offset": 100,
+                "opacity": "{motion.loader.rest}"
+              }
+            ],
+            "iterations": "infinite",
+            "direction": "normal",
+            "fill-mode": "none",
+            "on": {
+              "pattern": "{motion.loader.fill-on}",
+              "other": "{motion.loader.fill-other}"
+            }
+          }
+        }
+      },
+      "loader-twinkle": {
+        "$type": "transition",
+        "$value": {
+          "duration": {
+            "value": 2400,
+            "unit": "ms"
+          },
+          "delay": {
+            "value": 0,
+            "unit": "ms"
+          },
+          "timingFunction": "{easing.css-ease-in-out}"
+        },
+        "$description": "Loader: cells twinkle (alternate). Each cell draws its own cycle (twinkle-duration-min to -max) and start offset. 'on' is twinkle-on for pattern cells, twinkle-other for the rest.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css @keyframes loader-twinkle",
+            "keyframes": [
+              {
+                "offset": 0,
+                "opacity": "{motion.loader.twinkle-rest}"
+              },
+              {
+                "offset": 100,
+                "opacity": "on"
+              }
+            ],
+            "iterations": "infinite",
+            "direction": "alternate",
+            "fill-mode": "none",
+            "on": {
+              "pattern": "{motion.loader.twinkle-on}",
+              "other": "{motion.loader.twinkle-other}"
+            }
+          }
+        }
+      },
+      "loader-emerge": {
+        "$type": "transition",
+        "$value": {
+          "duration": {
+            "value": 3520,
+            "unit": "ms"
+          },
+          "delay": {
+            "value": 0,
+            "unit": "ms"
+          },
+          "timingFunction": "{easing.css-ease-in-out}"
+        },
+        "$description": "Loader: the pattern holds at full ink while the other cells flash on and off around it (loader duration x 1.6; per-cell delays emerge-delay-min to -max).",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css @keyframes loader-emerge",
+            "keyframes": [
+              {
+                "offset": 0,
+                "opacity": "{motion.loader.rest}"
+              },
+              {
+                "offset": 9,
+                "opacity": "{motion.loader.emerge-on}"
+              },
+              {
+                "offset": 52,
+                "opacity": "{motion.loader.emerge-on}"
+              },
+              {
+                "offset": 61,
+                "opacity": "{motion.loader.rest}"
+              },
+              {
+                "offset": 100,
+                "opacity": "{motion.loader.rest}"
+              }
+            ],
+            "iterations": "infinite",
+            "direction": "normal",
+            "fill-mode": "none"
+          }
+        }
+      },
+      "loader-emerge-slow": {
+        "$type": "transition",
+        "$value": {
+          "duration": {
+            "value": 5720,
+            "unit": "ms"
+          },
+          "delay": {
+            "value": 0,
+            "unit": "ms"
+          },
+          "timingFunction": "{easing.css-ease-in-out}"
+        },
+        "$description": "Loader: slow emerge, track a (loader duration x 2.6). Each non-pattern cell runs track a, b or c with its own delay (emerge-slow-delay-min to -max).",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css @keyframes loader-emerge-a",
+            "keyframes": [
+              {
+                "offset": 0,
+                "opacity": "{motion.loader.rest}"
+              },
+              {
+                "offset": 6,
+                "opacity": "{motion.loader.slow-a-rise}"
+              },
+              {
+                "offset": 11,
+                "opacity": "{motion.loader.slow-a-rise}"
+              },
+              {
+                "offset": 16,
+                "opacity": "{motion.loader.emerge-on}"
+              },
+              {
+                "offset": 50,
+                "opacity": "{motion.loader.emerge-on}"
+              },
+              {
+                "offset": 56,
+                "opacity": "{motion.loader.slow-a-fall}"
+              },
+              {
+                "offset": 62,
+                "opacity": "{motion.loader.slow-a-fall}"
+              },
+              {
+                "offset": 68,
+                "opacity": "{motion.loader.rest}"
+              },
+              {
+                "offset": 100,
+                "opacity": "{motion.loader.rest}"
+              }
+            ],
+            "iterations": "infinite",
+            "direction": "normal",
+            "fill-mode": "none"
+          }
+        }
+      },
+      "loader-emerge-slow-b": {
+        "$type": "transition",
+        "$value": {
+          "duration": {
+            "value": 5720,
+            "unit": "ms"
+          },
+          "delay": {
+            "value": 0,
+            "unit": "ms"
+          },
+          "timingFunction": "{easing.css-ease-in-out}"
+        },
+        "$description": "Loader: slow emerge, track b: two steps up, a step down, rest.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css @keyframes loader-emerge-b",
+            "keyframes": [
+              {
+                "offset": 0,
+                "opacity": "{motion.loader.rest}"
+              },
+              {
+                "offset": 4,
+                "opacity": "{motion.loader.slow-b-rise}"
+              },
+              {
+                "offset": 12,
+                "opacity": "{motion.loader.slow-b-rise}"
+              },
+              {
+                "offset": 15,
+                "opacity": "{motion.loader.slow-b-lift}"
+              },
+              {
+                "offset": 20,
+                "opacity": "{motion.loader.emerge-on}"
+              },
+              {
+                "offset": 52,
+                "opacity": "{motion.loader.emerge-on}"
+              },
+              {
+                "offset": 55,
+                "opacity": "{motion.loader.slow-b-fall}"
+              },
+              {
+                "offset": 63,
+                "opacity": "{motion.loader.slow-b-fall}"
+              },
+              {
+                "offset": 66,
+                "opacity": "{motion.loader.rest}"
+              },
+              {
+                "offset": 100,
+                "opacity": "{motion.loader.rest}"
+              }
+            ],
+            "iterations": "infinite",
+            "direction": "normal",
+            "fill-mode": "none"
+          }
+        }
+      },
+      "loader-emerge-slow-c": {
+        "$type": "transition",
+        "$value": {
+          "duration": {
+            "value": 5720,
+            "unit": "ms"
+          },
+          "delay": {
+            "value": 0,
+            "unit": "ms"
+          },
+          "timingFunction": "{easing.css-ease-in-out}"
+        },
+        "$description": "Loader: slow emerge, track c: on, a flicker, on, a dip and a flicker, rest.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css @keyframes loader-emerge-c",
+            "keyframes": [
+              {
+                "offset": 0,
+                "opacity": "{motion.loader.rest}"
+              },
+              {
+                "offset": 8,
+                "opacity": "{motion.loader.emerge-on}"
+              },
+              {
+                "offset": 12,
+                "opacity": "{motion.loader.slow-c-flicker}"
+              },
+              {
+                "offset": 18,
+                "opacity": "{motion.loader.emerge-on}"
+              },
+              {
+                "offset": 48,
+                "opacity": "{motion.loader.emerge-on}"
+              },
+              {
+                "offset": 54,
+                "opacity": "{motion.loader.slow-c-dip}"
+              },
+              {
+                "offset": 58,
+                "opacity": "{motion.loader.slow-c-flicker}"
+              },
+              {
+                "offset": 64,
+                "opacity": "{motion.loader.rest}"
+              },
+              {
+                "offset": 100,
+                "opacity": "{motion.loader.rest}"
+              }
+            ],
+            "iterations": "infinite",
+            "direction": "normal",
+            "fill-mode": "none"
+          }
+        }
+      },
+      "loader-emerge-drift": {
+        "$type": "transition",
+        "$value": {
+          "duration": {
+            "value": 5940,
+            "unit": "ms"
+          },
+          "delay": {
+            "value": 0,
+            "unit": "ms"
+          },
+          "timingFunction": "{easing.css-ease-in-out}"
+        },
+        "$description": "Loader: drifting emerge (loader duration x 2.7): a step up, full, a step down, rest (per-cell delays emerge-drift-delay-min to -max).",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css @keyframes loader-emerge-drift",
+            "keyframes": [
+              {
+                "offset": 0,
+                "opacity": "{motion.loader.rest}"
+              },
+              {
+                "offset": 5,
+                "opacity": "{motion.loader.drift-rise}"
+              },
+              {
+                "offset": 9,
+                "opacity": "{motion.loader.emerge-on}"
+              },
+              {
+                "offset": 34,
+                "opacity": "{motion.loader.emerge-on}"
+              },
+              {
+                "offset": 38,
+                "opacity": "{motion.loader.drift-fall}"
+              },
+              {
+                "offset": 43,
+                "opacity": "{motion.loader.rest}"
+              },
+              {
+                "offset": 100,
+                "opacity": "{motion.loader.rest}"
+              }
+            ],
+            "iterations": "infinite",
+            "direction": "normal",
+            "fill-mode": "none"
+          }
+        }
+      },
+      "loader-sparse": {
+        "$type": "transition",
+        "$value": {
+          "duration": {
+            "value": 4200,
+            "unit": "ms"
+          },
+          "delay": {
+            "value": 0,
+            "unit": "ms"
+          },
+          "timingFunction": "{easing.css-ease-in-out}"
+        },
+        "$description": "Loader: sparse two-phase emerge; each non-pattern cell draws peaks p1 and p2 from the peaks list, its cycle (sparse-duration-min to -max) and start offset.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css @keyframes loader-emerge-sparse",
+            "keyframes": [
+              {
+                "offset": 0,
+                "opacity": "{motion.loader.rest}"
+              },
+              {
+                "offset": 4,
+                "opacity": "p1"
+              },
+              {
+                "offset": 15,
+                "opacity": "p1"
+              },
+              {
+                "offset": 20,
+                "opacity": "{motion.loader.rest}"
+              },
+              {
+                "offset": 54,
+                "opacity": "{motion.loader.rest}"
+              },
+              {
+                "offset": 58,
+                "opacity": "p2"
+              },
+              {
+                "offset": 67,
+                "opacity": "p2"
+              },
+              {
+                "offset": 72,
+                "opacity": "{motion.loader.rest}"
+              },
+              {
+                "offset": 100,
+                "opacity": "{motion.loader.rest}"
+              }
+            ],
+            "iterations": "infinite",
+            "direction": "normal",
+            "fill-mode": "none",
+            "peaks": [
+              "{motion.loader.peak-low}",
+              "{motion.loader.peak-mid}",
+              "{motion.loader.peak-high}"
+            ]
+          }
+        }
+      },
+      "loader-sparse-fast": {
+        "$type": "transition",
+        "$value": {
+          "duration": {
+            "value": 2000,
+            "unit": "ms"
+          },
+          "delay": {
+            "value": 0,
+            "unit": "ms"
+          },
+          "timingFunction": "{easing.css-ease-in-out}"
+        },
+        "$description": "Loader: sparse emerge, fast (sparse-fast-duration-min to -max per cell).",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css .loader--emerge-sparse-fast",
+            "keyframes": [
+              {
+                "offset": 0,
+                "opacity": "{motion.loader.rest}"
+              },
+              {
+                "offset": 4,
+                "opacity": "p1"
+              },
+              {
+                "offset": 15,
+                "opacity": "p1"
+              },
+              {
+                "offset": 20,
+                "opacity": "{motion.loader.rest}"
+              },
+              {
+                "offset": 54,
+                "opacity": "{motion.loader.rest}"
+              },
+              {
+                "offset": 58,
+                "opacity": "p2"
+              },
+              {
+                "offset": 67,
+                "opacity": "p2"
+              },
+              {
+                "offset": 72,
+                "opacity": "{motion.loader.rest}"
+              },
+              {
+                "offset": 100,
+                "opacity": "{motion.loader.rest}"
+              }
+            ],
+            "iterations": "infinite",
+            "direction": "normal",
+            "fill-mode": "none",
+            "peaks": [
+              "{motion.loader.peak-low}",
+              "{motion.loader.peak-mid}",
+              "{motion.loader.peak-high}"
+            ]
+          }
+        }
+      },
+      "loader-drop": {
+        "$type": "transition",
+        "$value": {
+          "duration": "{duration.loader}",
+          "delay": {
+            "value": 0,
+            "unit": "ms"
+          },
+          "timingFunction": "{easing.drop}"
+        },
+        "$description": "Loader: pattern cells drop into place one after another (motion.loader.drop-step apart), hold, then fade.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css @keyframes loader-drop",
+            "keyframes": [
+              {
+                "offset": 0,
+                "opacity": 0,
+                "translate-y": "-{motion.loader.drop-offset}"
+              },
+              {
+                "offset": 6,
+                "opacity": 1
+              },
+              {
+                "offset": 18,
+                "opacity": 1,
+                "translate-y": 0
+              },
+              {
+                "offset": 78,
+                "opacity": 1,
+                "translate-y": 0
+              },
+              {
+                "offset": 86,
+                "opacity": 0,
+                "translate-y": 0
+              },
+              {
+                "offset": 100,
+                "opacity": 0,
+                "translate-y": 0
+              }
+            ],
+            "iterations": "infinite",
+            "direction": "normal",
+            "fill-mode": "both"
+          }
+        }
+      },
+      "loader-chase": {
+        "$type": "transition",
+        "$value": {
+          "duration": {
+            "value": 1540,
+            "unit": "ms"
+          },
+          "delay": {
+            "value": 0,
+            "unit": "ms"
+          },
+          "timingFunction": "{easing.linear}"
+        },
+        "$description": "Loader: a lit cell chases around the pattern (loader duration x 0.7; cells motion.loader.chase-step of the loader duration apart).",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css @keyframes loader-chase",
+            "keyframes": [
+              {
+                "offset": 0,
+                "opacity": "{motion.loader.chase-rest}"
+              },
+              {
+                "offset": 8,
+                "opacity": 1
+              },
+              {
+                "offset": 40,
+                "opacity": "{motion.loader.chase-rest}"
+              },
+              {
+                "offset": 100,
+                "opacity": "{motion.loader.chase-rest}"
+              }
+            ],
+            "iterations": "infinite",
+            "direction": "normal",
+            "fill-mode": "none"
+          }
+        }
+      },
+      "loader-spin": {
+        "$type": "transition",
+        "$value": {
+          "duration": "{duration.loader}",
+          "delay": {
+            "value": 0,
+            "unit": "ms"
+          },
+          "timingFunction": "{easing.linear}"
+        },
+        "$description": "Loader: the pattern turns once per cycle in four 90-degree steps.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css @keyframes loader-spin",
+            "keyframes": [
+              {
+                "offset": 0,
+                "rotate": 0
+              },
+              {
+                "offset": 100,
+                "rotate": "{motion.loader.spin-turn}"
+              }
+            ],
+            "iterations": "infinite",
+            "direction": "normal",
+            "fill-mode": "none",
+            "steps": 4
+          }
+        }
+      },
+      "loader-orbit": {
+        "$type": "transition",
+        "$value": {
+          "duration": "{duration.loader}",
+          "delay": {
+            "value": 0,
+            "unit": "ms"
+          },
+          "timingFunction": "{easing.css-ease-in-out}"
+        },
+        "$description": "Loader: the centre column breathes (squashes vertically) while the ring cells step round it (motion.loader.orbit-steps per cycle).",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css @keyframes loader-orbit-bar",
+            "keyframes": [
+              {
+                "offset": 0,
+                "scale-y": 1
+              },
+              {
+                "offset": 50,
+                "scale-y": "{motion.loader.orbit-squash}"
+              },
+              {
+                "offset": 100,
+                "scale-y": 1
+              }
+            ],
+            "iterations": "infinite",
+            "direction": "normal",
+            "fill-mode": "none"
+          }
+        }
+      },
+      "hero-lift": {
+        "$type": "transition",
+        "$value": {
+          "duration": {
+            "value": 0,
+            "unit": "ms"
+          },
+          "delay": {
+            "value": 0,
+            "unit": "ms"
+          },
+          "timingFunction": "{easing.scroll-lift}"
+        },
+        "$description": "Scroll-driven lift of the fill hero: moves up 40vh across the first 80vh of scroll (regular widths, motion allowed).",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css @keyframes hero-lift",
+            "keyframes": [
+              {
+                "offset": 0,
+                "translate-y": 0
+              },
+              {
+                "offset": 100,
+                "translate-y": "-{motion.scroll-lift.distance}"
+              }
+            ],
+            "iterations": "1",
+            "direction": "normal",
+            "fill-mode": "both",
+            "timeline": "scroll(root block)",
+            "range": "{motion.scroll-lift.range}"
+          }
+        }
+      },
+      "screen-in-forward": {
+        "$type": "transition",
+        "$value": {
+          "duration": "{duration.slow}",
+          "delay": {
+            "value": 0,
+            "unit": "ms"
+          },
+          "timingFunction": "{easing.out}"
+        },
+        "$description": "Forward navigation (a push): the incoming screen slides in from the inline end by interaction.shift.screen as it fades in.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "addition",
+            "keyframes": [
+              {
+                "offset": 0,
+                "opacity": 0,
+                "translate-inline": "{interaction.shift.screen}"
+              },
+              {
+                "offset": 100,
+                "opacity": 1,
+                "translate-inline": 0
+              }
+            ],
+            "iterations": "1",
+            "direction": "normal",
+            "fill-mode": "both"
+          }
+        }
+      },
+      "screen-out-forward": {
+        "$type": "transition",
+        "$value": {
+          "duration": "{duration.slow}",
+          "delay": {
+            "value": 0,
+            "unit": "ms"
+          },
+          "timingFunction": "{easing.out}"
+        },
+        "$description": "Forward navigation: the outgoing screen moves toward the inline start as it fades out.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "addition",
+            "keyframes": [
+              {
+                "offset": 0,
+                "opacity": 1,
+                "translate-inline": 0
+              },
+              {
+                "offset": 100,
+                "opacity": 0,
+                "translate-inline": "-{interaction.shift.screen}"
+              }
+            ],
+            "iterations": "1",
+            "direction": "normal",
+            "fill-mode": "both"
+          }
+        }
+      },
+      "screen-in-back": {
+        "$type": "transition",
+        "$value": {
+          "duration": "{duration.base}",
+          "delay": {
+            "value": 0,
+            "unit": "ms"
+          },
+          "timingFunction": "{easing.out}"
+        },
+        "$description": "Back navigation (a pop): the screen returned to comes back from the inline start; quicker than a push.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "addition",
+            "keyframes": [
+              {
+                "offset": 0,
+                "opacity": 0,
+                "translate-inline": "-{interaction.shift.screen}"
+              },
+              {
+                "offset": 100,
+                "opacity": 1,
+                "translate-inline": 0
+              }
+            ],
+            "iterations": "1",
+            "direction": "normal",
+            "fill-mode": "both"
+          }
+        }
+      },
+      "screen-out-back": {
+        "$type": "transition",
+        "$value": {
+          "duration": "{duration.base}",
+          "delay": {
+            "value": 0,
+            "unit": "ms"
+          },
+          "timingFunction": "{easing.out}"
+        },
+        "$description": "Back navigation: the screen being left moves toward the inline end as it fades out.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "addition",
+            "keyframes": [
+              {
+                "offset": 0,
+                "opacity": 1,
+                "translate-inline": 0
+              },
+              {
+                "offset": 100,
+                "opacity": 0,
+                "translate-inline": "{interaction.shift.screen}"
+              }
+            ],
+            "iterations": "1",
+            "direction": "normal",
+            "fill-mode": "both"
+          }
+        }
+      },
+      "screen-fade-in": {
+        "$type": "transition",
+        "$value": {
+          "duration": "{duration.base}",
+          "delay": {
+            "value": 0,
+            "unit": "ms"
+          },
+          "timingFunction": "{easing.standard}"
+        },
+        "$description": "Switching between peer screens (tab bar destinations, segmented views): the new screen fades in, without movement.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "addition",
+            "keyframes": [
+              {
+                "offset": 0,
+                "opacity": 0
+              },
+              {
+                "offset": 100,
+                "opacity": 1
+              }
+            ],
+            "iterations": "1",
+            "direction": "normal",
+            "fill-mode": "both"
+          }
+        }
+      },
+      "screen-fade-out": {
+        "$type": "transition",
+        "$value": {
+          "duration": "{duration.base}",
+          "delay": {
+            "value": 0,
+            "unit": "ms"
+          },
+          "timingFunction": "{easing.standard}"
+        },
+        "$description": "Switching between peer screens: the old screen fades out.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "addition",
+            "keyframes": [
+              {
+                "offset": 0,
+                "opacity": 1
+              },
+              {
+                "offset": 100,
+                "opacity": 0
+              }
+            ],
+            "iterations": "1",
+            "direction": "normal",
+            "fill-mode": "both"
+          }
+        }
+      },
+      "modal-in": {
+        "$type": "transition",
+        "$value": {
+          "duration": "{duration.slower}",
+          "delay": {
+            "value": 0,
+            "unit": "ms"
+          },
+          "timingFunction": "{easing.out}"
+        },
+        "$description": "A full-screen modal (compose, edit) rising from interaction.shift.modal below as it fades in.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "addition",
+            "keyframes": [
+              {
+                "offset": 0,
+                "opacity": 0,
+                "translate-y": "{interaction.shift.modal}"
+              },
+              {
+                "offset": 100,
+                "opacity": 1,
+                "translate-y": 0
+              }
+            ],
+            "iterations": "1",
+            "direction": "normal",
+            "fill-mode": "both"
+          }
+        }
+      },
+      "modal-out": {
+        "$type": "transition",
+        "$value": {
+          "duration": "{duration.base}",
+          "delay": {
+            "value": 0,
+            "unit": "ms"
+          },
+          "timingFunction": "{easing.in}"
+        },
+        "$description": "A full-screen modal sinking as it fades out.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "addition",
+            "keyframes": [
+              {
+                "offset": 0,
+                "opacity": 1,
+                "translate-y": 0
+              },
+              {
+                "offset": 100,
+                "opacity": 0,
+                "translate-y": "{interaction.shift.modal}"
+              }
+            ],
+            "iterations": "1",
+            "direction": "normal",
+            "fill-mode": "both"
+          }
+        }
+      },
+      "skeleton-pulse": {
+        "$type": "transition",
+        "$value": {
+          "duration": "{duration.pulse}",
+          "delay": {
+            "value": 0,
+            "unit": "ms"
+          },
+          "timingFunction": "{easing.css-ease-in-out}"
+        },
+        "$description": "Skeleton placeholders breathe between full opacity and opacity.50; they hold still under reduced motion.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "addition",
+            "keyframes": [
+              {
+                "offset": 0,
+                "opacity": 1
+              },
+              {
+                "offset": 50,
+                "opacity": "{opacity.50}"
+              },
+              {
+                "offset": 100,
+                "opacity": 1
+              }
+            ],
+            "iterations": "infinite",
+            "direction": "normal",
+            "fill-mode": "none"
+          }
+        }
+      },
+      "refresh-spin": {
+        "$type": "transition",
+        "$value": {
+          "duration": "{duration.pulse}",
+          "delay": {
+            "value": 0,
+            "unit": "ms"
+          },
+          "timingFunction": "{easing.linear}"
+        },
+        "$description": "Pull to refresh: the indicator turns while the refresh runs (one turn per cycle); under reduced motion it holds still and the status line says Refreshing.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "addition",
+            "keyframes": [
+              {
+                "offset": 0,
+                "rotate": 0
+              },
+              {
+                "offset": 100,
+                "rotate": "{motion.loader.spin-turn}"
+              }
+            ],
+            "iterations": "infinite",
+            "direction": "normal",
+            "fill-mode": "none"
+          }
+        }
+      }
+    },
+    "loader": {
+      "$description": "Loader cell values and per-cell choreography. Pattern cells are the loader's .is-pattern cells; per-cell values are drawn once per cell (the reference uses a seeded generator, so a loader looks the same on every render).",
+      "rest": {
+        "$type": "number",
+        "$value": "{opacity.8}",
+        "$description": "Resting cell opacity between beats (fill, emerge, sparse, tetris).",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css @keyframes loader-fill 0%"
+          }
+        }
+      },
+      "fill-on": {
+        "$type": "number",
+        "$value": "{opacity.100}",
+        "$description": "Fill loader: pattern cells at full ink.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css .loader-cell.is-mark"
+          }
+        }
+      },
+      "fill-other": {
+        "$type": "number",
+        "$value": "{opacity.28}",
+        "$description": "Fill loader: the other cells.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css .loader--fill .loader-px:not(.is-mark) --on"
+          }
+        }
+      },
+      "fill-step": {
+        "$type": "number",
+        "$value": 0.0188,
+        "$description": "Fill loaders: delay between consecutive cells as a fraction of the loader duration (reading, spiral and rise orders).",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css .loader--fill, .loader--fill-spiral, .loader--fill-rise [data-px] animation-delay"
+          }
+        }
+      },
+      "twinkle-on": {
+        "$type": "number",
+        "$value": 0.95,
+        "$description": "Twinkle loader: pattern cells.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css .loader--twinkle .is-mark --on"
+          }
+        }
+      },
+      "twinkle-other": {
+        "$type": "number",
+        "$value": 0.32,
+        "$description": "Twinkle loader: the other cells.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css .loader--twinkle .loader-px:not(.is-mark) --on"
+          }
+        }
+      },
+      "twinkle-rest": {
+        "$type": "number",
+        "$value": "{opacity.6}",
+        "$description": "Twinkle loader: minimum.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css @keyframes loader-twinkle"
+          }
+        }
+      },
+      "twinkle-duration-min": {
+        "$type": "duration",
+        "$value": {
+          "value": 1576,
+          "unit": "ms"
+        },
+        "$description": "Twinkle loader: shortest per-cell cycle.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css .loader--twinkle [data-px] animation-duration"
+          }
+        }
+      },
+      "twinkle-duration-max": {
+        "$type": "duration",
+        "$value": {
+          "value": 3193,
+          "unit": "ms"
+        },
+        "$description": "Twinkle loader: longest per-cell cycle.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css .loader--twinkle [data-px] animation-duration"
+          }
+        }
+      },
+      "twinkle-offset-min": {
+        "$type": "duration",
+        "$value": {
+          "value": 190,
+          "unit": "ms"
+        },
+        "$description": "Twinkle loader: smallest start offset (each cell starts this far into its cycle; a negative animation delay).",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css .loader--twinkle [data-px] animation-delay"
+          }
+        }
+      },
+      "twinkle-offset-max": {
+        "$type": "duration",
+        "$value": {
+          "value": 2793,
+          "unit": "ms"
+        },
+        "$description": "Twinkle loader: largest start offset.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css .loader--twinkle [data-px] animation-delay"
+          }
+        }
+      },
+      "sparse-duration-min": {
+        "$type": "duration",
+        "$value": {
+          "value": 3419,
+          "unit": "ms"
+        },
+        "$description": "Sparse loader: shortest per-cell cycle.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css .loader--emerge-sparse [data-px] animation-duration"
+          }
+        }
+      },
+      "sparse-duration-max": {
+        "$type": "duration",
+        "$value": {
+          "value": 6399,
+          "unit": "ms"
+        },
+        "$description": "Sparse loader: longest per-cell cycle.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css .loader--emerge-sparse [data-px] animation-duration"
+          }
+        }
+      },
+      "sparse-offset-min": {
+        "$type": "duration",
+        "$value": {
+          "value": 213,
+          "unit": "ms"
+        },
+        "$description": "Sparse loader: smallest start offset (each cell starts this far into its cycle; a negative animation delay).",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css .loader--emerge-sparse [data-px] animation-delay"
+          }
+        }
+      },
+      "sparse-offset-max": {
+        "$type": "duration",
+        "$value": {
+          "value": 5999,
+          "unit": "ms"
+        },
+        "$description": "Sparse loader: largest start offset.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css .loader--emerge-sparse [data-px] animation-delay"
+          }
+        }
+      },
+      "sparse-fast-duration-min": {
+        "$type": "duration",
+        "$value": {
+          "value": 1846,
+          "unit": "ms"
+        },
+        "$description": "Sparse-fast loader: shortest per-cell cycle.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css .loader--emerge-sparse-fast [data-px] animation-duration"
+          }
+        }
+      },
+      "sparse-fast-duration-max": {
+        "$type": "duration",
+        "$value": {
+          "value": 2970,
+          "unit": "ms"
+        },
+        "$description": "Sparse-fast loader: longest per-cell cycle.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css .loader--emerge-sparse-fast [data-px] animation-duration"
+          }
+        }
+      },
+      "sparse-fast-offset-min": {
+        "$type": "duration",
+        "$value": {
+          "value": 229,
+          "unit": "ms"
+        },
+        "$description": "Sparse-fast loader: smallest start offset (each cell starts this far into its cycle; a negative animation delay).",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css .loader--emerge-sparse-fast [data-px] animation-delay"
+          }
+        }
+      },
+      "sparse-fast-offset-max": {
+        "$type": "duration",
+        "$value": {
+          "value": 2982,
+          "unit": "ms"
+        },
+        "$description": "Sparse-fast loader: largest start offset.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css .loader--emerge-sparse-fast [data-px] animation-delay"
+          }
+        }
+      },
+      "chase-rest": {
+        "$type": "number",
+        "$value": "{opacity.18}",
+        "$description": "Chase loader: resting cell.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css @keyframes loader-chase"
+          }
+        }
+      },
+      "chase-step": {
+        "$type": "number",
+        "$value": 0.1,
+        "$description": "Chase loader: delay between consecutive cells round the pattern, as a fraction of the loader duration.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css .loader--chase [data-cell] animation-delay"
+          }
+        }
+      },
+      "emerge-on": {
+        "$type": "number",
+        "$value": "{opacity.100}",
+        "$description": "Emerge loaders: pattern cells hold at full ink; other cells peak here.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css @keyframes loader-emerge 9%"
+          }
+        }
+      },
+      "emerge-delay-min": {
+        "$type": "duration",
+        "$value": {
+          "value": 192,
+          "unit": "ms"
+        },
+        "$description": "Emerge loader: shortest per-cell start delay.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css .loader--emerge [data-px] animation-delay"
+          }
+        }
+      },
+      "emerge-delay-max": {
+        "$type": "duration",
+        "$value": {
+          "value": 1202,
+          "unit": "ms"
+        },
+        "$description": "Emerge loader: longest per-cell start delay.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css .loader--emerge [data-px] animation-delay"
+          }
+        }
+      },
+      "emerge-slow-delay-min": {
+        "$type": "duration",
+        "$value": {
+          "value": 80,
+          "unit": "ms"
+        },
+        "$description": "Emerge slow loader: shortest per-cell start delay.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css .loader--emerge-slow [data-px] animation-delay"
+          }
+        }
+      },
+      "emerge-slow-delay-max": {
+        "$type": "duration",
+        "$value": {
+          "value": 2040,
+          "unit": "ms"
+        },
+        "$description": "Emerge slow loader: longest per-cell start delay.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css .loader--emerge-slow [data-px] animation-delay"
+          }
+        }
+      },
+      "emerge-drift-delay-min": {
+        "$type": "duration",
+        "$value": {
+          "value": 50,
+          "unit": "ms"
+        },
+        "$description": "Emerge drift loader: shortest per-cell start delay.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css .loader--emerge-drift [data-px] animation-delay"
+          }
+        }
+      },
+      "emerge-drift-delay-max": {
+        "$type": "duration",
+        "$value": {
+          "value": 2192,
+          "unit": "ms"
+        },
+        "$description": "Emerge drift loader: longest per-cell start delay.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css .loader--emerge-drift [data-px] animation-delay"
+          }
+        }
+      },
+      "slow-a-rise": {
+        "$type": "number",
+        "$value": 0.4,
+        "$description": "Slow emerge, track a: first step up.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css @keyframes loader-emerge-a"
+          }
+        }
+      },
+      "slow-a-fall": {
+        "$type": "number",
+        "$value": 0.45,
+        "$description": "Slow emerge, track a: step down before rest.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css @keyframes loader-emerge-a"
+          }
+        }
+      },
+      "slow-b-rise": {
+        "$type": "number",
+        "$value": 0.25,
+        "$description": "Slow emerge, track b: first step up.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css @keyframes loader-emerge-b"
+          }
+        }
+      },
+      "slow-b-lift": {
+        "$type": "number",
+        "$value": 0.7,
+        "$description": "Slow emerge, track b: second step up.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css @keyframes loader-emerge-b"
+          }
+        }
+      },
+      "slow-b-fall": {
+        "$type": "number",
+        "$value": "{opacity.60}",
+        "$description": "Slow emerge, track b: step down before rest.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css @keyframes loader-emerge-b"
+          }
+        }
+      },
+      "slow-c-flicker": {
+        "$type": "number",
+        "$value": "{opacity.50}",
+        "$description": "Slow emerge, track c: flicker between full steps.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css @keyframes loader-emerge-c"
+          }
+        }
+      },
+      "slow-c-dip": {
+        "$type": "number",
+        "$value": 0.2,
+        "$description": "Slow emerge, track c: dip before the last flicker.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css @keyframes loader-emerge-c"
+          }
+        }
+      },
+      "drift-rise": {
+        "$type": "number",
+        "$value": "{opacity.50}",
+        "$description": "Drifting emerge: step up before full.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css @keyframes loader-emerge-drift"
+          }
+        }
+      },
+      "drift-fall": {
+        "$type": "number",
+        "$value": 0.4,
+        "$description": "Drifting emerge: step down before rest.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css @keyframes loader-emerge-drift"
+          }
+        }
+      },
+      "peak-low": {
+        "$type": "number",
+        "$value": "{opacity.30}",
+        "$description": "Sparse loaders: low peak.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css .loader--emerge-sparse --p1 / --p2"
+          }
+        }
+      },
+      "peak-mid": {
+        "$type": "number",
+        "$value": 0.55,
+        "$description": "Sparse loaders: middle peak.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css .loader--emerge-sparse --p1 / --p2"
+          }
+        }
+      },
+      "peak-high": {
+        "$type": "number",
+        "$value": "{opacity.100}",
+        "$description": "Sparse loaders: high peak.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css .loader--emerge-sparse --p1 / --p2"
+          }
+        }
+      },
+      "drop-offset": {
+        "$type": "dimension",
+        "$value": "{interaction.lift.drop}",
+        "$description": "Drop loader: start offset of a falling cell.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css @keyframes loader-drop"
+          }
+        }
+      },
+      "drop-step": {
+        "$type": "duration",
+        "$value": "{duration.fast}",
+        "$description": "Drop loader: delay between consecutive pattern cells (reading order).",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css .loader--drop [data-cell] animation-delay"
+          }
+        }
+      },
+      "spin-turn": {
+        "$type": "number",
+        "$value": 360,
+        "$description": "Spin loader: one full turn per cycle, taken in steps.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css @keyframes loader-spin",
+            "unit": "deg"
+          }
+        }
+      },
+      "orbit-squash": {
+        "$type": "number",
+        "$value": 0.82,
+        "$description": "Orbit loader: vertical scale of the centre column at mid-cycle.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css @keyframes loader-orbit-bar"
+          }
+        }
+      },
+      "orbit-steps": {
+        "$type": "number",
+        "$value": 8,
+        "$description": "Orbit loader: steps per cycle; on each step the pattern cells of the ring round the centre move one place clockwise (the source orbits the six cells of its mark in six steps; the 3 x 3 ring of a 5 x 5 grid has eight places). Each step is a whole step (steps(1, end)).",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "derived",
+            "source": "desertant.com brand/index.css .loader--orbit [data-cell] animation steps(1,end)",
+            "steps": 1
+          }
+        }
+      },
+      "tetris-duration": {
+        "$type": "duration",
+        "$value": {
+          "value": 2860,
+          "unit": "ms"
+        },
+        "$description": "Tetris loader cycle (loader duration x 1.3).",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css .loader--tetris animation-duration"
+          }
+        }
+      },
+      "tetris-steps": {
+        "$type": "number",
+        "$value": 29,
+        "$description": "Tetris loader: the cycle is this many equal steps; cells change only on step boundaries (steps(1, end) per keyframe). Pattern cells land one per step from the bottom row up and hold.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css .loader--tetris .loader-px animation-timing-function steps(1,end)",
+            "steps": 1
+          }
+        }
+      },
+      "tetris-flash-step": {
+        "$type": "number",
+        "$value": 20,
+        "$description": "Tetris loader: step at which the completed pattern dims to tetris-dim; it lights on the next step, dims again, then clears.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css @keyframes loader-tetris-* 68.97%"
+          }
+        }
+      },
+      "tetris-clear-duration": {
+        "$type": "duration",
+        "$value": {
+          "value": 2640,
+          "unit": "ms"
+        },
+        "$description": "Tetris-clear loader cycle (loader duration x 1.2).",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css .loader--tetris-clear animation-duration"
+          }
+        }
+      },
+      "tetris-clear-steps": {
+        "$type": "number",
+        "$value": 24,
+        "$description": "Tetris-clear loader: steps per cycle (whole steps, as the tetris loader).",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css .loader--tetris-clear .loader-px animation-timing-function steps(1,end)",
+            "steps": 1
+          }
+        }
+      },
+      "tetris-clear-flash-step": {
+        "$type": "number",
+        "$value": 19,
+        "$description": "Tetris-clear loader: step at which the completed pattern dims.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css @keyframes loader-tetris-clear-* 79.17%"
+          }
+        }
+      },
+      "tetris-dim": {
+        "$type": "number",
+        "$value": 0.45,
+        "$description": "Tetris loaders: a completed pattern dims to this opacity twice before clearing.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css @keyframes loader-tetris-* / loader-tetris-clear-*"
+          }
+        }
+      }
+    },
+    "scroll-lift": {
+      "distance": {
+        "$type": "number",
+        "$value": 40,
+        "$description": "Scroll lift: how far the fill hero rises (vh).",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css @keyframes hero-lift",
+            "unit": "vh"
+          }
+        }
+      },
+      "range": {
+        "$type": "number",
+        "$value": 80,
+        "$description": "Scroll lift: scroll distance over which it rises (vh from the top).",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css .hero-model animation-range",
+            "unit": "vh"
+          }
+        }
+      }
+    },
+    "reduced": {
+      "duration": {
+        "$type": "duration",
+        "$value": {
+          "value": 0,
+          "unit": "ms"
+        },
+        "$description": "Every duration under prefers-reduced-motion: reduce. Tilts, lifts, reveals, scroll lift and loader animation stop; opacity changes remain instant.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css @media (prefers-reduced-motion: reduce)"
+          }
+        }
+      }
+    }
+  }
+}

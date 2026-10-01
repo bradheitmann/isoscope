@@ -1,0 +1,799 @@
+{
+  "id": "nord",
+  "name": "Nord",
+  "description": "Sven Greb's arctic palette: Nord, and a light mode built from Snow Storm grounds and Polar Night text.",
+  "sources": [
+    {
+      "id": "nord",
+      "author": "Sven Greb",
+      "url": "https://www.nordtheme.com/docs/colors-and-palettes",
+      "repository": "https://github.com/nordtheme/nord",
+      "revision": "1cef71605416a222e57225b544540ce0fcec18d4",
+      "licence": "MIT",
+      "files": [
+        "src/nord.css"
+      ],
+      "note": "Nord documents bright-ambiance use: nord6 as background and area colour, Polar Night for plain text. The light mode here is an extension built on that rule."
+    },
+    {
+      "id": "nord-vscode",
+      "author": "Sven Greb",
+      "url": "https://marketplace.visualstudio.com/items?itemName=arcticicestudio.nord-visual-studio-code",
+      "repository": "https://github.com/nordtheme/visual-studio-code",
+      "revision": "8ead09822c02d0d49d0f764104505e5a34d3689f",
+      "licence": "MIT",
+      "files": [
+        "themes/nord-color-theme.json"
+      ]
+    },
+    {
+      "id": "nord-alacritty",
+      "author": "Sven Greb",
+      "url": "https://github.com/nordtheme/alacritty",
+      "repository": "https://github.com/nordtheme/alacritty",
+      "revision": "9949642f3903e8fcb62bfc03f09410e3d78440c2",
+      "licence": "MIT",
+      "files": [
+        "src/nord.yaml (terminal colours)"
+      ]
+    }
+  ],
+  "modes": {
+    "light": {
+      "name": "Nord Light",
+      "origin": "extension",
+      "roles": {
+        "bg": {
+          "value": "#eceff4",
+          "source": "extension: nord6 as background (Nord bright ambiance)"
+        },
+        "surface": {
+          "value": "#ffffff",
+          "source": "extension: white fields"
+        },
+        "card": {
+          "value": "#e5e9f0",
+          "source": "extension: nord5"
+        },
+        "raised": {
+          "value": "#ffffff",
+          "source": "extension: white for floating layers"
+        },
+        "sunken": {
+          "value": "#d8dee9",
+          "source": "extension: nord4"
+        },
+        "inset": {
+          "value": "#dbdee4",
+          "derived": "mix(bg, fg, 0.08)"
+        },
+        "fg": {
+          "value": "#2e3440",
+          "source": "extension: nord0 (Polar Night plain text in bright ambiance)"
+        },
+        "fg-2": {
+          "value": "#3b4252",
+          "source": "extension: nord1"
+        },
+        "fg-3": {
+          "value": "#4c566a",
+          "source": "extension: nord3"
+        },
+        "fg-4": {
+          "value": "#798191",
+          "derived": "mix(fg-3, bg, 0.3)"
+        },
+        "accent": {
+          "value": "#5e81ac",
+          "source": "extension: nord10 (the darkest Frost, for action colour on light grounds)"
+        },
+        "on-accent": {
+          "value": "#eceff4",
+          "source": "extension: nord6"
+        },
+        "accent-hover": {
+          "value": "#4d6f99",
+          "derived": "accent with OKLab lightness moved 0.06 away from on-accent"
+        },
+        "accent-press": {
+          "value": "#3c5e87",
+          "derived": "accent with OKLab lightness moved 0.12 away from on-accent"
+        },
+        "focus": {
+          "value": "#5e81ac",
+          "derived": "accent"
+        },
+        "selection": {
+          "value": "#d8dee9",
+          "source": "extension: nord4"
+        },
+        "scrim": {
+          "value": "#2e3440",
+          "derived": "the darker of light.fg and dark.bg"
+        },
+        "red": {
+          "value": "#bf616a",
+          "source": "nord11"
+        },
+        "orange": {
+          "value": "#d08770",
+          "source": "nord12"
+        },
+        "yellow": {
+          "value": "#ebcb8b",
+          "source": "nord13"
+        },
+        "green": {
+          "value": "#a3be8c",
+          "source": "nord14"
+        },
+        "cyan": {
+          "value": "#8fbcbb",
+          "source": "nord7"
+        },
+        "blue": {
+          "value": "#5e81ac",
+          "source": "nord10"
+        },
+        "purple": {
+          "value": "#b48ead",
+          "source": "nord15"
+        },
+        "magenta": {
+          "value": "#b48ead",
+          "source": "nord15"
+        },
+        "success": {
+          "value": "#a3be8c",
+          "derived": "green"
+        },
+        "warning": {
+          "value": "#ebcb8b",
+          "derived": "yellow"
+        },
+        "danger": {
+          "value": "#bf616a",
+          "derived": "red"
+        },
+        "info": {
+          "value": "#8fbcbb",
+          "derived": "cyan"
+        },
+        "success-text": {
+          "value": "#a3be8c",
+          "derived": "success (contrast solving adjusts it on each ground)"
+        },
+        "warning-text": {
+          "value": "#ebcb8b",
+          "derived": "warning (contrast solving adjusts it on each ground)"
+        },
+        "danger-text": {
+          "value": "#bf616a",
+          "derived": "danger (contrast solving adjusts it on each ground)"
+        },
+        "info-text": {
+          "value": "#8fbcbb",
+          "derived": "info (contrast solving adjusts it on each ground)"
+        },
+        "chart-1": {
+          "value": "#5e81ac",
+          "derived": "blue"
+        },
+        "chart-2": {
+          "value": "#d08770",
+          "derived": "orange"
+        },
+        "chart-3": {
+          "value": "#a3be8c",
+          "derived": "green"
+        },
+        "chart-4": {
+          "value": "#b48ead",
+          "derived": "magenta"
+        },
+        "chart-5": {
+          "value": "#ebcb8b",
+          "derived": "yellow"
+        },
+        "chart-6": {
+          "value": "#bf616a",
+          "derived": "red (cyan and the hues after it sit within 0.065 OKLab of the text colour or 0.08 of an earlier chart colour)"
+        },
+        "ansi.black": {
+          "value": "#2e3440",
+          "derived": "fg"
+        },
+        "ansi.red": {
+          "value": "#bf616a",
+          "derived": "red"
+        },
+        "ansi.green": {
+          "value": "#a3be8c",
+          "derived": "green"
+        },
+        "ansi.yellow": {
+          "value": "#ebcb8b",
+          "derived": "yellow"
+        },
+        "ansi.blue": {
+          "value": "#5e81ac",
+          "derived": "blue"
+        },
+        "ansi.magenta": {
+          "value": "#b48ead",
+          "derived": "magenta"
+        },
+        "ansi.cyan": {
+          "value": "#8fbcbb",
+          "derived": "cyan"
+        },
+        "ansi.white": {
+          "value": "#c6cad1",
+          "derived": "mix(bg, fg, 0.18)"
+        },
+        "ansi.bright-black": {
+          "value": "#4c566a",
+          "derived": "fg-3"
+        },
+        "ansi.bright-red": {
+          "value": "#a84c56",
+          "derived": "ansi.red with OKLab lightness -0.07"
+        },
+        "ansi.bright-green": {
+          "value": "#8ea877",
+          "derived": "ansi.green with OKLab lightness -0.07"
+        },
+        "ansi.bright-yellow": {
+          "value": "#d4b575",
+          "derived": "ansi.yellow with OKLab lightness -0.07"
+        },
+        "ansi.bright-blue": {
+          "value": "#4a6c96",
+          "derived": "ansi.blue with OKLab lightness -0.07"
+        },
+        "ansi.bright-magenta": {
+          "value": "#9e7997",
+          "derived": "ansi.magenta with OKLab lightness -0.07"
+        },
+        "ansi.bright-cyan": {
+          "value": "#7aa6a5",
+          "derived": "ansi.cyan with OKLab lightness -0.07"
+        },
+        "ansi.bright-white": {
+          "value": "#dbdee4",
+          "derived": "mix(bg, fg, 0.08)"
+        },
+        "syntax.keyword": {
+          "value": "#b48ead",
+          "derived": "purple (base16: base0E)"
+        },
+        "syntax.control": {
+          "value": "#b48ead",
+          "derived": "purple (base16: base0E)"
+        },
+        "syntax.function": {
+          "value": "#5e81ac",
+          "derived": "blue (base16: base0D)"
+        },
+        "syntax.string": {
+          "value": "#a3be8c",
+          "derived": "green (base16: base0B)"
+        },
+        "syntax.variable": {
+          "value": "#bf616a",
+          "derived": "red (base16: base08)"
+        },
+        "syntax.type": {
+          "value": "#ebcb8b",
+          "derived": "yellow (base16: base0A)"
+        },
+        "syntax.number": {
+          "value": "#d08770",
+          "derived": "orange (base16: base09)"
+        },
+        "syntax.comment": {
+          "value": "#4c566a",
+          "derived": "fg-3 (base16: base03)"
+        },
+        "fill.sage.bg": {
+          "value": "#abb3a5",
+          "derived": "desert sage lightness 0.758 and chroma 0.034 x 0.65 (the theme's green against desert's, at most the theme's own), the hue of green"
+        },
+        "fill.sage.ink": {
+          "value": "#212632",
+          "derived": "light.fg moved in OKLab lightness to 7.0:1 on fill.sage.bg (light.fg and light.bg reach 5.78:1)"
+        },
+        "fill.teal.bg": {
+          "value": "#c8d1d1",
+          "derived": "desert teal lightness 0.853 and chroma 0.019 x 0.52 (the theme's cyan against desert's, at most the theme's own), the hue of cyan"
+        },
+        "fill.teal.ink": {
+          "value": "#2e3440",
+          "derived": "light.fg, the better of light.fg and light.bg on fill.teal.bg"
+        },
+        "fill.forest.bg": {
+          "value": "#1c1d1a",
+          "derived": "desert forest lightness 0.229 and chroma 0.009 x 0.65 (the theme's green against desert's, at most the theme's own), the hue of green"
+        },
+        "fill.forest.ink": {
+          "value": "#eceff4",
+          "derived": "light.bg, the better of light.fg and light.bg on fill.forest.bg"
+        },
+        "fill.terracotta.bg": {
+          "value": "#c67e67",
+          "derived": "desert terracotta lightness 0.662 and chroma 0.143 x 0.67 (the theme's orange against desert's, at most the theme's own), the hue of orange"
+        },
+        "fill.terracotta.ink": {
+          "value": "#060a14",
+          "derived": "light.fg moved in OKLab lightness to 6.2:1 on fill.terracotta.bg (light.fg and light.bg reach 3.91:1)"
+        },
+        "fill.sand.bg": {
+          "value": "#d4d0c8",
+          "derived": "desert sand lightness 0.859 and chroma 0.019 x 0.63 (the theme's yellow against desert's, at most the theme's own), the hue of yellow"
+        },
+        "fill.sand.ink": {
+          "value": "#2e3440",
+          "derived": "light.fg, the better of light.fg and light.bg on fill.sand.bg"
+        },
+        "fill.warm-grey.bg": {
+          "value": "#b3b6bb",
+          "derived": "desert warm-grey lightness 0.776; the theme's neutral hue and chroma (at most 0.03)"
+        },
+        "fill.warm-grey.ink": {
+          "value": "#242a36",
+          "derived": "light.fg moved in OKLab lightness to 7.0:1 on fill.warm-grey.bg (light.fg and light.bg reach 6.14:1)"
+        },
+        "fill.clay-red.bg": {
+          "value": "#be505d",
+          "derived": "desert clay-red lightness 0.576 and chroma 0.200 x 0.71 (the theme's red against desert's, at most the theme's own), the hue of red"
+        },
+        "fill.clay-red.ink": {
+          "value": "#f6f9fe",
+          "derived": "light.bg moved in OKLab lightness to 4.4:1 on fill.clay-red.bg (light.fg and light.bg reach 4.05:1)"
+        },
+        "fill.dark-teal.bg": {
+          "value": "#2a4b73",
+          "derived": "desert dark-teal lightness 0.408 and chroma 0.058 x 1.32 (the theme's blue against desert's, at most the theme's own), the hue of blue"
+        },
+        "fill.dark-teal.ink": {
+          "value": "#eceff4",
+          "derived": "light.bg, the better of light.fg and light.bg on fill.dark-teal.bg"
+        },
+        "fill.dusty-pink.bg": {
+          "value": "#b892b1",
+          "derived": "desert dusty-pink lightness 0.704 and chroma 0.039 x 1.59 (the theme's magenta against desert's, at most the theme's own), the hue of magenta"
+        },
+        "fill.dusty-pink.ink": {
+          "value": "#0c111b",
+          "derived": "light.fg moved in OKLab lightness to 7.0:1 on fill.dusty-pink.bg (light.fg and light.bg reach 4.63:1)"
+        },
+        "fill.light-peach.bg": {
+          "value": "#f2dcd5",
+          "derived": "desert light-peach lightness 0.911 and chroma 0.040 x 0.67 (the theme's orange against desert's, at most the theme's own), the hue of orange"
+        },
+        "fill.light-peach.ink": {
+          "value": "#2e3440",
+          "derived": "light.fg, the better of light.fg and light.bg on fill.light-peach.bg"
+        },
+        "fill.faun.bg": {
+          "value": "#c9c6be",
+          "derived": "desert faun lightness 0.826 and chroma 0.017 x 0.63 (the theme's yellow against desert's, at most the theme's own), the hue of yellow"
+        },
+        "fill.faun.ink": {
+          "value": "#2e3440",
+          "derived": "light.fg, the better of light.fg and light.bg on fill.faun.bg"
+        },
+        "fill.cool-grey.bg": {
+          "value": "#dbdee3",
+          "derived": "desert cool-grey lightness 0.899; the theme's neutral hue and chroma (at most 0.03)"
+        },
+        "fill.cool-grey.ink": {
+          "value": "#2e3440",
+          "derived": "light.fg, the better of light.fg and light.bg on fill.cool-grey.bg"
+        },
+        "fill.stone.bg": {
+          "value": "#acafb4",
+          "derived": "desert stone lightness 0.753; the theme's neutral hue and chroma (at most 0.03)"
+        },
+        "fill.stone.ink": {
+          "value": "#1f2430",
+          "derived": "light.fg moved in OKLab lightness to 7.0:1 on fill.stone.bg (light.fg and light.bg reach 5.68:1)"
+        },
+        "fill.dark-grey.bg": {
+          "value": "#66686d",
+          "derived": "desert dark-grey lightness 0.518; the theme's neutral hue and chroma (at most 0.03)"
+        },
+        "fill.dark-grey.ink": {
+          "value": "#f6f9fe",
+          "derived": "light.bg moved in OKLab lightness to 5.2:1 on fill.dark-grey.bg (light.fg and light.bg reach 4.84:1)"
+        },
+        "fill.ink.bg": {
+          "value": "#0f1114",
+          "derived": "desert ink lightness 0.175; the theme's neutral hue and chroma (at most 0.03)"
+        },
+        "fill.ink.ink": {
+          "value": "#eceff4",
+          "derived": "light.bg, the better of light.fg and light.bg on fill.ink.bg"
+        }
+      }
+    },
+    "dark": {
+      "name": "Nord",
+      "origin": "source",
+      "roles": {
+        "bg": {
+          "value": "#2e3440",
+          "source": "nord0 (Polar Night: background)"
+        },
+        "surface": {
+          "value": "#3b4252",
+          "source": "nord-vscode input.background (nord1)"
+        },
+        "card": {
+          "value": "#3b4252",
+          "source": "nord1 (elevated: panels, status bars)"
+        },
+        "raised": {
+          "value": "#434c5e",
+          "source": "nord2"
+        },
+        "sunken": {
+          "value": "#181c24",
+          "derived": "mix(bg, black, 0.3)"
+        },
+        "inset": {
+          "value": "#404652",
+          "derived": "mix(bg, fg, 0.12)"
+        },
+        "fg": {
+          "value": "#d8dee9",
+          "source": "nord4 (plain text)"
+        },
+        "fg-2": {
+          "value": "#c7cdd8",
+          "source": "nord-vscode descriptionForeground (#d8dee9e6) composited over nord0"
+        },
+        "fg-3": {
+          "value": "#616e88",
+          "source": "nord-vscode comments (#616E88, the brightened nord3)"
+        },
+        "fg-4": {
+          "value": "#4c566a",
+          "source": "nord3 (UI elements, indent guides)"
+        },
+        "accent": {
+          "value": "#88c0d0",
+          "source": "nord8 (Frost: primary accent)"
+        },
+        "on-accent": {
+          "value": "#2e3440",
+          "source": "nord-vscode button.foreground (nord0)"
+        },
+        "accent-hover": {
+          "value": "#9bd3e4",
+          "derived": "accent with OKLab lightness moved 0.06 away from on-accent"
+        },
+        "accent-press": {
+          "value": "#aee7f8",
+          "derived": "accent with OKLab lightness moved 0.12 away from on-accent"
+        },
+        "focus": {
+          "value": "#88c0d0",
+          "derived": "accent"
+        },
+        "selection": {
+          "value": "#434c5e",
+          "source": "nord2 (selection)"
+        },
+        "scrim": {
+          "value": "#2e3440",
+          "derived": "the darker of light.fg and dark.bg"
+        },
+        "red": {
+          "value": "#bf616a",
+          "source": "nord11"
+        },
+        "orange": {
+          "value": "#d08770",
+          "source": "nord12"
+        },
+        "yellow": {
+          "value": "#ebcb8b",
+          "source": "nord13"
+        },
+        "green": {
+          "value": "#a3be8c",
+          "source": "nord14"
+        },
+        "cyan": {
+          "value": "#88c0d0",
+          "source": "nord8"
+        },
+        "blue": {
+          "value": "#5e81ac",
+          "source": "nord10"
+        },
+        "purple": {
+          "value": "#b48ead",
+          "source": "nord15"
+        },
+        "magenta": {
+          "value": "#b48ead",
+          "source": "nord15"
+        },
+        "success": {
+          "value": "#a3be8c",
+          "derived": "green"
+        },
+        "warning": {
+          "value": "#ebcb8b",
+          "derived": "yellow"
+        },
+        "danger": {
+          "value": "#bf616a",
+          "derived": "red"
+        },
+        "info": {
+          "value": "#88c0d0",
+          "derived": "cyan"
+        },
+        "success-text": {
+          "value": "#a3be8c",
+          "derived": "success (contrast solving adjusts it on each ground)"
+        },
+        "warning-text": {
+          "value": "#ebcb8b",
+          "derived": "warning (contrast solving adjusts it on each ground)"
+        },
+        "danger-text": {
+          "value": "#bf616a",
+          "derived": "danger (contrast solving adjusts it on each ground)"
+        },
+        "info-text": {
+          "value": "#88c0d0",
+          "derived": "info (contrast solving adjusts it on each ground)"
+        },
+        "chart-1": {
+          "value": "#5e81ac",
+          "derived": "blue"
+        },
+        "chart-2": {
+          "value": "#d08770",
+          "derived": "orange"
+        },
+        "chart-3": {
+          "value": "#a3be8c",
+          "derived": "green"
+        },
+        "chart-4": {
+          "value": "#b48ead",
+          "derived": "magenta"
+        },
+        "chart-5": {
+          "value": "#ebcb8b",
+          "derived": "yellow"
+        },
+        "chart-6": {
+          "value": "#88c0d0",
+          "derived": "cyan"
+        },
+        "ansi.black": {
+          "value": "#3b4252",
+          "source": "nord-alacritty normal.black = nord1"
+        },
+        "ansi.red": {
+          "value": "#bf616a",
+          "source": "nord-alacritty normal.red = nord11"
+        },
+        "ansi.green": {
+          "value": "#a3be8c",
+          "source": "nord-alacritty normal.green = nord14"
+        },
+        "ansi.yellow": {
+          "value": "#ebcb8b",
+          "source": "nord-alacritty normal.yellow = nord13"
+        },
+        "ansi.blue": {
+          "value": "#81a1c1",
+          "source": "nord-alacritty normal.blue = nord9"
+        },
+        "ansi.magenta": {
+          "value": "#b48ead",
+          "source": "nord-alacritty normal.magenta = nord15"
+        },
+        "ansi.cyan": {
+          "value": "#88c0d0",
+          "source": "nord-alacritty normal.cyan = nord8"
+        },
+        "ansi.white": {
+          "value": "#e5e9f0",
+          "source": "nord-alacritty normal.white = nord5"
+        },
+        "ansi.bright-black": {
+          "value": "#4c566a",
+          "source": "nord-alacritty bright.black = nord3"
+        },
+        "ansi.bright-red": {
+          "value": "#bf616a",
+          "source": "nord-alacritty bright.red = nord11"
+        },
+        "ansi.bright-green": {
+          "value": "#a3be8c",
+          "source": "nord-alacritty bright.green = nord14"
+        },
+        "ansi.bright-yellow": {
+          "value": "#ebcb8b",
+          "source": "nord-alacritty bright.yellow = nord13"
+        },
+        "ansi.bright-blue": {
+          "value": "#81a1c1",
+          "source": "nord-alacritty bright.blue = nord9"
+        },
+        "ansi.bright-magenta": {
+          "value": "#b48ead",
+          "source": "nord-alacritty bright.magenta = nord15"
+        },
+        "ansi.bright-cyan": {
+          "value": "#8fbcbb",
+          "source": "nord-alacritty bright.cyan = nord7"
+        },
+        "ansi.bright-white": {
+          "value": "#eceff4",
+          "source": "nord-alacritty bright.white = nord6"
+        },
+        "syntax.keyword": {
+          "value": "#81a1c1",
+          "source": "nord-vscode keyword (nord9)"
+        },
+        "syntax.control": {
+          "value": "#81a1c1",
+          "source": "nord-vscode keyword (nord9)"
+        },
+        "syntax.function": {
+          "value": "#88c0d0",
+          "source": "nord-vscode function (nord8)"
+        },
+        "syntax.string": {
+          "value": "#a3be8c",
+          "source": "nord-vscode string (nord14)"
+        },
+        "syntax.variable": {
+          "value": "#d8dee9",
+          "source": "nord-vscode variable (nord4)"
+        },
+        "syntax.type": {
+          "value": "#8fbcbb",
+          "source": "nord-vscode class (nord7)"
+        },
+        "syntax.number": {
+          "value": "#b48ead",
+          "source": "nord-vscode number (nord15)"
+        },
+        "syntax.comment": {
+          "value": "#616e88",
+          "source": "nord-vscode comment (#616E88)"
+        },
+        "fill.sage.bg": {
+          "value": "#abb3a5",
+          "derived": "light-mode fill.sage.bg (fills do not change with mode)"
+        },
+        "fill.sage.ink": {
+          "value": "#212632",
+          "derived": "light-mode fill.sage.ink (fills do not change with mode)"
+        },
+        "fill.teal.bg": {
+          "value": "#c8d1d1",
+          "derived": "light-mode fill.teal.bg (fills do not change with mode)"
+        },
+        "fill.teal.ink": {
+          "value": "#2e3440",
+          "derived": "light-mode fill.teal.ink (fills do not change with mode)"
+        },
+        "fill.forest.bg": {
+          "value": "#1c1d1a",
+          "derived": "light-mode fill.forest.bg (fills do not change with mode)"
+        },
+        "fill.forest.ink": {
+          "value": "#eceff4",
+          "derived": "light-mode fill.forest.ink (fills do not change with mode)"
+        },
+        "fill.terracotta.bg": {
+          "value": "#c67e67",
+          "derived": "light-mode fill.terracotta.bg (fills do not change with mode)"
+        },
+        "fill.terracotta.ink": {
+          "value": "#060a14",
+          "derived": "light-mode fill.terracotta.ink (fills do not change with mode)"
+        },
+        "fill.sand.bg": {
+          "value": "#d4d0c8",
+          "derived": "light-mode fill.sand.bg (fills do not change with mode)"
+        },
+        "fill.sand.ink": {
+          "value": "#2e3440",
+          "derived": "light-mode fill.sand.ink (fills do not change with mode)"
+        },
+        "fill.warm-grey.bg": {
+          "value": "#b3b6bb",
+          "derived": "light-mode fill.warm-grey.bg (fills do not change with mode)"
+        },
+        "fill.warm-grey.ink": {
+          "value": "#242a36",
+          "derived": "light-mode fill.warm-grey.ink (fills do not change with mode)"
+        },
+        "fill.clay-red.bg": {
+          "value": "#be505d",
+          "derived": "light-mode fill.clay-red.bg (fills do not change with mode)"
+        },
+        "fill.clay-red.ink": {
+          "value": "#f6f9fe",
+          "derived": "light-mode fill.clay-red.ink (fills do not change with mode)"
+        },
+        "fill.dark-teal.bg": {
+          "value": "#2a4b73",
+          "derived": "light-mode fill.dark-teal.bg (fills do not change with mode)"
+        },
+        "fill.dark-teal.ink": {
+          "value": "#eceff4",
+          "derived": "light-mode fill.dark-teal.ink (fills do not change with mode)"
+        },
+        "fill.dusty-pink.bg": {
+          "value": "#b892b1",
+          "derived": "light-mode fill.dusty-pink.bg (fills do not change with mode)"
+        },
+        "fill.dusty-pink.ink": {
+          "value": "#0c111b",
+          "derived": "light-mode fill.dusty-pink.ink (fills do not change with mode)"
+        },
+        "fill.light-peach.bg": {
+          "value": "#f2dcd5",
+          "derived": "light-mode fill.light-peach.bg (fills do not change with mode)"
+        },
+        "fill.light-peach.ink": {
+          "value": "#2e3440",
+          "derived": "light-mode fill.light-peach.ink (fills do not change with mode)"
+        },
+        "fill.faun.bg": {
+          "value": "#c9c6be",
+          "derived": "light-mode fill.faun.bg (fills do not change with mode)"
+        },
+        "fill.faun.ink": {
+          "value": "#2e3440",
+          "derived": "light-mode fill.faun.ink (fills do not change with mode)"
+        },
+        "fill.cool-grey.bg": {
+          "value": "#dbdee3",
+          "derived": "light-mode fill.cool-grey.bg (fills do not change with mode)"
+        },
+        "fill.cool-grey.ink": {
+          "value": "#2e3440",
+          "derived": "light-mode fill.cool-grey.ink (fills do not change with mode)"
+        },
+        "fill.stone.bg": {
+          "value": "#acafb4",
+          "derived": "light-mode fill.stone.bg (fills do not change with mode)"
+        },
+        "fill.stone.ink": {
+          "value": "#1f2430",
+          "derived": "light-mode fill.stone.ink (fills do not change with mode)"
+        },
+        "fill.dark-grey.bg": {
+          "value": "#66686d",
+          "derived": "light-mode fill.dark-grey.bg (fills do not change with mode)"
+        },
+        "fill.dark-grey.ink": {
+          "value": "#f6f9fe",
+          "derived": "light-mode fill.dark-grey.ink (fills do not change with mode)"
+        },
+        "fill.ink.bg": {
+          "value": "#0f1114",
+          "derived": "light-mode fill.ink.bg (fills do not change with mode)"
+        },
+        "fill.ink.ink": {
+          "value": "#eceff4",
+          "derived": "light-mode fill.ink.ink (fills do not change with mode)"
+        }
+      }
+    }
+  }
+}

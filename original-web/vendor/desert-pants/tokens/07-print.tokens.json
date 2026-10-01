@@ -1,0 +1,1886 @@
+{
+  "$description": "Print and PDF: formats, margins, bleed, grids, print type roles, press rules.",
+  "$extensions": {
+    "com.desertpants": {
+      "system": "desert-pants",
+      "format": "DTCG 2025.10",
+      "source": "Visual language derived from desertant.com (brand/index.css, assets/site.css, captured 2026-09-23/24). Logos, marks, product names, photography and copy are not included.",
+      "modes": [
+        "light",
+        "dark"
+      ]
+    }
+  },
+  "print": {
+    "$description": "Print and PDF. Physical sizes are exact in their native unit (inches for US formats, millimetres for ISO); $value carries the CSS-pixel equivalent (96px = 1in) and $extensions.physical the native value. Print always uses the light theme on white paper.",
+    "$extensions": {
+      "com.desertpants": {
+        "platforms": [
+          "print"
+        ]
+      }
+    },
+    "format": {
+      "$description": "Page formats in portrait orientation (width x height). Landscape swaps the two.",
+      "letter": {
+        "$description": "US Letter: reports, one-pagers, letters.",
+        "width": {
+          "$type": "dimension",
+          "$value": {
+            "value": 816.0,
+            "unit": "px"
+          },
+          "$description": "letter width (portrait) (8.5in; 612.0pt).",
+          "$extensions": {
+            "com.desertpants": {
+              "origin": "addition",
+              "physical": {
+                "value": 8.5,
+                "unit": "in",
+                "pt": 612.0
+              }
+            }
+          }
+        },
+        "height": {
+          "$type": "dimension",
+          "$value": {
+            "value": 1056,
+            "unit": "px"
+          },
+          "$description": "letter height (portrait) (11in; 792.0pt).",
+          "$extensions": {
+            "com.desertpants": {
+              "origin": "addition",
+              "physical": {
+                "value": 11,
+                "unit": "in",
+                "pt": 792.0
+              }
+            }
+          }
+        }
+      },
+      "legal": {
+        "$description": "US Legal: contracts.",
+        "width": {
+          "$type": "dimension",
+          "$value": {
+            "value": 816.0,
+            "unit": "px"
+          },
+          "$description": "legal width (portrait) (8.5in; 612.0pt).",
+          "$extensions": {
+            "com.desertpants": {
+              "origin": "addition",
+              "physical": {
+                "value": 8.5,
+                "unit": "in",
+                "pt": 612.0
+              }
+            }
+          }
+        },
+        "height": {
+          "$type": "dimension",
+          "$value": {
+            "value": 1344,
+            "unit": "px"
+          },
+          "$description": "legal height (portrait) (14in; 1008.0pt).",
+          "$extensions": {
+            "com.desertpants": {
+              "origin": "addition",
+              "physical": {
+                "value": 14,
+                "unit": "in",
+                "pt": 1008.0
+              }
+            }
+          }
+        }
+      },
+      "tabloid": {
+        "$description": "US Tabloid / Ledger: posters, spreads.",
+        "width": {
+          "$type": "dimension",
+          "$value": {
+            "value": 1056,
+            "unit": "px"
+          },
+          "$description": "tabloid width (portrait) (11in; 792.0pt).",
+          "$extensions": {
+            "com.desertpants": {
+              "origin": "addition",
+              "physical": {
+                "value": 11,
+                "unit": "in",
+                "pt": 792.0
+              }
+            }
+          }
+        },
+        "height": {
+          "$type": "dimension",
+          "$value": {
+            "value": 1632,
+            "unit": "px"
+          },
+          "$description": "tabloid height (portrait) (17in; 1224.0pt).",
+          "$extensions": {
+            "com.desertpants": {
+              "origin": "addition",
+              "physical": {
+                "value": 17,
+                "unit": "in",
+                "pt": 1224.0
+              }
+            }
+          }
+        }
+      },
+      "a4": {
+        "$description": "ISO A4: reports and letters outside North America.",
+        "width": {
+          "$type": "dimension",
+          "$value": {
+            "value": 793.7008,
+            "unit": "px"
+          },
+          "$description": "a4 width (portrait) (210mm; 595.2756pt).",
+          "$extensions": {
+            "com.desertpants": {
+              "origin": "addition",
+              "physical": {
+                "value": 210,
+                "unit": "mm",
+                "pt": 595.2756
+              }
+            }
+          }
+        },
+        "height": {
+          "$type": "dimension",
+          "$value": {
+            "value": 1122.5197,
+            "unit": "px"
+          },
+          "$description": "a4 height (portrait) (297mm; 841.8898pt).",
+          "$extensions": {
+            "com.desertpants": {
+              "origin": "addition",
+              "physical": {
+                "value": 297,
+                "unit": "mm",
+                "pt": 841.8898
+              }
+            }
+          }
+        }
+      },
+      "a3": {
+        "$description": "ISO A3: posters and spreads.",
+        "width": {
+          "$type": "dimension",
+          "$value": {
+            "value": 1122.5197,
+            "unit": "px"
+          },
+          "$description": "a3 width (portrait) (297mm; 841.8898pt).",
+          "$extensions": {
+            "com.desertpants": {
+              "origin": "addition",
+              "physical": {
+                "value": 297,
+                "unit": "mm",
+                "pt": 841.8898
+              }
+            }
+          }
+        },
+        "height": {
+          "$type": "dimension",
+          "$value": {
+            "value": 1587.4016,
+            "unit": "px"
+          },
+          "$description": "a3 height (portrait) (420mm; 1190.5512pt).",
+          "$extensions": {
+            "com.desertpants": {
+              "origin": "addition",
+              "physical": {
+                "value": 420,
+                "unit": "mm",
+                "pt": 1190.5512
+              }
+            }
+          }
+        }
+      },
+      "a5": {
+        "$description": "ISO A5: leaflets and notebooks.",
+        "width": {
+          "$type": "dimension",
+          "$value": {
+            "value": 559.3701,
+            "unit": "px"
+          },
+          "$description": "a5 width (portrait) (148mm; 419.5276pt).",
+          "$extensions": {
+            "com.desertpants": {
+              "origin": "addition",
+              "physical": {
+                "value": 148,
+                "unit": "mm",
+                "pt": 419.5276
+              }
+            }
+          }
+        },
+        "height": {
+          "$type": "dimension",
+          "$value": {
+            "value": 793.7008,
+            "unit": "px"
+          },
+          "$description": "a5 height (portrait) (210mm; 595.2756pt).",
+          "$extensions": {
+            "com.desertpants": {
+              "origin": "addition",
+              "physical": {
+                "value": 210,
+                "unit": "mm",
+                "pt": 595.2756
+              }
+            }
+          }
+        }
+      },
+      "arch-c": {
+        "$description": "ARCH C: small posters and wall charts (dp-poster).",
+        "width": {
+          "$type": "dimension",
+          "$value": {
+            "value": 1728,
+            "unit": "px"
+          },
+          "$description": "arch-c width (portrait) (18in; 1296.0pt).",
+          "$extensions": {
+            "com.desertpants": {
+              "origin": "addition",
+              "physical": {
+                "value": 18,
+                "unit": "in",
+                "pt": 1296.0
+              }
+            }
+          }
+        },
+        "height": {
+          "$type": "dimension",
+          "$value": {
+            "value": 2304,
+            "unit": "px"
+          },
+          "$description": "arch-c height (portrait) (24in; 1728.0pt).",
+          "$extensions": {
+            "com.desertpants": {
+              "origin": "addition",
+              "physical": {
+                "value": 24,
+                "unit": "in",
+                "pt": 1728.0
+              }
+            }
+          }
+        }
+      },
+      "arch-d": {
+        "$description": "ARCH D: posters and system maps (dp-poster); fits a 24in roll in portrait.",
+        "width": {
+          "$type": "dimension",
+          "$value": {
+            "value": 2304,
+            "unit": "px"
+          },
+          "$description": "arch-d width (portrait) (24in; 1728.0pt).",
+          "$extensions": {
+            "com.desertpants": {
+              "origin": "addition",
+              "physical": {
+                "value": 24,
+                "unit": "in",
+                "pt": 1728.0
+              }
+            }
+          }
+        },
+        "height": {
+          "$type": "dimension",
+          "$value": {
+            "value": 3456,
+            "unit": "px"
+          },
+          "$description": "arch-d height (portrait) (36in; 2592.0pt).",
+          "$extensions": {
+            "com.desertpants": {
+              "origin": "addition",
+              "physical": {
+                "value": 36,
+                "unit": "in",
+                "pt": 2592.0
+              }
+            }
+          }
+        }
+      },
+      "arch-e": {
+        "$description": "ARCH E: large wall charts (dp-poster); needs a 36in roll.",
+        "width": {
+          "$type": "dimension",
+          "$value": {
+            "value": 3456,
+            "unit": "px"
+          },
+          "$description": "arch-e width (portrait) (36in; 2592.0pt).",
+          "$extensions": {
+            "com.desertpants": {
+              "origin": "addition",
+              "physical": {
+                "value": 36,
+                "unit": "in",
+                "pt": 2592.0
+              }
+            }
+          }
+        },
+        "height": {
+          "$type": "dimension",
+          "$value": {
+            "value": 4608,
+            "unit": "px"
+          },
+          "$description": "arch-e height (portrait) (48in; 3456.0pt).",
+          "$extensions": {
+            "com.desertpants": {
+              "origin": "addition",
+              "physical": {
+                "value": 48,
+                "unit": "in",
+                "pt": 3456.0
+              }
+            }
+          }
+        }
+      },
+      "a2": {
+        "$description": "ISO A2: posters (dp-poster).",
+        "width": {
+          "$type": "dimension",
+          "$value": {
+            "value": 1587.4016,
+            "unit": "px"
+          },
+          "$description": "a2 width (portrait) (420mm; 1190.5512pt).",
+          "$extensions": {
+            "com.desertpants": {
+              "origin": "addition",
+              "physical": {
+                "value": 420,
+                "unit": "mm",
+                "pt": 1190.5512
+              }
+            }
+          }
+        },
+        "height": {
+          "$type": "dimension",
+          "$value": {
+            "value": 2245.0394,
+            "unit": "px"
+          },
+          "$description": "a2 height (portrait) (594mm; 1683.7795pt).",
+          "$extensions": {
+            "com.desertpants": {
+              "origin": "addition",
+              "physical": {
+                "value": 594,
+                "unit": "mm",
+                "pt": 1683.7795
+              }
+            }
+          }
+        }
+      },
+      "a1": {
+        "$description": "ISO A1: posters and system maps (dp-poster); fits a 24in roll in portrait.",
+        "width": {
+          "$type": "dimension",
+          "$value": {
+            "value": 2245.0394,
+            "unit": "px"
+          },
+          "$description": "a1 width (portrait) (594mm; 1683.7795pt).",
+          "$extensions": {
+            "com.desertpants": {
+              "origin": "addition",
+              "physical": {
+                "value": 594,
+                "unit": "mm",
+                "pt": 1683.7795
+              }
+            }
+          }
+        },
+        "height": {
+          "$type": "dimension",
+          "$value": {
+            "value": 3178.5827,
+            "unit": "px"
+          },
+          "$description": "a1 height (portrait) (841mm; 2383.937pt).",
+          "$extensions": {
+            "com.desertpants": {
+              "origin": "addition",
+              "physical": {
+                "value": 841,
+                "unit": "mm",
+                "pt": 2383.937
+              }
+            }
+          }
+        }
+      },
+      "a0": {
+        "$description": "ISO A0: large wall charts (dp-poster); needs a 36in roll.",
+        "width": {
+          "$type": "dimension",
+          "$value": {
+            "value": 3178.5827,
+            "unit": "px"
+          },
+          "$description": "a0 width (portrait) (841mm; 2383.937pt).",
+          "$extensions": {
+            "com.desertpants": {
+              "origin": "addition",
+              "physical": {
+                "value": 841,
+                "unit": "mm",
+                "pt": 2383.937
+              }
+            }
+          }
+        },
+        "height": {
+          "$type": "dimension",
+          "$value": {
+            "value": 4493.8583,
+            "unit": "px"
+          },
+          "$description": "a0 height (portrait) (1189mm; 3370.3937pt).",
+          "$extensions": {
+            "com.desertpants": {
+              "origin": "addition",
+              "physical": {
+                "value": 1189,
+                "unit": "mm",
+                "pt": 3370.3937
+              }
+            }
+          }
+        }
+      },
+      "slide-16x9": {
+        "$description": "16:9 presentation page (PDF export of slides). Landscape only.",
+        "width": {
+          "$type": "dimension",
+          "$value": {
+            "value": 1279.9968,
+            "unit": "px"
+          },
+          "$description": "Slide width (13.3333in; 959.9976pt).",
+          "$extensions": {
+            "com.desertpants": {
+              "origin": "addition",
+              "physical": {
+                "value": 13.3333,
+                "unit": "in",
+                "pt": 959.9976
+              }
+            }
+          }
+        },
+        "height": {
+          "$type": "dimension",
+          "$value": {
+            "value": 720.0,
+            "unit": "px"
+          },
+          "$description": "Slide height (7.5in; 540.0pt).",
+          "$extensions": {
+            "com.desertpants": {
+              "origin": "addition",
+              "physical": {
+                "value": 7.5,
+                "unit": "in",
+                "pt": 540.0
+              }
+            }
+          }
+        }
+      }
+    },
+    "margin": {
+      "$description": "Page margins. Derived from the space scale at 1px = 0.75pt.",
+      "portrait": {
+        "top": {
+          "$type": "dimension",
+          "$value": "{space.18}",
+          "$description": "Portrait top margin (54pt).",
+          "$extensions": {
+            "com.desertpants": {
+              "origin": "derived"
+            }
+          }
+        },
+        "bottom": {
+          "$type": "dimension",
+          "$value": "{space.18}",
+          "$description": "Portrait bottom margin (54pt).",
+          "$extensions": {
+            "com.desertpants": {
+              "origin": "derived"
+            }
+          }
+        },
+        "inside": {
+          "$type": "dimension",
+          "$value": "{space.18}",
+          "$description": "Portrait inside margin (54pt).",
+          "$extensions": {
+            "com.desertpants": {
+              "origin": "derived"
+            }
+          }
+        },
+        "outside": {
+          "$type": "dimension",
+          "$value": "{space.18}",
+          "$description": "Portrait outside margin (54pt).",
+          "$extensions": {
+            "com.desertpants": {
+              "origin": "derived"
+            }
+          }
+        }
+      },
+      "landscape": {
+        "top": {
+          "$type": "dimension",
+          "$value": "{space.14}",
+          "$description": "Landscape top margin (42pt).",
+          "$extensions": {
+            "com.desertpants": {
+              "origin": "derived"
+            }
+          }
+        },
+        "bottom": {
+          "$type": "dimension",
+          "$value": "{space.14}",
+          "$description": "Landscape bottom margin (42pt).",
+          "$extensions": {
+            "com.desertpants": {
+              "origin": "derived"
+            }
+          }
+        },
+        "inside": {
+          "$type": "dimension",
+          "$value": "{space.18}",
+          "$description": "Landscape inside margin (54pt).",
+          "$extensions": {
+            "com.desertpants": {
+              "origin": "derived"
+            }
+          }
+        },
+        "outside": {
+          "$type": "dimension",
+          "$value": "{space.18}",
+          "$description": "Landscape outside margin (54pt).",
+          "$extensions": {
+            "com.desertpants": {
+              "origin": "derived"
+            }
+          }
+        }
+      },
+      "slide": {
+        "top": {
+          "$type": "dimension",
+          "$value": "{space.16}",
+          "$description": "Slide top margin (48pt).",
+          "$extensions": {
+            "com.desertpants": {
+              "origin": "derived"
+            }
+          }
+        },
+        "bottom": {
+          "$type": "dimension",
+          "$value": "{space.16}",
+          "$description": "Slide bottom margin (48pt).",
+          "$extensions": {
+            "com.desertpants": {
+              "origin": "derived"
+            }
+          }
+        },
+        "inside": {
+          "$type": "dimension",
+          "$value": "{space.16}",
+          "$description": "Slide left margin (48pt).",
+          "$extensions": {
+            "com.desertpants": {
+              "origin": "derived"
+            }
+          }
+        },
+        "outside": {
+          "$type": "dimension",
+          "$value": "{space.16}",
+          "$description": "Slide right margin (48pt).",
+          "$extensions": {
+            "com.desertpants": {
+              "origin": "derived"
+            }
+          }
+        }
+      }
+    },
+    "bleed": {
+      "us": {
+        "$type": "dimension",
+        "$value": {
+          "value": 12.0,
+          "unit": "px"
+        },
+        "$description": "Bleed beyond the trim for US formats (0.125in; 9.0pt).",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "addition",
+            "physical": {
+              "value": 0.125,
+              "unit": "in",
+              "pt": 9.0
+            }
+          }
+        }
+      },
+      "iso": {
+        "$type": "dimension",
+        "$value": {
+          "value": 11.3386,
+          "unit": "px"
+        },
+        "$description": "Bleed beyond the trim for ISO formats (3mm; 8.5039pt).",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "addition",
+            "physical": {
+              "value": 3,
+              "unit": "mm",
+              "pt": 8.5039
+            }
+          }
+        }
+      }
+    },
+    "crop-mark": {
+      "length": {
+        "$type": "dimension",
+        "$value": {
+          "value": 24.0,
+          "unit": "px"
+        },
+        "$description": "Crop mark length (18pt; 18.0pt).",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "addition",
+            "physical": {
+              "value": 18,
+              "unit": "pt",
+              "pt": 18.0
+            }
+          }
+        }
+      },
+      "offset": {
+        "$type": "dimension",
+        "$value": {
+          "value": 12.0,
+          "unit": "px"
+        },
+        "$description": "Crop mark offset from the trim (9pt; 9.0pt).",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "addition",
+            "physical": {
+              "value": 9,
+              "unit": "pt",
+              "pt": 9.0
+            }
+          }
+        }
+      },
+      "stroke": {
+        "$type": "dimension",
+        "$value": {
+          "value": 0.3333,
+          "unit": "px"
+        },
+        "$description": "Crop mark stroke (0.25pt; 0.25pt).",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "addition",
+            "physical": {
+              "value": 0.25,
+              "unit": "pt",
+              "pt": 0.25
+            }
+          }
+        }
+      }
+    },
+    "grid": {
+      "$description": "Print column grids.",
+      "portrait-columns": {
+        "$type": "number",
+        "$value": 6,
+        "$description": "Columns on portrait pages.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "addition"
+          }
+        }
+      },
+      "landscape-columns": {
+        "$type": "number",
+        "$value": 12,
+        "$description": "Columns on landscape pages.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "addition"
+          }
+        }
+      },
+      "slide-columns": {
+        "$type": "number",
+        "$value": 12,
+        "$description": "Columns on 16:9 slides.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "addition"
+          }
+        }
+      },
+      "gap": {
+        "$type": "dimension",
+        "$value": "{space.6}",
+        "$description": "Column gap on every print page (18pt).",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "derived"
+          }
+        }
+      },
+      "baseline": {
+        "$type": "dimension",
+        "$value": {
+          "value": 11.3333,
+          "unit": "px"
+        },
+        "$description": "Baseline grid: half the 17pt body leading (8.5pt; 8.5pt).",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "addition",
+            "physical": {
+              "value": 8.5,
+              "unit": "pt",
+              "pt": 8.5
+            }
+          }
+        }
+      },
+      "header-offset": {
+        "$type": "dimension",
+        "$value": {
+          "value": 32.0,
+          "unit": "px"
+        },
+        "$description": "Distance from the top trim to the running-head baseline (the rule follows below it at component.print-page.rule-gap) (24pt; 24.0pt).",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "addition",
+            "physical": {
+              "value": 24,
+              "unit": "pt",
+              "pt": 24.0
+            }
+          }
+        }
+      },
+      "footer-offset": {
+        "$type": "dimension",
+        "$value": {
+          "value": 32.0,
+          "unit": "px"
+        },
+        "$description": "Distance from the bottom trim to the folio baseline (the rule sits above it at component.print-page.rule-gap) (24pt; 24.0pt).",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "addition",
+            "physical": {
+              "value": 24,
+              "unit": "pt",
+              "pt": 24.0
+            }
+          }
+        }
+      },
+      "descent": {
+        "$type": "number",
+        "$value": 0.2,
+        "$description": "Distance from the baseline to the bottom of every print line box, in em. The top edge sits at leading minus descent, so each line box is exactly leading x size tall and text holds the baseline grid.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "addition",
+            "unit": "em"
+          }
+        }
+      }
+    },
+    "type": {
+      "$description": "Print type roles. Size in pt = web px x 0.625; fluid roles use the 860px viewport value for portrait and the 1440px value for landscape.",
+      "display": {
+        "$description": "Cover and poster headline.",
+        "$extensions": {
+          "com.desertpants": {
+            "stands-for": [
+              "display",
+              "title-model",
+              "title-fill-hero"
+            ]
+          }
+        },
+        "portrait": {
+          "$type": "typography",
+          "$value": {
+            "fontFamily": "{font.family.display}",
+            "fontSize": {
+              "value": 61.6,
+              "unit": "px"
+            },
+            "fontWeight": "{font.weight.semibold}",
+            "letterSpacing": {
+              "value": -3.696,
+              "unit": "px"
+            },
+            "lineHeight": 0.85
+          },
+          "$description": "Cover and poster headline. Portrait. 46.2pt.",
+          "$extensions": {
+            "com.desertpants": {
+              "origin": "derived",
+              "source": "web role px x 0.625 = pt",
+              "tracking-em": -0.06,
+              "pt": 46.2
+            }
+          }
+        },
+        "landscape": {
+          "$type": "typography",
+          "$value": {
+            "fontFamily": "{font.family.display}",
+            "fontSize": {
+              "value": 100.0,
+              "unit": "px"
+            },
+            "fontWeight": "{font.weight.semibold}",
+            "letterSpacing": {
+              "value": -6.0,
+              "unit": "px"
+            },
+            "lineHeight": 0.85
+          },
+          "$description": "Cover and poster headline. Landscape. 75pt.",
+          "$extensions": {
+            "com.desertpants": {
+              "origin": "derived",
+              "source": "web role px x 0.625 = pt",
+              "tracking-em": -0.06,
+              "pt": 75
+            }
+          }
+        }
+      },
+      "h1": {
+        "$description": "Document title.",
+        "$extensions": {
+          "com.desertpants": {
+            "stands-for": [
+              "h1",
+              "headline",
+              "article-title",
+              "docs-headline",
+              "title-lg"
+            ]
+          }
+        },
+        "portrait": {
+          "$type": "typography",
+          "$value": {
+            "fontFamily": "{font.family.display}",
+            "fontSize": {
+              "value": 57.3333,
+              "unit": "px"
+            },
+            "fontWeight": "{font.weight.semibold}",
+            "letterSpacing": {
+              "value": -3.44,
+              "unit": "px"
+            },
+            "lineHeight": 0.9
+          },
+          "$description": "Document title. Portrait. 43pt.",
+          "$extensions": {
+            "com.desertpants": {
+              "origin": "derived",
+              "source": "web role px x 0.625 = pt",
+              "tracking-em": -0.06,
+              "pt": 43
+            }
+          }
+        },
+        "landscape": {
+          "$type": "typography",
+          "$value": {
+            "fontFamily": "{font.family.display}",
+            "fontSize": {
+              "value": 96.0,
+              "unit": "px"
+            },
+            "fontWeight": "{font.weight.semibold}",
+            "letterSpacing": {
+              "value": -5.76,
+              "unit": "px"
+            },
+            "lineHeight": 0.9
+          },
+          "$description": "Document title. Landscape. 72pt.",
+          "$extensions": {
+            "com.desertpants": {
+              "origin": "derived",
+              "source": "web role px x 0.625 = pt",
+              "tracking-em": -0.06,
+              "pt": 72
+            }
+          }
+        }
+      },
+      "h2": {
+        "$description": "Section heading.",
+        "$extensions": {
+          "com.desertpants": {
+            "stands-for": [
+              "h2",
+              "article-h2",
+              "docs-h2",
+              "post-title-featured"
+            ]
+          }
+        },
+        "portrait": {
+          "$type": "typography",
+          "$value": {
+            "fontFamily": "{font.family.display}",
+            "fontSize": {
+              "value": 23.3333,
+              "unit": "px"
+            },
+            "fontWeight": "{font.weight.semibold}",
+            "letterSpacing": {
+              "value": -0.9333,
+              "unit": "px"
+            },
+            "lineHeight": 1.2
+          },
+          "$description": "Section heading. Portrait. 17.5pt.",
+          "$extensions": {
+            "com.desertpants": {
+              "origin": "derived",
+              "source": "web role px x 0.625 = pt",
+              "tracking-em": -0.04,
+              "pt": 17.5
+            }
+          }
+        },
+        "landscape": {
+          "$type": "typography",
+          "$value": {
+            "fontFamily": "{font.family.display}",
+            "fontSize": {
+              "value": 33.3333,
+              "unit": "px"
+            },
+            "fontWeight": "{font.weight.semibold}",
+            "letterSpacing": {
+              "value": -1.3333,
+              "unit": "px"
+            },
+            "lineHeight": 1.2
+          },
+          "$description": "Section heading. Landscape. 25pt.",
+          "$extensions": {
+            "com.desertpants": {
+              "origin": "derived",
+              "source": "web role px x 0.625 = pt",
+              "tracking-em": -0.04,
+              "pt": 25
+            }
+          }
+        }
+      },
+      "h3": {
+        "$description": "Subsection heading.",
+        "$extensions": {
+          "com.desertpants": {
+            "stands-for": [
+              "h3",
+              "article-h3",
+              "card-title",
+              "feature-title",
+              "feature-title-sm",
+              "post-title",
+              "result",
+              "figure-title"
+            ]
+          }
+        },
+        "portrait": {
+          "$type": "typography",
+          "$value": {
+            "fontFamily": "{font.family.display}",
+            "fontSize": {
+              "value": 20.0,
+              "unit": "px"
+            },
+            "fontWeight": "{font.weight.semibold}",
+            "letterSpacing": {
+              "value": -0.6,
+              "unit": "px"
+            },
+            "lineHeight": 1.2
+          },
+          "$description": "Subsection heading. Portrait. 15pt.",
+          "$extensions": {
+            "com.desertpants": {
+              "origin": "derived",
+              "source": "web role px x 0.625 = pt",
+              "tracking-em": -0.03,
+              "pt": 15
+            }
+          }
+        },
+        "landscape": {
+          "$type": "typography",
+          "$value": "{print.type.h3.portrait}",
+          "$description": "Subsection heading. Landscape (same as portrait).",
+          "$extensions": {
+            "com.desertpants": {
+              "origin": "derived"
+            }
+          }
+        }
+      },
+      "h4": {
+        "$description": "Minor heading.",
+        "$extensions": {
+          "com.desertpants": {
+            "stands-for": [
+              "h4",
+              "article-h4",
+              "docs-h3",
+              "side-nav-title"
+            ]
+          }
+        },
+        "portrait": {
+          "$type": "typography",
+          "$value": {
+            "fontFamily": "{font.family.display}",
+            "fontSize": {
+              "value": 15.0,
+              "unit": "px"
+            },
+            "fontWeight": "{font.weight.semibold}",
+            "letterSpacing": {
+              "value": -0.6,
+              "unit": "px"
+            },
+            "lineHeight": 1.2
+          },
+          "$description": "Minor heading. Portrait. 11.25pt.",
+          "$extensions": {
+            "com.desertpants": {
+              "origin": "derived",
+              "source": "web role px x 0.625 = pt",
+              "tracking-em": -0.04,
+              "pt": 11.25
+            }
+          }
+        },
+        "landscape": {
+          "$type": "typography",
+          "$value": "{print.type.h4.portrait}",
+          "$description": "Minor heading. Landscape (same as portrait).",
+          "$extensions": {
+            "com.desertpants": {
+              "origin": "derived"
+            }
+          }
+        }
+      },
+      "stat-value": {
+        "$description": "Figures in stat blocks.",
+        "$extensions": {
+          "com.desertpants": {
+            "stands-for": [
+              "stat-value",
+              "stat-value-narrow",
+              "media-stat"
+            ]
+          }
+        },
+        "portrait": {
+          "$type": "typography",
+          "$value": {
+            "fontFamily": "{font.family.display}",
+            "fontSize": {
+              "value": 33.3333,
+              "unit": "px"
+            },
+            "fontWeight": "{font.weight.semibold}",
+            "letterSpacing": {
+              "value": -1.3333,
+              "unit": "px"
+            },
+            "lineHeight": 1
+          },
+          "$description": "Figures in stat blocks. Portrait. 25pt.",
+          "$extensions": {
+            "com.desertpants": {
+              "origin": "derived",
+              "source": "web role px x 0.625 = pt",
+              "tracking-em": -0.04,
+              "font-variant-numeric": "tabular-nums",
+              "pt": 25
+            }
+          }
+        },
+        "landscape": {
+          "$type": "typography",
+          "$value": {
+            "fontFamily": "{font.family.display}",
+            "fontSize": {
+              "value": 46.6667,
+              "unit": "px"
+            },
+            "fontWeight": "{font.weight.semibold}",
+            "letterSpacing": {
+              "value": -1.8667,
+              "unit": "px"
+            },
+            "lineHeight": 1
+          },
+          "$description": "Figures in stat blocks. Landscape. 35pt.",
+          "$extensions": {
+            "com.desertpants": {
+              "origin": "derived",
+              "source": "web role px x 0.625 = pt",
+              "tracking-em": -0.04,
+              "font-variant-numeric": "tabular-nums",
+              "pt": 35
+            }
+          }
+        }
+      },
+      "label": {
+        "$description": "Row names and chart values.",
+        "$extensions": {
+          "com.desertpants": {
+            "stands-for": [
+              "label",
+              "label-tight",
+              "table-row-head",
+              "check-label",
+              "meter-name",
+              "meter-value",
+              "chart-label",
+              "byline-name"
+            ]
+          }
+        },
+        "portrait": {
+          "$type": "typography",
+          "$value": {
+            "fontFamily": "{font.family.display}",
+            "fontSize": {
+              "value": 15.0,
+              "unit": "px"
+            },
+            "fontWeight": "{font.weight.semibold}",
+            "letterSpacing": {
+              "value": -0.6,
+              "unit": "px"
+            },
+            "lineHeight": 1.2
+          },
+          "$description": "Row names and chart values. Portrait. 11.25pt.",
+          "$extensions": {
+            "com.desertpants": {
+              "origin": "derived",
+              "source": "web role px x 0.625 = pt",
+              "tracking-em": -0.04,
+              "pt": 11.25
+            }
+          }
+        },
+        "landscape": {
+          "$type": "typography",
+          "$value": "{print.type.label.portrait}",
+          "$description": "Row names and chart values. Landscape (same as portrait).",
+          "$extensions": {
+            "com.desertpants": {
+              "origin": "derived"
+            }
+          }
+        }
+      },
+      "claim": {
+        "$description": "Figure captions and claims.",
+        "$extensions": {
+          "com.desertpants": {
+            "stands-for": [
+              "claim",
+              "feature-claim",
+              "feature-claim-sm",
+              "hero-sub",
+              "quote",
+              "quote-blog",
+              "quote-pull",
+              "quote-wide",
+              "stat-detail",
+              "pin-text"
+            ]
+          }
+        },
+        "portrait": {
+          "$type": "typography",
+          "$value": {
+            "fontFamily": "{font.family.display}",
+            "fontSize": {
+              "value": 13.3333,
+              "unit": "px"
+            },
+            "fontWeight": "{font.weight.medium}",
+            "letterSpacing": {
+              "value": -0.1333,
+              "unit": "px"
+            },
+            "lineHeight": 1.4
+          },
+          "$description": "Figure captions and claims. Portrait. 10pt.",
+          "$extensions": {
+            "com.desertpants": {
+              "origin": "derived",
+              "source": "web role px x 0.625 = pt",
+              "tracking-em": -0.01,
+              "pt": 10
+            }
+          }
+        },
+        "landscape": {
+          "$type": "typography",
+          "$value": "{print.type.claim.portrait}",
+          "$description": "Figure captions and claims. Landscape (same as portrait).",
+          "$extensions": {
+            "com.desertpants": {
+              "origin": "derived"
+            }
+          }
+        }
+      },
+      "lede": {
+        "$description": "Intro paragraph.",
+        "$extensions": {
+          "com.desertpants": {
+            "stands-for": [
+              "lede"
+            ]
+          }
+        },
+        "portrait": {
+          "$type": "typography",
+          "$value": {
+            "fontFamily": "{font.family.mono}",
+            "fontSize": {
+              "value": 15.0,
+              "unit": "px"
+            },
+            "fontWeight": "{font.weight.regular}",
+            "letterSpacing": {
+              "value": 0.0,
+              "unit": "px"
+            },
+            "lineHeight": 1.7
+          },
+          "$description": "Intro paragraph. Portrait. 11.25pt.",
+          "$extensions": {
+            "com.desertpants": {
+              "origin": "derived",
+              "source": "web role px x 0.625 = pt",
+              "tracking-em": 0,
+              "pt": 11.25
+            }
+          }
+        },
+        "landscape": {
+          "$type": "typography",
+          "$value": "{print.type.lede.portrait}",
+          "$description": "Intro paragraph. Landscape (same as portrait).",
+          "$extensions": {
+            "com.desertpants": {
+              "origin": "derived"
+            }
+          }
+        }
+      },
+      "body": {
+        "$description": "Body copy (17pt leading = 2 baselines).",
+        "$extensions": {
+          "com.desertpants": {
+            "stands-for": [
+              "body",
+              "body-snug",
+              "transcript",
+              "input"
+            ]
+          }
+        },
+        "portrait": {
+          "$type": "typography",
+          "$value": {
+            "fontFamily": "{font.family.mono}",
+            "fontSize": {
+              "value": 13.3333,
+              "unit": "px"
+            },
+            "fontWeight": "{font.weight.regular}",
+            "letterSpacing": {
+              "value": 0.0,
+              "unit": "px"
+            },
+            "lineHeight": 1.7
+          },
+          "$description": "Body copy (17pt leading = 2 baselines). Portrait. 10pt.",
+          "$extensions": {
+            "com.desertpants": {
+              "origin": "derived",
+              "source": "web role px x 0.625 = pt",
+              "tracking-em": 0,
+              "pt": 10
+            }
+          }
+        },
+        "landscape": {
+          "$type": "typography",
+          "$value": "{print.type.body.portrait}",
+          "$description": "Body copy (17pt leading = 2 baselines). Landscape (same as portrait).",
+          "$extensions": {
+            "com.desertpants": {
+              "origin": "derived"
+            }
+          }
+        }
+      },
+      "body-sm": {
+        "$description": "Secondary copy and table cells.",
+        "$extensions": {
+          "com.desertpants": {
+            "stands-for": [
+              "body-sm",
+              "table-cell",
+              "table-highlight",
+              "copy-sm",
+              "result-text",
+              "btn-note"
+            ]
+          }
+        },
+        "portrait": {
+          "$type": "typography",
+          "$value": {
+            "fontFamily": "{font.family.mono}",
+            "fontSize": {
+              "value": 11.6667,
+              "unit": "px"
+            },
+            "fontWeight": "{font.weight.regular}",
+            "letterSpacing": {
+              "value": 0.0,
+              "unit": "px"
+            },
+            "lineHeight": 1.6
+          },
+          "$description": "Secondary copy and table cells. Portrait. 8.75pt.",
+          "$extensions": {
+            "com.desertpants": {
+              "origin": "derived",
+              "source": "web role px x 0.625 = pt",
+              "tracking-em": 0,
+              "pt": 8.75
+            }
+          }
+        },
+        "landscape": {
+          "$type": "typography",
+          "$value": "{print.type.body-sm.portrait}",
+          "$description": "Secondary copy and table cells. Landscape (same as portrait).",
+          "$extensions": {
+            "com.desertpants": {
+              "origin": "derived"
+            }
+          }
+        }
+      },
+      "code": {
+        "$description": "Code.",
+        "$extensions": {
+          "com.desertpants": {
+            "stands-for": [
+              "code",
+              "data-xs"
+            ]
+          }
+        },
+        "portrait": {
+          "$type": "typography",
+          "$value": {
+            "fontFamily": "{font.family.mono}",
+            "fontSize": {
+              "value": 11.6667,
+              "unit": "px"
+            },
+            "fontWeight": "{font.weight.regular}",
+            "letterSpacing": {
+              "value": 0.0,
+              "unit": "px"
+            },
+            "lineHeight": 1.7
+          },
+          "$description": "Code. Portrait. 8.75pt.",
+          "$extensions": {
+            "com.desertpants": {
+              "origin": "derived",
+              "source": "web role px x 0.625 = pt",
+              "tracking-em": 0,
+              "pt": 8.75
+            }
+          }
+        },
+        "landscape": {
+          "$type": "typography",
+          "$value": "{print.type.code.portrait}",
+          "$description": "Code. Landscape (same as portrait).",
+          "$extensions": {
+            "com.desertpants": {
+              "origin": "derived"
+            }
+          }
+        }
+      },
+      "eyebrow": {
+        "$description": "Eyebrows and running heads.",
+        "$extensions": {
+          "com.desertpants": {
+            "stands-for": [
+              "eyebrow",
+              "label-sm",
+              "segment-caps",
+              "chart-title",
+              "link-caps"
+            ]
+          }
+        },
+        "portrait": {
+          "$type": "typography",
+          "$value": {
+            "fontFamily": "{font.family.mono}",
+            "fontSize": {
+              "value": 10.0,
+              "unit": "px"
+            },
+            "fontWeight": "{font.weight.medium}",
+            "letterSpacing": {
+              "value": 0.6,
+              "unit": "px"
+            },
+            "lineHeight": 1.7
+          },
+          "$description": "Eyebrows and running heads. Portrait. 7.5pt.",
+          "$extensions": {
+            "com.desertpants": {
+              "origin": "derived",
+              "source": "web role px x 0.625 = pt",
+              "tracking-em": 0.06,
+              "text-transform": "uppercase",
+              "pt": 7.5
+            }
+          }
+        },
+        "landscape": {
+          "$type": "typography",
+          "$value": "{print.type.eyebrow.portrait}",
+          "$description": "Eyebrows and running heads. Landscape (same as portrait).",
+          "$extensions": {
+            "com.desertpants": {
+              "origin": "derived"
+            }
+          }
+        }
+      },
+      "tag": {
+        "$description": "Tags.",
+        "$extensions": {
+          "com.desertpants": {
+            "stands-for": [
+              "tag",
+              "tag-sm",
+              "tag-xs",
+              "status",
+              "segment"
+            ]
+          }
+        },
+        "portrait": {
+          "$type": "typography",
+          "$value": {
+            "fontFamily": "{font.family.mono}",
+            "fontSize": {
+              "value": 10.0,
+              "unit": "px"
+            },
+            "fontWeight": "{font.weight.medium}",
+            "letterSpacing": {
+              "value": 0.6,
+              "unit": "px"
+            },
+            "lineHeight": 1.3
+          },
+          "$description": "Tags. Portrait. 7.5pt.",
+          "$extensions": {
+            "com.desertpants": {
+              "origin": "derived",
+              "source": "web role px x 0.625 = pt",
+              "tracking-em": 0.06,
+              "text-transform": "uppercase",
+              "pt": 7.5
+            }
+          }
+        },
+        "landscape": {
+          "$type": "typography",
+          "$value": "{print.type.tag.portrait}",
+          "$description": "Tags. Landscape (same as portrait).",
+          "$extensions": {
+            "com.desertpants": {
+              "origin": "derived"
+            }
+          }
+        }
+      },
+      "table-head": {
+        "$description": "Table heads.",
+        "$extensions": {
+          "com.desertpants": {
+            "stands-for": [
+              "table-head",
+              "data-head"
+            ]
+          }
+        },
+        "portrait": {
+          "$type": "typography",
+          "$value": {
+            "fontFamily": "{font.family.mono}",
+            "fontSize": {
+              "value": 9.1667,
+              "unit": "px"
+            },
+            "fontWeight": "{font.weight.medium}",
+            "letterSpacing": {
+              "value": 0.55,
+              "unit": "px"
+            },
+            "lineHeight": 1.7
+          },
+          "$description": "Table heads. Portrait. 6.875pt.",
+          "$extensions": {
+            "com.desertpants": {
+              "origin": "derived",
+              "source": "web role px x 0.625 = pt",
+              "tracking-em": 0.06,
+              "text-transform": "uppercase",
+              "pt": 6.875
+            }
+          }
+        },
+        "landscape": {
+          "$type": "typography",
+          "$value": "{print.type.table-head.portrait}",
+          "$description": "Table heads. Landscape (same as portrait).",
+          "$extensions": {
+            "com.desertpants": {
+              "origin": "derived"
+            }
+          }
+        }
+      },
+      "meta": {
+        "$description": "Meta lines and the folio.",
+        "$extensions": {
+          "com.desertpants": {
+            "stands-for": [
+              "meta",
+              "meta-wide",
+              "breadcrumb",
+              "footer-note",
+              "clock"
+            ]
+          }
+        },
+        "portrait": {
+          "$type": "typography",
+          "$value": {
+            "fontFamily": "{font.family.mono}",
+            "fontSize": {
+              "value": 9.1667,
+              "unit": "px"
+            },
+            "fontWeight": "{font.weight.regular}",
+            "letterSpacing": {
+              "value": 0.55,
+              "unit": "px"
+            },
+            "lineHeight": 1.4
+          },
+          "$description": "Meta lines and the folio. Portrait. 6.875pt.",
+          "$extensions": {
+            "com.desertpants": {
+              "origin": "derived",
+              "source": "web role px x 0.625 = pt",
+              "tracking-em": 0.06,
+              "text-transform": "uppercase",
+              "pt": 6.875
+            }
+          }
+        },
+        "landscape": {
+          "$type": "typography",
+          "$value": "{print.type.meta.portrait}",
+          "$description": "Meta lines and the folio. Landscape (same as portrait).",
+          "$extensions": {
+            "com.desertpants": {
+              "origin": "derived"
+            }
+          }
+        }
+      },
+      "micro": {
+        "$description": "Footnotes and fine print.",
+        "$extensions": {
+          "com.desertpants": {
+            "stands-for": [
+              "micro",
+              "body-xs",
+              "entity-label",
+              "lang-gloss"
+            ]
+          }
+        },
+        "portrait": {
+          "$type": "typography",
+          "$value": {
+            "fontFamily": "{font.family.mono}",
+            "fontSize": {
+              "value": 9.1667,
+              "unit": "px"
+            },
+            "fontWeight": "{font.weight.regular}",
+            "letterSpacing": {
+              "value": 0.0,
+              "unit": "px"
+            },
+            "lineHeight": 1.5
+          },
+          "$description": "Footnotes and fine print. Portrait. 6.875pt.",
+          "$extensions": {
+            "com.desertpants": {
+              "origin": "derived",
+              "source": "web role px x 0.625 = pt",
+              "tracking-em": 0,
+              "pt": 6.875
+            }
+          }
+        },
+        "landscape": {
+          "$type": "typography",
+          "$value": "{print.type.micro.portrait}",
+          "$description": "Footnotes and fine print. Landscape (same as portrait).",
+          "$extensions": {
+            "com.desertpants": {
+              "origin": "derived"
+            }
+          }
+        }
+      }
+    },
+    "color": {
+      "$description": "Print colour handling.",
+      "page": {
+        "$type": "color",
+        "$value": "{color.palette.white}",
+        "$description": "Page ground: paper white. Cream is used for blocks and panels only, or matched by choosing a cream stock.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "addition",
+            "theme": "best(role(light.fg), role(light.bg), role(light.raised))"
+          }
+        }
+      },
+      "text": {
+        "$type": "color",
+        "$value": "{color.palette.ink}",
+        "$description": "Text colour for display sizes.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "derived",
+            "theme": "role(light.fg)"
+          }
+        }
+      },
+      "rule": {
+        "$type": "color",
+        "$value": "{color.border.subtle}",
+        "$description": "Hairline rules.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "derived"
+          }
+        }
+      }
+    },
+    "ink": {
+      "$description": "Press rules. Reference condition: FOGRA39 (ISO 12647-2 coated, ISO Coated v2). Every opaque and translucent colour token carries its FOGRA39 separation in $extensions.com.desertpants.print.cmyk-fogra39 (relative colorimetric with black point compensation; translucent colours composited over paper white).",
+      "$extensions": {
+        "com.desertpants": {
+          "condition": "FOGRA39"
+        }
+      },
+      "small-text-k": {
+        "$type": "number",
+        "$value": 100,
+        "$description": "Text below print.ink.small-text-max-pt separates as 100% black only (no rich black), to avoid misregistration.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "addition",
+            "unit": "%"
+          }
+        }
+      },
+      "small-text-max-pt": {
+        "$type": "number",
+        "$value": 12,
+        "$description": "Threshold (pt) for the K-only text rule.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "addition",
+            "unit": "pt"
+          }
+        }
+      },
+      "tac-max": {
+        "$type": "number",
+        "$value": 330,
+        "$description": "Maximum total area coverage (C+M+Y+K) under the FOGRA39 reference condition. Checked against every colour's separation.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "addition",
+            "unit": "%"
+          }
+        }
+      },
+      "image-min-ppi": {
+        "$type": "number",
+        "$value": 300,
+        "$description": "Minimum effective image resolution at final size.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "addition",
+            "unit": "ppi"
+          }
+        }
+      }
+    },
+    "rule": {
+      "hair": {
+        "$type": "dimension",
+        "$value": {
+          "value": 1.0,
+          "unit": "px"
+        },
+        "$description": "Hairline rule (0.75pt; 0.75pt).",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "addition",
+            "physical": {
+              "value": 0.75,
+              "unit": "pt",
+              "pt": 0.75
+            }
+          }
+        }
+      },
+      "thick": {
+        "$type": "dimension",
+        "$value": {
+          "value": 2.0,
+          "unit": "px"
+        },
+        "$description": "Thick rule (stat frames, chart marks) (1.5pt; 1.5pt).",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "addition",
+            "physical": {
+              "value": 1.5,
+              "unit": "pt",
+              "pt": 1.5
+            }
+          }
+        }
+      }
+    }
+  }
+}

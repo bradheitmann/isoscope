@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="en" data-dp-theme="desert" data-dp-mode="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="color-scheme" content="light dark" />
+  <meta name="description" content="An inspectable isometric architecture city." />
+  <title>Isoscope</title>
+</head>
+<body class="dp-type-body-sm">
+  <header class="topbar" aria-label="Isoscope">
+    <span id="brandV" class="dp-type-brand-name dp-wordmark">Isoscope</span>
+  </header>
+  <div class="workbench" id="workbench">
+  <aside class="side" id="mapControls" aria-label="Map controls">
+    <div class="rail-actions" aria-label="Map actions">
+      <button class="dp-button dp-button--sm" id="btnFlow" type="button" aria-label="Flow: animate data connections" aria-pressed="false" title="Flow"></button>
+      <button class="dp-button dp-button--sm dp-button--outline" id="btnTrace" type="button" aria-label="Trace: light the loop one step at a time" title="Trace"></button>
+      <button class="dp-button dp-button--sm dp-button--outline" id="btnStack" type="button" aria-label="Stack: lift the architecture into three levels" aria-pressed="false" title="Stack"></button>
+      <button class="dp-button dp-button--sm dp-button--outline" id="btnReset" type="button" aria-label="Reset camera" title="Reset camera (R)"></button>
+      <button class="dp-button dp-button--sm dp-button--outline" id="btnSettings" type="button" aria-label="Settings" aria-haspopup="dialog" aria-controls="drawer" aria-expanded="false" title="Settings"></button>
+      <button class="dp-button dp-button--sm dp-button--outline" id="btnReadMap" type="button" aria-label="Open map overview" aria-expanded="false" aria-controls="readingPanel" title="Map overview"></button>
+    </div>
+    <div class="rail-camera" aria-label="Camera zoom">
+      <button class="dp-button dp-button--outline" id="zin" type="button" aria-label="Zoom in"></button>
+      <button class="dp-button dp-button--outline" id="zout" type="button" aria-label="Zoom out"></button>
+    </div>
+  </aside>
+  <main class="canvas-wrap" id="canvasWrap" aria-label="Flyover architecture map">
+    <canvas id="gl" tabindex="0" aria-label="Isometric city. Click a building to inspect it. Drag to orbit, right-drag to pan, scroll to zoom."></canvas>
+    <div id="labels" aria-hidden="true"></div>
+  </main>
+  <div class="dp-scrim reading-scrim" id="readingScrim" hidden>
+  <aside class="panel" id="readingPanel" tabindex="-1" role="dialog" aria-modal="true" aria-labelledby="pTitle" aria-label="Reading panel" aria-live="polite">
+    <button class="dp-button dp-button--outline close-reading" id="closeReadingPanel" type="button" data-dp-close aria-label="Close reading panel">Close</button>
+    <div class="scroll" id="paneBody" role="tabpanel">
+      <p class="eyebrow dp-type-label-sm" id="pEyebrow"></p>
+      <h1 class="dp-type-h2" id="pTitle"></h1>
+      <p class="sub dp-type-body-sm" id="pSub"></p>
+      <section class="metrics-section" aria-label="Project summary">
+        <h2 class="dp-type-label-sm">Project summary</h2>
+        <div class="metricstrip" id="metricStrip"></div>
+      </section>
+      <section class="reading-section module-navigator" aria-labelledby="moduleNavigatorTitle">
+        <h2 class="dp-type-h3" id="moduleNavigatorTitle">Navigate modules</h2>
+        <label class="dp-search">
+          <span id="moduleSearchIcon" aria-hidden="true"></span>
+          <input id="moduleSearch" type="search" autocomplete="off" aria-label="Search sections and modules" placeholder="Search sections and modules" />
+        </label>
+        <p class="dp-type-meta" id="moduleResults" role="status" aria-live="polite"></p>
+        <nav id="legend" class="module-results dp-list" aria-label="Sections and modules"></nav>
+        <button class="dp-button dp-button--outline module-more" id="moduleMore" type="button" hidden>Show more modules</button>
+      </section>
+      <hr class="rule" />
+      <div id="pProse" class="prose dp-type-body-sm"></div>
+      <section class="reading-section" aria-label="Map key">
+        <details>
+          <summary class="dp-type-label-sm">Map key</summary>
+          <div class="sidekey dp-type-body-sm" id="sideKey">
+      <p class="grouphead dp-type-label-sm">Reading the map</p>
+      <div class="keyrow"><span class="sw ok" aria-hidden="true"></span>Paper roof — healthy, quiet</div>
+      <div class="keyrow"><span class="sw attn" aria-hidden="true"></span>Amber roof — work outstanding</div>
+      <div class="keyrow"><span class="sw build" aria-hidden="true"></span>Blue roof — being built</div>
+      <div class="keyrow"><span class="sw blocked" aria-hidden="true"></span>Red roof — blocked</div>
+      <div class="keyrow"><span class="base red" aria-hidden="true"></span>Red base — a blocker inside</div>
+      <div class="keyrow"><span class="base you" aria-hidden="true"></span>Slate base — your decision inside</div>
+      <div class="keyrow"><span class="base amber" aria-hidden="true"></span>Amber base — items queued</div>
+      <div class="keyrow"><span class="base amber line-key" aria-hidden="true"></span>Amber line — degraded link</div>
+      <div class="keyrow"><span class="base red line-key" aria-hidden="true"></span>Red line — broken link</div>
+      <div class="keyrow"><span class="jn" aria-hidden="true"></span>Dot at the wall — link joins here</div>
+      <div class="keyrow"><span class="hop" aria-hidden="true"></span>Arc over a line — crossing, not a join</div>
+      <div class="keyrow dp-type-meta">Fly closer: labels gain their counts</div>
+            <div class="keyrow dp-type-body-sm" id="asOf"></div>
+          </div>
+        </details>
+      </section>
+      <section class="reading-section" aria-label="Using the map">
+        <details id="movementDetails">
+          <summary class="dp-type-label-sm">Move around</summary>
+          <div class="movement-help dp-type-body-sm">
+            <p><strong>Orbit</strong> Drag with one pointer.</p>
+            <p><strong>Pan</strong> Right-drag with a mouse or use two-finger drag.</p>
+            <p><strong>Zoom</strong> Scroll or pinch.</p>
+            <p><strong>Select</strong> Choose a building to inspect its circuit; choose a pipe to inspect its flow.</p>
+            <p><strong>Reset</strong> Select empty ground or press R.</p>
+          </div>
+        </details>
+      </section>
+    </div>
+  </aside>
+  </div>
+  </div>
+  <div class="settings-backdrop" id="settingsBackdrop" hidden aria-hidden="true"></div>
+  <aside class="drawer" id="drawer" role="dialog" aria-modal="true" aria-labelledby="settingsTitle" aria-label="Settings" hidden inert>
+    <header class="drawer-head"><h2 class="dp-type-label">Settings</h2><button class="dp-button dp-button--outline" id="drawerClose" type="button" aria-label="Close settings">×</button></header>
+    <div class="drawer-body">
+      <button class="dp-button dp-button--outline guide-button" id="btnGuide" type="button">Show the intro guide</button>
+      <h3 class="dp-type-label-sm">Theme</h3>
+      <label class="dp-type-body-sm" for="modeSelect">Mode</label>
+      <select id="modeSelect" class="dp-field"><option value="light">Light</option><option value="dark">Dark</option><option value="system">System</option></select>
+      <button class="dp-button dp-button--outline random-theme" id="btnRandomTheme" type="button">Random theme</button>
+      <div id="themeList" class="theme-list"></div>
+      <h3 class="dp-type-label-sm">Flow character</h3><div class="seg" id="dashSeg"></div>
+      <h3 class="dp-type-label-sm">Line weight</h3><div class="seg" id="weightSeg"></div>
+    </div>
+  </aside>
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>

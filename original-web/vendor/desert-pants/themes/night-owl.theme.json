@@ -1,0 +1,777 @@
+{
+  "id": "night-owl",
+  "name": "Night Owl",
+  "description": "Sarah Drasner's Night Owl and Light Owl.",
+  "sources": [
+    {
+      "id": "night-owl",
+      "author": "Sarah Drasner",
+      "url": "https://marketplace.visualstudio.com/items?itemName=sdras.night-owl",
+      "repository": "https://github.com/sdras/night-owl-vscode-theme",
+      "revision": "cc291eba7976b20d7c66bde6883c27b902196b07",
+      "licence": "MIT",
+      "files": [
+        "themes/Night Owl-Light-color-theme.json",
+        "themes/Night Owl-color-theme.json"
+      ]
+    }
+  ],
+  "modes": {
+    "light": {
+      "name": "Light Owl",
+      "origin": "source",
+      "roles": {
+        "bg": {
+          "value": "#fbfbfb",
+          "source": "night-owl Night Owl-Light-color-theme.json: editor.background"
+        },
+        "surface": {
+          "value": "#f0f0f0",
+          "source": "night-owl Night Owl-Light-color-theme.json: input.background"
+        },
+        "card": {
+          "value": "#f0f0f0",
+          "source": "night-owl Night Owl-Light-color-theme.json: sideBar.background"
+        },
+        "raised": {
+          "value": "#f0f0f0",
+          "source": "night-owl Night Owl-Light-color-theme.json: editorWidget.background"
+        },
+        "sunken": {
+          "value": "#f6f6f6",
+          "source": "night-owl Night Owl-Light-color-theme.json: terminal.background"
+        },
+        "inset": {
+          "value": "#ebebed",
+          "derived": "mix(bg, fg, 0.08)"
+        },
+        "fg": {
+          "value": "#403f53",
+          "source": "night-owl Night Owl-Light-color-theme.json: editor.foreground"
+        },
+        "fg-2": {
+          "value": "#656475",
+          "derived": "mix(fg, bg, 0.22)"
+        },
+        "fg-3": {
+          "value": "#90a7b2",
+          "source": "night-owl Night Owl-Light-color-theme.json: editorLineNumber.foreground"
+        },
+        "fg-4": {
+          "value": "#afc0c7",
+          "derived": "mix(fg-3, bg, 0.3)"
+        },
+        "accent": {
+          "value": "#2aa298",
+          "source": "night-owl Night Owl-Light-color-theme.json: button.background"
+        },
+        "on-accent": {
+          "value": "#f0f0f0",
+          "source": "night-owl Night Owl-Light-color-theme.json: button.foreground"
+        },
+        "accent-hover": {
+          "value": "#008f86",
+          "derived": "accent with OKLab lightness moved 0.06 away from on-accent"
+        },
+        "accent-press": {
+          "value": "#007b73",
+          "derived": "accent with OKLab lightness moved 0.12 away from on-accent"
+        },
+        "focus": {
+          "value": "#2aa298",
+          "derived": "accent"
+        },
+        "selection": {
+          "value": "#e0e0e0",
+          "source": "night-owl Night Owl-Light-color-theme.json: editor.selectionBackground"
+        },
+        "scrim": {
+          "value": "#011627",
+          "derived": "the darker of light.fg and dark.bg"
+        },
+        "red": {
+          "value": "#de3d3b",
+          "source": "tokenColors and terminal colours of the same theme file"
+        },
+        "orange": {
+          "value": "#aa0982",
+          "source": "tokenColors and terminal colours of the same theme file"
+        },
+        "yellow": {
+          "value": "#e0af02",
+          "source": "tokenColors and terminal colours of the same theme file"
+        },
+        "green": {
+          "value": "#08916a",
+          "source": "tokenColors and terminal colours of the same theme file"
+        },
+        "cyan": {
+          "value": "#2aa298",
+          "source": "tokenColors and terminal colours of the same theme file"
+        },
+        "blue": {
+          "value": "#4876d6",
+          "source": "tokenColors and terminal colours of the same theme file"
+        },
+        "purple": {
+          "value": "#994cc3",
+          "source": "tokenColors and terminal colours of the same theme file"
+        },
+        "magenta": {
+          "value": "#d6438a",
+          "source": "tokenColors and terminal colours of the same theme file"
+        },
+        "success": {
+          "value": "#08916a",
+          "derived": "green"
+        },
+        "warning": {
+          "value": "#e0af02",
+          "derived": "yellow"
+        },
+        "danger": {
+          "value": "#de3d3b",
+          "derived": "red"
+        },
+        "info": {
+          "value": "#2aa298",
+          "derived": "cyan"
+        },
+        "success-text": {
+          "value": "#08916a",
+          "derived": "success (contrast solving adjusts it on each ground)"
+        },
+        "warning-text": {
+          "value": "#daaa01",
+          "source": "night-owl Night Owl-Light-color-theme.json: editorWarning.foreground"
+        },
+        "danger-text": {
+          "value": "#e64d49",
+          "source": "night-owl Night Owl-Light-color-theme.json: editorError.foreground"
+        },
+        "info-text": {
+          "value": "#2aa298",
+          "derived": "info (contrast solving adjusts it on each ground)"
+        },
+        "chart-1": {
+          "value": "#4876d6",
+          "derived": "blue"
+        },
+        "chart-2": {
+          "value": "#aa0982",
+          "derived": "orange"
+        },
+        "chart-3": {
+          "value": "#08916a",
+          "derived": "green"
+        },
+        "chart-4": {
+          "value": "#d6438a",
+          "derived": "magenta"
+        },
+        "chart-5": {
+          "value": "#e0af02",
+          "derived": "yellow"
+        },
+        "chart-6": {
+          "value": "#de3d3b",
+          "derived": "red (cyan and the hues after it sit within 0.065 OKLab of the text colour or 0.08 of an earlier chart colour)"
+        },
+        "ansi.black": {
+          "value": "#403f53",
+          "source": "night-owl Night Owl-Light-color-theme.json: terminal.ansiBlack"
+        },
+        "ansi.red": {
+          "value": "#de3d3b",
+          "source": "night-owl Night Owl-Light-color-theme.json: terminal.ansiRed"
+        },
+        "ansi.green": {
+          "value": "#08916a",
+          "source": "night-owl Night Owl-Light-color-theme.json: terminal.ansiGreen"
+        },
+        "ansi.yellow": {
+          "value": "#e0af02",
+          "source": "night-owl Night Owl-Light-color-theme.json: terminal.ansiYellow"
+        },
+        "ansi.blue": {
+          "value": "#288ed7",
+          "source": "night-owl Night Owl-Light-color-theme.json: terminal.ansiBlue"
+        },
+        "ansi.magenta": {
+          "value": "#d6438a",
+          "source": "night-owl Night Owl-Light-color-theme.json: terminal.ansiMagenta"
+        },
+        "ansi.cyan": {
+          "value": "#2aa298",
+          "source": "night-owl Night Owl-Light-color-theme.json: terminal.ansiCyan"
+        },
+        "ansi.white": {
+          "value": "#93a1a1",
+          "source": "night-owl Night Owl-Light-color-theme.json: terminal.ansiWhite"
+        },
+        "ansi.bright-black": {
+          "value": "#403f53",
+          "source": "night-owl Night Owl-Light-color-theme.json: terminal.ansiBrightBlack"
+        },
+        "ansi.bright-red": {
+          "value": "#de3d3b",
+          "source": "night-owl Night Owl-Light-color-theme.json: terminal.ansiBrightRed"
+        },
+        "ansi.bright-green": {
+          "value": "#08916a",
+          "source": "night-owl Night Owl-Light-color-theme.json: terminal.ansiBrightGreen"
+        },
+        "ansi.bright-yellow": {
+          "value": "#daaa01",
+          "source": "night-owl Night Owl-Light-color-theme.json: terminal.ansiBrightYellow"
+        },
+        "ansi.bright-blue": {
+          "value": "#288ed7",
+          "source": "night-owl Night Owl-Light-color-theme.json: terminal.ansiBrightBlue"
+        },
+        "ansi.bright-magenta": {
+          "value": "#d6438a",
+          "source": "night-owl Night Owl-Light-color-theme.json: terminal.ansiBrightMagenta"
+        },
+        "ansi.bright-cyan": {
+          "value": "#2aa298",
+          "source": "night-owl Night Owl-Light-color-theme.json: terminal.ansiBrightCyan"
+        },
+        "ansi.bright-white": {
+          "value": "#93a1a1",
+          "source": "night-owl Night Owl-Light-color-theme.json: terminal.ansiBrightWhite"
+        },
+        "syntax.keyword": {
+          "value": "#994cc3",
+          "source": "night-owl Night Owl-Light-color-theme.json: tokenColors 'keyword' (for keyword)"
+        },
+        "syntax.control": {
+          "value": "#994cc3",
+          "source": "night-owl Night Owl-Light-color-theme.json: tokenColors 'keyword.control' (for keyword.control.flow)"
+        },
+        "syntax.function": {
+          "value": "#4876d6",
+          "source": "night-owl Night Owl-Light-color-theme.json: tokenColors 'entity.name.function' (for entity.name.function)"
+        },
+        "syntax.string": {
+          "value": "#c96765",
+          "source": "night-owl Night Owl-Light-color-theme.json: tokenColors 'string.quoted' (for string.quoted.double)"
+        },
+        "syntax.variable": {
+          "value": "#4876d6",
+          "source": "night-owl Night Owl-Light-color-theme.json: tokenColors 'variable' (for variable.other.readwrite)"
+        },
+        "syntax.type": {
+          "value": "#111111",
+          "source": "night-owl Night Owl-Light-color-theme.json: tokenColors 'entity.name.class' (for entity.name.class)"
+        },
+        "syntax.number": {
+          "value": "#aa0982",
+          "source": "night-owl Night Owl-Light-color-theme.json: tokenColors 'constant.numeric' (for constant.numeric)"
+        },
+        "syntax.comment": {
+          "value": "#939dbb",
+          "source": "night-owl Night Owl-Light-color-theme.json: tokenColors 'comment.line.double-slash' (for comment.line.double-slash)"
+        },
+        "fill.sage.bg": {
+          "value": "#9cb8ab",
+          "derived": "desert sage lightness 0.758 and chroma 0.034 x 1.04 (the theme's green against desert's, at most the theme's own), the hue of green"
+        },
+        "fill.sage.ink": {
+          "value": "#262538",
+          "derived": "light.fg moved in OKLab lightness to 7.0:1 on fill.sage.bg (light.fg and light.bg reach 4.80:1)"
+        },
+        "fill.teal.bg": {
+          "value": "#c1d3d1",
+          "derived": "desert teal lightness 0.853 and chroma 0.019 x 1.11 (the theme's cyan against desert's, at most the theme's own), the hue of cyan"
+        },
+        "fill.teal.ink": {
+          "value": "#3c3b4e",
+          "derived": "light.fg moved in OKLab lightness to 7.0:1 on fill.teal.bg (light.fg and light.bg reach 6.58:1)"
+        },
+        "fill.forest.bg": {
+          "value": "#191e1b",
+          "derived": "desert forest lightness 0.229 and chroma 0.009 x 1.04 (the theme's green against desert's, at most the theme's own), the hue of green"
+        },
+        "fill.forest.ink": {
+          "value": "#fbfbfb",
+          "derived": "light.bg, the better of light.fg and light.bg on fill.forest.bg"
+        },
+        "fill.terracotta.bg": {
+          "value": "#e351b5",
+          "derived": "desert terracotta lightness 0.662 and chroma 0.143 x 1.46 (the theme's orange against desert's, at most the theme's own), the hue of orange"
+        },
+        "fill.terracotta.ink": {
+          "value": "#0a0819",
+          "derived": "light.fg moved in OKLab lightness to 5.7:1 on fill.terracotta.bg (light.fg and light.bg reach 3.32:1)"
+        },
+        "fill.sand.bg": {
+          "value": "#d6d0c1",
+          "derived": "desert sand lightness 0.859 and chroma 0.019 x 1.12 (the theme's yellow against desert's, at most the theme's own), the hue of yellow"
+        },
+        "fill.sand.ink": {
+          "value": "#3c3b4f",
+          "derived": "light.fg moved in OKLab lightness to 7.0:1 on fill.sand.bg (light.fg and light.bg reach 6.65:1)"
+        },
+        "fill.warm-grey.bg": {
+          "value": "#b4b4c9",
+          "derived": "desert warm-grey lightness 0.776; the theme's neutral hue and chroma (at most 0.03)"
+        },
+        "fill.warm-grey.ink": {
+          "value": "#2a283b",
+          "derived": "light.fg moved in OKLab lightness to 7.0:1 on fill.warm-grey.bg (light.fg and light.bg reach 5.02:1)"
+        },
+        "fill.clay-red.bg": {
+          "value": "#d63333",
+          "derived": "desert clay-red lightness 0.576 and chroma 0.200 x 1.16 (the theme's red against desert's, at most the theme's own), the hue of red"
+        },
+        "fill.clay-red.ink": {
+          "value": "#fbfbfb",
+          "derived": "light.bg, the better of light.fg and light.bg on fill.clay-red.bg"
+        },
+        "fill.dark-teal.bg": {
+          "value": "#1c4397",
+          "derived": "desert dark-teal lightness 0.408 and chroma 0.058 x 2.50 (the theme's blue against desert's, at most the theme's own), the hue of blue"
+        },
+        "fill.dark-teal.ink": {
+          "value": "#fbfbfb",
+          "derived": "light.bg, the better of light.fg and light.bg on fill.dark-teal.bg"
+        },
+        "fill.dusty-pink.bg": {
+          "value": "#d086a3",
+          "derived": "desert dusty-pink lightness 0.704 and chroma 0.039 x 2.50 (the theme's magenta against desert's, at most the theme's own), the hue of magenta"
+        },
+        "fill.dusty-pink.ink": {
+          "value": "#0e0c1c",
+          "derived": "light.fg moved in OKLab lightness to 7.0:1 on fill.dusty-pink.bg (light.fg and light.bg reach 3.71:1)"
+        },
+        "fill.light-peach.bg": {
+          "value": "#fed3ec",
+          "derived": "desert light-peach lightness 0.911 and chroma 0.040 x 1.46 (the theme's orange against desert's, at most the theme's own), the hue of orange"
+        },
+        "fill.light-peach.ink": {
+          "value": "#403f53",
+          "derived": "light.fg, the better of light.fg and light.bg on fill.light-peach.bg"
+        },
+        "fill.faun.bg": {
+          "value": "#cbc6b9",
+          "derived": "desert faun lightness 0.826 and chroma 0.017 x 1.12 (the theme's yellow against desert's, at most the theme's own), the hue of yellow"
+        },
+        "fill.faun.ink": {
+          "value": "#353448",
+          "derived": "light.fg moved in OKLab lightness to 7.0:1 on fill.faun.bg (light.fg and light.bg reach 6.00:1)"
+        },
+        "fill.cool-grey.bg": {
+          "value": "#dcdbf1",
+          "derived": "desert cool-grey lightness 0.899; the theme's neutral hue and chroma (at most 0.03)"
+        },
+        "fill.cool-grey.ink": {
+          "value": "#403f53",
+          "derived": "light.fg, the better of light.fg and light.bg on fill.cool-grey.bg"
+        },
+        "fill.stone.bg": {
+          "value": "#adadc2",
+          "derived": "desert stone lightness 0.753; the theme's neutral hue and chroma (at most 0.03)"
+        },
+        "fill.stone.ink": {
+          "value": "#242235",
+          "derived": "light.fg moved in OKLab lightness to 7.0:1 on fill.stone.bg (light.fg and light.bg reach 4.64:1)"
+        },
+        "fill.dark-grey.bg": {
+          "value": "#676679",
+          "derived": "desert dark-grey lightness 0.518; the theme's neutral hue and chroma (at most 0.03)"
+        },
+        "fill.dark-grey.ink": {
+          "value": "#fbfbfb",
+          "derived": "light.bg, the better of light.fg and light.bg on fill.dark-grey.bg"
+        },
+        "fill.ink.bg": {
+          "value": "#100e1d",
+          "derived": "desert ink lightness 0.175; the theme's neutral hue and chroma (at most 0.03)"
+        },
+        "fill.ink.ink": {
+          "value": "#fbfbfb",
+          "derived": "light.bg, the better of light.fg and light.bg on fill.ink.bg"
+        }
+      }
+    },
+    "dark": {
+      "name": "Night Owl",
+      "origin": "source",
+      "roles": {
+        "bg": {
+          "value": "#011627",
+          "source": "night-owl Night Owl-color-theme.json: editor.background"
+        },
+        "surface": {
+          "value": "#0b253a",
+          "source": "night-owl Night Owl-color-theme.json: input.background"
+        },
+        "card": {
+          "value": "#01111d",
+          "source": "night-owl Night Owl-color-theme.json: tab.inactiveBackground"
+        },
+        "raised": {
+          "value": "#2c3043",
+          "source": "night-owl Night Owl-color-theme.json: editorSuggestWidget.background"
+        },
+        "sunken": {
+          "value": "#021320",
+          "source": "night-owl Night Owl-color-theme.json: editorWidget.background"
+        },
+        "inset": {
+          "value": "#152a3c",
+          "derived": "mix(bg, fg, 0.12)"
+        },
+        "fg": {
+          "value": "#d6deeb",
+          "source": "night-owl Night Owl-color-theme.json: editor.foreground"
+        },
+        "fg-2": {
+          "value": "#5f7e97",
+          "source": "night-owl Night Owl-color-theme.json: tab.inactiveForeground"
+        },
+        "fg-3": {
+          "value": "#4b6479",
+          "source": "night-owl Night Owl-color-theme.json: editorLineNumber.foreground"
+        },
+        "fg-4": {
+          "value": "#334b5f",
+          "derived": "mix(fg-3, bg, 0.3)"
+        },
+        "accent": {
+          "value": "#7e57c2",
+          "source": "night-owl Night Owl-color-theme.json: button.background #7e57c2cc with its alpha removed (button.hoverBackground)"
+        },
+        "on-accent": {
+          "value": "#ffffff",
+          "source": "night-owl Night Owl-color-theme.json: button.foreground #ffffffcc with its alpha removed"
+        },
+        "accent-hover": {
+          "value": "#6d45ae",
+          "derived": "accent with OKLab lightness moved 0.06 away from on-accent"
+        },
+        "accent-press": {
+          "value": "#5c329b",
+          "derived": "accent with OKLab lightness moved 0.12 away from on-accent"
+        },
+        "focus": {
+          "value": "#7e57c2",
+          "derived": "accent"
+        },
+        "selection": {
+          "value": "#1d3b53",
+          "source": "night-owl Night Owl-color-theme.json: editor.selectionBackground"
+        },
+        "scrim": {
+          "value": "#011627",
+          "derived": "the darker of light.fg and dark.bg"
+        },
+        "red": {
+          "value": "#ef5350",
+          "source": "tokenColors and terminal colours of the same theme file"
+        },
+        "orange": {
+          "value": "#f78c6c",
+          "source": "tokenColors and terminal colours of the same theme file"
+        },
+        "yellow": {
+          "value": "#ffcb8b",
+          "source": "tokenColors and terminal colours of the same theme file"
+        },
+        "green": {
+          "value": "#22da6e",
+          "source": "tokenColors and terminal colours of the same theme file"
+        },
+        "cyan": {
+          "value": "#7fdbca",
+          "source": "tokenColors and terminal colours of the same theme file"
+        },
+        "blue": {
+          "value": "#82aaff",
+          "source": "tokenColors and terminal colours of the same theme file"
+        },
+        "purple": {
+          "value": "#c792ea",
+          "source": "tokenColors and terminal colours of the same theme file"
+        },
+        "magenta": {
+          "value": "#c792ea",
+          "source": "tokenColors and terminal colours of the same theme file"
+        },
+        "success": {
+          "value": "#22da6e",
+          "derived": "green"
+        },
+        "warning": {
+          "value": "#ffcb8b",
+          "derived": "yellow"
+        },
+        "danger": {
+          "value": "#ef5350",
+          "derived": "red"
+        },
+        "info": {
+          "value": "#7fdbca",
+          "derived": "cyan"
+        },
+        "success-text": {
+          "value": "#22da6e",
+          "derived": "success (contrast solving adjusts it on each ground)"
+        },
+        "warning-text": {
+          "value": "#b39554",
+          "source": "night-owl Night Owl-color-theme.json: editorWarning.foreground"
+        },
+        "danger-text": {
+          "value": "#ef5350",
+          "source": "night-owl Night Owl-color-theme.json: editorError.foreground"
+        },
+        "info-text": {
+          "value": "#7fdbca",
+          "derived": "info (contrast solving adjusts it on each ground)"
+        },
+        "chart-1": {
+          "value": "#82aaff",
+          "derived": "blue"
+        },
+        "chart-2": {
+          "value": "#f78c6c",
+          "derived": "orange"
+        },
+        "chart-3": {
+          "value": "#22da6e",
+          "derived": "green"
+        },
+        "chart-4": {
+          "value": "#c792ea",
+          "derived": "magenta"
+        },
+        "chart-5": {
+          "value": "#ffcb8b",
+          "derived": "yellow"
+        },
+        "chart-6": {
+          "value": "#7fdbca",
+          "derived": "cyan"
+        },
+        "ansi.black": {
+          "value": "#011627",
+          "source": "night-owl Night Owl-color-theme.json: terminal.ansiBlack"
+        },
+        "ansi.red": {
+          "value": "#ef5350",
+          "source": "night-owl Night Owl-color-theme.json: terminal.ansiRed"
+        },
+        "ansi.green": {
+          "value": "#22da6e",
+          "source": "night-owl Night Owl-color-theme.json: terminal.ansiGreen"
+        },
+        "ansi.yellow": {
+          "value": "#c5e478",
+          "source": "night-owl Night Owl-color-theme.json: terminal.ansiYellow"
+        },
+        "ansi.blue": {
+          "value": "#82aaff",
+          "source": "night-owl Night Owl-color-theme.json: terminal.ansiBlue"
+        },
+        "ansi.magenta": {
+          "value": "#c792ea",
+          "source": "night-owl Night Owl-color-theme.json: terminal.ansiMagenta"
+        },
+        "ansi.cyan": {
+          "value": "#21c7a8",
+          "source": "night-owl Night Owl-color-theme.json: terminal.ansiCyan"
+        },
+        "ansi.white": {
+          "value": "#ffffff",
+          "source": "night-owl Night Owl-color-theme.json: terminal.ansiWhite"
+        },
+        "ansi.bright-black": {
+          "value": "#575656",
+          "source": "night-owl Night Owl-color-theme.json: terminal.ansiBrightBlack"
+        },
+        "ansi.bright-red": {
+          "value": "#ef5350",
+          "source": "night-owl Night Owl-color-theme.json: terminal.ansiBrightRed"
+        },
+        "ansi.bright-green": {
+          "value": "#22da6e",
+          "source": "night-owl Night Owl-color-theme.json: terminal.ansiBrightGreen"
+        },
+        "ansi.bright-yellow": {
+          "value": "#ffeb95",
+          "source": "night-owl Night Owl-color-theme.json: terminal.ansiBrightYellow"
+        },
+        "ansi.bright-blue": {
+          "value": "#82aaff",
+          "source": "night-owl Night Owl-color-theme.json: terminal.ansiBrightBlue"
+        },
+        "ansi.bright-magenta": {
+          "value": "#c792ea",
+          "source": "night-owl Night Owl-color-theme.json: terminal.ansiBrightMagenta"
+        },
+        "ansi.bright-cyan": {
+          "value": "#7fdbca",
+          "source": "night-owl Night Owl-color-theme.json: terminal.ansiBrightCyan"
+        },
+        "ansi.bright-white": {
+          "value": "#ffffff",
+          "source": "night-owl Night Owl-color-theme.json: terminal.ansiBrightWhite"
+        },
+        "syntax.keyword": {
+          "value": "#c792ea",
+          "source": "night-owl Night Owl-color-theme.json: tokenColors 'keyword' (for keyword)"
+        },
+        "syntax.control": {
+          "value": "#c792ea",
+          "source": "night-owl Night Owl-color-theme.json: tokenColors 'keyword.control' (for keyword.control.flow)"
+        },
+        "syntax.function": {
+          "value": "#82aaff",
+          "source": "night-owl Night Owl-color-theme.json: tokenColors 'entity.name.function' (for entity.name.function)"
+        },
+        "syntax.string": {
+          "value": "#ecc48d",
+          "source": "night-owl Night Owl-color-theme.json: tokenColors 'string.quoted' (for string.quoted.double)"
+        },
+        "syntax.variable": {
+          "value": "#c5e478",
+          "source": "night-owl Night Owl-color-theme.json: tokenColors 'variable' (for variable.other.readwrite)"
+        },
+        "syntax.type": {
+          "value": "#ffcb8b",
+          "source": "night-owl Night Owl-color-theme.json: tokenColors 'entity.name.class' (for entity.name.class)"
+        },
+        "syntax.number": {
+          "value": "#f78c6c",
+          "source": "night-owl Night Owl-color-theme.json: tokenColors 'constant.numeric' (for constant.numeric)"
+        },
+        "syntax.comment": {
+          "value": "#637777",
+          "source": "night-owl Night Owl-color-theme.json: tokenColors 'comment.line.double-slash' (for comment.line.double-slash)"
+        },
+        "fill.sage.bg": {
+          "value": "#9cb8ab",
+          "derived": "light-mode fill.sage.bg (fills do not change with mode)"
+        },
+        "fill.sage.ink": {
+          "value": "#262538",
+          "derived": "light-mode fill.sage.ink (fills do not change with mode)"
+        },
+        "fill.teal.bg": {
+          "value": "#c1d3d1",
+          "derived": "light-mode fill.teal.bg (fills do not change with mode)"
+        },
+        "fill.teal.ink": {
+          "value": "#3c3b4e",
+          "derived": "light-mode fill.teal.ink (fills do not change with mode)"
+        },
+        "fill.forest.bg": {
+          "value": "#191e1b",
+          "derived": "light-mode fill.forest.bg (fills do not change with mode)"
+        },
+        "fill.forest.ink": {
+          "value": "#fbfbfb",
+          "derived": "light-mode fill.forest.ink (fills do not change with mode)"
+        },
+        "fill.terracotta.bg": {
+          "value": "#e351b5",
+          "derived": "light-mode fill.terracotta.bg (fills do not change with mode)"
+        },
+        "fill.terracotta.ink": {
+          "value": "#0a0819",
+          "derived": "light-mode fill.terracotta.ink (fills do not change with mode)"
+        },
+        "fill.sand.bg": {
+          "value": "#d6d0c1",
+          "derived": "light-mode fill.sand.bg (fills do not change with mode)"
+        },
+        "fill.sand.ink": {
+          "value": "#3c3b4f",
+          "derived": "light-mode fill.sand.ink (fills do not change with mode)"
+        },
+        "fill.warm-grey.bg": {
+          "value": "#b4b4c9",
+          "derived": "light-mode fill.warm-grey.bg (fills do not change with mode)"
+        },
+        "fill.warm-grey.ink": {
+          "value": "#2a283b",
+          "derived": "light-mode fill.warm-grey.ink (fills do not change with mode)"
+        },
+        "fill.clay-red.bg": {
+          "value": "#d63333",
+          "derived": "light-mode fill.clay-red.bg (fills do not change with mode)"
+        },
+        "fill.clay-red.ink": {
+          "value": "#fbfbfb",
+          "derived": "light-mode fill.clay-red.ink (fills do not change with mode)"
+        },
+        "fill.dark-teal.bg": {
+          "value": "#1c4397",
+          "derived": "light-mode fill.dark-teal.bg (fills do not change with mode)"
+        },
+        "fill.dark-teal.ink": {
+          "value": "#fbfbfb",
+          "derived": "light-mode fill.dark-teal.ink (fills do not change with mode)"
+        },
+        "fill.dusty-pink.bg": {
+          "value": "#d086a3",
+          "derived": "light-mode fill.dusty-pink.bg (fills do not change with mode)"
+        },
+        "fill.dusty-pink.ink": {
+          "value": "#0e0c1c",
+          "derived": "light-mode fill.dusty-pink.ink (fills do not change with mode)"
+        },
+        "fill.light-peach.bg": {
+          "value": "#fed3ec",
+          "derived": "light-mode fill.light-peach.bg (fills do not change with mode)"
+        },
+        "fill.light-peach.ink": {
+          "value": "#403f53",
+          "derived": "light-mode fill.light-peach.ink (fills do not change with mode)"
+        },
+        "fill.faun.bg": {
+          "value": "#cbc6b9",
+          "derived": "light-mode fill.faun.bg (fills do not change with mode)"
+        },
+        "fill.faun.ink": {
+          "value": "#353448",
+          "derived": "light-mode fill.faun.ink (fills do not change with mode)"
+        },
+        "fill.cool-grey.bg": {
+          "value": "#dcdbf1",
+          "derived": "light-mode fill.cool-grey.bg (fills do not change with mode)"
+        },
+        "fill.cool-grey.ink": {
+          "value": "#403f53",
+          "derived": "light-mode fill.cool-grey.ink (fills do not change with mode)"
+        },
+        "fill.stone.bg": {
+          "value": "#adadc2",
+          "derived": "light-mode fill.stone.bg (fills do not change with mode)"
+        },
+        "fill.stone.ink": {
+          "value": "#242235",
+          "derived": "light-mode fill.stone.ink (fills do not change with mode)"
+        },
+        "fill.dark-grey.bg": {
+          "value": "#676679",
+          "derived": "light-mode fill.dark-grey.bg (fills do not change with mode)"
+        },
+        "fill.dark-grey.ink": {
+          "value": "#fbfbfb",
+          "derived": "light-mode fill.dark-grey.ink (fills do not change with mode)"
+        },
+        "fill.ink.bg": {
+          "value": "#100e1d",
+          "derived": "light-mode fill.ink.bg (fills do not change with mode)"
+        },
+        "fill.ink.ink": {
+          "value": "#fbfbfb",
+          "derived": "light-mode fill.ink.ink (fills do not change with mode)"
+        }
+      }
+    }
+  }
+}

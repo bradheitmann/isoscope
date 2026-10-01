@@ -1,0 +1,782 @@
+{
+  "id": "high-contrast",
+  "name": "High Contrast",
+  "description": "VS Code's Default High Contrast Light and Default High Contrast themes.",
+  "sources": [
+    {
+      "id": "vscode",
+      "author": "Microsoft",
+      "url": "https://code.visualstudio.com/docs/configure/accessibility/accessibility",
+      "repository": "https://github.com/microsoft/vscode",
+      "revision": "3722d65df29e36475cab545945b852cd3e607a89",
+      "licence": "MIT",
+      "files": [
+        "extensions/theme-defaults/themes/hc_light.json",
+        "extensions/theme-defaults/themes/hc_black.json",
+        "src/vs/platform/theme/common/colors/baseColors.ts",
+        "src/vs/platform/theme/common/colors/editorColors.ts",
+        "src/vs/platform/theme/common/colors/inputColors.ts",
+        "src/vs/workbench/contrib/terminal/common/terminalColorRegistry.ts"
+      ],
+      "note": "Default High Contrast Light and Default High Contrast set few colours in the theme files; the rest are the colour registry's hcLight and hcDark defaults."
+    }
+  ],
+  "modes": {
+    "light": {
+      "name": "Light High Contrast",
+      "origin": "source",
+      "roles": {
+        "bg": {
+          "value": "#ffffff",
+          "source": "registry editor.background (hcLight: Color.white)"
+        },
+        "surface": {
+          "value": "#ffffff",
+          "source": "registry input.background (hcLight: Color.white)"
+        },
+        "card": {
+          "value": "#ffffff",
+          "source": "registry editor.background (hcLight); panels share the editor ground"
+        },
+        "raised": {
+          "value": "#ffffff",
+          "source": "registry editorWidget.background (hcLight: Color.white)"
+        },
+        "sunken": {
+          "value": "#f2f2f2",
+          "source": "registry textCodeBlock.background (hcLight)"
+        },
+        "inset": {
+          "value": "#ececec",
+          "derived": "mix(bg, fg, 0.08)"
+        },
+        "fg": {
+          "value": "#292929",
+          "source": "registry foreground (hcLight)"
+        },
+        "fg-2": {
+          "value": "#696969",
+          "source": "registry descriptionForeground (hcLight: foreground at 0.7) composited over white"
+        },
+        "fg-3": {
+          "value": "#858585",
+          "derived": "mix(fg-2, bg, 0.2)"
+        },
+        "fg-4": {
+          "value": "#7f7f7f",
+          "source": "registry disabledForeground (hcLight)"
+        },
+        "accent": {
+          "value": "#0f4a85",
+          "source": "registry button.background (hcLight)"
+        },
+        "on-accent": {
+          "value": "#ffffff",
+          "source": "registry button.foreground (Color.white)"
+        },
+        "accent-hover": {
+          "value": "#003a6f",
+          "derived": "accent with OKLab lightness moved 0.06 away from on-accent"
+        },
+        "accent-press": {
+          "value": "#002a55",
+          "derived": "accent with OKLab lightness moved 0.12 away from on-accent"
+        },
+        "focus": {
+          "value": "#006bbd",
+          "source": "registry focusBorder (hcLight)"
+        },
+        "selection": {
+          "value": "#0f4a85",
+          "source": "registry editor.selectionBackground (hcLight)"
+        },
+        "scrim": {
+          "value": "#000000",
+          "derived": "the darker of light.fg and dark.bg"
+        },
+        "red": {
+          "value": "#b5200d",
+          "source": "registry errorForeground (hcLight)"
+        },
+        "orange": {
+          "value": "#a04208",
+          "derived": "mix(red, yellow, 0.5)"
+        },
+        "yellow": {
+          "value": "#895503",
+          "source": "registry editorWarning.foreground (hcLight)"
+        },
+        "green": {
+          "value": "#136c13",
+          "source": "vscode-registry: terminal.ansiGreen (hcLight)"
+        },
+        "cyan": {
+          "value": "#0598bc",
+          "source": "vscode-registry: terminal.ansiCyan (hcLight)"
+        },
+        "blue": {
+          "value": "#0f4a85",
+          "source": "registry textLink.foreground (hcLight)"
+        },
+        "purple": {
+          "value": "#b5200d",
+          "source": "vscode hc_light.json: tokenColors 'keyword.control'"
+        },
+        "magenta": {
+          "value": "#bc05bc",
+          "source": "vscode-registry: terminal.ansiMagenta (hcLight)"
+        },
+        "success": {
+          "value": "#136c13",
+          "derived": "green"
+        },
+        "warning": {
+          "value": "#895503",
+          "derived": "yellow"
+        },
+        "danger": {
+          "value": "#b5200d",
+          "derived": "red"
+        },
+        "info": {
+          "value": "#0598bc",
+          "derived": "cyan"
+        },
+        "success-text": {
+          "value": "#136c13",
+          "derived": "success (contrast solving adjusts it on each ground)"
+        },
+        "warning-text": {
+          "value": "#895503",
+          "source": "registry editorWarning.foreground (hcLight)"
+        },
+        "danger-text": {
+          "value": "#b5200d",
+          "source": "registry errorForeground (hcLight)"
+        },
+        "info-text": {
+          "value": "#0063d3",
+          "source": "registry editorInfo.foreground (hcLight)"
+        },
+        "chart-1": {
+          "value": "#0f4a85",
+          "derived": "blue"
+        },
+        "chart-2": {
+          "value": "#a04208",
+          "derived": "orange"
+        },
+        "chart-3": {
+          "value": "#136c13",
+          "derived": "green"
+        },
+        "chart-4": {
+          "value": "#bc05bc",
+          "derived": "magenta"
+        },
+        "chart-5": {
+          "value": "#0598bc",
+          "derived": "cyan (yellow and the hues after it sit within 0.065 OKLab of the text colour or 0.08 of an earlier chart colour)"
+        },
+        "chart-6": {
+          "value": "#3f76b5",
+          "derived": "chart-1 with OKLab lightness +0.15 (no theme hue stays 0.08 apart)"
+        },
+        "ansi.black": {
+          "value": "#292929",
+          "source": "vscode-registry: terminal.ansiBlack"
+        },
+        "ansi.red": {
+          "value": "#cd3131",
+          "source": "vscode-registry: terminal.ansiRed"
+        },
+        "ansi.green": {
+          "value": "#136c13",
+          "source": "vscode-registry: terminal.ansiGreen"
+        },
+        "ansi.yellow": {
+          "value": "#949800",
+          "source": "vscode-registry: terminal.ansiYellow"
+        },
+        "ansi.blue": {
+          "value": "#0451a5",
+          "source": "vscode-registry: terminal.ansiBlue"
+        },
+        "ansi.magenta": {
+          "value": "#bc05bc",
+          "source": "vscode-registry: terminal.ansiMagenta"
+        },
+        "ansi.cyan": {
+          "value": "#0598bc",
+          "source": "vscode-registry: terminal.ansiCyan"
+        },
+        "ansi.white": {
+          "value": "#555555",
+          "source": "vscode-registry: terminal.ansiWhite"
+        },
+        "ansi.bright-black": {
+          "value": "#666666",
+          "source": "vscode-registry: terminal.ansiBrightBlack"
+        },
+        "ansi.bright-red": {
+          "value": "#cd3131",
+          "source": "vscode-registry: terminal.ansiBrightRed"
+        },
+        "ansi.bright-green": {
+          "value": "#00bc00",
+          "source": "vscode-registry: terminal.ansiBrightGreen"
+        },
+        "ansi.bright-yellow": {
+          "value": "#b5ba00",
+          "source": "vscode-registry: terminal.ansiBrightYellow"
+        },
+        "ansi.bright-blue": {
+          "value": "#0451a5",
+          "source": "vscode-registry: terminal.ansiBrightBlue"
+        },
+        "ansi.bright-magenta": {
+          "value": "#bc05bc",
+          "source": "vscode-registry: terminal.ansiBrightMagenta"
+        },
+        "ansi.bright-cyan": {
+          "value": "#0598bc",
+          "source": "vscode-registry: terminal.ansiBrightCyan"
+        },
+        "ansi.bright-white": {
+          "value": "#a5a5a5",
+          "source": "vscode-registry: terminal.ansiBrightWhite"
+        },
+        "syntax.keyword": {
+          "value": "#0f4a85",
+          "source": "vscode hc_light.json: tokenColors 'keyword' (for keyword)"
+        },
+        "syntax.control": {
+          "value": "#b5200d",
+          "source": "vscode hc_light.json: tokenColors 'keyword.control' (for keyword.control.flow)"
+        },
+        "syntax.function": {
+          "value": "#5e2cbc",
+          "source": "vscode hc_light.json: tokenColors 'entity.name.function' (for entity.name.function)"
+        },
+        "syntax.string": {
+          "value": "#0f4a85",
+          "source": "vscode hc_light.json: tokenColors 'string' (for string.quoted.double)"
+        },
+        "syntax.variable": {
+          "value": "#001080",
+          "source": "vscode hc_light.json: tokenColors 'variable' (for variable.other.readwrite)"
+        },
+        "syntax.type": {
+          "value": "#185e73",
+          "source": "vscode hc_light.json: tokenColors 'entity.name.type' (for entity.name.type)"
+        },
+        "syntax.number": {
+          "value": "#096d48",
+          "source": "vscode hc_light.json: tokenColors 'constant.numeric' (for constant.numeric)"
+        },
+        "syntax.comment": {
+          "value": "#515151",
+          "source": "vscode hc_light.json: tokenColors 'comment' (for comment.line.double-slash)"
+        },
+        "fill.sage.bg": {
+          "value": "#a1b89f",
+          "derived": "desert sage lightness 0.758 and chroma 0.034 x 1.26 (the theme's green against desert's, at most the theme's own), the hue of green"
+        },
+        "fill.sage.ink": {
+          "value": "#272727",
+          "derived": "light.fg moved in OKLab lightness to 7.0:1 on fill.sage.bg (light.fg and light.bg reach 6.84:1)"
+        },
+        "fill.teal.bg": {
+          "value": "#bfd3da",
+          "derived": "desert teal lightness 0.853 and chroma 0.019 x 1.26 (the theme's cyan against desert's, at most the theme's own), the hue of cyan"
+        },
+        "fill.teal.ink": {
+          "value": "#292929",
+          "derived": "light.fg, the better of light.fg and light.bg on fill.teal.bg"
+        },
+        "fill.forest.bg": {
+          "value": "#1a1e19",
+          "derived": "desert forest lightness 0.229 and chroma 0.009 x 1.26 (the theme's green against desert's, at most the theme's own), the hue of green"
+        },
+        "fill.forest.ink": {
+          "value": "#ffffff",
+          "derived": "light.bg, the better of light.fg and light.bg on fill.forest.bg"
+        },
+        "fill.terracotta.bg": {
+          "value": "#d77445",
+          "derived": "desert terracotta lightness 0.662 and chroma 0.143 x 0.97 (the theme's orange against desert's, at most the theme's own), the hue of orange"
+        },
+        "fill.terracotta.ink": {
+          "value": "#0a0a0a",
+          "derived": "light.fg moved in OKLab lightness to 6.1:1 on fill.terracotta.bg (light.fg and light.bg reach 4.48:1)"
+        },
+        "fill.sand.bg": {
+          "value": "#d7cfc7",
+          "derived": "desert sand lightness 0.859 and chroma 0.019 x 0.76 (the theme's yellow against desert's, at most the theme's own), the hue of yellow"
+        },
+        "fill.sand.ink": {
+          "value": "#292929",
+          "derived": "light.fg, the better of light.fg and light.bg on fill.sand.bg"
+        },
+        "fill.warm-grey.bg": {
+          "value": "#b6b6b6",
+          "derived": "desert warm-grey lightness 0.776; the theme's neutral hue and chroma (at most 0.03)"
+        },
+        "fill.warm-grey.ink": {
+          "value": "#292929",
+          "derived": "light.fg, the better of light.fg and light.bg on fill.warm-grey.bg"
+        },
+        "fill.clay-red.bg": {
+          "value": "#d53521",
+          "derived": "desert clay-red lightness 0.576 and chroma 0.200 x 1.09 (the theme's red against desert's, at most the theme's own), the hue of red"
+        },
+        "fill.clay-red.ink": {
+          "value": "#ffffff",
+          "derived": "light.bg, the better of light.fg and light.bg on fill.clay-red.bg"
+        },
+        "fill.dark-teal.bg": {
+          "value": "#0f4a85",
+          "derived": "desert dark-teal lightness 0.408 and chroma 0.058 x 1.95 (the theme's blue against desert's, at most the theme's own), the hue of blue"
+        },
+        "fill.dark-teal.ink": {
+          "value": "#ffffff",
+          "derived": "light.bg, the better of light.fg and light.bg on fill.dark-teal.bg"
+        },
+        "fill.dusty-pink.bg": {
+          "value": "#c18abf",
+          "derived": "desert dusty-pink lightness 0.704 and chroma 0.039 x 2.50 (the theme's magenta against desert's, at most the theme's own), the hue of magenta"
+        },
+        "fill.dusty-pink.ink": {
+          "value": "#0e0e0e",
+          "derived": "light.fg moved in OKLab lightness to 7.0:1 on fill.dusty-pink.bg (light.fg and light.bg reach 5.30:1)"
+        },
+        "fill.light-peach.bg": {
+          "value": "#f9dacd",
+          "derived": "desert light-peach lightness 0.911 and chroma 0.040 x 0.97 (the theme's orange against desert's, at most the theme's own), the hue of orange"
+        },
+        "fill.light-peach.ink": {
+          "value": "#292929",
+          "derived": "light.fg, the better of light.fg and light.bg on fill.light-peach.bg"
+        },
+        "fill.faun.bg": {
+          "value": "#ccc5bd",
+          "derived": "desert faun lightness 0.826 and chroma 0.017 x 0.76 (the theme's yellow against desert's, at most the theme's own), the hue of yellow"
+        },
+        "fill.faun.ink": {
+          "value": "#292929",
+          "derived": "light.fg, the better of light.fg and light.bg on fill.faun.bg"
+        },
+        "fill.cool-grey.bg": {
+          "value": "#dedede",
+          "derived": "desert cool-grey lightness 0.899; the theme's neutral hue and chroma (at most 0.03)"
+        },
+        "fill.cool-grey.ink": {
+          "value": "#292929",
+          "derived": "light.fg, the better of light.fg and light.bg on fill.cool-grey.bg"
+        },
+        "fill.stone.bg": {
+          "value": "#afafaf",
+          "derived": "desert stone lightness 0.753; the theme's neutral hue and chroma (at most 0.03)"
+        },
+        "fill.stone.ink": {
+          "value": "#242424",
+          "derived": "light.fg moved in OKLab lightness to 7.0:1 on fill.stone.bg (light.fg and light.bg reach 6.63:1)"
+        },
+        "fill.dark-grey.bg": {
+          "value": "#686868",
+          "derived": "desert dark-grey lightness 0.518; the theme's neutral hue and chroma (at most 0.03)"
+        },
+        "fill.dark-grey.ink": {
+          "value": "#ffffff",
+          "derived": "light.bg, the better of light.fg and light.bg on fill.dark-grey.bg"
+        },
+        "fill.ink.bg": {
+          "value": "#101010",
+          "derived": "desert ink lightness 0.175; the theme's neutral hue and chroma (at most 0.03)"
+        },
+        "fill.ink.ink": {
+          "value": "#ffffff",
+          "derived": "light.bg, the better of light.fg and light.bg on fill.ink.bg"
+        }
+      }
+    },
+    "dark": {
+      "name": "Dark High Contrast",
+      "origin": "source",
+      "roles": {
+        "bg": {
+          "value": "#000000",
+          "source": "hc_black.json editor.background"
+        },
+        "surface": {
+          "value": "#000000",
+          "source": "registry input.background (hcDark: Color.black)"
+        },
+        "card": {
+          "value": "#000000",
+          "source": "registry editor.background (hcDark); panels share the editor ground"
+        },
+        "raised": {
+          "value": "#0c141f",
+          "source": "registry editorWidget.background (hcDark)"
+        },
+        "sunken": {
+          "value": "#000000",
+          "source": "registry textCodeBlock.background (hcDark: Color.black)"
+        },
+        "inset": {
+          "value": "#060606",
+          "derived": "mix(bg, fg, 0.12)"
+        },
+        "fg": {
+          "value": "#ffffff",
+          "source": "hc_black.json editor.foreground"
+        },
+        "fg-2": {
+          "value": "#b3b3b3",
+          "source": "registry descriptionForeground (hcDark: foreground at 0.7) composited over black"
+        },
+        "fg-3": {
+          "value": "#848484",
+          "derived": "mix(fg-2, bg, 0.2)"
+        },
+        "fg-4": {
+          "value": "#a5a5a5",
+          "source": "registry disabledForeground (hcDark)"
+        },
+        "accent": {
+          "value": "#f38518",
+          "source": "registry focusBorder (hcDark), the high-contrast active colour"
+        },
+        "on-accent": {
+          "value": "#000000",
+          "source": "extension: black on the active colour (VS Code draws buttons as black with a contrast border)"
+        },
+        "accent-hover": {
+          "value": "#ff9e50",
+          "derived": "accent with OKLab lightness moved 0.06 away from on-accent"
+        },
+        "accent-press": {
+          "value": "#ffbb8a",
+          "derived": "accent with OKLab lightness moved 0.12 away from on-accent"
+        },
+        "focus": {
+          "value": "#f38518",
+          "source": "registry focusBorder (hcDark)"
+        },
+        "selection": {
+          "value": "#ffffff",
+          "source": "hc_black.json editor.selectionBackground"
+        },
+        "scrim": {
+          "value": "#000000",
+          "derived": "the darker of light.fg and dark.bg"
+        },
+        "red": {
+          "value": "#f48771",
+          "source": "registry errorForeground (hcDark)"
+        },
+        "orange": {
+          "value": "#f38518",
+          "source": "registry contrastActiveBorder (hcDark)"
+        },
+        "yellow": {
+          "value": "#ffd370",
+          "source": "registry editorWarning.foreground (hcDark)"
+        },
+        "green": {
+          "value": "#00cd00",
+          "source": "vscode-registry: terminal.ansiGreen (hcDark)"
+        },
+        "cyan": {
+          "value": "#6fc3df",
+          "source": "registry contrastBorder (hcDark)"
+        },
+        "blue": {
+          "value": "#21a6ff",
+          "source": "registry textLink.foreground (hcDark)"
+        },
+        "purple": {
+          "value": "#c586c0",
+          "source": "vscode hc_black.json: tokenColors 'keyword.control'"
+        },
+        "magenta": {
+          "value": "#cd00cd",
+          "source": "vscode-registry: terminal.ansiMagenta (hcDark)"
+        },
+        "success": {
+          "value": "#00cd00",
+          "derived": "green"
+        },
+        "warning": {
+          "value": "#ffd370",
+          "derived": "yellow"
+        },
+        "danger": {
+          "value": "#f48771",
+          "derived": "red"
+        },
+        "info": {
+          "value": "#6fc3df",
+          "derived": "cyan"
+        },
+        "success-text": {
+          "value": "#00cd00",
+          "derived": "success (contrast solving adjusts it on each ground)"
+        },
+        "warning-text": {
+          "value": "#ffd370",
+          "source": "registry editorWarning.foreground (hcDark)"
+        },
+        "danger-text": {
+          "value": "#f48771",
+          "source": "registry errorForeground (hcDark)"
+        },
+        "info-text": {
+          "value": "#59a4f9",
+          "source": "registry editorInfo.foreground (hcDark)"
+        },
+        "chart-1": {
+          "value": "#21a6ff",
+          "derived": "blue"
+        },
+        "chart-2": {
+          "value": "#f38518",
+          "derived": "orange"
+        },
+        "chart-3": {
+          "value": "#00cd00",
+          "derived": "green"
+        },
+        "chart-4": {
+          "value": "#cd00cd",
+          "derived": "magenta"
+        },
+        "chart-5": {
+          "value": "#ffd370",
+          "derived": "yellow"
+        },
+        "chart-6": {
+          "value": "#6fc3df",
+          "derived": "cyan"
+        },
+        "ansi.black": {
+          "value": "#000000",
+          "source": "vscode-registry: terminal.ansiBlack"
+        },
+        "ansi.red": {
+          "value": "#cd0000",
+          "source": "vscode-registry: terminal.ansiRed"
+        },
+        "ansi.green": {
+          "value": "#00cd00",
+          "source": "vscode-registry: terminal.ansiGreen"
+        },
+        "ansi.yellow": {
+          "value": "#cdcd00",
+          "source": "vscode-registry: terminal.ansiYellow"
+        },
+        "ansi.blue": {
+          "value": "#0000ee",
+          "source": "vscode-registry: terminal.ansiBlue"
+        },
+        "ansi.magenta": {
+          "value": "#cd00cd",
+          "source": "vscode-registry: terminal.ansiMagenta"
+        },
+        "ansi.cyan": {
+          "value": "#00cdcd",
+          "source": "vscode-registry: terminal.ansiCyan"
+        },
+        "ansi.white": {
+          "value": "#e5e5e5",
+          "source": "vscode-registry: terminal.ansiWhite"
+        },
+        "ansi.bright-black": {
+          "value": "#7f7f7f",
+          "source": "vscode-registry: terminal.ansiBrightBlack"
+        },
+        "ansi.bright-red": {
+          "value": "#ff0000",
+          "source": "vscode-registry: terminal.ansiBrightRed"
+        },
+        "ansi.bright-green": {
+          "value": "#00ff00",
+          "source": "vscode-registry: terminal.ansiBrightGreen"
+        },
+        "ansi.bright-yellow": {
+          "value": "#ffff00",
+          "source": "vscode-registry: terminal.ansiBrightYellow"
+        },
+        "ansi.bright-blue": {
+          "value": "#5c5cff",
+          "source": "vscode-registry: terminal.ansiBrightBlue"
+        },
+        "ansi.bright-magenta": {
+          "value": "#ff00ff",
+          "source": "vscode-registry: terminal.ansiBrightMagenta"
+        },
+        "ansi.bright-cyan": {
+          "value": "#00ffff",
+          "source": "vscode-registry: terminal.ansiBrightCyan"
+        },
+        "ansi.bright-white": {
+          "value": "#ffffff",
+          "source": "vscode-registry: terminal.ansiBrightWhite"
+        },
+        "syntax.keyword": {
+          "value": "#569cd6",
+          "source": "vscode hc_black.json: tokenColors 'keyword' (for keyword)"
+        },
+        "syntax.control": {
+          "value": "#c586c0",
+          "source": "vscode hc_black.json: tokenColors 'keyword.control' (for keyword.control.flow)"
+        },
+        "syntax.function": {
+          "value": "#dcdcaa",
+          "source": "vscode hc_black.json: tokenColors 'entity.name.function' (for entity.name.function)"
+        },
+        "syntax.string": {
+          "value": "#ce9178",
+          "source": "vscode hc_black.json: tokenColors 'string' (for string.quoted.double)"
+        },
+        "syntax.variable": {
+          "value": "#9cdcfe",
+          "source": "vscode hc_black.json: tokenColors 'variable' (for variable.other.readwrite)"
+        },
+        "syntax.type": {
+          "value": "#4ec9b0",
+          "source": "vscode hc_black.json: tokenColors 'entity.name.type' (for entity.name.type)"
+        },
+        "syntax.number": {
+          "value": "#b5cea8",
+          "source": "vscode hc_black.json: tokenColors 'constant.numeric' (for constant.numeric)"
+        },
+        "syntax.comment": {
+          "value": "#7ca668",
+          "source": "vscode hc_black.json: tokenColors 'comment' (for comment.line.double-slash)"
+        },
+        "fill.sage.bg": {
+          "value": "#a1b89f",
+          "derived": "light-mode fill.sage.bg (fills do not change with mode)"
+        },
+        "fill.sage.ink": {
+          "value": "#272727",
+          "derived": "light-mode fill.sage.ink (fills do not change with mode)"
+        },
+        "fill.teal.bg": {
+          "value": "#bfd3da",
+          "derived": "light-mode fill.teal.bg (fills do not change with mode)"
+        },
+        "fill.teal.ink": {
+          "value": "#292929",
+          "derived": "light-mode fill.teal.ink (fills do not change with mode)"
+        },
+        "fill.forest.bg": {
+          "value": "#1a1e19",
+          "derived": "light-mode fill.forest.bg (fills do not change with mode)"
+        },
+        "fill.forest.ink": {
+          "value": "#ffffff",
+          "derived": "light-mode fill.forest.ink (fills do not change with mode)"
+        },
+        "fill.terracotta.bg": {
+          "value": "#d77445",
+          "derived": "light-mode fill.terracotta.bg (fills do not change with mode)"
+        },
+        "fill.terracotta.ink": {
+          "value": "#0a0a0a",
+          "derived": "light-mode fill.terracotta.ink (fills do not change with mode)"
+        },
+        "fill.sand.bg": {
+          "value": "#d7cfc7",
+          "derived": "light-mode fill.sand.bg (fills do not change with mode)"
+        },
+        "fill.sand.ink": {
+          "value": "#292929",
+          "derived": "light-mode fill.sand.ink (fills do not change with mode)"
+        },
+        "fill.warm-grey.bg": {
+          "value": "#b6b6b6",
+          "derived": "light-mode fill.warm-grey.bg (fills do not change with mode)"
+        },
+        "fill.warm-grey.ink": {
+          "value": "#292929",
+          "derived": "light-mode fill.warm-grey.ink (fills do not change with mode)"
+        },
+        "fill.clay-red.bg": {
+          "value": "#d53521",
+          "derived": "light-mode fill.clay-red.bg (fills do not change with mode)"
+        },
+        "fill.clay-red.ink": {
+          "value": "#ffffff",
+          "derived": "light-mode fill.clay-red.ink (fills do not change with mode)"
+        },
+        "fill.dark-teal.bg": {
+          "value": "#0f4a85",
+          "derived": "light-mode fill.dark-teal.bg (fills do not change with mode)"
+        },
+        "fill.dark-teal.ink": {
+          "value": "#ffffff",
+          "derived": "light-mode fill.dark-teal.ink (fills do not change with mode)"
+        },
+        "fill.dusty-pink.bg": {
+          "value": "#c18abf",
+          "derived": "light-mode fill.dusty-pink.bg (fills do not change with mode)"
+        },
+        "fill.dusty-pink.ink": {
+          "value": "#0e0e0e",
+          "derived": "light-mode fill.dusty-pink.ink (fills do not change with mode)"
+        },
+        "fill.light-peach.bg": {
+          "value": "#f9dacd",
+          "derived": "light-mode fill.light-peach.bg (fills do not change with mode)"
+        },
+        "fill.light-peach.ink": {
+          "value": "#292929",
+          "derived": "light-mode fill.light-peach.ink (fills do not change with mode)"
+        },
+        "fill.faun.bg": {
+          "value": "#ccc5bd",
+          "derived": "light-mode fill.faun.bg (fills do not change with mode)"
+        },
+        "fill.faun.ink": {
+          "value": "#292929",
+          "derived": "light-mode fill.faun.ink (fills do not change with mode)"
+        },
+        "fill.cool-grey.bg": {
+          "value": "#dedede",
+          "derived": "light-mode fill.cool-grey.bg (fills do not change with mode)"
+        },
+        "fill.cool-grey.ink": {
+          "value": "#292929",
+          "derived": "light-mode fill.cool-grey.ink (fills do not change with mode)"
+        },
+        "fill.stone.bg": {
+          "value": "#afafaf",
+          "derived": "light-mode fill.stone.bg (fills do not change with mode)"
+        },
+        "fill.stone.ink": {
+          "value": "#242424",
+          "derived": "light-mode fill.stone.ink (fills do not change with mode)"
+        },
+        "fill.dark-grey.bg": {
+          "value": "#686868",
+          "derived": "light-mode fill.dark-grey.bg (fills do not change with mode)"
+        },
+        "fill.dark-grey.ink": {
+          "value": "#ffffff",
+          "derived": "light-mode fill.dark-grey.ink (fills do not change with mode)"
+        },
+        "fill.ink.bg": {
+          "value": "#101010",
+          "derived": "light-mode fill.ink.bg (fills do not change with mode)"
+        },
+        "fill.ink.ink": {
+          "value": "#ffffff",
+          "derived": "light-mode fill.ink.ink (fills do not change with mode)"
+        }
+      }
+    }
+  }
+}

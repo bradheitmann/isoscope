@@ -152,7 +152,12 @@
    "h": 1,
    "does": "Runs the map in a browser from day one of a project: watches the graph store and repaints on every change — every commit, every agent edit, live.",
    "built": "Bun.serve + SSE + a three-line client in the template. The view survives every repaint (R30 phase 2: the scene rebuilds in place on every store change; camera, stack, theme, inspector, circuit preserved; a new red module still takes the camera). POST /mark and POST /ci accept CI/CD webhooks directly.",
-   "refs": "cli.ts (serve) · template.html (live client)"
+   "refs": "cli.ts (serve) · template.html (live client)",
+   "media": {
+    "src": "/media/van-halen-jump.mp4",
+    "face": "front",
+    "fit": "cover"
+   }
   },
   {
    "id": "AR",

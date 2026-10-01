@@ -13,6 +13,8 @@ import iconTrace from "../vendor/desert-pants/icons/svg/arrow-right.svg?raw";
 import iconDraw from "../vendor/desert-pants/icons/svg/pen.svg?raw";
 import iconLayers from "../vendor/desert-pants/icons/svg/layers.svg?raw";
 import iconGrid from "../vendor/desert-pants/icons/svg/grid.svg?raw";
+import iconSoundOn from "../vendor/desert-pants/icons/svg/volume-2.svg?raw";
+import iconSoundOff from "../vendor/desert-pants/icons/svg/volume-x.svg?raw";
 import iconStop from "../vendor/desert-pants/icons/svg/stop.svg?raw";
 import iconReset from "../vendor/desert-pants/icons/svg/rotate-ccw.svg?raw";
 import iconSettings from "../vendor/desert-pants/icons/svg/settings.svg?raw";
@@ -98,6 +100,7 @@ setCanonicalIcon($<HTMLButtonElement>("btnTrace"),iconTrace);
 setCanonicalIcon($<HTMLButtonElement>("btnDraw"),iconDraw);
 setCanonicalIcon($<HTMLButtonElement>("btnStack"),iconLayers);
 setCanonicalIcon($<HTMLButtonElement>("btnGrid"),iconGrid);
+setCanonicalIcon($<HTMLButtonElement>("btnSound"),iconSoundOff);
 setCanonicalIcon($<HTMLButtonElement>("btnSettings"),iconSettings);
 setCanonicalIcon($<HTMLButtonElement>("btnReadMap"),iconOverview);
 setCanonicalIcon($<HTMLButtonElement>("drawerClose"),iconClose);
@@ -463,12 +466,37 @@ function refreshMedia(n: MapNode): void {
  meshById[n.id].add(plane);
  mediaById[n.id]={plane,video,tex,live};
  if(mayPlay)video.play().catch(()=>{/* autoplay may wait for a gesture; the poster frame still shows */});
+ syncSoundButton();
 }
 function setMediaDim(id: string,on: boolean): void {
  const m=mediaById[id];if(!m)return;
  m.plane.material.opacity=on?1:0.28;
  m.plane.material.transparent=true;
 }
+/* Media surfaces carry audio, but browsers gate audible autoplay behind a user
+   gesture. So every media video starts muted (autoplay works, pixels flow), and
+   a Sound button appears whenever any media exists. The first click IS the gesture:
+   it unmutes every live media video and plays them with sound. A second click mutes.
+   aria-pressed mirrors the audible state. */
+const btnSound=$<HTMLButtonElement>("btnSound");
+function syncSoundButton(): void {
+ const any=Object.keys(mediaById).length>0;
+ btnSound.hidden=!any;
+ if(!any){btnSound.setAttribute("aria-pressed","false");return;}
+ const audible=Object.values(mediaById).some(m=>!m.video.muted);
+ btnSound.setAttribute("aria-pressed",String(audible));
+ btnSound.setAttribute("aria-label",audible?"Sound: mute the media surfaces":"Sound: unmute the media surfaces");
+ setCanonicalIcon(btnSound,audible?iconSoundOn:iconSoundOff);
+}
+btnSound.addEventListener("click",()=>{
+ const audible=Object.values(mediaById).some(m=>!m.video.muted);
+ const next=!audible;
+ Object.values(mediaById).forEach(m=>{
+  m.video.muted=!next;
+  if(next){m.video.volume=1;if(m.video.paused)m.video.play().catch(()=>{});}
+ });
+ syncSoundButton();
+});
 /* graph edges on the ground */
 /* connection health: a link can be broken/degraded independent of its modules.
    broken = risk red, gapped, and flow refuses to cross. degraded = amber, slow flow. */
@@ -1386,6 +1414,7 @@ function disposeScene(){
  geometries.forEach(g=>g.dispose());textures.forEach(t=>t.dispose());materials.forEach(m=>m.dispose());
  pickables.length=0;themed.length=0;hatched.length=0;edgeMats.length=0;
  Object.keys(mediaById).forEach(id=>{const m=mediaById[id];m.video.pause();m.video.removeAttribute("src");m.video.load();m.tex.dispose();delete mediaById[id];});
+ syncSoundButton();
  Object.keys(advisoryById).forEach(k=>delete advisoryById[k]);
  [meshById,edgeLinesById,byId].forEach(m=>Object.keys(m).forEach(k=>delete m[k]));
  lblLayer.replaceChildren();legend.replaceChildren();

@@ -165,17 +165,48 @@ describe("canonical Desert Pants design contract", () => {
 
   it("rejects nonterminal slash attributes and conflicting intended DOM type roles", () => {
     const slash = `${indexHtml}\n<p / style="font-size:12px" data-dp-art="canvas">Non-art UI</p>`;
-    expect(() => domRoleFindings(tokenCss, slash)).toThrow(/unexpected slash/);
+    expect(() => domRoleFindings(tokenCss, slash)).toThrow(/unexpected-solidus-in-tag/);
     const extraRole = indexHtml.replace('class="dp-type-h3" id="moduleNavigatorTitle"', 'class="dp-type-h3 dp-type-body-sm" id="moduleNavigatorTitle"');
     expect(domRoleFindings(tokenCss, extraRole).some(finding => finding.message.includes("conflicting typography roles"))).toBe(true);
   });
 
   it("binds wide and compact workbench tracks to the canonical workbench recipe", () => {
     expect(() => assertDesignContract(tokenCss, `${consumerCss}\n.workbench { grid-template-columns: 1px 1px 1px; gap: 0; }`, indexHtml)).toThrow(/wide workbench grid/);
-    expect(() => assertDesignContract(tokenCss, `${consumerCss}\n.shell .workbench { grid-template-columns: 1px; }`, indexHtml)).toThrow(/cannot alter the workbench grid/);
+    expect(() => assertDesignContract(tokenCss, `${consumerCss}\n.shell .workbench { grid-template-columns: 1px; }`, indexHtml)).toThrow(/grid\/gap declaration inventory/);
     expect(() => assertDesignContract(tokenCss, `${consumerCss}\n@media (max-width: 1180px) { .workbench { grid-template-columns: 1px 1px; gap: 0; } }`, indexHtml)).toThrow(/compact workbench grid/);
     const wrongBreakpoint = consumerCss.replace("@media (max-width: 1180px)", "@media (max-width: 1179px)");
     expect(() => assertDesignContract(tokenCss, wrongBreakpoint, indexHtml)).toThrow(/compact workbench grid/);
+    expect(() => assertDesignContract(tokenCss, consumerCss, indexHtml)).not.toThrow();
+  });
+
+  it("rejects grid reset shorthands and gap subproperties across every selector and context", () => {
+    const workbenchGap = "gap: var(--dp-layout-grid-component-visualization-workbench-gap);";
+    const workbenchPrefix = `.workbench { display: grid; grid-template-columns: var(--dp-layout-grid-component-visualization-workbench-rail-width) minmax(0, 1fr) minmax(var(--dp-layout-grid-component-visualization-workbench-reading-min-width), var(--dp-layout-grid-component-visualization-workbench-reading-preferred-width)); ${workbenchGap}`;
+    const wideReset = consumerCss.replace(workbenchPrefix, `${workbenchPrefix} grid: none;`);
+    const wideTemplateReset = consumerCss.replace(workbenchPrefix, `${workbenchPrefix} grid-template: none;`);
+    const wideGapOverride = consumerCss.replace(workbenchPrefix, `${workbenchPrefix} column-gap: 0;`);
+    const broadOverrides = [
+      `* { grid-template-columns: 1px 1px 1px !important; gap: 0 !important; }`,
+      `[id] { grid-template-columns: 1px !important; column-gap: 0 !important; }`,
+      `@media (max-width: 1180px) { [class] { grid-template-columns: 1px !important; gap: 0 !important; } }`
+    ];
+    for (const mutated of [wideReset, wideTemplateReset, wideGapOverride, ...broadOverrides.map(rule => `${consumerCss}\n${rule}`)]) {
+      expect(() => assertDesignContract(tokenCss, mutated, indexHtml)).toThrow(/grid\/gap declaration inventory/);
+    }
+    expect(() => assertDesignContract(tokenCss, consumerCss, indexHtml)).not.toThrow();
+  });
+
+  it("rejects each modeled grid and alignment declaration on an unrelated selector", () => {
+    const declarations = [
+      "display: none", "grid: none", "grid-template: none", "grid-template-columns: none", "grid-template-rows: none",
+      "grid-template-areas: none", "grid-auto-columns: none", "grid-auto-flow: row", "grid-auto-rows: none",
+      "grid-column: 1", "grid-column-end: 1", "grid-column-start: 1", "grid-row: 1", "grid-row-end: 1",
+      "grid-row-start: 1", "grid-area: auto", "grid-gap: 0", "grid-row-gap: 0", "grid-column-gap: 0", "gap: 0",
+      "row-gap: 0", "column-gap: 0", "place-content: start", "place-items: start", "place-self: start"
+    ];
+    for (const declaration of declarations) {
+      expect(() => assertDesignContract(tokenCss, `${consumerCss}\n[data-layout-probe] { ${declaration}; }`, indexHtml)).toThrow(/grid\/gap declaration inventory/);
+    }
     expect(() => assertDesignContract(tokenCss, consumerCss, indexHtml)).not.toThrow();
   });
 
@@ -196,5 +227,18 @@ describe("canonical Desert Pants design contract", () => {
     const injectedFindings = domRoleFindings(tokenCss, injectedUi);
     expect(injectedFindings.some(finding => finding.message.includes("unchecked inline style"))).toBe(true);
     expect(injectedFindings.some(finding => finding.message.includes("mislabels authored DOM as canvas art"))).toBe(true);
+  });
+
+  it("does not treat script raw text as DOM or allow it to satisfy a required heading", () => {
+    const actualHeading = '<h2 class="dp-type-h3" id="moduleNavigatorTitle">Navigate modules</h2>';
+    const script = '<script type="module" src="/src/main.ts"><h2 class="dp-type-h3" id="moduleNavigatorTitle">Fake</h2></script>';
+    const forgedScript = indexHtml.replace(actualHeading, "").replace('<script type="module" src="/src/main.ts"></script>', script);
+    expect(() => domRoleFindings(tokenCss, forgedScript)).toThrow(/external script body must be empty/);
+
+    const forgedTitle = indexHtml.replace(actualHeading, "").replace("</head>", `<title><h2 class="dp-type-h3" id="moduleNavigatorTitle">Fake</h2></title>\n</head>`);
+    expect(domRoleFindings(tokenCss, forgedTitle).some(finding => finding.message.includes("required typography element #moduleNavigatorTitle is missing"))).toBe(true);
+    const forgedTemplate = indexHtml.replace(actualHeading, "").replace("</body>", `<template><h2 class="dp-type-h3" id="moduleNavigatorTitle">Fake</h2></template>\n</body>`);
+    expect(() => domRoleFindings(tokenCss, forgedTemplate)).toThrow(/unsupported authored HTML element <template>/);
+    expect(domRoleFindings(tokenCss, indexHtml)).toEqual([]);
   });
 });

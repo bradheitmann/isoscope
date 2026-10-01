@@ -1,6 +1,8 @@
 import { createHash } from "node:crypto";
 import { readdirSync, readFileSync, lstatSync } from "node:fs";
 import { join, relative, resolve, sep } from "node:path";
+import { parse } from "parse5";
+import type { DefaultTreeAdapterTypes } from "parse5";
 
 /**
  * Trust anchors checked against the Desert Pants checkout when this lane was
@@ -51,6 +53,11 @@ const REQUIRED_DOM_ROLES: Readonly<Record<string, string>> = {
   sideKey: "dp-type-body-sm",
   asOf: "dp-type-body-sm"
 };
+const ALLOWED_AUTHORED_HTML_TAGS = new Set([
+  "aside", "body", "button", "canvas", "details", "div", "h1", "h2", "h3", "head", "header", "hr",
+  "html", "input", "label", "link", "main", "meta", "nav", "option", "p", "script", "section", "select",
+  "span", "strong", "summary", "title"
+]);
 const CANONICAL_CSS_IMPORTS = [
   "../vendor/desert-pants/build/web/fonts.css",
   "../vendor/desert-pants/build/web/tokens.css",
@@ -65,6 +72,77 @@ interface ConsumerRule {
   readonly declarations: Declarations;
   readonly media: readonly string[];
 }
+interface LayoutRuleContract {
+  readonly selector: string;
+  readonly media: readonly string[];
+  readonly declarations: Readonly<Record<string, string>>;
+}
+const MODELED_LAYOUT_PROPERTIES = new Set([
+  "display", "grid", "grid-template", "grid-template-columns", "grid-template-rows", "grid-template-areas",
+  "grid-auto-columns", "grid-auto-flow",
+  "grid-auto-rows", "grid-column", "grid-column-end", "grid-column-start", "grid-row", "grid-row-end",
+  "grid-row-start", "grid-area", "grid-gap", "grid-row-gap", "grid-column-gap", "gap", "row-gap",
+  "column-gap", "place-content", "place-items", "place-self"
+]);
+const EXPECTED_LAYOUT_DECLARATIONS: readonly LayoutRuleContract[] = [
+  { selector: "body", media: [], declarations: { display: "grid", "grid-template-rows": "var(--dp-component-app-bar-height) minmax(0, 1fr) auto" } },
+  { selector: ".topbar", media: [], declarations: { display: "flex", gap: "var(--dp-space-4)" } },
+  { selector: ".brand", media: [], declarations: { display: "grid", gap: "var(--dp-space-1)" } },
+  { selector: ".metricstrip", media: [], declarations: { display: "flex", gap: "var(--dp-space-4)" } },
+  { selector: ".metricstrip .cell", media: [], declarations: { display: "grid", gap: "var(--dp-space-1)" } },
+  { selector: ".actions", media: [], declarations: { display: "flex", gap: "var(--dp-space-2)" } },
+  {
+    selector: ".workbench", media: [], declarations: {
+      display: "grid",
+      "grid-template-columns": "var(--dp-layout-grid-component-visualization-workbench-rail-width) minmax(0, 1fr) minmax(var(--dp-layout-grid-component-visualization-workbench-reading-min-width), var(--dp-layout-grid-component-visualization-workbench-reading-preferred-width))",
+      gap: "var(--dp-layout-grid-component-visualization-workbench-gap)"
+    }
+  },
+  { selector: ".side", media: [], declarations: { "grid-column": "1", display: "flex", gap: "var(--dp-space-3)" } },
+  { selector: ".rail-actions", media: [], declarations: { display: "grid", gap: "var(--dp-space-2)" } },
+  { selector: ".rail-camera", media: [], declarations: { display: "grid", gap: "var(--dp-space-2)" } },
+  { selector: "#legend", media: [], declarations: { display: "block" } },
+  { selector: ".sidekey", media: [], declarations: { display: "grid", gap: "var(--dp-space-2)" } },
+  { selector: ".keyrow", media: [], declarations: { display: "flex", gap: "var(--dp-space-2)" } },
+  { selector: ".sw, .base", media: [], declarations: { display: "inline-block" } },
+  { selector: ".jn, .hop", media: [], declarations: { display: "inline-block" } },
+  { selector: ".canvas-wrap", media: [], declarations: { "grid-column": "2" } },
+  { selector: "#gl", media: [], declarations: { display: "block" } },
+  { selector: ".lbl", media: [], declarations: { display: "flex", gap: "var(--dp-component-scene-node-gap)" } },
+  { selector: ".lbl.veryfar, .lbl.clash", media: [], declarations: { display: "none" } },
+  { selector: ".zoomctl", media: [], declarations: { display: "flex", gap: "var(--dp-space-2)" } },
+  { selector: ".reading-scrim", media: [], declarations: { display: "contents" } },
+  { selector: ".panel", media: [], declarations: { "grid-column": "3" } },
+  { selector: ".close-reading", media: [], declarations: { display: "none" } },
+  { selector: ".module-navigator", media: [], declarations: { display: "grid", gap: "var(--dp-space-3)" } },
+  { selector: ".module-results", media: [], declarations: { display: "grid", gap: "var(--dp-space-2)" } },
+  { selector: ".module-group", media: [], declarations: { display: "grid", gap: "var(--dp-space-2)" } },
+  { selector: "button.module-more[hidden]", media: [], declarations: { display: "none" } },
+  { selector: ".prose .cond", media: [], declarations: { display: "block" } },
+  { selector: ".prose .good", media: [], declarations: { display: "block" } },
+  { selector: ".prose .pip", media: [], declarations: { display: "inline-block" } },
+  { selector: ".drawer", media: [], declarations: { display: "flex" } },
+  { selector: ".settings-backdrop[hidden]", media: [], declarations: { display: "none" } },
+  { selector: ".drawer[hidden]", media: [], declarations: { display: "none" } },
+  { selector: ".drawer-head", media: [], declarations: { display: "flex", gap: "var(--dp-space-3)" } },
+  { selector: ".drawer-body", media: [], declarations: { display: "grid", gap: "var(--dp-space-3)" } },
+  { selector: ".theme-list", media: [], declarations: { display: "flex", gap: "var(--dp-space-2)" } },
+  { selector: ".trow", media: [], declarations: { display: "flex", gap: "var(--dp-space-2)" } },
+  { selector: ".seg", media: [], declarations: { display: "flex" } },
+  { selector: ".introveil", media: [], declarations: { display: "flex" } },
+  { selector: ".introveil[hidden]", media: [], declarations: { display: "none" } },
+  { selector: ".ctl", media: [], declarations: { display: "grid", "grid-template-columns": "auto minmax(0, 1fr)", gap: "var(--dp-space-2) var(--dp-space-4)" } },
+  {
+    selector: ".workbench", media: ["@media (max-width: 1180px)"], declarations: {
+      "grid-template-columns": "var(--dp-layout-grid-component-visualization-workbench-rail-width) minmax(0, 1fr)",
+      gap: "var(--dp-layout-grid-component-visualization-workbench-compact-gap)"
+    }
+  },
+  { selector: ".canvas-wrap", media: ["@media (max-width: 1180px)"], declarations: { "grid-column": "2" } },
+  { selector: ".reading-scrim:not([hidden])", media: ["@media (max-width: 1180px)"], declarations: { display: "flex" } },
+  { selector: ".panel", media: ["@media (max-width: 1180px)"], declarations: { "grid-column": "auto" } },
+  { selector: ".close-reading", media: ["@media (max-width: 1180px)"], declarations: { display: "inline-flex" } }
+];
 
 export interface ContractFinding {
   readonly file: string;
@@ -400,15 +478,19 @@ export function typographyRoleFindings(canonicalCss: string, consumerCss: string
 export function workbenchLayoutFindings(canonicalCss: string, consumerCss: string, file = "styles.css"): ContractFinding[] {
   const findings: ContractFinding[] = [];
   const allRules = cssRules(consumerCss);
-  const layoutProperties = new Set([
-    "display", "grid", "grid-template", "grid-template-columns", "grid-template-rows", "grid-template-areas",
-    "grid-auto-columns", "grid-auto-flow", "grid-auto-rows", "grid-column", "grid-row", "grid-area",
-    "gap", "row-gap", "column-gap", "place-content", "place-items"
-  ]);
-  for (const rule of allRules) {
-    if (rule.selector.includes("workbench") && rule.selector !== ".workbench" && [...rule.declarations.keys()].some(property => layoutProperties.has(property))) {
-      findings.push({ file, message: `${rule.selector} cannot alter the workbench grid; use the direct canonical .workbench recipe selector` });
-    }
+  const actualLayoutDeclarations: LayoutRuleContract[] = allRules.flatMap(rule => {
+    const declarations = Object.fromEntries([...rule.declarations]
+      .filter(([property]) => MODELED_LAYOUT_PROPERTIES.has(property))
+      .sort(([left], [right]) => left.localeCompare(right)));
+    return Object.keys(declarations).length > 0 ? [{ selector: rule.selector, media: rule.media, declarations }] : [];
+  });
+  const expectedLayoutDeclarations = EXPECTED_LAYOUT_DECLARATIONS.map(rule => ({
+    selector: rule.selector,
+    media: rule.media,
+    declarations: Object.fromEntries(Object.entries(rule.declarations).sort(([left], [right]) => left.localeCompare(right)))
+  }));
+  if (JSON.stringify(actualLayoutDeclarations) !== JSON.stringify(expectedLayoutDeclarations)) {
+    findings.push({ file, message: "modeled grid/gap declaration inventory differs from the canonical static layout contract" });
   }
   const rules = allRules.filter(rule => rule.selector === ".workbench");
   const wide = rules.filter(rule => rule.media.length === 0);
@@ -497,90 +579,44 @@ interface StaticElement {
   readonly attributes: ReadonlyMap<string, string | null>;
 }
 
-function findHtmlTagEnd(html: string, start: number): number {
-  let quote: "'" | '"' | null = null;
-  for (let index = start; index < html.length; index += 1) {
-    const char = html[index] ?? "";
-    if (quote) {
-      if (char === quote) quote = null;
-    } else if (char === "'" || char === '"') quote = char;
-    else if (char === ">") return index;
-  }
-  throw new Error("authored HTML contains an unterminated tag");
+function isElement(node: DefaultTreeAdapterTypes.ChildNode): node is DefaultTreeAdapterTypes.Element | DefaultTreeAdapterTypes.Template {
+  return "tagName" in node;
 }
 
-function parseHtmlAttributes(source: string): Map<string, string | null> {
-  const attributes = new Map<string, string | null>();
-  let position = 0;
-  while (position < source.length) {
-    while (/\s/.test(source[position] ?? "")) position += 1;
-    if (position >= source.length) break;
-    if (source[position] === "/") throw new Error("unexpected slash before end of HTML attributes");
-    const nameMatch = /^[a-zA-Z_:][a-zA-Z0-9_:.-]*/.exec(source.slice(position));
-    if (!nameMatch) throw new Error(`unsupported HTML attribute syntax near: ${source.slice(position, position + 30)}`);
-    const name = nameMatch[0].toLowerCase();
-    position += nameMatch[0].length;
-    while (/\s/.test(source[position] ?? "")) position += 1;
-    let value: string | null = null;
-    if (source[position] === "=") {
-      position += 1;
-      while (/\s/.test(source[position] ?? "")) position += 1;
-      const quote = source[position];
-      if (quote === "'" || quote === '"') {
-        position += 1;
-        const close = source.indexOf(quote, position);
-        if (close < 0) throw new Error(`unterminated quoted HTML attribute ${name}`);
-        value = source.slice(position, close);
-        position = close + 1;
-      } else {
-        const unquoted = /^[^\s>]+/.exec(source.slice(position));
-        if (!unquoted) throw new Error(`empty unquoted HTML attribute ${name}`);
-        value = unquoted[0];
-        position += unquoted[0].length;
-      }
-    }
-    if (attributes.has(name)) throw new Error(`duplicate HTML attribute ${name}`);
-    attributes.set(name, value);
-  }
-  return attributes;
+function elementAttributes(element: DefaultTreeAdapterTypes.Element | DefaultTreeAdapterTypes.Template): ReadonlyMap<string, string> {
+  return new Map(element.attrs.map(attribute => [attribute.name.toLowerCase(), attribute.value]));
 }
 
 function parseStaticHtml(html: string): StaticElement[] {
+  const parseErrors: string[] = [];
+  const document = parse(html, { onParseError: error => parseErrors.push(error.code) });
+  if (parseErrors.length > 0) throw new Error(`authored HTML has parse errors: ${[...new Set(parseErrors)].join(", ")}`);
+
   const elements: StaticElement[] = [];
-  let position = 0;
-  while (position < html.length) {
-    const opening = html.indexOf("<", position);
-    if (opening < 0) break;
-    if (html.startsWith("<!--", opening)) {
-      const close = html.indexOf("-->", opening + 4);
-      if (close < 0) throw new Error("authored HTML has an unterminated comment");
-      position = close + 3;
-      continue;
+  const visit = (nodes: readonly DefaultTreeAdapterTypes.ChildNode[]): void => {
+    for (const node of nodes) {
+      if (!isElement(node)) continue;
+      const tag = node.tagName.toLowerCase();
+      const attributes = elementAttributes(node);
+      elements.push({ tag, attributes });
+      if (!ALLOWED_AUTHORED_HTML_TAGS.has(tag)) throw new Error(`unsupported authored HTML element <${tag}>`);
+      if (node.namespaceURI !== "http://www.w3.org/1999/xhtml") {
+        throw new Error(`non-HTML namespace content is unsupported in authored DOM: <${tag}>`);
+      }
+      if (tag === "style") throw new Error("inline style elements are unsupported; use the checked consumer stylesheet");
+      if (["iframe", "object", "embed", "template"].includes(tag) || attributes.has("srcdoc")) {
+        throw new Error(`embedded or inert content is unsupported in authored HTML: <${tag}>`);
+      }
+      if (tag === "script") {
+        if (!attributes.has("src")) throw new Error("inline scripts are unsupported by the static DOM contract");
+        if (node.childNodes.some(child => child.nodeName === "#text" && "value" in child && child.value.trim().length > 0)) {
+          throw new Error("external script body must be empty in the static DOM contract");
+        }
+      }
+      visit(node.childNodes);
     }
-    const close = findHtmlTagEnd(html, opening + 1);
-    const text = html.slice(opening, close + 1);
-    if (/^<!doctype\s+html\s*>$/i.test(text)) {
-      position = close + 1;
-      continue;
-    }
-    if (text.startsWith("</")) {
-      if (!/^<\/[a-zA-Z][a-zA-Z0-9:-]*\s*>$/.test(text)) throw new Error(`unsupported closing HTML tag: ${text}`);
-      position = close + 1;
-      continue;
-    }
-    if (text.startsWith("<!") || text.startsWith("<?")) throw new Error(`unsupported HTML declaration: ${text}`);
-    const tagMatch = /^<([a-zA-Z][a-zA-Z0-9:-]*)([\s\S]*?)>$/.exec(text);
-    if (!tagMatch) throw new Error(`unsupported HTML tag syntax: ${text}`);
-    const tag = tagMatch[1].toLowerCase();
-    const attributes = parseHtmlAttributes(tagMatch[2].replace(/\/\s*$/, ""));
-    elements.push({ tag, attributes });
-    position = close + 1;
-    if (tag === "style") throw new Error("inline style elements are unsupported; use the checked consumer stylesheet");
-    if (["iframe", "object", "embed"].includes(tag) || attributes.has("srcdoc")) {
-      throw new Error(`embedded document content is unsupported in authored HTML: <${tag}>`);
-    }
-    if (tag === "script" && !attributes.has("src")) throw new Error("inline scripts are unsupported by the static DOM contract");
-  }
+  };
+  visit(document.childNodes);
   return elements;
 }
 

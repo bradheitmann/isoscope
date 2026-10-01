@@ -1,9 +1,10 @@
-import { cpSync, mkdirSync, mkdtempSync, readFileSync, rmSync, symlinkSync, writeFileSync } from "node:fs";
+import { cpSync, mkdirSync, mkdtempSync, readFileSync, readdirSync, rmSync, symlinkSync, writeFileSync } from "node:fs";
 import { spawnSync } from "node:child_process";
 import { createHash } from "node:crypto";
 import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
 import { describe, expect, it } from "vitest";
+import postcss, { type AtRule } from "postcss";
 import { themes } from "../vendor/desert-pants/build/web/themes";
 import { presentedThemes } from "../src/theme-order";
 import {
@@ -26,6 +27,12 @@ const authored = [
   readFileSync(resolve(root, "src/main.ts"), "utf8")
 ].join("\n");
 const consumerCss = readFileSync(resolve(root, "src/styles.css"), "utf8");
+
+interface ImportFixture {
+  readonly statements: readonly string[];
+  readonly paths: readonly string[];
+  readonly body: string;
+}
 
 function referencedTypographyRoles(source: string): Set<string> {
   return new Set(source.match(/\bdp-type-[a-z0-9-]+\b/g) ?? []);
@@ -52,9 +59,45 @@ function createEnforcementScratch(): string {
   return scratchRoot;
 }
 
-function runScratchEnforcement(scratchRoot: string, css: string): number | null {
-  writeFileSync(join(scratchRoot, "src/styles.css"), css);
-  const result = spawnSync("npm", ["run", "enforce"], { cwd: scratchRoot, encoding: "utf8" });
+function createProjectScratch(): { readonly projectRoot: string; readonly scratchRoot: string } {
+  const scratchRoot = mkdtempSync(join(tmpdir(), "isoscope-import-pipeline-"));
+  const projectRoot = join(scratchRoot, "original-web");
+  mkdirSync(projectRoot);
+  cpSync(resolve(root, "../router.mjs"), join(scratchRoot, "router.mjs"));
+  for (const entry of readdirSync(root)) {
+    if (entry === "node_modules" || entry === "dist" || entry === ".git") continue;
+    cpSync(join(root, entry), join(projectRoot, entry), { recursive: true });
+  }
+  symlinkSync(resolve(root, "node_modules"), join(projectRoot, "node_modules"), "dir");
+  return { projectRoot, scratchRoot };
+}
+
+function extractImportFixture(css: string): ImportFixture {
+  const rootNode = postcss.parse(css, { from: undefined });
+  const imports = rootNode.nodes.filter((node): node is AtRule => node.type === "atrule" && node.name.toLowerCase() === "import");
+  const ranges = imports.map(node => {
+    const start = node.source?.start?.offset;
+    const end = node.source?.end?.offset;
+    const match = /^(["'])([^"']+)\1$/.exec(node.params.trim());
+    if (start === undefined || end === undefined || !match?.[2]) {
+      throw new Error("test fixture requires source-bound literal root imports");
+    }
+    return { start, end, statement: css.slice(start, end), path: match[2] };
+  });
+  let body = "";
+  let cursor = 0;
+  for (const range of ranges) {
+    body += css.slice(cursor, range.start);
+    cursor = range.end;
+  }
+  body += css.slice(cursor);
+  return { statements: ranges.map(range => range.statement), paths: ranges.map(range => range.path), body };
+}
+
+function runScratchCommand(scratchRoot: string, script: string, css?: string, childTestRun = false): number | null {
+  if (css !== undefined) writeFileSync(join(scratchRoot, "src/styles.css"), css);
+  const env = childTestRun ? { ...process.env, ISOSCOPE_IMPORT_PIPELINE_CHILD: "1" } : process.env;
+  const result = spawnSync("npm", ["run", script], { cwd: scratchRoot, encoding: "utf8", env });
   if (result.error) throw result.error;
   return result.status;
 }
@@ -268,19 +311,27 @@ describe("canonical Desert Pants design contract", () => {
   });
 
   it("accepts only the complete canonical root import phase before stylesheet rules and media", () => {
-    const importLines = consumerCss.match(/^@import [^\n]+;$/gm) ?? [];
-    expect(importLines).toHaveLength(5);
-    const importBlock = `${importLines.join("\n")}\n`;
-    const body = consumerCss.replace(importBlock, "");
+    const fixture = extractImportFixture(consumerCss);
+    const importStatements = fixture.statements;
+    const importBlock = `${importStatements.join("\n")}\n`;
+    const body = fixture.body;
+    expect(importStatements).toHaveLength(5);
+    expect(fixture.paths).toEqual([
+      "../vendor/desert-pants/build/web/fonts.css",
+      "../vendor/desert-pants/build/web/tokens.css",
+      "../vendor/desert-pants/build/web/themes.css",
+      "../vendor/desert-pants/reference/base.css",
+      "../vendor/desert-pants/reference/components.css"
+    ]);
     expect(body).not.toBe(consumerCss);
-    const reordered = [importLines[1], importLines[0], ...importLines.slice(2)].join("\n") + `\n${body}`;
-    const duplicate = `${importBlock}${importLines[0]}\n${body}`;
+    const reordered = [importStatements[1], importStatements[0], ...importStatements.slice(2)].join("\n") + `\n${body}`;
+    const duplicate = `${importBlock}${importStatements[0]}\n${body}`;
     const late = `${body}\n${importBlock}`;
     const ruleBeforeImports = `.probe { color: red; }\n${importBlock}${body}`;
-    const ruleBetweenImports = `${importLines[0]}\n.probe { color: red; }\n${importLines.slice(1).join("\n")}\n${body}`;
+    const ruleBetweenImports = `${importStatements[0]}\n.probe { color: red; }\n${importStatements.slice(1).join("\n")}\n${body}`;
     const mediaBeforeImports = `@media (min-width: 1px) { .probe { color: red; } }\n${importBlock}${body}`;
-    const mediaAfterFirstImport = `${importLines[0]}\n@media (min-width: 1px) { .probe { color: red; } }\n${importLines.slice(1).join("\n")}\n${body}`;
-    const nestedImport = `@media (min-width: 1px) { ${importLines[0]} }\n${importLines.slice(1).join("\n")}\n${body}`;
+    const mediaAfterFirstImport = `${importStatements[0]}\n@media (min-width: 1px) { .probe { color: red; } }\n${importStatements.slice(1).join("\n")}\n${body}`;
+    const nestedImport = `@media (min-width: 1px) { ${importStatements[0]} }\n${importStatements.slice(1).join("\n")}\n${body}`;
     const extraImport = `${importBlock}@import "../vendor/desert-pants/extra.css";\n${body}`;
     const zeroImports = body;
     const unsupportedContext = `@layer theme { ${importBlock} }\n${body}`;
@@ -301,22 +352,38 @@ describe("canonical Desert Pants design contract", () => {
     for (const [label, css] of invalidCases) {
       expect(() => assertDesignContract(tokenCss, css, indexHtml), label).toThrow();
     }
-    const commentedPhase = `/* before imports */\n${importLines[0]}\n/* between imports */\n${importLines.slice(1).join("\n")}\n/* after imports */\n${body}`;
+    const commentedPhase = `/* before imports */\n${importStatements[0]}\n/* between imports */\n${importStatements.slice(1).join("\n")}\n/* after imports */\n${body}`;
+    const uppercaseSingleQuoted = `${fixture.paths.map(path => `@IMPORT '${path}';`).join("\n")}\n${body}`;
     const normalCascade = `${consumerCss}\n.dp-type-h2 { font-size: var(--dp-type-body-sm-font-size); font-size: var(--dp-type-h2-font-size); }`;
     expect(() => assertDesignContract(tokenCss, commentedPhase, indexHtml)).not.toThrow();
+    expect(() => assertDesignContract(tokenCss, uppercaseSingleQuoted, indexHtml)).not.toThrow();
     expect(() => assertDesignContract(tokenCss, normalCascade, indexHtml)).not.toThrow();
 
     const scratchRoot = createEnforcementScratch();
     try {
       for (const [label, css] of invalidCases) {
-        expect(runScratchEnforcement(scratchRoot, css), `npm run enforce: ${label}`).toBe(1);
+        expect(runScratchCommand(scratchRoot, "enforce", css), `npm run enforce: ${label}`).toBe(1);
       }
-      expect(runScratchEnforcement(scratchRoot, commentedPhase), "npm run enforce: comments within canonical phase").toBe(0);
-      expect(runScratchEnforcement(scratchRoot, normalCascade), "npm run enforce: normal last-wins").toBe(0);
+      expect(runScratchCommand(scratchRoot, "enforce", commentedPhase), "npm run enforce: comments within canonical phase").toBe(0);
+      expect(runScratchCommand(scratchRoot, "enforce", uppercaseSingleQuoted), "npm run enforce: uppercase single-quoted imports").toBe(0);
+      expect(runScratchCommand(scratchRoot, "enforce", normalCascade), "npm run enforce: normal last-wins").toBe(0);
     } finally {
       rmSync(scratchRoot, { recursive: true, force: true });
     }
-  });
+
+    if (process.env.ISOSCOPE_IMPORT_PIPELINE_CHILD !== "1") {
+      const projectScratch = createProjectScratch();
+      try {
+        for (const [label, css] of [["comments between imports", commentedPhase], ["uppercase single-quoted imports", uppercaseSingleQuoted]] as const) {
+          expect(runScratchCommand(projectScratch.projectRoot, "enforce", css), `${label}: full-project enforce`).toBe(0);
+          expect(runScratchCommand(projectScratch.projectRoot, "test", css, true), `${label}: full-project test`).toBe(0);
+          expect(runScratchCommand(projectScratch.projectRoot, "build", css), `${label}: full-project build`).toBe(0);
+        }
+      } finally {
+        rmSync(projectScratch.scratchRoot, { recursive: true, force: true });
+      }
+    }
+  }, 120_000);
 
   it("rejects each modeled grid and alignment declaration on an unrelated selector", () => {
     const declarations = [

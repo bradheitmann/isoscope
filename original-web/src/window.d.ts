@@ -7,7 +7,12 @@ declare global {
       look: (x: number, z: number, zoom?: number, az?: number, pol?: number) => void;
       restore: () => void;
       inspect: (id: string) => void;
-      state: () => { zoom: number; cordon: string[] };
+      media: {
+        state: (id: string) => { hasMedia: boolean; audible: boolean; playing: boolean; t: number };
+        togglePlay: (id: string) => void;
+        solo: (id: string) => void;
+      };
+      state: () => { zoom: number; cordon: string[]; audioFocus: string | null; masterAudio: boolean };
     };
     __isoRouteQC: Record<string, unknown>;
     __lblMeasured: boolean;

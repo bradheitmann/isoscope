@@ -6,17 +6,17 @@ The future production projection models code, data and incidents. These domains
 may share capture/storage, but task IDs are never replaced with trace IDs and a
 build/check event never proves a worker is running.
 
-## Delivered vertical slice
+## Implementation boundaries
 
 - `isoscope-core`: read-only GitHub adapter using `gh` credential custody,
   deterministic workflow projection, local graph operations, immutable JSON
   source receipts, atomic published snapshot, overlap lock, read-only loopback
   API and native stdio MCP graph adapter.
-- Strict TypeScript and Three.js web client: replacement surface, not additions
+- Strict TypeScript and Three.js web client, under integration: replacement surface, not additions
   to the old template. GPU topology and accessible tabular evidence consume the
   same snapshot. Desert Pants source and asset hashes are pinned in the vendor
   provenance manifest. Theme IDs are enumerated from the authoritative manifest.
-- Native GPUI desktop client: an independent native renderer consuming the shared
+- Native GPUI desktop client, under revision and independent validation: an independent native renderer consuming the shared
   Rust model and canonical theme data. It is not a webview running Three.js.
 
 `GET /api/snapshot` is `isoscope.workflow/1`; `GET /api/graph` is the legacy

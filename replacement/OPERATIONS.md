@@ -69,3 +69,36 @@ is native stdio JSON-RPC and provides the nine local map tool names; it grants n
 forge approval or GitHub mutation capability. Configure an absolute binary path
 and working directory. Frozen web exports preserve source timestamps and remain
 read-only; their staleness must be visible.
+
+### Verified execution and immutable runtime binding
+
+The first scheduler chat (`01a0f5c9-d7fb-7682-894c-b82e7c99871e`) completed a real
+refresh at 2026-10-01T04:50:20.920660Z: 292 items, plan f11a2c4, raw receipt
+`2cbede9bd2dfc2770f90db7351f68746c353fea6b88087345dcbfc4f445ad587`, executable
+`715df65c28385b38c368577f12d069de1f084fcf7b8c1fc5426e8f34818cf7cf` from a9a3669,
+host mac.lan/PID 48135. The completed scheduler turn and collector receipt agree.
+
+A second run began before a release rebuild and completed afterward; its
+source-commit field remained a9a3669 while its late-read on-disk executable hash
+referred to the replacement 54ecdda binary. This receipt is retained, with an
+explicit runtime binding limitation; it is **not** proof that 54ecdda executed.
+To eliminate that replacement race, the automation was updated through the
+Codex tool to the immutable, executable-only versioned file:
+
+`replacement/runtime/isoscope-core-54ecdda92f5492606ec00ffecc87842c081889e6`
+
+Its SHA-256 is
+`c82b2d5afeb5e390a9c3f5d0e39fbe6bab2dd57d0b08258c3c7e740f8d688471`.
+The saved prompt checks the hash before execution. This ignored runtime file is
+preserved locally; subsequent builds do not overwrite it. Future source updates
+require a new versioned filename/hash and purpose-built automation update.
+The versioned executable completed an actual scheduled refresh at
+2026-10-01T05:05:11.104233Z, verified by the scheduler's completed receipt and
+`refresh-status.json`: source 54ecdda, the matching executable hash above,
+host mac.lan/PID 68621, 292 items, plan f11a2c4. Raw source receipt:
+`1f4dadc516a8a9d0217e3ffbf7f66180f5fe0fe4ef58597a5d67ab9ee5e0d6c9`;
+snapshot content hash:
+`50dde564b5f7706a093913b09bdf7891ba03ece23b37197dbc27b3846152734e`.
+This proves corrected-release scheduled execution. The scheduler agent's model
+overhead remains separate from the deterministic collector and is not included
+in product token/cost coverage.

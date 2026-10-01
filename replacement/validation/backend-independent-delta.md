@@ -1,0 +1,9 @@
+## PASS — scoped delta at `54ecdda92f5492606ec00ffecc87842c081889e6`
+
+- Verdict selection uses the later of creation and edit time, then filters to verdicts bound to the current head. The regression test confirms an older-created FAIL edited after a newer PASS leaves the item blocked; the existing stale-head test confirms an old-head PASS cannot accept the current head. ([reduce.rs](/Users/bradleyheitmann/open_protocols/isoscope-backend-qa/crates/isoscope-core/src/reduce.rs:121), [workflow.rs](/Users/bradleyheitmann/open_protocols/isoscope-backend-qa/crates/isoscope-core/tests/workflow.rs:343))
+- Foreign-repository replay is rejected before publication. I seeded a valid last-good snapshot, replayed a foreign receipt through the CLI, and verified the replay failed, the content hash and repository stayed unchanged, the snapshot became stale with the mismatch error, and receipt count remained 1. ([store.rs](/Users/bradleyheitmann/open_protocols/isoscope-backend-qa/crates/isoscope-core/src/store.rs:75), [main.rs](/Users/bradleyheitmann/open_protocols/isoscope-backend-qa/crates/isoscope-core/src/main.rs:65))
+- The replay regression test has substantive rejection/no-write assertions, but starts from an empty state; last-good preservation was verified by the separate CLI probe.
+
+**Verification:** `CARGO_TARGET_DIR="$PWD/.qa-target" cargo test --workspace` — 24 passed; `CARGO_TARGET_DIR="$PWD/.qa-target" cargo clippy --workspace --all-targets -- -D warnings` — passed; `git diff --check HEAD^ HEAD` — passed. The worktree is clean.
+
+This verdict covers only the requested delta; it does not establish whole-client acceptance or qualification. The native wrapper’s numeric token-usage receipt was not exposed in this session.

@@ -30,7 +30,7 @@ type Group = { id: string; label: string };
 type MapNode = {
   id: string; tag?: string; g: string; name: string; x: number; y: number; w: number; d: number; h: number;
   does?: string; built?: string; refs?: string; good?: string; cond?: string; items: Item[]; st: string;
-  media?: { src: string; face?: "front" | "roof" | "left" | "right"; fit?: "cover" | "contain" };
+  media?: { src: string; face?: "front" | "roof" | "left" | "right"; fit?: "cover" | "contain"; live?: boolean };
   stack?: number; _lvl: number; _ly: number; _lyT: number; _anchor: THREE.Vector3;
 };
 type EdgeTuple = [string, string, string?];
@@ -290,7 +290,7 @@ const sun=new THREE.DirectionalLight(COL.paper,0.9);sun.position.set(18,30,10);s
 const fill=new THREE.DirectionalLight(COL.paper,0.25);fill.position.set(-14,12,-16);scene.add(fill);
 
 /* ground grid — OKOA hairline field (rebuilt on theme switch) */
-const LVL_H=2.8;let stacked=false;let rebuildDotsAfterLevelMotion=false; /* declared before makeGrid runs at setup */
+const LVL_H=2.8;let stacked=false;let rebuildDotsAfterLevelMotion=false;let brushReliftPending=false; /* declared before makeGrid runs at setup */
 let grids: THREE.GridHelper[] = [];
 function makeGrid(){
  grids.forEach(g=>{scene.remove(g);g.geometry.dispose();g.material.dispose();});grids=[];
@@ -421,14 +421,21 @@ function refreshAdvisory(n: MapNode): void {
    circuit like any other face, and honors reduced-motion by holding the first
    frame. Playback is user/media-driven, independent of the Flow toggle — a screen
    is a screen. */
-const mediaById: Record<string, { plane: THREE.Mesh<THREE.PlaneGeometry, THREE.MeshBasicMaterial>; video: HTMLVideoElement; tex: THREE.VideoTexture }> = {};
+const mediaById: Record<string, { plane: THREE.Mesh<THREE.PlaneGeometry, THREE.MeshBasicMaterial>; video: HTMLVideoElement; tex: THREE.VideoTexture; live: boolean }> = {};
 function refreshMedia(n: MapNode): void {
  const old=mediaById[n.id];
- if(old){const par=old.plane.parent;if(par)par.remove(old.plane);old.plane.geometry.dispose();old.plane.material.dispose();old.tex.dispose();old.video.pause();old.video.src="";delete mediaById[n.id];}
+ if(old){const par=old.plane.parent;if(par)par.remove(old.plane);old.plane.geometry.dispose();old.plane.material.dispose();old.tex.dispose();old.video.pause();old.video.removeAttribute("src");old.video.load();delete mediaById[n.id];}
  if(!n.media||!n.media.src)return;
+ const src=n.media.src;
+ /* a source can be a file, an animated loop, or a live stream (context windows,
+    music videos, telemetry). .m3u8 = HLS live; anything can carry a stream. Live
+    sources don't loop and are allowed to play even under reduced-motion IF the
+    module is energized — a live feed is content, not decoration. */
+ const live=n.media.live===true||/\.m3u8(\?|$)/i.test(src);
  const video=document.createElement("video");
- video.src=n.media.src;video.muted=true;video.loop=true;video.playsInline=true;video.crossOrigin="anonymous";
- video.autoplay=!RM;
+ video.muted=true;video.loop=!live;video.playsInline=true;video.crossOrigin="anonymous";
+ video.autoplay=!RM;video.preload=live?"auto":"metadata";
+ video.src=src; /* native HLS plays where supported; an hls.js shim can attach here later */
  const tex=new THREE.VideoTexture(video);tex.colorSpace=THREE.SRGBColorSpace;
  const mat=new THREE.MeshBasicMaterial({map:tex,transparent:true,toneMapped:false});
  const h=Math.max(n.h,0.6);
@@ -436,7 +443,7 @@ function refreshMedia(n: MapNode): void {
  plane.position.set(n.x+n.w/2,h/2+0.02,n.y+n.d+0.016); /* proud of the mist so the screen reads on top */
  plane.renderOrder=2;
  meshById[n.id].add(plane);
- mediaById[n.id]={plane,video,tex};
+ mediaById[n.id]={plane,video,tex,live};
  if(!RM)video.play().catch(()=>{/* autoplay may wait for a gesture; the poster frame still shows */});
 }
 function setMediaDim(id: string,on: boolean): void {
@@ -583,7 +590,7 @@ function placeCamera(az: number,pol: number,r: number,tx: number,ty: number,tz: 
 placeCamera(HOME.az,HOME.pol,HOME.r,HOME.tx,HOME.ty,HOME.tz,HOME.zoom);
 let flyGoal: { tx: number; ty: number; tz: number; zoom: number; az?: number; pol?: number } | null = null;
 controls.addEventListener("start",()=>{flyGoal=null;}); /* user input cancels autopilot */
-function resetView(){clearEdgeSel();flowing=false;btnFlow.setAttribute("aria-pressed","false");setCanonicalIcon(btnFlow,iconPlay);exitCordon();flyGoal={tx:HOME.tx,ty:HOME.ty,tz:HOME.tz,zoom:HOME.zoom,az:HOME.az,pol:HOME.pol};clearTrace();renderModuleNavigator();}
+function resetView(){clearEdgeSel();flowing=false;btnFlow.setAttribute("aria-pressed","false");setCanonicalIcon(btnFlow,iconPlay);exitCordon();brush.clear();flyGoal={tx:HOME.tx,ty:HOME.ty,tz:HOME.tz,zoom:HOME.zoom,az:HOME.az,pol:HOME.pol};clearTrace();renderModuleNavigator();}
 $("btnReset").addEventListener("click",resetView);
 document.addEventListener("keydown",ev=>{
  if(ev.key!=="r"&&ev.key!=="R")return;
@@ -1073,6 +1080,7 @@ btnStack.addEventListener("click",()=>{
  NODES.forEach(n=>{n._lyT=stacked?n._lvl*LVL_H:0;});
  makeGrid();
  rebuildDotsAfterLevelMotion=true;
+ brushReliftPending=true; /* strokes ride their module to its new level */
 });
 /* the ground grid is a reading aid, not a fixture — a toggle turns it off for a clean page */
 const btnGrid=$<HTMLButtonElement>("btnGrid");
@@ -1223,6 +1231,20 @@ LINEW.forEach((p,i)=>{
   weightSeg.querySelectorAll("button").forEach((x,xi)=>x.setAttribute("aria-pressed",String(xi===i)));
  });
  weightSeg.appendChild(b);
+});
+/* pen thickness is a module-level setting (the brush reads it lazily); a stable
+    constant, declared here so the segmented control can be built before the brush */
+const PENW=[{label:"Fine",w:1.5},{label:"Medium",w:3},{label:"Bold",w:5.5}];
+let penWIndex=1;
+const penSeg=$<HTMLElement>("penSeg");
+PENW.forEach((p,i)=>{
+ const b=document.createElement("button");b.type="button";b.textContent=p.label;
+ b.setAttribute("aria-pressed",String(i===penWIndex)); /* Medium is the resting nib */
+ b.addEventListener("click",()=>{
+  penWIndex=i;
+  penSeg.querySelectorAll("button").forEach((x,xi)=>x.setAttribute("aria-pressed",String(xi===i)));
+ });
+ penSeg.appendChild(b);
 });
 $("btnGuide").addEventListener("click",()=>{
  closeSettings();
@@ -1471,49 +1493,112 @@ const redline=(()=>{
 })();
 redline.rebuild();
 
-/* ————— the brush (static ink you own) —————
-   Toggle Draw (or press W) and orbit/pick are suspended: every drag lays a
-   hand-drawn stroke on the ground plane. Strokes are static — they persist,
-   ride the scene's transforms, and can be undone one at a time or cleared.
-   Ink is the primary text color: a pencil line, quiet and on-brand. */
+/* ————— the brush (static ink you own, drawn in the object's space) —————
+   Toggle Draw (or press W) and orbit/pick are suspended. With a module selected
+   (pinned, or a single energized one), strokes land on THAT module's plane:
+   orbit near top-down and you draw flat on its level; orbit to edge-on and you
+   draw vertical on the face you are looking at. The camera polar angle at the
+   moment you start the stroke picks the plane. With nothing selected it falls
+   back to the ground plane. Strokes persist, ride Stack lifts, undo one at a
+   time, and clear from Settings. Ink is the primary text color with a whisper
+   of accent — a pencil line, quiet and on-brand. */
 const brush=(()=>{
  const group=new THREE.Group();group.renderOrder=4;scene.add(group);
- type Stroke={line: THREE.Line; pts: THREE.Vector3[]};
+ /* strokes are fat lines (true pixel width) so pen thickness is a real, variable
+    setting, matching the edge rendering. A stroke drawn on a module conforms to
+    its surfaces; one drawn with nothing selected lies on the ground plane. */
+ type Stroke={line: Line2; mat: LineMaterial; pts: THREE.Vector3[]; target: string | null; baseY: number};
  const strokes: Stroke[]=[];
  let active=false;let drawing=false;let current: Stroke | null=null;
  const btnDraw=$<HTMLButtonElement>("btnDraw");
  const count=$<HTMLElement>("drawCount");
- const ground=new THREE.Plane(new THREE.Vector3(0,1,0),0); /* y=0 work surface */
  const hitP=new THREE.Vector3();
- function toGround(cx: number,cy: number): THREE.Vector3 | null {
+ const brushMats: LineMaterial[]=[];
+ /* the module a stroke belongs to: the pinned one, else the single energized one */
+ function target(): MapNode | null {
+  if(pinned&&byId[pinned])return byId[pinned];
+  if(cordon.size===1)return byId[[...cordon][0]];
+  return null;
+ }
+ function setRay(cx: number,cy: number): void {
   const r=canvas.getBoundingClientRect();
   ptr.x=((cx-r.left)/r.width)*2-1;ptr.y=-((cy-r.top)/r.height)*2+1;
   ray.setFromCamera(ptr,camera);
-  return ray.ray.intersectPlane(ground,hitP)?hitP.clone():null;
+  ray.camera=camera;
  }
- function ink(): THREE.Color { return mix(COL.fg1,COL.accent,0.22); } /* pencil with a whisper of accent */
+ /* ON the object: raycast the selected module's meshes and lay the point on
+    whatever face the pointer crosses (roof or wall), nudged proud of the surface
+    so it reads. This is conformal drawing — the ink hugs the box. */
+ function onObject(n: MapNode,cx: number,cy: number): THREE.Vector3 | null {
+  setRay(cx,cy);
+  const meshes: THREE.Object3D[]=[];
+  meshById[n.id].traverse((o: THREE.Object3D)=>{if(o instanceof THREE.Mesh&&o.userData.id===n.id)meshes.push(o);});
+  const hit=ray.intersectObjects(meshes,false);
+  if(!hit.length)return null;
+  const h=hit[0];
+  const nrm=h.face?h.face.normal.clone().transformDirection(h.object.matrixWorld):new THREE.Vector3(0,1,0);
+  return h.point.clone().addScaledVector(nrm,0.02);
+ }
+ /* AROUND the object (missed the mesh): fall back to a working plane through the
+    module, chosen by camera polar angle — top-down draws flat on its level,
+    edge-on draws vertical on the facing side. */
+ const FLAT_LIMIT=0.86;
+ function aroundPlane(n: MapNode,cx: number,cy: number): THREE.Vector3 | null {
+  const off=camera.position.clone().sub(controls.target);
+  const sph=new THREE.Spherical().setFromVector3(off);
+  const base=n._ly||0;
+  let plane: THREE.Plane;
+  if(sph.phi<FLAT_LIMIT)plane=new THREE.Plane(new THREE.Vector3(0,1,0),-base);
+  else{
+   const normal=new THREE.Vector3(Math.sin(sph.theta),0,Math.cos(sph.theta)).normalize();
+   plane=new THREE.Plane().setFromNormalAndCoplanarPoint(normal,new THREE.Vector3(n.x+n.w/2,base+n.h/2,n.y+n.d/2));
+  }
+  setRay(cx,cy);
+  return ray.ray.intersectPlane(plane,hitP)?hitP.clone():null;
+ }
+ const groundPlane=new THREE.Plane(new THREE.Vector3(0,1,0),0);
+ function toSurface(cx: number,cy: number): THREE.Vector3 | null {
+  const n=target();
+  if(n){const on=onObject(n,cx,cy);if(on)return on;return aroundPlane(n,cx,cy);}
+  setRay(cx,cy);
+  return ray.ray.intersectPlane(groundPlane,hitP)?hitP.clone():null;
+ }
+ function ink(): THREE.Color { return mix(COL.fg1,COL.accent,0.22); }
  function syncCount(){count.textContent=strokes.length+" stroke"+(strokes.length===1?"":"s");}
+ function makeMat(): LineMaterial {
+  const m=new LineMaterial({color:ink().getHex(),transparent:true,opacity:0.92,linewidth:PENW[penWIndex].w});
+  m.resolution.set(wrap.clientWidth,wrap.clientHeight);
+  brushMats.push(m);
+  return m;
+ }
+ function geomFrom(pts: THREE.Vector3[]): LineGeometry {
+  const flat: number[]=[];pts.forEach(p=>flat.push(p.x,p.y,p.z));
+  const g=new LineGeometry();g.setPositions(flat);return g;
+ }
  function begin(cx: number,cy: number): void {
-  const p=toGround(cx,cy);if(!p)return;
-  const m=new THREE.LineBasicMaterial({color:ink(),transparent:true,opacity:0.9});
-  const line=new THREE.Line(new THREE.BufferGeometry(),m);
-  line.userData.seg=0;group.add(line);
-  current={line,pts:[p]};drawing=true;
+  const n=target();
+  const p=toSurface(cx,cy);if(!p)return;
+  const mat=makeMat();
+  const line=new Line2(geomFrom([p]),mat);
+  line.computeLineDistances();
+  group.add(line);
+  current={line,mat,pts:[p],target:n?n.id:null,baseY:n?(n._ly||0):0};drawing=true;
  }
  function extend(cx: number,cy: number): void {
   if(!drawing||!current)return;
-  const p=toGround(cx,cy);if(!p)return;
+  const p=toSurface(cx,cy);if(!p)return;
   const last=current.pts[current.pts.length-1];
-  if(last.distanceToSquared(p)<0.0016)return; /* ignore sub-pixel jitter */
+  if(last.distanceToSquared(p)<0.0009)return; /* ignore sub-pixel jitter */
   current.pts.push(p);
   current.line.geometry.dispose();
-  current.line.geometry=new THREE.BufferGeometry().setFromPoints(current.pts);
+  current.line.geometry=geomFrom(current.pts);
+  current.line.computeLineDistances();
  }
  function end(): void {
   if(!drawing||!current)return;
   drawing=false;
   if(current.pts.length>1){strokes.push(current);syncCount();}
-  else{group.remove(current.line);current.line.geometry.dispose();(current.line.material as THREE.Material).dispose();}
+  else{group.remove(current.line);current.line.geometry.dispose();current.mat.dispose();brushMats.splice(brushMats.indexOf(current.mat),1);}
   current=null;
  }
  function setActive(on: boolean): void {
@@ -1523,15 +1608,24 @@ const brush=(()=>{
   canvas.style.cursor=on?"crosshair":"";
   if(!on)end();
  }
- function undo(): void {
-  const s=strokes.pop();if(!s)return;
-  group.remove(s.line);s.line.geometry.dispose();(s.line.material as THREE.Material).dispose();syncCount();
+ function drop(s: Stroke): void {
+  group.remove(s.line);s.line.geometry.dispose();s.mat.dispose();
+  const i=brushMats.indexOf(s.mat);if(i>=0)brushMats.splice(i,1);
  }
- function clear(): void {
-  while(strokes.length){const s=strokes.pop();if(!s)break;group.remove(s.line);s.line.geometry.dispose();(s.line.material as THREE.Material).dispose();}
-  syncCount();
+ function undo(): void { const s=strokes.pop();if(!s)return;drop(s);syncCount(); }
+ function clear(): void { while(strokes.length){const s=strokes.pop();if(!s)break;drop(s);}syncCount(); }
+ function repaint(): void { const c=ink();strokes.forEach(s=>{s.mat.color.copy(c);}); }
+ function resizeAll(): void { brushMats.forEach(m=>m.resolution.set(wrap.clientWidth,wrap.clientHeight)); }
+ /* strokes bound to a module ride it when Stack lifts the levels */
+ function relift(): void {
+  strokes.forEach(s=>{
+   if(!s.target||!byId[s.target])return;
+   const n=byId[s.target];const dy=(n._ly||0)-s.baseY;
+   if(Math.abs(dy)<1e-4)return;
+   s.pts.forEach(p=>{p.y+=dy;});s.baseY=n._ly||0;
+   s.line.geometry.dispose();s.line.geometry=geomFrom(s.pts);s.line.computeLineDistances();
+  });
  }
- function repaint(): void { strokes.forEach(s=>{(s.line.material as THREE.LineBasicMaterial).color.copy(ink());}); }
  btnDraw.addEventListener("click",()=>setActive(!active));
  $("btnDrawUndo").addEventListener("click",undo);
  $("btnDrawClear").addEventListener("click",clear);
@@ -1539,7 +1633,7 @@ const brush=(()=>{
  canvas.addEventListener("pointermove",ev=>{if(active)extend(ev.clientX,ev.clientY);},true);
  window.addEventListener("pointerup",()=>{if(active)end();},true);
  syncCount();
- return {setActive,undo,clear,repaint,isActive:()=>active};
+ return {setActive,undo,clear,repaint,relift,resizeAll,isActive:()=>active};
 })();
 
 /* ————— frame loop ————— */
@@ -1547,6 +1641,7 @@ function resize(){
  const w=wrap.clientWidth,h=wrap.clientHeight;
  renderer.setSize(w,h,false);
  edgeMats.forEach(m=>m.resolution.set(w,h));
+ brush.resizeAll(); /* fat-line strokes need the live resolution too */
  const a=w/h;camera.left=-VIEW*a/2;camera.right=VIEW*a/2;camera.top=VIEW/2;camera.bottom=-VIEW/2;
  camera.updateProjectionMatrix();
 }
@@ -1585,6 +1680,8 @@ function tick(){
  });
  if(lvlMoving)Object.values(edgeLinesById).forEach(o=>rebuildEdge(o));
  if(!lvlMoving&&rebuildDotsAfterLevelMotion){Object.values(edgeLinesById).forEach(o=>buildDots(o));rebuildDotsAfterLevelMotion=false;}
+ /* while Stack lifts the levels, strokes bound to a module ride it each frame */
+ if(lvlMoving||brushReliftPending){brush.relift();if(!lvlMoving)brushReliftPending=false;}
  /* advisory mist drifts only while Flow is on, and only on energized modules.
     Time is a free-running accumulator — never wrapped — so the fog field is a
     sampled continuum with no snap-back. */

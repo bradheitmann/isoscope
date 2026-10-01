@@ -18,27 +18,24 @@
       </svg>
       <span class="brand-name">Isoscope</span>
     </span>
-    <span id="brandTag" class="brand-tag dp-type-meta"></span>
   </header>
   <div class="workbench" id="workbench">
-  <aside class="side" id="mapControls" aria-label="Map controls">
-    <div class="rail-actions" aria-label="Map actions">
-      <button class="dp-button dp-button--sm" id="btnFlow" type="button" aria-label="Flow: animate data connections" aria-pressed="false" title="Flow"></button>
-      <button class="dp-button dp-button--sm dp-button--outline" id="btnTrace" type="button" aria-label="Trace: light the loop one step at a time" title="Trace"></button>
-      <button class="dp-button dp-button--sm dp-button--outline" id="btnStack" type="button" aria-label="Stack: lift the architecture into three levels" aria-pressed="false" title="Stack"></button>
-      <button class="dp-button dp-button--sm dp-button--outline" id="btnReset" type="button" aria-label="Reset camera" aria-keyshortcuts="r" title="Reset camera (R)"></button>
-      <button class="dp-button dp-button--sm dp-button--outline" id="btnSettings" type="button" aria-label="Settings" aria-haspopup="dialog" aria-controls="drawer" aria-expanded="false" title="Settings"></button>
-      <button class="dp-button dp-button--sm dp-button--outline" id="btnReadMap" type="button" aria-label="Open map overview" aria-expanded="false" aria-controls="readingPanel" title="Map overview"></button>
-    </div>
-    <div class="rail-camera" aria-label="Camera zoom">
-      <button class="dp-button dp-button--outline" id="zin" type="button" aria-label="Zoom in"></button>
-      <button class="dp-button dp-button--outline" id="zout" type="button" aria-label="Zoom out"></button>
-    </div>
-  </aside>
   <main class="canvas-wrap" id="canvasWrap" aria-label="Flyover architecture map">
     <canvas id="gl" tabindex="0" aria-label="Isometric city. Click a building to inspect it. Drag to orbit, right-drag to pan, scroll to zoom."></canvas>
     <div id="labels" aria-hidden="true"></div>
+    <div class="controls-float" id="mapControls" aria-label="Map controls">
+      <button class="dp-button dp-button--sm dp-button--outline" id="btnReset" type="button" aria-label="Reset camera" aria-keyshortcuts="r" title="Reset camera (R)"></button>
+      <button class="dp-button dp-button--sm" id="btnFlow" type="button" aria-label="Flow: animate data connections" aria-pressed="false" title="Flow"></button>
+      <button class="dp-button dp-button--sm dp-button--outline" id="btnTrace" type="button" aria-label="Trace: light the loop one step at a time" title="Trace"></button>
+      <button class="dp-button dp-button--sm dp-button--outline" id="btnStack" type="button" aria-label="Stack: lift the architecture into three levels" aria-pressed="false" title="Stack"></button>
+      <button class="dp-button dp-button--sm dp-button--outline" id="btnSettings" type="button" aria-label="Settings" aria-haspopup="dialog" aria-controls="drawer" aria-expanded="false" title="Settings"></button>
+      <button class="dp-button dp-button--sm dp-button--outline" id="btnReadMap" type="button" aria-label="Open map overview" aria-expanded="false" aria-controls="readingPanel" title="Map overview"></button>
+      <button class="dp-button dp-button--sm dp-button--outline" id="zin" type="button" aria-label="Zoom in" title="Zoom in"></button>
+      <button class="dp-button dp-button--sm dp-button--outline" id="zout" type="button" aria-label="Zoom out" title="Zoom out"></button>
+    </div>
+    <div id="panelResizer" class="panel-resizer" role="separator" aria-orientation="vertical" aria-label="Resize reading panel" aria-controls="readingPanel" tabindex="0"></div>
   </main>
+  <button class="tray-handle" id="trayHandle" type="button" aria-label="Show reading panel" aria-controls="readingPanel" hidden></button>
   <div class="dp-scrim" id="readingScrim" hidden></div>
   <aside class="panel" id="readingPanel" tabindex="-1" role="complementary" aria-labelledby="pTitle" aria-label="Reading panel" hidden inert>
     <div class="sheet-head">

@@ -9,9 +9,9 @@ import { tokens, type TokenPath } from "../vendor/desert-pants/build/web/tokens"
 import { presentedThemes } from "./theme-order";
 import { pageNavigation, type NavigationNode } from "./navigation";
 import iconPlay from "../vendor/desert-pants/icons/svg/play.svg?raw";
-import iconPause from "../vendor/desert-pants/icons/svg/pause.svg?raw";
 import iconTrace from "../vendor/desert-pants/icons/svg/arrow-right.svg?raw";
-import iconStack from "../vendor/desert-pants/icons/svg/archive.svg?raw";
+import iconLayers from "../vendor/desert-pants/icons/svg/layers.svg?raw";
+import iconStop from "../vendor/desert-pants/icons/svg/stop.svg?raw";
 import iconReset from "../vendor/desert-pants/icons/svg/rotate-ccw.svg?raw";
 import iconSettings from "../vendor/desert-pants/icons/svg/settings.svg?raw";
 import iconOverview from "../vendor/desert-pants/icons/svg/info.svg?raw";
@@ -89,10 +89,10 @@ function setCanonicalIcon(button: HTMLElement, source: string, withClass=true): 
  if(withClass)icon.classList.add("dp-icon");icon.setAttribute("aria-hidden","true");icon.setAttribute("focusable","false");
  button.replaceChildren(icon);
 }
+setCanonicalIcon($<HTMLButtonElement>("btnReset"),iconReset);
 setCanonicalIcon($<HTMLButtonElement>("btnFlow"),iconPlay);
 setCanonicalIcon($<HTMLButtonElement>("btnTrace"),iconTrace);
-setCanonicalIcon($<HTMLButtonElement>("btnStack"),iconStack);
-setCanonicalIcon($<HTMLButtonElement>("btnReset"),iconReset);
+setCanonicalIcon($<HTMLButtonElement>("btnStack"),iconLayers);
 setCanonicalIcon($<HTMLButtonElement>("btnSettings"),iconSettings);
 setCanonicalIcon($<HTMLButtonElement>("btnReadMap"),iconOverview);
 setCanonicalIcon($<HTMLButtonElement>("drawerClose"),iconClose);
@@ -149,6 +149,8 @@ const EDGEDOCS: NonNullable<Spec["edgeDocs"]> = SPEC.edgeDocs ?? {};
 const TRACE: string[] = SPEC.trace ?? [];
 const TRACETEXT: Record<string, string> = SPEC.traceText ?? {};
 const byId: Record<string, MapNode> = {};
+/* advisory gradient planes live beside the meshes; one per attention face */
+const advisoryById: Record<string, THREE.Mesh<THREE.PlaneGeometry, THREE.ShaderMaterial>[]> = {};
 /* auto-fit: every spec gets a centered home and a view scaled to its extents */
 const _bb=(()=>{let x0=1e9,x1=-1e9,z0=1e9,z1=-1e9;
  if(!NODES.length)return {x0:-1,x1:1,z0:-1,z1:1};
@@ -211,6 +213,30 @@ function computePalette(): void {
  PLINTH.red=COL.risk;PLINTH.you=COL.accent;PLINTH.amber=COL.caution;
 }
 computePalette();
+/* ————— advisory gradient language (the art's living signal) —————
+   Brand discipline: signal colour + a word/icon, low-chroma, no decorative neon.
+   Each advisory face carries a vertical band: category washes at the crown easing
+   into the category deeps at the foot. Multi-category modules blend every category
+   evenly. The gradient is a live shader plane masked to the face; it moves only
+   while Flow is pressed and the module is energized, else it holds a quiet frame. */
+const SIGNAL_BASES: Record<string, string> = { red: "danger", amber: "warning", you: "accent" };
+function probeVar(variable: string): THREE.Color {
+ const probe=document.createElement("span");
+ probe.className="dp-color-probe";probe.style.color=`var(${variable})`;document.body.append(probe);
+ const value=getComputedStyle(probe).color;probe.remove();
+ if(!value||!/\d/.test(value))throw new Error(`Advisory gradient token unresolved: ${variable}`);
+ return new THREE.Color(value);
+}
+const ADVISORY: Record<string, { wash: THREE.Color; deep: THREE.Color }> = {}; /* per-category, rebuilt on theme */
+function computeAdvisory(): void {
+ for(const [cat,base] of Object.entries(SIGNAL_BASES)){
+  ADVISORY[cat]={
+   wash: base==="accent"?probeVar("--dp-color-accent-hover"):probeVar(`--dp-color-signal-${base}-fill`),
+   deep: base==="accent"?probeVar("--dp-color-accent-default"):probeVar(`--dp-color-signal-${base}-text`)
+  };
+ }
+}
+computeAdvisory();
 const themed: ThemedMaterial[] = []; /* Original scene materials repaint from live theme tokens. */
 const hatched: Array<{ m: THREE.MeshBasicMaterial; st: string }> = [];
 function hatchColors(st: string){
@@ -285,6 +311,51 @@ function worstOf(n: MapNode): string | null {
  if(n.items.some(i=>i.c==="red"))return "red";
  if(n.items.some(i=>i.c==="you"))return "you";
  return "amber";
+}
+/* ————— advisory gradient planes: a masked band on the front face ————— */
+const ADVISORY_VERT=`
+ varying vec2 vUv;
+ void main(){ vUv=uv; gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.0); }
+`;
+const ADVISORY_FRAG=`
+ uniform vec3 uColors[3]; uniform int uCount;
+ uniform float uPhase; uniform float uMotion;
+ varying vec2 vUv;
+ void main(){
+  float t=clamp(vUv.y+uPhase*uMotion,0.0,1.0);
+  vec3 col=uColors[0];
+  if(uCount>1){
+   float f=t*float(uCount-1); int i=int(floor(f)); float fr=f-float(i);
+   col=mix(uColors[min(i,2)],uColors[min(i+1,2)],smoothstep(0.0,1.0,fr));
+  }
+  float shade=0.82+0.18*sin((vUv.x+vUv.y)*6.28318+uPhase*6.28318*uMotion);
+  gl_FragColor=vec4(col*shade,0.92);
+ }
+`;
+function advisoryPlane(n: MapNode,cats: string[]): THREE.Mesh<THREE.PlaneGeometry, THREE.ShaderMaterial> | null {
+ const present=cats.filter(c=>ADVISORY[c]);
+ if(!present.length)return null;
+ const cols: THREE.Color[]=[];
+ present.forEach(c=>{cols.push(ADVISORY[c].wash);});
+ present.forEach(c=>{cols.push(ADVISORY[c].deep);});
+ const uColors=[cols[0],cols[1]??cols[0],cols[2]??cols[cols.length-1]??cols[0]];
+ const mat=new THREE.ShaderMaterial({
+  vertexShader:ADVISORY_VERT,fragmentShader:ADVISORY_FRAG,transparent:true,depthWrite:false,
+  uniforms:{uColors:{value:uColors},uCount:{value:Math.min(3,cols.length)},uPhase:{value:0},uMotion:{value:0}}
+ });
+ const h=Math.max(n.h,0.6);
+ const plane=new THREE.Mesh(new THREE.PlaneGeometry(n.w,h),mat);
+ plane.position.set(n.x+n.w/2,h/2+0.02,n.y+n.d+0.012);
+ plane.userData.advisoryCats=present;
+ return plane;
+}
+function refreshAdvisory(n: MapNode): void {
+ const cats=Array.from(new Set((n.items||[]).map(i=>i.c).filter(c=>SIGNAL_BASES[c])));
+ const old=advisoryById[n.id]||[];
+ old.forEach(p=>{const par=p.parent;if(par)par.remove(p);p.geometry.dispose();p.material.dispose();});
+ advisoryById[n.id]=[];
+ const plane=advisoryPlane(n,cats);
+ if(plane){meshById[n.id].add(plane);advisoryById[n.id]=[plane];}
 }
 /* graph edges on the ground */
 /* connection health: a link can be broken/degraded independent of its modules.
@@ -532,46 +603,59 @@ function mark(id: string,on: boolean): void {
  if(li){li.classList.toggle("is-pressed",on);li.setAttribute("aria-pressed",String(on));}
  if(g){g.traverse((o: THREE.Object3D)=>{if(o instanceof THREE.LineSegments){const material=o.material;if(!Array.isArray(material)&&"color" in material)material.color=on?COL.accent:COL.fg1;}});}
 }
+/* peek = title-only resting state (~16vh); medium/large = canonical sheet detents */
+type SheetDetent="peek"|"medium"|"large";
+let sheetDetent: SheetDetent="medium";
+function setSheetDetent(detent: SheetDetent): void {
+ sheetDetent=detent;
+ readingPanel.classList.toggle("is-peek",detent==="peek");
+ readingPanel.classList.toggle("is-medium",detent==="medium");
+ readingPanel.classList.toggle("is-large",detent==="large");
+ sheetGrabber.setAttribute("aria-label",detent==="large"?"Collapse reading panel":"Expand reading panel");
+}
 function openReadingPanel(focusSearch=false): void {
  if(!compactReader.matches)return;
  if(drawer.classList.contains("open"))closeSettings(); /* layers are exclusive: one surface at a time */
  const ae=document.activeElement;
  readingReturnFocus=ae instanceof HTMLElement&&ae!==document.body?ae:btnReadMap;
- readingScrim.hidden=false;sideRail.inert=true;canvasWrap.inert=true; /* rail and art go inert while the sheet owns the screen */
+ readingScrim.hidden=true; /* the tray floats over the art; a dim scrim is not part of this product */
+ sideRail.inert=false;canvasWrap.inert=false; /* the art stays alive under the tray */
  readingPanel.hidden=false;readingPanel.inert=false;readerModalOpen=true;
- setSheetDetent("medium");
- readingPanel.setAttribute("role","dialog");readingPanel.setAttribute("aria-modal","true");
+ setSheetDetent(sheetDetent==="peek"?"medium":sheetDetent);
+ readingPanel.setAttribute("role","dialog");readingPanel.removeAttribute("aria-modal");
  btnReadMap.setAttribute("aria-expanded","true");
- requestAnimationFrame(()=>{
-  if(focusSearch)moduleSearch.focus();
-  else readingPanel.querySelector<HTMLElement>("[data-dp-close]")?.focus();
- });
+ trayHandle.hidden=true;
+ if(focusSearch)requestAnimationFrame(()=>moduleSearch.focus());
 }
 const readingPanel=$<HTMLElement>("readingPanel");
 const btnReadMap=$<HTMLButtonElement>("btnReadMap");
 const readingScrim=$<HTMLElement>("readingScrim");
 const sideRail=$<HTMLElement>("mapControls");
 const canvasWrap=$<HTMLElement>("canvasWrap");
+const trayHandle=$<HTMLButtonElement>("trayHandle");
+const panelResizer=$<HTMLElement>("panelResizer");
 const compactReader=window.matchMedia("(max-width: 1180px)");
 let readingReturnFocus: HTMLElement | null=null;
 let readerModalOpen=false;
 function closeReadingPanel(): void {
- readerModalOpen=false;sideRail.inert=false;canvasWrap.inert=false;
+ readerModalOpen=false;
  btnReadMap.setAttribute("aria-expanded","false");
- if(compactReader.matches){readingScrim.hidden=true;readingPanel.hidden=true;readingPanel.inert=true;}
+ if(compactReader.matches){readingScrim.hidden=true;readingPanel.hidden=true;readingPanel.inert=true;trayHandle.hidden=false;}
  (readingReturnFocus?.isConnected?readingReturnFocus:btnReadMap).focus();readingReturnFocus=null;
 }
 function syncReaderLayout(): void {
  if(compactReader.matches){
   readerModalOpen=false;readingScrim.hidden=true;readingPanel.hidden=true;readingPanel.inert=true;
-  readingPanel.classList.add("dp-sheet");
-  readingPanel.setAttribute("role","dialog");readingPanel.setAttribute("aria-modal","true");
+  readingPanel.classList.add("dp-sheet");readingPanel.classList.remove("is-peek","is-medium","is-large");
+  readingPanel.setAttribute("role","dialog");readingPanel.removeAttribute("aria-modal");
   sideRail.inert=false;canvasWrap.inert=false;btnReadMap.setAttribute("aria-expanded","false");
+  trayHandle.hidden=false;panelResizer.hidden=true;
  }else{
   readingScrim.hidden=true;readingPanel.hidden=false;readingPanel.inert=false;
-  readingPanel.classList.remove("dp-sheet","is-medium","is-large");
+  readingPanel.classList.remove("dp-sheet","is-peek","is-medium","is-large");
   readingPanel.setAttribute("role","complementary");readingPanel.removeAttribute("aria-modal");
   sideRail.inert=false;canvasWrap.inert=false;btnReadMap.setAttribute("aria-expanded","false");
+  trayHandle.hidden=true;panelResizer.hidden=false;
  }
 }
 compactReader.addEventListener("change",()=>{
@@ -582,6 +666,36 @@ compactReader.addEventListener("change",()=>{
  if(focusWasInPanel&&compactReader.matches)btnReadMap.focus();
  else if(readerWasOpen&&!compactReader.matches)readingPanel.focus();
 });
+/* the summon strip brings the surface back, whichever form factor it takes */
+trayHandle.addEventListener("click",()=>{
+ renderPanel(null);
+ readingPanel.scrollTop=0;
+ if(compactReader.matches)openReadingPanel(false);
+ else{readingPanel.hidden=false;readingPanel.inert=false;trayHandle.hidden=true;readingPanel.focus({preventScroll:true});}
+});
+/* wide-mode reader width: drag the divider anywhere (16%–50% of the viewport); arrows step it */
+let panelWidthPx: number | null=null;
+function applyPanelWidth(px: number): void {
+ const min=Math.max(320,innerWidth*0.16),max=innerWidth*0.5;
+ panelWidthPx=Math.round(Math.min(max,Math.max(min,px)));
+ document.documentElement.style.setProperty("--panel-w",panelWidthPx+"px");
+ panelResizer.setAttribute("aria-valuenow",String(Math.round(panelWidthPx/innerWidth*100)));
+}
+panelResizer.addEventListener("pointerdown",ev=>{
+ if(compactReader.matches)return;
+ ev.preventDefault();panelResizer.setPointerCapture(ev.pointerId);panelResizer.classList.add("dragging");
+ const startX=ev.clientX,startW=readingPanel.getBoundingClientRect().width;
+ const move=(e: PointerEvent)=>applyPanelWidth(startW+(startX-e.clientX));
+ const up=()=>{panelResizer.classList.remove("dragging");panelResizer.removeEventListener("pointermove",move);panelResizer.removeEventListener("pointerup",up);};
+ panelResizer.addEventListener("pointermove",move);panelResizer.addEventListener("pointerup",up);
+});
+panelResizer.addEventListener("keydown",ev=>{
+ if(compactReader.matches)return;
+ const w=panelWidthPx??readingPanel.getBoundingClientRect().width;
+ if(ev.key==="ArrowLeft"){ev.preventDefault();applyPanelWidth(w+24);}
+ else if(ev.key==="ArrowRight"){ev.preventDefault();applyPanelWidth(w-24);}
+});
+window.addEventListener("resize",()=>{if(panelWidthPx!==null&&!compactReader.matches)applyPanelWidth(panelWidthPx);});
 syncReaderLayout();
 btnReadMap.addEventListener("click",()=>{
  renderPanel(null);
@@ -589,9 +703,7 @@ btnReadMap.addEventListener("click",()=>{
  if(compactReader.matches)openReadingPanel(false);
  else readingPanel.focus({preventScroll:true});
 });
-$("closeReadingPanel").addEventListener("click",closeReadingPanel);
-readingScrim.addEventListener("click",ev=>{if(ev.target===readingScrim)closeReadingPanel();});
-/* focus trap lives on the panel (focus is inside it); the scrim never receives keys */
+/* the tray is non-modal: scrim clicks pass to the art; Escape rests the tray at peek */
 const FOCUSABLE='button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), a[href], summary, [tabindex]:not([tabindex="-1"])';
 readingPanel.addEventListener("keydown",ev=>{
  if(ev.key!=="Tab"||!readerModalOpen)return;
@@ -601,21 +713,15 @@ readingPanel.addEventListener("keydown",ev=>{
  if(ev.shiftKey&&document.activeElement===first){ev.preventDefault();last.focus();}
  else if(!ev.shiftKey&&document.activeElement===last){ev.preventDefault();first.focus();}
 });
-/* canonical bottom-sheet behaviour: grabber click toggles detents, drag dismisses past the token ratio/velocity */
 const sheetGrabber=$<HTMLButtonElement>("sheetGrabber");
-let sheetDetent: "medium"|"large"="medium";
-function setSheetDetent(detent: "medium"|"large"): void {
- sheetDetent=detent;
- readingPanel.classList.toggle("is-medium",detent==="medium");
- readingPanel.classList.toggle("is-large",detent==="large");
- sheetGrabber.setAttribute("aria-label",detent==="medium"?"Expand reading panel":"Collapse reading panel");
-}
 let suppressGrabberClick=false;
 sheetGrabber.addEventListener("click",()=>{
  if(suppressGrabberClick){suppressGrabberClick=false;return;} /* a real drag ended on the grabber */
  if(!compactReader.matches||!readerModalOpen)return;
- setSheetDetent(sheetDetent==="medium"?"large":"medium");
+ setSheetDetent(sheetDetent==="peek"?"medium":sheetDetent==="medium"?"large":"medium");
 });
+/* X and drag-down put the tray away to its resting peek — it never vanishes without a way back */
+$("closeReadingPanel").addEventListener("click",()=>setSheetDetent("peek"));
 (function sheetDrag(){
  const css=getComputedStyle(readingPanel);
  const num=(name: string,fallback: number): number=>{const v=parseFloat(css.getPropertyValue(name));return Number.isFinite(v)?v:fallback;};
@@ -637,12 +743,14 @@ sheetGrabber.addEventListener("click",()=>{
  });
  const settle=(ev: PointerEvent)=>{
   if(!drag)return;
+  const h=drag.h;
   const dy=Math.max(0,ev.clientY-drag.y),vy=drag.vy,moved=drag.moved;
   drag=null;readingPanel.classList.remove("is-dragging");readingPanel.style.transform="";
-  if(!moved)return; /* below slop: let the click toggle the detent */
+  if(!moved)return; /* below slop: let the click cycle the detent */
   suppressGrabberClick=true;
   ev.preventDefault();
-  if(vy>dismissVelocity||dy>dismissRatio*readingPanel.getBoundingClientRect().height)closeReadingPanel();
+  /* strong pull-down rests the tray at peek; otherwise step down one detent */
+  if(vy>dismissVelocity||(dy>dismissRatio*h&&sheetDetent!=="peek"))setSheetDetent(sheetDetent==="large"?"medium":"peek");
   else if(dy>readingPanel.getBoundingClientRect().height*0.2&&sheetDetent==="large")setSheetDetent("medium");
  };
  sheetGrabber.addEventListener("pointerup",settle);
@@ -683,6 +791,12 @@ function paintCircuit(){
   meshById[n.id].traverse((o: THREE.Object3D)=>{
     materialsOf(o).forEach((m: THREE.Material)=>{const r=Number(m.userData.op0??1);
       m.transparent=!on||r<1;m.opacity=on?r:(o instanceof THREE.Mesh?0.32:0.22);m.needsUpdate=true;});});
+  /* advisory bands stay legible when deselected (a lighter veil, never erased) */
+  (advisoryById[n.id]||[]).forEach(p=>{
+   p.material.uniforms.uMotion.value=on?1:0;
+   p.material.opacity=on?1:0.5; /* veil: present but quiet until the module is energized */
+   p.material.needsUpdate=true;
+  });
  });
 }
 function applyCircuit(){
@@ -836,7 +950,7 @@ const btnFlow=$<HTMLButtonElement>("btnFlow");
 btnFlow.addEventListener("click",()=>{
  flowing=!flowing;if(RM)flowing=false;
  btnFlow.setAttribute("aria-pressed",String(flowing));
- setCanonicalIcon(btnFlow,flowing?iconPause:iconPlay);
+ setCanonicalIcon(btnFlow,flowing?iconStop:iconPlay);
 });
 const btnStack=$<HTMLButtonElement>("btnStack");
 btnStack.addEventListener("click",()=>{
@@ -882,6 +996,20 @@ function refreshTheme(): void {
  computePalette();scene.background=COL.paper.clone();ambient.color.copy(COL.paper);sun.color.copy(COL.paper);fill.color.copy(COL.paper);makeGrid();
  themed.forEach(t=>{if(t.m.color){t.m.color.copy(t.get());t.m.needsUpdate=true;}});
  hatched.forEach(h=>{const old=h.m.map;h.m.map=makeHatch(h.st);h.m.needsUpdate=true;if(old)old.dispose();});
+ /* advisory gradients repaint from the live theme */
+ computeAdvisory();
+ NODES.forEach(n=>{
+  const planes=advisoryById[n.id]||[];
+  if(!planes.length)return;
+  const cats=Array.from(new Set((n.items||[]).map(i=>i.c).filter(c=>SIGNAL_BASES[c])));
+  planes.forEach(p=>{
+   const cols: THREE.Color[]=[];
+   cats.forEach(c=>{cols.push(ADVISORY[c].wash);});
+   cats.forEach(c=>{cols.push(ADVISORY[c].deep);});
+   p.material.uniforms.uColors.value=[cols[0],cols[1]??cols[0],cols[2]??cols[cols.length-1]??cols[0]];
+   p.material.uniforms.uCount.value=Math.min(3,cols.length);
+  });
+ });
  paintCircuit();
  /* browser chrome follows the canvas (token color.chrome.theme = bg-canvas) */
  const chromeMeta=document.querySelector('meta[name="theme-color"]');
@@ -923,7 +1051,7 @@ drawer.addEventListener("keydown",ev=>{
 document.addEventListener("keydown",ev=>{
  if(ev.key!=="Escape")return;
  if(drawer.classList.contains("open")){ev.preventDefault();closeSettings();}
- else if(readerModalOpen){ev.preventDefault();closeReadingPanel();}
+ else if(readerModalOpen){ev.preventDefault();setSheetDetent("peek");}
 });
 const themeList=$<HTMLElement>("themeList");
 const modeSelect=$<HTMLSelectElement>("modeSelect");
@@ -1003,8 +1131,6 @@ const dec=(t: string | undefined): string=>new DOMParser().parseFromString("<x>"
 $("pEyebrow").textContent=dec((spec.intro||{}).eyebrow);
 $("pTitle").textContent=dec((spec.intro||{}).title);
 $("pSub").textContent=dec((spec.intro||{}).sub);
-const brandTag=document.getElementById("brandTag");
-if(brandTag)brandTag.textContent=dec((spec.intro||{}).sub)||"See the shape of your codebase";
 
 NODES.forEach(n=>{
  const grp=new THREE.Group();grp.userData.id=n.id;
@@ -1029,6 +1155,7 @@ NODES.forEach(n=>{
    for(let i=0;i<n.stack;i++)box(i*(sh+gap)*0.8,sh);}
  else box(0,n.h);
  scene.add(grp);meshById[n.id]=grp;
+ refreshAdvisory(n);
  /* placard */
  const lb=document.createElement("div");lb.className="lbl";lb.id="lb-"+n.id;
  const idsp=document.createElement("span");idsp.className="id";idsp.textContent=n.id;
@@ -1202,6 +1329,14 @@ function tick(){
  });
  if(lvlMoving)Object.values(edgeLinesById).forEach(o=>rebuildEdge(o));
  if(!lvlMoving&&rebuildDotsAfterLevelMotion){Object.values(edgeLinesById).forEach(o=>buildDots(o));rebuildDotsAfterLevelMotion=false;}
+ /* advisory bands move only while Flow is on, and only on energized modules */
+ Object.keys(advisoryById).forEach(id=>{
+  const on=cordon.size===0||cordon.has(id);
+  advisoryById[id].forEach(p=>{
+   const live=flowing&&on&&!RM;
+   if(live)p.material.uniforms.uPhase.value=(p.material.uniforms.uPhase.value+0.004)%1;
+  });
+ });
  /* junction dots read exactly as their pipe: same ink, same opacity — ghosted pipe, ghosted join */
  Object.values(edgeLinesById).forEach(o=>{const lm=o.line.material;o.jn.forEach(j=>{j.material.color.copy(lm.color);j.material.opacity=lm.opacity;j.visible=lm.opacity>0.02;});});
  /* flow dots exist only where flow is on AND the line is lit */

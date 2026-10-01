@@ -18,28 +18,31 @@ body { display: grid; grid-template-rows: auto minmax(0, 1fr); background: var(-
 .iso-mark-top { fill: var(--dp-color-accent-default); }
 .iso-mark-left { fill: var(--dp-color-text-primary); }
 .iso-mark-right { fill: var(--dp-color-text-secondary); }
-.brand-tag { color: var(--dp-color-text-muted); margin-inline-start: var(--dp-space-4); min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.brand-tag[hidden] { display: none; }
-@media (max-width: 440px) { .brand-tag { display: none; } } /* breakpoint.xs: wordmark only */
 
-/* ————— workbench grid: control rail · art viewport · reading panel ————— */
-.workbench { display: grid; grid-template-columns: var(--dp-layout-grid-component-visualization-workbench-rail-width) minmax(0, 1fr); gap: var(--dp-layout-grid-component-visualization-workbench-compact-gap); min-height: 0; overflow: hidden; }
-.side { grid-column: 1; display: flex; flex-direction: column; gap: var(--dp-space-3); min-width: 0; overflow: auto; padding-block: var(--dp-space-3); padding-inline: var(--dp-layout-grid-component-visualization-workbench-rail-inline-padding); border-inline-end: var(--dp-border-width-hair) solid var(--dp-color-border-subtle); scrollbar-width: none; }
-.rail-actions { display: grid; gap: var(--dp-space-2); }
-.rail-actions .dp-button { inline-size: var(--dp-layout-grid-component-visualization-workbench-rail-touch-min); min-inline-size: var(--dp-layout-grid-component-visualization-workbench-rail-touch-min); min-block-size: var(--dp-layout-grid-component-visualization-workbench-rail-touch-min); padding-inline: 0; }
+/* ————— workbench: art viewport with floating controls + resizable reader ————— */
+.workbench { display: grid; grid-template-columns: minmax(0, 1fr); min-height: 0; overflow: hidden; }
+
+/* one floating cluster over the art, top-start: every control the same 44px box.
+   Compact: a bottom sheet over the art. Wide: a resizable column. */
+.controls-float { position: absolute; inset-block-start: var(--dp-space-3); inset-inline-start: var(--dp-space-3); z-index: var(--dp-z-raised); display: flex; flex-direction: column; gap: var(--dp-space-2); }
+.controls-float .dp-button { position: relative; inline-size: var(--dp-layout-grid-component-visualization-workbench-rail-touch-min); min-inline-size: var(--dp-layout-grid-component-visualization-workbench-rail-touch-min); min-block-size: var(--dp-layout-grid-component-visualization-workbench-rail-touch-min); padding-inline: 0; overflow: visible; box-shadow: var(--dp-shadow-sm); }
+/* labels expand to the right of the icon on hover/focus (desktop pointer affordance) */
+.controls-float .dp-button::after { content: attr(title); position: absolute; inset-inline-start: calc(100% + var(--dp-space-2)); inset-block-start: 50%; translate: 0 -50%; padding: var(--dp-space-1) var(--dp-space-2); border-radius: var(--dp-radius-md); background: var(--dp-color-bg-raised); color: var(--dp-color-text-primary); border: var(--dp-border-width-hair) solid var(--dp-color-border-subtle); box-shadow: var(--dp-shadow-sm); font-family: var(--dp-type-label-sm-font-family); font-size: var(--dp-type-label-sm-font-size); font-weight: var(--dp-type-label-sm-font-weight); letter-spacing: var(--dp-type-label-sm-letter-spacing); text-transform: var(--dp-type-label-sm-text-transform); white-space: nowrap; opacity: 0; visibility: hidden; transition: opacity var(--dp-duration-fast) var(--dp-easing-standard); pointer-events: none; }
+.controls-float .dp-button:hover::after, .controls-float .dp-button:focus-visible::after { opacity: 1; visibility: visible; }
+@media (hover: none) { .controls-float .dp-button::after { display: none; } }
+/* toggle contract: momentaries (reset/zoom/trace) flash the press accent only while held;
+   toggles (flow/stack) latch in the accent while on */
+.controls-float .dp-button[aria-pressed="true"] { background: var(--dp-color-accent-default); border-color: var(--dp-color-accent-default); color: var(--dp-color-accent-contrast); }
+.controls-float .dp-button[aria-pressed="true"]:hover { background: var(--dp-color-accent-hover); border-color: var(--dp-color-accent-hover); color: var(--dp-color-accent-contrast); }
+.controls-float .dp-button:not([aria-pressed]):active, .controls-float .dp-button[aria-pressed="false"]:active { background: var(--dp-color-accent-press); border-color: var(--dp-color-accent-press); color: var(--dp-color-accent-contrast); }
 .dp-icon { inline-size: var(--dp-component-button-size-sm-icon); block-size: var(--dp-component-button-size-sm-icon); flex: none; }
-.rail-camera { display: grid; gap: var(--dp-space-2); margin-block-start: var(--dp-space-3); }
-.rail-camera .dp-button { inline-size: var(--dp-layout-grid-component-visualization-workbench-rail-touch-min); min-inline-size: var(--dp-layout-grid-component-visualization-workbench-rail-touch-min); min-block-size: var(--dp-layout-grid-component-visualization-workbench-rail-touch-min); padding-inline: 0; }
-/* short heights (breakpoint-height.short = 500px): pack the rail; zoom floats over the
-   canvas corner like every map product, always reachable without scrolling the rail */
+/* short heights (breakpoint-height.short = 500px): tighten the cluster */
 @media (max-height: 500px) {
-  .side { gap: var(--dp-space-1); padding-block: var(--dp-space-1); }
-  .rail-actions { gap: var(--dp-space-1); }
-  .rail-camera { position: fixed; inset-inline-end: var(--dp-space-3); inset-block-end: var(--dp-space-3); z-index: var(--dp-z-raised); grid-auto-flow: column; gap: var(--dp-space-1); margin-block-start: 0; }
+  .controls-float { gap: var(--dp-space-1); inset-block-start: var(--dp-space-1); inset-inline-start: var(--dp-space-1); }
 }
 
 /* ————— art viewport (protected) ————— */
-.canvas-wrap { grid-column: 2; position: relative; min-width: 0; min-height: 0; overflow: hidden; background: var(--dp-color-bg-canvas); }
+.canvas-wrap { position: relative; min-width: 0; min-height: 0; overflow: hidden; background: var(--dp-color-bg-canvas); }
 #gl { display: block; width: 100%; height: 100%; outline: none; }
 #gl:focus-visible { outline: var(--dp-border-width-focus) solid var(--dp-color-focus-ring); outline-offset: calc(-1 * var(--dp-border-width-focus)); }
 #labels { position: absolute; inset: 0; overflow: hidden; pointer-events: none; }
@@ -57,12 +60,25 @@ body { display: grid; grid-template-rows: auto minmax(0, 1fr); background: var(-
 .lbl.hot { background: var(--dp-color-selection-bg); color: var(--dp-color-selection-fg); }
 .lbl.dim { opacity: var(--dp-component-scene-node-muted-opacity); }
 
-/* ————— reading panel: bottom sheet on small screens (canonical .dp-sheet anatomy) ————— */
+/* ————— reading panel: bottom tray on small screens (canonical .dp-sheet anatomy) ————— */
 .panel { position: fixed; inset-inline: 0; inset-block-end: 0; margin-inline: auto; max-inline-size: var(--dp-component-bottom-sheet-max-width); z-index: var(--dp-z-sheet); min-height: 0; }
 .panel[hidden] { display: none; }
 .sheet-head { position: sticky; top: 0; z-index: var(--dp-z-raised); display: flex; align-items: center; justify-content: center; padding-block-end: var(--dp-space-2); background: var(--dp-component-bottom-sheet-bg); }
 .sheet-head .dp-sheet__grabber { margin: 0; }
 .close-reading { position: absolute; inset-inline-end: var(--dp-space-2); top: 0; color: var(--dp-color-text-secondary); }
+/* peek: only the grabber + current title show (~16% of a phone screen); one tap lifts the rest */
+.panel.is-peek { block-size: clamp(5.6rem, 16vh, 8.4rem); }
+.panel.is-peek .scroll { display: none; }
+.panel.is-peek .close-reading { display: none; }
+/* summon handle: right-edge strip, always there when the tray is away (both form factors) */
+.tray-handle { position: fixed; inset-inline-end: 0; inset-block: var(--dp-space-6); z-index: var(--dp-z-raised); inline-size: var(--dp-space-5); padding: 0; border: 0; border-inline-start: var(--dp-border-width-hair) solid var(--dp-color-border-subtle); border-radius: var(--dp-radius-md) 0 0 var(--dp-radius-md); background: var(--dp-color-bg-raised); cursor: pointer; }
+.tray-handle::after { content: ""; position: absolute; inset-inline-start: 50%; inset-block-start: 50%; translate: -50% -50%; inline-size: var(--dp-border-width-thick); block-size: var(--dp-layout-size-touch-min); border-radius: var(--dp-radius-full); background: var(--dp-color-border-default); }
+.tray-handle:hover::after, .tray-handle:focus-visible::after { background: var(--dp-color-accent-default); }
+.tray-handle[hidden] { display: none; }
+/* wide-mode divider: drag anywhere on it to resize the reader (16%–50% of the viewport) */
+.panel-resizer { position: absolute; inset-block: 0; inset-inline-end: 0; z-index: var(--dp-z-raised); inline-size: var(--dp-space-3); cursor: col-resize; touch-action: none; }
+.panel-resizer::after { content: ""; position: absolute; inset-block: 0; inset-inline-start: 50%; inline-size: var(--dp-border-width-thick); translate: -50% 0; background: transparent; transition: background var(--dp-duration-fast) var(--dp-easing-standard); }
+.panel-resizer:hover::after, .panel-resizer:focus-visible::after, .panel-resizer.dragging::after { background: var(--dp-color-accent-default); }
 .scroll { min-height: 0; }
 .inspector-head { margin-block-end: var(--dp-space-4); }
 .dp-eyebrow { margin-block-end: var(--dp-space-1); }
@@ -116,6 +132,8 @@ details > summary { cursor: pointer; }
 .drawer { position: fixed; inset-block: 0; inset-inline-end: 0; z-index: var(--dp-z-dialog); display: flex; flex-direction: column; inline-size: var(--dp-layout-container-sm); max-inline-size: calc(100% - var(--dp-space-6)); padding: var(--dp-space-5); overflow: auto; background: var(--dp-color-bg-raised); color: var(--dp-color-text-primary); border-inline-start: var(--dp-border-width-hair) solid var(--dp-color-border-default); box-shadow: var(--dp-shadow-lg); transform: translateX(100%); transition: transform var(--dp-duration-base) var(--dp-easing-standard); }
 .drawer[hidden] { display: none; }
 .drawer.open { transform: none; }
+/* the recipe sets family/size only; complete the tuple so selects render the brand type */
+.drawer .dp-field__control { font-weight: var(--dp-type-body-sm-font-weight); letter-spacing: var(--dp-type-body-sm-letter-spacing); text-transform: var(--dp-type-body-sm-text-transform); }
 .drawer-head { display: flex; align-items: center; justify-content: space-between; gap: var(--dp-space-3); }
 .drawer-head h2 { margin: 0; }
 .drawer-body { display: grid; align-content: start; gap: var(--dp-space-3); overflow: auto; padding-block-start: var(--dp-space-3); }
@@ -152,10 +170,11 @@ details > summary { cursor: pointer; }
 .ct.you { color: var(--dp-color-accent-default); }
 .ct.caution { color: var(--dp-color-signal-warning-text); }
 
-/* ————— wide workbench (≥ breakpoint.lg 1180px): reader becomes a static column ————— */
+/* ————— wide workbench (≥ breakpoint.lg 1180px): reader is a resizable static column ————— */
 @media (min-width: 1181px) {
-  .workbench { grid-template-columns: var(--dp-layout-grid-component-visualization-workbench-rail-width) minmax(0, 1fr) minmax(var(--dp-layout-grid-component-visualization-workbench-reading-min-width), var(--dp-layout-grid-component-visualization-workbench-reading-preferred-width)); gap: var(--dp-layout-grid-component-visualization-workbench-gap); }
-  .panel { position: static; grid-column: 3; min-width: 0; max-inline-size: none; overflow: auto; z-index: auto; background: var(--dp-color-bg-surface); border-inline-start: var(--dp-border-width-hair) solid var(--dp-color-border-subtle); border-radius: 0; box-shadow: none; }
+  .workbench { display: flex; }
+  .canvas-wrap { flex: 1 1 auto; }
+  .panel { position: relative; inset: auto; flex: 0 0 var(--panel-w, var(--dp-layout-grid-component-visualization-workbench-reading-preferred-width)); min-inline-size: 0; max-inline-size: none; overflow: auto; z-index: auto; background: var(--dp-color-bg-surface); border-inline-start: var(--dp-border-width-hair) solid var(--dp-color-border-subtle); border-radius: 0; box-shadow: none; }
   .sheet-head { display: none; }
   .scroll { padding: var(--dp-space-6) var(--dp-space-5); }
   .reading-section { margin-block-start: var(--dp-space-6); }

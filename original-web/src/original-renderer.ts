@@ -436,6 +436,7 @@ function facePlane(n: MapNode,face: FaceKey,mat: THREE.Material): THREE.Mesh<THR
  const px=n.x+n.w/2,pz=n.y+n.d/2;
  let m: THREE.Mesh<THREE.PlaneGeometry, THREE.Material>;
  if(face==="roof"){m=new THREE.Mesh(new THREE.PlaneGeometry(n.w,n.d),mat);m.rotation.x=-Math.PI/2;m.position.set(px,h+proud,pz);}
+ else if(face==="bottom"){m=new THREE.Mesh(new THREE.PlaneGeometry(n.w,n.d),mat);m.rotation.x=Math.PI/2;m.position.set(px,-proud,pz);} /* faces down, under the box */
  else if(face==="south"){m=new THREE.Mesh(new THREE.PlaneGeometry(n.w,h),mat);m.rotation.y=Math.PI;m.position.set(px,h/2+0.02,n.y-proud);}
  else if(face==="east"){m=new THREE.Mesh(new THREE.PlaneGeometry(n.d,h),mat);m.rotation.y=Math.PI/2;m.position.set(n.x+n.w+proud,h/2+0.02,pz);}
  else if(face==="west"){m=new THREE.Mesh(new THREE.PlaneGeometry(n.d,h),mat);m.rotation.y=-Math.PI/2;m.position.set(n.x-proud,h/2+0.02,pz);}
@@ -451,7 +452,7 @@ function containFit(tex: THREE.Texture,vw: number,vh: number,pw: number,ph: numb
 }
 function faceDims(n: MapNode,face: FaceKey): { pw: number; ph: number } {
  const h=Math.max(n.h,0.6);
- return face==="roof"?{pw:n.w,ph:n.d}:{pw:face==="east"||face==="west"?n.d:n.w,ph:h};
+ return (face==="roof"||face==="bottom")?{pw:n.w,ph:n.d}:{pw:face==="east"||face==="west"?n.d:n.w,ph:h};
 }
 /* ————— shared video pool —————
    One <video> decode per distinct source, no matter how many faces show it. 60
@@ -630,18 +631,25 @@ function audibleEntry(id: string): SurfaceEntry | null {
  for(const e of Object.values(faces))if(e&&e.audio&&e.video)return e;
  return null;
 }
-/* enforce the invariant across every surface: only audioFocus may be audible,
-   and only when masterAudio is on. */
+/* enforce the one-voice invariant. Surfaces that share a source share ONE pooled
+   <video> element, so loudness is decided per SOURCE, not per face: only the
+   focused module's source is unmuted, every other pooled element stays muted. */
+function focusSrc(): string | null {
+ if(!audioFocus)return null;
+ const e=audibleEntry(audioFocus);
+ return e&&e.video?(e.video as HTMLVideoElement & {__src?:string}).currentSrc||null:null;
+}
 function applyAudio(): void {
  const mods=audibleModules();
  if(masterAudio&&(!audioFocus||!mods.includes(audioFocus)))audioFocus=mods[0]??null; /* default voice: first audible module */
- Object.values(surfacesById).forEach(faces=>Object.values(faces).forEach(e=>{
-  if(!e||!e.video)return;
-  const audible=masterAudio&&e.moduleId===audioFocus&&!!e.audio;
-  e.video.muted=!audible;
-  if(audible){e.video.volume=1;if(e.video.paused)e.video.play().catch(()=>{});}
- }));
+ const target=focusSrc();
+ Object.values(videoPool).forEach(pv=>{
+  const audible=masterAudio&&!!target&&pv.video.currentSrc===target;
+  pv.video.muted=!audible;
+  if(audible){pv.video.volume=1;if(pv.video.paused)pv.video.play().catch(()=>{});}
+ });
  syncSoundButton();
+ refreshNowPlaying();
 }
 function setAudioFocus(id: string | null): void { audioFocus=id;applyAudio(); }
 function syncSoundButton(): void {
@@ -671,7 +679,43 @@ const mediaControls={
   Object.values(faces).forEach(e=>{if(e&&e.video){if(e.video.paused)e.video.play().catch(()=>{});else e.video.pause();}});
  },
  solo(id: string): void { if(!masterAudio)masterAudio=true;setAudioFocus(id); },
+ restart(id: string): void {
+  const faces=surfacesById[id];if(!faces)return;
+  const seen=new Set<HTMLVideoElement>();
+  Object.values(faces).forEach(e=>{if(e&&e.video&&!seen.has(e.video)){seen.add(e.video);e.video.currentTime=0;if(e.video.paused)e.video.play().catch(()=>{});}});
+ },
 };
+
+/* ————— media transport: one button, bottom-left above the avatar —————
+   Only appears when a module actually holds the voice (no media, no button — the
+   map isn't always a theater). Click toggles play/pause; Shift+click starts over. */
+const npPlay=$<HTMLButtonElement>("npPlay");
+function npModule(): string | null { return audioFocus??(cordon.size===1?[...cordon][0]:null); }
+function npVideo(): HTMLVideoElement | null {
+ const id=npModule();if(!id)return null;
+ const faces=surfacesById[id];if(!faces)return null;
+ const e=audibleEntry(id)??Object.values(faces).find(x=>x&&x.video)??null;
+ return e&&e.video?e.video:null;
+}
+function refreshNowPlaying(): void {
+ const id=npModule(),v=npVideo();
+ if(!id||!v){npPlay.hidden=true;return;}
+ npPlay.hidden=false;
+ const playing=!v.paused;
+ npPlay.classList.toggle("is-playing",playing);
+ npPlay.setAttribute("aria-label",(playing?"Pause":"Play")+" — "+(byId[id]&&(byId[id].name||id)||id));
+}
+npPlay.addEventListener("click",ev=>{
+ const id=npModule();if(!id)return;
+ if(ev.shiftKey)mediaControls.restart(id);else mediaControls.togglePlay(id);
+ refreshNowPlaying();
+});
+function nowPlayingTick(): void {
+ if(npPlay.hidden)return;
+ const v=npVideo();
+ const playing=!!(v&&!v.paused);
+ if(playing!==npPlay.classList.contains("is-playing"))refreshNowPlaying();
+}
 /* graph edges on the ground */
 /* connection health: a link can be broken/degraded independent of its modules.
    broken = risk red, gapped, and flow refuses to cross. degraded = amber, slow flow. */
@@ -799,7 +843,7 @@ function rebuildAllEdges(){Object.values(edgeLinesById).forEach(o=>{rebuildEdge(
 const HOME={tx:CENTER.x,ty:1.0,tz:CENTER.z,r:40,az:-Math.PI/4,pol:0.9553,zoom:1.12};
 const controls=new OrbitControls(camera,canvas);
 controls.enableDamping=true;controls.dampingFactor=0.08;
-controls.minZoom=0.35;controls.maxZoom=6;
+controls.minZoom=0.35;controls.maxZoom=24; /* punch right in to a single face */
 controls.minPolarAngle=0.05;controls.maxPolarAngle=Math.PI-0.05;
 controls.screenSpacePanning=false;
 function placeCamera(az: number,pol: number,r: number,tx: number,ty: number,tz: number,zoom: number): void {
@@ -818,6 +862,17 @@ document.addEventListener("keydown",ev=>{
  if(isEditableTarget(ev.target))return; /* typing "r" in the search field is not a camera command */
  if(readerModalOpen||drawer.classList.contains("open"))return; /* a modal owns the screen */
  resetView();
+});
+/* quick media control: Space = play/pause the module holding the voice, 0 = start it over */
+document.addEventListener("keydown",ev=>{
+ if(ev.key!==" "&&ev.key!=="0")return;
+ if(isEditableTarget(ev.target))return;                 /* typing in a field is not a transport command */
+ if(readerModalOpen||drawer.classList.contains("open"))return;
+ const id=audioFocus??(cordon.size===1?[...cordon][0]:null);
+ if(!id)return;
+ ev.preventDefault();
+ if(ev.key===" ")mediaControls.togglePlay(id);else mediaControls.restart(id);
+ refreshNowPlaying();
 });
 document.addEventListener("keydown",ev=>{
  if(ev.key!=="w"&&ev.key!=="W")return;
@@ -855,9 +910,10 @@ canvas.addEventListener("pointerdown",ev=>{downPt={x:ev.clientX,y:ev.clientY};})
 canvas.addEventListener("pointerup",ev=>{
  if(brush.isActive()){downPt=null;return;} /* the brush owns the pointer while drawing */
  if(downPt&&Math.abs(ev.clientX-downPt.x)<5&&Math.abs(ev.clientY-downPt.y)<5&&ev.button===0)
-   pickAt(ev.clientX,ev.clientY,ev.shiftKey,ev.metaKey||ev.ctrlKey);
+   pickAt(ev.clientX,ev.clientY,ev.shiftKey,false);
  downPt=null;
 });
+canvas.addEventListener("dblclick",ev=>{pickAt(ev.clientX,ev.clientY,ev.shiftKey,true);});
 
 /* ————— picking, hover, selection ————— */
 const ray=new THREE.Raycaster(),ptr=new THREE.Vector2();
@@ -904,13 +960,17 @@ function selectEdge(key: string): void {
  NODES.forEach(n=>mark(n.id,e.indexOf(n.id)>=0));
  renderEdgePanel(key);
 }
-function pickAt(cx: number,cy: number,shift: boolean,_meta: boolean): void {
+function pickAt(cx: number,cy: number,shift: boolean,dbl: boolean): void {
  incidentActive=false;
  const hit=castAt(cx,cy);
- /* shift+click = solo this module's audio WITHOUT selecting it (no camera, no
-    inspector). One voice at a time; this just chooses which. */
- if(shift&&hit&&hit.kind==="node"&&audibleModules().includes(hit.id)){setAudioFocus(hit.id);return;}
- if(hit&&hit.kind==="node"){
+ /* Selection only ever changes on shift+click or double-click. A PLAIN click on a
+    module just steers the single voice to it — sound follows what you point at,
+    without touching the cordon. */
+ if(hit&&hit.kind==="node"&&!shift&&!dbl){
+  if(audibleModules().includes(hit.id)){if(!masterAudio)masterAudio=true;setAudioFocus(hit.id);}
+  return;                                        /* plain click: audio only, no select */
+ }
+ if(hit&&hit.kind==="node"){                    /* shift+click or double-click: toggle */
   clearEdgeSel();
   if(cordon.has(hit.id))cordon.delete(hit.id);   /* cut the breaker */
   else{cordon.add(hit.id);flyTo(byId[hit.id]);}  /* energize */
@@ -918,8 +978,9 @@ function pickAt(cx: number,cy: number,shift: boolean,_meta: boolean): void {
   applyCircuit();return;
  }
  if(hit&&hit.kind==="edge"){selectEdge(hit.key);return;}
+ if(!shift&&!dbl)return;                        /* plain click on ground: leave the cordon be */
  clearEdgeSel();
- cordon.clear();                                  /* empty ground: board back to live */
+ cordon.clear();                                  /* shift/dbl-click empty ground: board back to live */
  pinned=null;NODES.forEach(n=>mark(n.id,false));
  applyCircuit();
 }
@@ -1150,6 +1211,7 @@ function applyCircuit(){
  if(ti>=0){ti=-1;}
  paintCircuit();
  updateNavigatorSelection();
+ refreshNowPlaying();
  if(cordon.size===0){renderPanel(null);return;}
  if(cordon.size===1){renderPanel([...cordon][0]);return;}
  renderCircuitPanel();
@@ -1915,6 +1977,7 @@ function tick(){
  });
  renderer.render(scene,camera);
  syncTick(); /* keep grouped surfaces frame-locked (the theater reads as one image) */
+ nowPlayingTick(); /* keep the now-playing plate's progress + play state live */
 }
 document.fonts.ready.then(()=>{window.__lblMeasured=false;});
 /* ————— R30 phase 1: restore the view after a live reload; remember theme + weights across sessions ————— */

@@ -6,8 +6,8 @@
    The store is deliberately free of Three.js — pure data + fetch — so it is
    unit-testable and the renderer binds to it, not the reverse. */
 
-export type FaceKey = "roof" | "north" | "south" | "east" | "west";
-export const FACES: FaceKey[] = ["roof", "north", "south", "east", "west"];
+export type FaceKey = "roof" | "north" | "south" | "east" | "west" | "bottom";
+export const FACES: FaceKey[] = ["roof", "north", "south", "east", "west", "bottom"];
 export type SurfaceKind = "video" | "image" | "mist" | "doc" | "slides" | "ink";
 export const SURFACE_KINDS: SurfaceKind[] = ["video", "image", "mist", "doc", "slides", "ink"];
 

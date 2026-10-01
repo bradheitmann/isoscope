@@ -89,6 +89,13 @@
      "fit": "cover",
      "group": "theater",
      "audio": true
+    },
+    {
+     "src": "/media/van-halen-jump.mp4",
+     "face": "bottom",
+     "fit": "cover",
+     "group": "theater",
+     "audio": false
     }
    ]
   },
@@ -140,6 +147,13 @@
      "fit": "cover",
      "group": "theater",
      "audio": true
+    },
+    {
+     "src": "/media/van-halen-when-its-love.mp4",
+     "face": "bottom",
+     "fit": "cover",
+     "group": "theater",
+     "audio": false
     }
    ]
   },
@@ -191,6 +205,13 @@
      "fit": "cover",
      "group": "theater",
      "audio": true
+    },
+    {
+     "src": "/media/van-halen-right-now.mp4",
+     "face": "bottom",
+     "fit": "cover",
+     "group": "theater",
+     "audio": false
     }
    ]
   },
@@ -242,6 +263,13 @@
      "fit": "cover",
      "group": "theater",
      "audio": true
+    },
+    {
+     "src": "/media/ratt-round-and-round.mp4",
+     "face": "bottom",
+     "fit": "cover",
+     "group": "theater",
+     "audio": false
     }
    ]
   },
@@ -293,6 +321,13 @@
      "fit": "cover",
      "group": "theater",
      "audio": true
+    },
+    {
+     "src": "/media/def-leppard-heartbreak.mp4",
+     "face": "bottom",
+     "fit": "cover",
+     "group": "theater",
+     "audio": false
     }
    ]
   },
@@ -345,6 +380,13 @@
      "fit": "cover",
      "group": "theater",
      "audio": true
+    },
+    {
+     "src": "/media/van-halen-jump.mp4",
+     "face": "bottom",
+     "fit": "cover",
+     "group": "theater",
+     "audio": false
     }
    ]
   },
@@ -396,6 +438,13 @@
      "fit": "cover",
      "group": "theater",
      "audio": true
+    },
+    {
+     "src": "/media/billy-idol-eyes.mp4",
+     "face": "bottom",
+     "fit": "cover",
+     "group": "theater",
+     "audio": false
     }
    ]
   },
@@ -447,6 +496,13 @@
      "fit": "cover",
      "group": "theater",
      "audio": true
+    },
+    {
+     "src": "/media/van-halen-jump.mp4",
+     "face": "bottom",
+     "fit": "cover",
+     "group": "theater",
+     "audio": false
     }
    ]
   },
@@ -498,6 +554,13 @@
      "fit": "cover",
      "group": "theater",
      "audio": true
+    },
+    {
+     "src": "/media/van-halen-when-its-love.mp4",
+     "face": "bottom",
+     "fit": "cover",
+     "group": "theater",
+     "audio": false
     }
    ]
   },
@@ -549,6 +612,13 @@
      "fit": "cover",
      "group": "theater",
      "audio": true
+    },
+    {
+     "src": "/media/van-halen-right-now.mp4",
+     "face": "bottom",
+     "fit": "cover",
+     "group": "theater",
+     "audio": false
     }
    ]
   },
@@ -600,6 +670,13 @@
      "fit": "cover",
      "group": "theater",
      "audio": true
+    },
+    {
+     "src": "/media/ratt-round-and-round.mp4",
+     "face": "bottom",
+     "fit": "cover",
+     "group": "theater",
+     "audio": false
     }
    ]
   },
@@ -651,6 +728,13 @@
      "fit": "cover",
      "group": "theater",
      "audio": true
+    },
+    {
+     "src": "/media/def-leppard-heartbreak.mp4",
+     "face": "bottom",
+     "fit": "cover",
+     "group": "theater",
+     "audio": false
     }
    ]
   }

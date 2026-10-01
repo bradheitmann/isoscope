@@ -127,6 +127,68 @@
       </div>
     </div>
   </aside>
+  <!-- bottom-left cluster: media transport button above the user avatar -->
+  <div class="me-cluster" id="meCluster">
+    <button class="np-fab" id="npPlay" type="button" hidden title="Play / pause the current track (Shift+click to start over)" aria-label="Play or pause the current track">
+      <span class="np-eq" id="npEq" aria-hidden="true"><i></i><i></i><i></i></span>
+      <span class="np-ico" id="npIco" aria-hidden="true">▶</span>
+    </button>
+    <span class="me-avatar" id="meAvatar" title="Bradley Heitmann">BH</span>
+  </div>
+  <!-- per-module inspect & edit: the "storage box" surface -->
+  <div class="dp-scrim inspector-scrim" id="inspectorScrim" hidden aria-hidden="true"></div>
+  <aside class="inspector" id="inspector" role="dialog" aria-modal="true" aria-labelledby="inspName" hidden inert>
+    <header class="inspector-bar">
+      <div class="inspector-title">
+        <p class="dp-eyebrow" id="inspTag"></p>
+        <h2 class="dp-type-h2" id="inspName"></h2>
+      </div>
+      <button class="dp-icon-button" id="inspectorClose" type="button" aria-label="Close inspector"></button>
+    </header>
+    <div class="inspector-body">
+      <section class="insp-section" aria-label="Surfaces">
+        <h3 class="dp-type-label-sm">Surfaces</h3>
+        <p class="dp-type-body-xs insp-hint">Pick a face, then choose what lives on it.</p>
+        <div class="face-chips" id="faceChips" role="tablist" aria-label="Faces"></div>
+        <div class="face-editor" id="faceEditor">
+          <div class="dp-segmented" id="kindSeg" role="group" aria-label="Content kind"></div>
+          <div class="face-src" id="faceSrcRow">
+            <select id="faceLibSel" class="dp-field__control" aria-label="From the media bench"></select>
+            <div class="face-src-row">
+              <input id="faceUrlIn" class="dp-field__control" type="url" placeholder="or paste a URL (video, image, stream)" aria-label="Source URL" />
+              <label class="dp-button dp-button--outline face-upload" for="faceFileIn">Upload<input id="faceFileIn" type="file" accept="video/*,image/*,audio/*" hidden /></label>
+            </div>
+            <textarea id="faceDocIn" class="dp-field__control" rows="4" placeholder="Markdown note for this face" aria-label="Document text" hidden></textarea>
+          </div>
+          <div class="face-actions">
+            <button class="dp-button" id="faceApply" type="button">Apply to face</button>
+            <button class="dp-button dp-button--outline" id="faceClear" type="button">Clear face</button>
+          </div>
+          <div class="face-media-ctl" id="faceMediaCtl" hidden>
+            <button class="dp-button dp-button--sm" id="mcPlay" type="button">Play / pause</button>
+            <button class="dp-button dp-button--sm dp-button--outline" id="mcSolo" type="button">Solo audio</button>
+            <span class="dp-type-body-xs" id="mcState"></span>
+          </div>
+        </div>
+      </section>
+      <section class="insp-section" aria-label="Notes">
+        <h3 class="dp-type-label-sm">Notes</h3>
+        <textarea id="inspNotes" class="dp-field__control" rows="4" placeholder="Your notes on this module — saved to its record." aria-label="Module notes"></textarea>
+        <p class="dp-type-meta" id="notesSaved"></p>
+      </section>
+      <section class="insp-section" aria-label="Inside">
+        <h3 class="dp-type-label-sm">Inside</h3>
+        <p class="dp-type-body-xs insp-hint">Files and notes kept inside this box.</p>
+        <ul class="inside-list" id="insideList"></ul>
+        <div class="inside-add">
+          <input id="insideNoteIn" class="dp-field__control" type="text" placeholder="Add an inside note" aria-label="Inside note" />
+          <button class="dp-button dp-button--sm" id="insideAddNote" type="button">Add</button>
+          <label class="dp-button dp-button--sm dp-button--outline" for="insideFileIn">Add file<input id="insideFileIn" type="file" hidden /></label>
+        </div>
+      </section>
+      <p class="dp-type-meta insp-persist" id="inspPersist"></p>
+    </div>
+  </aside>
   <script type="module" src="/src/main.ts"></script>
 </body>
 </html>

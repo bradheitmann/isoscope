@@ -1,0 +1,2680 @@
+{
+  "$description": "Layout, grids, sizes, iconography and interaction constants.",
+  "$extensions": {
+    "com.desertpants": {
+      "system": "desert-pants",
+      "format": "DTCG 2025.10",
+      "source": "Visual language derived from desertant.com (brand/index.css, assets/site.css, captured 2026-09-23/24). Logos, marks, product names, photography and copy are not included.",
+      "modes": [
+        "light",
+        "dark"
+      ]
+    }
+  },
+  "layout": {
+    "$description": "Layout: containers, page rhythm, header metrics and grids for web, mobile and print.",
+    "container": {
+      "$description": "Content containers (max widths).",
+      "sm": {
+        "$type": "dimension",
+        "$value": {
+          "value": 640,
+          "unit": "px"
+        },
+        "$description": "Narrow forms, toasts on large screens.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css --container-sm"
+          }
+        }
+      },
+      "md": {
+        "$type": "dimension",
+        "$value": {
+          "value": 820,
+          "unit": "px"
+        },
+        "$description": "Reading column with media.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css --container-md"
+          }
+        }
+      },
+      "lg": {
+        "$type": "dimension",
+        "$value": {
+          "value": 1080,
+          "unit": "px"
+        },
+        "$description": "Wide sections.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css --container-lg"
+          }
+        }
+      },
+      "xl": {
+        "$type": "dimension",
+        "$value": {
+          "value": 1172,
+          "unit": "px"
+        },
+        "$description": "Main page column, footer.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css --container-xl"
+          }
+        }
+      },
+      "2xl": {
+        "$type": "dimension",
+        "$value": {
+          "value": 1480,
+          "unit": "px"
+        },
+        "$description": "Full-bleed galleries.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css --container-2xl"
+          }
+        }
+      }
+    },
+    "max-width": {
+      "$description": "Maximum widths of specific blocks.",
+      "prose": {
+        "$type": "dimension",
+        "$value": {
+          "value": 900,
+          "unit": "px"
+        },
+        "$description": "Prose, section ledes, narrow sections, articles.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css .prose"
+          }
+        }
+      },
+      "copy": {
+        "$type": "dimension",
+        "$value": {
+          "value": 602,
+          "unit": "px"
+        },
+        "$description": "Short copy blocks beside media.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com assets/site.css .intel-copy"
+          }
+        }
+      },
+      "hero-sub": {
+        "$type": "dimension",
+        "$value": {
+          "value": 1040,
+          "unit": "px"
+        },
+        "$description": "Hero sub-line.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css .hero-sub"
+          }
+        }
+      },
+      "model-hero": {
+        "$type": "dimension",
+        "$value": {
+          "value": 618,
+          "unit": "px"
+        },
+        "$description": "Product hero text block.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css .model-hero"
+          }
+        }
+      },
+      "article-wide": {
+        "$type": "dimension",
+        "$value": {
+          "value": 1352,
+          "unit": "px"
+        },
+        "$description": "Wide figures inside articles.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com assets/site.css .article-wide"
+          }
+        }
+      },
+      "form": {
+        "$type": "dimension",
+        "$value": {
+          "value": 720,
+          "unit": "px"
+        },
+        "$description": "Maximum width of a form column.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com assets/site.css .contact-form"
+          }
+        }
+      },
+      "menu-min": {
+        "$type": "dimension",
+        "$value": {
+          "value": 240,
+          "unit": "px"
+        },
+        "$description": "Menu minimum width.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com assets/site.css .lang-switch-menu"
+          }
+        }
+      },
+      "menu-max": {
+        "$type": "dimension",
+        "$value": {
+          "value": 300,
+          "unit": "px"
+        },
+        "$description": "Menu maximum width.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com assets/site.css .lang-switch-menu"
+          }
+        }
+      },
+      "featured-body": {
+        "$type": "dimension",
+        "$value": {
+          "value": 620,
+          "unit": "px"
+        },
+        "$description": "Featured post text column.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css .post-card--featured .post-card-body"
+          }
+        }
+      },
+      "dialog": {
+        "$type": "dimension",
+        "$value": {
+          "value": 560,
+          "unit": "px"
+        },
+        "$description": "Maximum width of a dialog card.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "addition"
+          }
+        }
+      },
+      "toast": {
+        "$type": "dimension",
+        "$value": {
+          "value": 420,
+          "unit": "px"
+        },
+        "$description": "Maximum width of a toast.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "addition"
+          }
+        }
+      },
+      "sheet": {
+        "$type": "dimension",
+        "$value": {
+          "value": 640,
+          "unit": "px"
+        },
+        "$description": "Bottom sheets on wide screens.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "addition"
+          }
+        }
+      }
+    },
+    "gutter": {
+      "compact": {
+        "$type": "dimension",
+        "$value": {
+          "value": 24,
+          "unit": "px"
+        },
+        "$description": "Page side margin at 480px and below, and on phones.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css --gutter"
+          }
+        }
+      },
+      "regular": {
+        "$type": "dimension",
+        "$value": {
+          "value": 64,
+          "unit": "px"
+        },
+        "$description": "Page side margin at 1280px and above.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css --gutter"
+          }
+        }
+      },
+      "fluid": {
+        "$type": "dimension",
+        "$value": "{layout.gutter.compact}",
+        "$description": "Page side margin on the web: clamp(24px, 5vw, 64px). Native platforms use the compact value.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css --gutter",
+            "fluid": {
+              "min-px": 24,
+              "vw": 5,
+              "offset-px": 0,
+              "max-px": 64,
+              "min": "{layout.gutter.compact}",
+              "max": "{layout.gutter.regular}"
+            }
+          }
+        }
+      }
+    },
+    "header": {
+      "height-compact": {
+        "$type": "dimension",
+        "$value": {
+          "value": 80,
+          "unit": "px"
+        },
+        "$description": "Header height at small viewports.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css --head-h"
+          }
+        }
+      },
+      "height-regular": {
+        "$type": "dimension",
+        "$value": {
+          "value": 110,
+          "unit": "px"
+        },
+        "$description": "Header height at 1400px and above.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css --head-h"
+          }
+        }
+      },
+      "height-fluid": {
+        "$type": "dimension",
+        "$value": "{layout.header.height-compact}",
+        "$description": "Header height on the web: clamp(80px, 5vw + 40px, 110px).",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css --head-h",
+            "fluid": {
+              "min-px": 80,
+              "vw": 5,
+              "offset-px": 40,
+              "max-px": 110,
+              "min": "{layout.header.height-compact}",
+              "max": "{layout.header.height-regular}"
+            }
+          }
+        }
+      },
+      "inset-compact": {
+        "$type": "dimension",
+        "$value": {
+          "value": 24,
+          "unit": "px"
+        },
+        "$description": "Header side inset at small viewports.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css --head-inset"
+          }
+        }
+      },
+      "inset-regular": {
+        "$type": "dimension",
+        "$value": {
+          "value": 40,
+          "unit": "px"
+        },
+        "$description": "Header side inset at 1334px and above.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css --head-inset"
+          }
+        }
+      },
+      "inset-fluid": {
+        "$type": "dimension",
+        "$value": "{layout.header.inset-compact}",
+        "$description": "Header side inset on the web: clamp(24px, 3vw, 40px).",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css --head-inset",
+            "fluid": {
+              "min-px": 24,
+              "vw": 3,
+              "offset-px": 0,
+              "max-px": 40,
+              "min": "{layout.header.inset-compact}",
+              "max": "{layout.header.inset-regular}"
+            }
+          }
+        }
+      }
+    },
+    "page": {
+      "$description": "Page rhythm.",
+      "col-pad-top-min": {
+        "$type": "dimension",
+        "$value": {
+          "value": 104,
+          "unit": "px"
+        },
+        "$description": "Space above the first block of a page column. Minimum; native platforms use this value.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css --col-pad-top"
+          }
+        }
+      },
+      "col-pad-top-max": {
+        "$type": "dimension",
+        "$value": {
+          "value": 212,
+          "unit": "px"
+        },
+        "$description": "Space above the first block of a page column. Maximum.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css --col-pad-top"
+          }
+        }
+      },
+      "col-pad-top": {
+        "$type": "dimension",
+        "$value": "{layout.page.col-pad-top-min}",
+        "$description": "Space above the first block of a page column. Web: clamp(104px, 14vh, 212px).",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css --col-pad-top",
+            "fluid": {
+              "min-px": 104,
+              "vh": 14,
+              "offset-px": 0,
+              "max-px": 212,
+              "min": "{layout.page.col-pad-top-min}",
+              "max": "{layout.page.col-pad-top-max}"
+            }
+          }
+        }
+      },
+      "stage-pad-bottom-min": {
+        "$type": "dimension",
+        "$value": {
+          "value": 48,
+          "unit": "px"
+        },
+        "$description": "Space below the stage. Minimum; native platforms use this value.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css .stage"
+          }
+        }
+      },
+      "stage-pad-bottom-max": {
+        "$type": "dimension",
+        "$value": {
+          "value": 80,
+          "unit": "px"
+        },
+        "$description": "Space below the stage. Maximum.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css .stage"
+          }
+        }
+      },
+      "stage-pad-bottom": {
+        "$type": "dimension",
+        "$value": "{layout.page.stage-pad-bottom-min}",
+        "$description": "Space below the stage. Web: clamp(48px, 6vw, 80px).",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css .stage",
+            "fluid": {
+              "min-px": 48,
+              "vw": 6,
+              "offset-px": 0,
+              "max-px": 80,
+              "min": "{layout.page.stage-pad-bottom-min}",
+              "max": "{layout.page.stage-pad-bottom-max}"
+            }
+          }
+        }
+      },
+      "home-gap-min": {
+        "$type": "dimension",
+        "$value": {
+          "value": 64,
+          "unit": "px"
+        },
+        "$description": "Gap between home sections. Minimum; native platforms use this value.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css .col--home"
+          }
+        }
+      },
+      "home-gap-max": {
+        "$type": "dimension",
+        "$value": {
+          "value": 112,
+          "unit": "px"
+        },
+        "$description": "Gap between home sections. Maximum.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css .col--home"
+          }
+        }
+      },
+      "home-gap": {
+        "$type": "dimension",
+        "$value": "{layout.page.home-gap-min}",
+        "$description": "Gap between home sections. Web: clamp(64px, 9vw, 112px).",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css .col--home",
+            "fluid": {
+              "min-px": 64,
+              "vw": 9,
+              "offset-px": 0,
+              "max-px": 112,
+              "min": "{layout.page.home-gap-min}",
+              "max": "{layout.page.home-gap-max}"
+            }
+          }
+        }
+      },
+      "article-gap-min": {
+        "$type": "dimension",
+        "$value": {
+          "value": 64,
+          "unit": "px"
+        },
+        "$description": "Gap between article sections. Minimum; native platforms use this value.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css .article"
+          }
+        }
+      },
+      "article-gap-max": {
+        "$type": "dimension",
+        "$value": {
+          "value": 100,
+          "unit": "px"
+        },
+        "$description": "Gap between article sections. Maximum.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css .article"
+          }
+        }
+      },
+      "article-gap": {
+        "$type": "dimension",
+        "$value": "{layout.page.article-gap-min}",
+        "$description": "Gap between article sections. Web: clamp(64px, 8vw, 100px).",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css .article",
+            "fluid": {
+              "min-px": 64,
+              "vw": 8,
+              "offset-px": 0,
+              "max-px": 100,
+              "min": "{layout.page.article-gap-min}",
+              "max": "{layout.page.article-gap-max}"
+            }
+          }
+        }
+      },
+      "hero-gap-min": {
+        "$type": "dimension",
+        "$value": {
+          "value": 32,
+          "unit": "px"
+        },
+        "$description": "Gap inside the hero. Minimum; native platforms use this value.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css .hero"
+          }
+        }
+      },
+      "hero-gap-max": {
+        "$type": "dimension",
+        "$value": {
+          "value": 64,
+          "unit": "px"
+        },
+        "$description": "Gap inside the hero. Maximum.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css .hero"
+          }
+        }
+      },
+      "hero-gap": {
+        "$type": "dimension",
+        "$value": "{layout.page.hero-gap-min}",
+        "$description": "Gap inside the hero. Web: clamp(32px, 4vw, 64px).",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css .hero",
+            "fluid": {
+              "min-px": 32,
+              "vw": 4,
+              "offset-px": 0,
+              "max-px": 64,
+              "min": "{layout.page.hero-gap-min}",
+              "max": "{layout.page.hero-gap-max}"
+            }
+          }
+        }
+      },
+      "footer-margin-top-min": {
+        "$type": "dimension",
+        "$value": {
+          "value": 64,
+          "unit": "px"
+        },
+        "$description": "Space above the footer. Minimum; native platforms use this value.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css .site-footer"
+          }
+        }
+      },
+      "footer-margin-top-max": {
+        "$type": "dimension",
+        "$value": {
+          "value": 112,
+          "unit": "px"
+        },
+        "$description": "Space above the footer. Maximum.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css .site-footer"
+          }
+        }
+      },
+      "footer-margin-top": {
+        "$type": "dimension",
+        "$value": "{layout.page.footer-margin-top-min}",
+        "$description": "Space above the footer. Web: clamp(64px, 10vh, 112px).",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css .site-footer",
+            "fluid": {
+              "min-px": 64,
+              "vh": 10,
+              "offset-px": 0,
+              "max-px": 112,
+              "min": "{layout.page.footer-margin-top-min}",
+              "max": "{layout.page.footer-margin-top-max}"
+            }
+          }
+        }
+      },
+      "footer-pad-top-min": {
+        "$type": "dimension",
+        "$value": {
+          "value": 40,
+          "unit": "px"
+        },
+        "$description": "Footer top padding. Minimum; native platforms use this value.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com assets/site.css .site-footer"
+          }
+        }
+      },
+      "footer-pad-top-max": {
+        "$type": "dimension",
+        "$value": {
+          "value": 56,
+          "unit": "px"
+        },
+        "$description": "Footer top padding. Maximum.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com assets/site.css .site-footer"
+          }
+        }
+      },
+      "footer-pad-top": {
+        "$type": "dimension",
+        "$value": "{layout.page.footer-pad-top-min}",
+        "$description": "Footer top padding. Web: clamp(40px, 4vh, 56px).",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com assets/site.css .site-footer",
+            "fluid": {
+              "min-px": 40,
+              "vh": 4,
+              "offset-px": 0,
+              "max-px": 56,
+              "min": "{layout.page.footer-pad-top-min}",
+              "max": "{layout.page.footer-pad-top-max}"
+            }
+          }
+        }
+      },
+      "section-gap": {
+        "$type": "dimension",
+        "$value": "{space.8}",
+        "$description": "Gap between a section title and its content.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css .section"
+          }
+        }
+      },
+      "section-stack": {
+        "$type": "dimension",
+        "$value": "{space.18}",
+        "$description": "Gap between stacked sections.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css .section--stack"
+          }
+        }
+      },
+      "footer-pad-bottom": {
+        "$type": "dimension",
+        "$value": "{space.6}",
+        "$description": "Footer bottom padding.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com assets/site.css .site-footer"
+          }
+        }
+      },
+      "scroll-margin": {
+        "$type": "dimension",
+        "$value": "{space.8}",
+        "$description": "Scroll offset for in-page anchors.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css .section"
+          }
+        }
+      }
+    },
+    "grid": {
+      "$description": "Layout grids.",
+      "web": {
+        "$description": "Web page grid by width class (regular = above breakpoint.md).",
+        "compact-columns": {
+          "$type": "number",
+          "$value": 4,
+          "$description": "Columns at 640px and below.",
+          "$extensions": {
+            "com.desertpants": {
+              "origin": "derived"
+            }
+          }
+        },
+        "compact-gap": {
+          "$type": "dimension",
+          "$value": "{space.4}",
+          "$description": "Column gap at 640px and below.",
+          "$extensions": {
+            "com.desertpants": {
+              "origin": "derived"
+            }
+          }
+        },
+        "medium-columns": {
+          "$type": "number",
+          "$value": 8,
+          "$description": "Columns from 641px to 860px.",
+          "$extensions": {
+            "com.desertpants": {
+              "origin": "derived"
+            }
+          }
+        },
+        "medium-gap": {
+          "$type": "dimension",
+          "$value": "{space.6}",
+          "$description": "Column gap from 641px to 860px.",
+          "$extensions": {
+            "com.desertpants": {
+              "origin": "derived"
+            }
+          }
+        },
+        "regular-columns": {
+          "$type": "number",
+          "$value": 12,
+          "$description": "Columns above 860px.",
+          "$extensions": {
+            "com.desertpants": {
+              "origin": "derived"
+            }
+          }
+        },
+        "regular-gap": {
+          "$type": "dimension",
+          "$value": "{space.6}",
+          "$description": "Column gap above 860px.",
+          "$extensions": {
+            "com.desertpants": {
+              "origin": "derived"
+            }
+          }
+        },
+        "max-width": {
+          "$type": "dimension",
+          "$value": "{layout.container.xl}",
+          "$description": "Grid maximum width.",
+          "$extensions": {
+            "com.desertpants": {
+              "origin": "source",
+              "source": "desertant.com brand/index.css .col"
+            }
+          }
+        }
+      },
+      "mobile": {
+        "$description": "Native mobile grid (iOS points, Android dp).",
+        "$extensions": {
+          "com.desertpants": {
+            "platforms": [
+              "ios",
+              "android"
+            ]
+          }
+        },
+        "phone-columns": {
+          "$type": "number",
+          "$value": 4,
+          "$description": "Columns on phones.",
+          "$extensions": {
+            "com.desertpants": {
+              "origin": "addition"
+            }
+          }
+        },
+        "phone-margin": {
+          "$type": "dimension",
+          "$value": "{layout.gutter.compact}",
+          "$description": "Screen side margin on phones.",
+          "$extensions": {
+            "com.desertpants": {
+              "origin": "derived"
+            }
+          }
+        },
+        "phone-gap": {
+          "$type": "dimension",
+          "$value": "{space.4}",
+          "$description": "Column gap on phones.",
+          "$extensions": {
+            "com.desertpants": {
+              "origin": "addition"
+            }
+          }
+        },
+        "tablet-columns": {
+          "$type": "number",
+          "$value": 8,
+          "$description": "Columns on tablets (600pt/dp and wider).",
+          "$extensions": {
+            "com.desertpants": {
+              "origin": "addition"
+            }
+          }
+        },
+        "tablet-margin": {
+          "$type": "dimension",
+          "$value": "{space.8}",
+          "$description": "Screen side margin on tablets.",
+          "$extensions": {
+            "com.desertpants": {
+              "origin": "addition"
+            }
+          }
+        },
+        "tablet-gap": {
+          "$type": "dimension",
+          "$value": "{space.6}",
+          "$description": "Column gap on tablets.",
+          "$extensions": {
+            "com.desertpants": {
+              "origin": "addition"
+            }
+          }
+        },
+        "tablet-min-width": {
+          "$type": "dimension",
+          "$value": {
+            "value": 600,
+            "unit": "px"
+          },
+          "$description": "Width at which the tablet grid applies.",
+          "$extensions": {
+            "com.desertpants": {
+              "origin": "addition"
+            }
+          }
+        },
+        "content-bottom-extra": {
+          "$type": "dimension",
+          "$value": "{space.4}",
+          "$description": "Extra space added to the platform safe-area inset below scrolling content (web: env(safe-area-inset-bottom) + this value).",
+          "$extensions": {
+            "com.desertpants": {
+              "origin": "addition",
+              "platforms": [
+                "web",
+                "ios",
+                "android"
+              ]
+            }
+          }
+        }
+      },
+      "component": {
+        "$description": "Component grids.",
+        "card-columns-regular": {
+          "$type": "number",
+          "$value": 3,
+          "$description": "List-card grid columns above 860px.",
+          "$extensions": {
+            "com.desertpants": {
+              "origin": "source",
+              "source": "desertant.com brand/index.css .card-grid"
+            }
+          }
+        },
+        "card-columns-medium": {
+          "$type": "number",
+          "$value": 2,
+          "$description": "List-card grid columns from 641px to 860px (source switch at 900px).",
+          "$extensions": {
+            "com.desertpants": {
+              "origin": "source",
+              "source": "desertant.com brand/index.css .card-grid @900"
+            }
+          }
+        },
+        "card-columns-compact": {
+          "$type": "number",
+          "$value": 1,
+          "$description": "List-card grid columns at 640px and below (source switch at 560px).",
+          "$extensions": {
+            "com.desertpants": {
+              "origin": "source",
+              "source": "desertant.com brand/index.css .card-grid @560"
+            }
+          }
+        },
+        "card-gap": {
+          "$type": "dimension",
+          "$value": "{space.4}",
+          "$description": "List-card grid gap.",
+          "$extensions": {
+            "com.desertpants": {
+              "origin": "source",
+              "source": "desertant.com brand/index.css .card-grid"
+            }
+          }
+        },
+        "pinboard-columns-regular": {
+          "$type": "number",
+          "$value": 4,
+          "$description": "Pinboard columns above 1180px (source switch at 1000px).",
+          "$extensions": {
+            "com.desertpants": {
+              "origin": "source",
+              "source": "desertant.com brand/index.css .pinboard"
+            }
+          }
+        },
+        "pinboard-columns-medium": {
+          "$type": "number",
+          "$value": 2,
+          "$description": "Pinboard columns from 641px to 1180px.",
+          "$extensions": {
+            "com.desertpants": {
+              "origin": "source",
+              "source": "desertant.com brand/index.css .pinboard @1000"
+            }
+          }
+        },
+        "pinboard-columns-compact": {
+          "$type": "number",
+          "$value": 1,
+          "$description": "Pinboard columns at 640px and below.",
+          "$extensions": {
+            "com.desertpants": {
+              "origin": "source",
+              "source": "desertant.com brand/index.css .pinboard @560"
+            }
+          }
+        },
+        "pinboard-gap": {
+          "$type": "dimension",
+          "$value": "{space.5}",
+          "$description": "Pinboard gap.",
+          "$extensions": {
+            "com.desertpants": {
+              "origin": "source",
+              "source": "desertant.com brand/index.css .pinboard"
+            }
+          }
+        },
+        "pinboard-fill-min": {
+          "$type": "dimension",
+          "$value": {
+            "value": 240,
+            "unit": "px"
+          },
+          "$description": "Minimum pin width in the auto-fill pinboard.",
+          "$extensions": {
+            "com.desertpants": {
+              "origin": "source",
+              "source": "desertant.com brand/index.css .pinboard--fill"
+            }
+          }
+        },
+        "post-min": {
+          "$type": "dimension",
+          "$value": {
+            "value": 320,
+            "unit": "px"
+          },
+          "$description": "Minimum post-card width in the auto-fill post grid.",
+          "$extensions": {
+            "com.desertpants": {
+              "origin": "source",
+              "source": "desertant.com brand/index.css .post-grid"
+            }
+          }
+        },
+        "post-gap": {
+          "$type": "dimension",
+          "$value": "{space.6}",
+          "$description": "Post grid gap.",
+          "$extensions": {
+            "com.desertpants": {
+              "origin": "source",
+              "source": "desertant.com brand/index.css .post-grid"
+            }
+          }
+        },
+        "facts-min": {
+          "$type": "dimension",
+          "$value": {
+            "value": 260,
+            "unit": "px"
+          },
+          "$description": "Minimum fact width in auto-fit fact grids.",
+          "$extensions": {
+            "com.desertpants": {
+              "origin": "source",
+              "source": "desertant.com assets/site.css .press-facts"
+            }
+          }
+        },
+        "footer-columns-regular": {
+          "$type": "number",
+          "$value": 6,
+          "$description": "Footer grid columns above 1180px (source switch at 1000px).",
+          "$extensions": {
+            "com.desertpants": {
+              "origin": "source",
+              "source": "desertant.com assets/site.css .footer-grid"
+            }
+          }
+        },
+        "footer-columns-medium": {
+          "$type": "number",
+          "$value": 3,
+          "$description": "Footer grid columns from 861px to 1180px.",
+          "$extensions": {
+            "com.desertpants": {
+              "origin": "source",
+              "source": "desertant.com assets/site.css .footer-grid @1000"
+            }
+          }
+        },
+        "footer-columns-compact": {
+          "$type": "number",
+          "$value": 2,
+          "$description": "Footer flows in 2 CSS columns at 860px and below (source switch at 700px).",
+          "$extensions": {
+            "com.desertpants": {
+              "origin": "source",
+              "source": "desertant.com assets/site.css .footer-grid @700"
+            }
+          }
+        },
+        "nav-columns-regular": {
+          "$type": "number",
+          "$value": 3,
+          "$description": "Navigation dropdown grid columns.",
+          "$extensions": {
+            "com.desertpants": {
+              "origin": "source",
+              "source": "desertant.com brand/index.css .nav-grid"
+            }
+          }
+        },
+        "nav-columns-compact": {
+          "$type": "number",
+          "$value": 2,
+          "$description": "Compact navigation grid columns.",
+          "$extensions": {
+            "com.desertpants": {
+              "origin": "source",
+              "source": "desertant.com brand/index.css .nav-grid @860"
+            }
+          }
+        },
+        "specs-label-regular": {
+          "$type": "dimension",
+          "$value": {
+            "value": 250,
+            "unit": "px"
+          },
+          "$description": "Spec list term column width.",
+          "$extensions": {
+            "com.desertpants": {
+              "origin": "source",
+              "source": "desertant.com brand/index.css .specs div"
+            }
+          }
+        },
+        "specs-label-compact": {
+          "$type": "dimension",
+          "$value": {
+            "value": 100,
+            "unit": "px"
+          },
+          "$description": "Spec list term column width at 860px and below.",
+          "$extensions": {
+            "com.desertpants": {
+              "origin": "source",
+              "source": "desertant.com brand/index.css .specs div @860"
+            }
+          }
+        },
+        "board-name-min": {
+          "$type": "dimension",
+          "$value": {
+            "value": 140,
+            "unit": "px"
+          },
+          "$description": "Leaderboard name column minimum.",
+          "$extensions": {
+            "com.desertpants": {
+              "origin": "source",
+              "source": "desertant.com brand/index.css .board-row"
+            }
+          }
+        },
+        "board-name-max": {
+          "$type": "dimension",
+          "$value": {
+            "value": 260,
+            "unit": "px"
+          },
+          "$description": "Leaderboard name column maximum.",
+          "$extensions": {
+            "com.desertpants": {
+              "origin": "source",
+              "source": "desertant.com brand/index.css .board-row"
+            }
+          }
+        },
+        "board-score": {
+          "$type": "dimension",
+          "$value": {
+            "value": 80,
+            "unit": "px"
+          },
+          "$description": "Leaderboard score column.",
+          "$extensions": {
+            "com.desertpants": {
+              "origin": "source",
+              "source": "desertant.com brand/index.css .board-row"
+            }
+          }
+        },
+        "board-score-compact": {
+          "$type": "dimension",
+          "$value": {
+            "value": 64,
+            "unit": "px"
+          },
+          "$description": "Leaderboard score column at 640px and below.",
+          "$extensions": {
+            "com.desertpants": {
+              "origin": "source",
+              "source": "desertant.com brand/index.css .board-row @640"
+            }
+          }
+        },
+        "field-row-columns": {
+          "$type": "number",
+          "$value": 2,
+          "$description": "Form field row columns (1 at 640px and below).",
+          "$extensions": {
+            "com.desertpants": {
+              "origin": "source",
+              "source": "desertant.com assets/site.css .field-row"
+            }
+          }
+        },
+        "field-row-gap": {
+          "$type": "dimension",
+          "$value": "{space.6}",
+          "$description": "Form field row gap.",
+          "$extensions": {
+            "com.desertpants": {
+              "origin": "source",
+              "source": "desertant.com assets/site.css .field-row"
+            }
+          }
+        }
+      }
+    },
+    "size": {
+      "$description": "Fixed sizes of controls, targets, dots and media.",
+      "control": {
+        "sm": {
+          "$type": "dimension",
+          "$value": {
+            "value": 32,
+            "unit": "px"
+          },
+          "$description": "Small control height.",
+          "$extensions": {
+            "com.desertpants": {
+              "origin": "source",
+              "source": "desertant.com brand/index.css --control-sm"
+            }
+          }
+        },
+        "md": {
+          "$type": "dimension",
+          "$value": {
+            "value": 40,
+            "unit": "px"
+          },
+          "$description": "Medium control height; nav thumbnails and 'all' link.",
+          "$extensions": {
+            "com.desertpants": {
+              "origin": "source",
+              "source": "desertant.com brand/index.css --control-md"
+            }
+          }
+        },
+        "lg": {
+          "$type": "dimension",
+          "$value": {
+            "value": 48,
+            "unit": "px"
+          },
+          "$description": "Large control height; inputs and search fields on touch.",
+          "$extensions": {
+            "com.desertpants": {
+              "origin": "source",
+              "source": "desertant.com brand/index.css --control-lg"
+            }
+          }
+        }
+      },
+      "touch": {
+        "min": {
+          "$type": "dimension",
+          "$value": {
+            "value": 44,
+            "unit": "px"
+          },
+          "$description": "Minimum touch target on iOS and the web (menu items, nav toggle height).",
+          "$extensions": {
+            "com.desertpants": {
+              "origin": "source",
+              "source": "desertant.com assets/site.css .lang-switch-item min-height:44px"
+            }
+          }
+        },
+        "android": {
+          "$type": "dimension",
+          "$value": {
+            "value": 48,
+            "unit": "px"
+          },
+          "$description": "Minimum touch target on Android.",
+          "$extensions": {
+            "com.desertpants": {
+              "origin": "addition",
+              "platforms": [
+                "android"
+              ]
+            }
+          }
+        },
+        "inline-min": {
+          "$type": "dimension",
+          "$value": {
+            "value": 24,
+            "unit": "px"
+          },
+          "$description": "Minimum height of inline text links (WCAG 2.5.8).",
+          "$extensions": {
+            "com.desertpants": {
+              "origin": "source",
+              "source": "desertant.com assets/site.css .breadcrumb a ... min-height:24px"
+            }
+          }
+        }
+      },
+      "dot": {
+        "nav": {
+          "$type": "dimension",
+          "$value": {
+            "value": 4,
+            "unit": "px"
+          },
+          "$description": "Current-page dot after a navigation link; active tab-bar dot.",
+          "$extensions": {
+            "com.desertpants": {
+              "origin": "source",
+              "source": "desertant.com brand/index.css .site-nav>a.is-on:after"
+            }
+          }
+        },
+        "bullet": {
+          "$type": "dimension",
+          "$value": {
+            "value": 8,
+            "unit": "px"
+          },
+          "$description": "Feature-list bullet.",
+          "$extensions": {
+            "com.desertpants": {
+              "origin": "source",
+              "source": "desertant.com brand/index.css .features li:before"
+            }
+          }
+        },
+        "pin": {
+          "$type": "dimension",
+          "$value": {
+            "value": 9,
+            "unit": "px"
+          },
+          "$description": "Model dot in pin labels.",
+          "$extensions": {
+            "com.desertpants": {
+              "origin": "source",
+              "source": "desertant.com brand/index.css .pin-model i"
+            }
+          }
+        },
+        "board": {
+          "$type": "dimension",
+          "$value": {
+            "value": 10,
+            "unit": "px"
+          },
+          "$description": "Leaderboard dot marks.",
+          "$extensions": {
+            "com.desertpants": {
+              "origin": "source",
+              "source": "desertant.com brand/index.css .board--dots .board-fill"
+            }
+          }
+        },
+        "tag": {
+          "$type": "dimension",
+          "$value": {
+            "value": 14,
+            "unit": "px"
+          },
+          "$description": "Colour dot inside a dot tag.",
+          "$extensions": {
+            "com.desertpants": {
+              "origin": "source",
+              "source": "desertant.com brand/index.css .tag--dot i"
+            }
+          }
+        }
+      },
+      "dot-em": {
+        "highlight": {
+          "$type": "number",
+          "$value": 0.5,
+          "$description": "Highlight-row dot, relative to the row font size (em).",
+          "$extensions": {
+            "com.desertpants": {
+              "origin": "source",
+              "source": "desertant.com brand/index.css .table tr.is-us th:before",
+              "unit": "em"
+            }
+          }
+        }
+      },
+      "progress": {
+        "bar": {
+          "$type": "dimension",
+          "$value": {
+            "value": 8,
+            "unit": "px"
+          },
+          "$description": "Result bars and meters.",
+          "$extensions": {
+            "com.desertpants": {
+              "origin": "source",
+              "source": "desertant.com assets/site.css .dt-bar"
+            }
+          }
+        },
+        "media": {
+          "$type": "dimension",
+          "$value": {
+            "value": 3,
+            "unit": "px"
+          },
+          "$description": "Media player progress track.",
+          "$extensions": {
+            "com.desertpants": {
+              "origin": "source",
+              "source": "desertant.com assets/site.css .replay-track"
+            }
+          }
+        },
+        "board": {
+          "$type": "dimension",
+          "$value": {
+            "value": 16,
+            "unit": "px"
+          },
+          "$description": "Leaderboard track.",
+          "$extensions": {
+            "com.desertpants": {
+              "origin": "source",
+              "source": "desertant.com brand/index.css .board-track"
+            }
+          }
+        },
+        "scrub": {
+          "$type": "dimension",
+          "$value": {
+            "value": 6,
+            "unit": "px"
+          },
+          "$description": "Audio scrub track.",
+          "$extensions": {
+            "com.desertpants": {
+              "origin": "source",
+              "source": "desertant.com assets/site.css .audio-demo-scrub"
+            }
+          }
+        }
+      },
+      "chart": {
+        "column-height": {
+          "$type": "dimension",
+          "$value": {
+            "value": 240,
+            "unit": "px"
+          },
+          "$description": "Column chart plot height.",
+          "$extensions": {
+            "com.desertpants": {
+              "origin": "source",
+              "source": "desertant.com brand/index.css .columns"
+            }
+          }
+        },
+        "column-height-tall": {
+          "$type": "dimension",
+          "$value": {
+            "value": 320,
+            "unit": "px"
+          },
+          "$description": "Tall column chart plot height.",
+          "$extensions": {
+            "com.desertpants": {
+              "origin": "source",
+              "source": "desertant.com brand/index.css .columns--tall"
+            }
+          }
+        },
+        "column-height-compact": {
+          "$type": "dimension",
+          "$value": {
+            "value": 120,
+            "unit": "px"
+          },
+          "$description": "Compact column chart plot height.",
+          "$extensions": {
+            "com.desertpants": {
+              "origin": "source",
+              "source": "desertant.com brand/index.css .columns--compact"
+            }
+          }
+        },
+        "bar-max": {
+          "$type": "dimension",
+          "$value": {
+            "value": 96,
+            "unit": "px"
+          },
+          "$description": "Column bar maximum width.",
+          "$extensions": {
+            "com.desertpants": {
+              "origin": "source",
+              "source": "desertant.com brand/index.css .column-bar"
+            }
+          }
+        },
+        "bar-max-compact": {
+          "$type": "dimension",
+          "$value": {
+            "value": 48,
+            "unit": "px"
+          },
+          "$description": "Compact column bar maximum width.",
+          "$extensions": {
+            "com.desertpants": {
+              "origin": "source",
+              "source": "desertant.com brand/index.css .columns--compact .column-bar"
+            }
+          }
+        }
+      },
+      "media": {
+        "player": {
+          "$type": "dimension",
+          "$value": {
+            "value": 304,
+            "unit": "px"
+          },
+          "$description": "Media player stage height.",
+          "$extensions": {
+            "com.desertpants": {
+              "origin": "source",
+              "source": "desertant.com assets/site.css .replay --replay-h:19rem"
+            }
+          }
+        },
+        "player-compact": {
+          "$type": "dimension",
+          "$value": {
+            "value": 240,
+            "unit": "px"
+          },
+          "$description": "Media player stage height at 640px and below.",
+          "$extensions": {
+            "com.desertpants": {
+              "origin": "source",
+              "source": "desertant.com assets/site.css .replay @640"
+            }
+          }
+        },
+        "player-inline": {
+          "$type": "dimension",
+          "$value": {
+            "value": 208,
+            "unit": "px"
+          },
+          "$description": "Inline media player stage height.",
+          "$extensions": {
+            "com.desertpants": {
+              "origin": "source",
+              "source": "desertant.com assets/site.css .perf-replay .replay @900"
+            }
+          }
+        },
+        "player-inline-compact": {
+          "$type": "dimension",
+          "$value": {
+            "value": 160,
+            "unit": "px"
+          },
+          "$description": "Inline media player stage height at 640px and below.",
+          "$extensions": {
+            "com.desertpants": {
+              "origin": "source",
+              "source": "desertant.com assets/site.css .replay @640 10rem"
+            }
+          }
+        },
+        "use-case-shot": {
+          "$type": "dimension",
+          "$value": {
+            "value": 300,
+            "unit": "px"
+          },
+          "$description": "App screenshot height in use-case blocks.",
+          "$extensions": {
+            "com.desertpants": {
+              "origin": "source",
+              "source": "desertant.com assets/site.css --uc-shot"
+            }
+          }
+        },
+        "canvas-min": {
+          "$type": "dimension",
+          "$value": {
+            "value": 320,
+            "unit": "px"
+          },
+          "$description": "Drawing surface minimum height.",
+          "$extensions": {
+            "com.desertpants": {
+              "origin": "source",
+              "source": "desertant.com assets/site.css .demo-canvas-wrap"
+            }
+          }
+        },
+        "demo-min": {
+          "$type": "dimension",
+          "$value": {
+            "value": 220,
+            "unit": "px"
+          },
+          "$description": "Demo loading area minimum height.",
+          "$extensions": {
+            "com.desertpants": {
+              "origin": "source",
+              "source": "desertant.com assets/site.css .demo-loading"
+            }
+          }
+        },
+        "hero-photo-min-width": {
+          "$type": "dimension",
+          "$value": {
+            "value": 240,
+            "unit": "px"
+          },
+          "$description": "Fill-hero photo minimum width.",
+          "$extensions": {
+            "com.desertpants": {
+              "origin": "source",
+              "source": "desertant.com brand/index.css .hero-model-photo"
+            }
+          }
+        },
+        "hero-photo-min-height-compact": {
+          "$type": "dimension",
+          "$value": {
+            "value": 360,
+            "unit": "px"
+          },
+          "$description": "Fill-hero photo minimum height at 860px and below.",
+          "$extensions": {
+            "com.desertpants": {
+              "origin": "source",
+              "source": "desertant.com brand/index.css .hero-model-photo @860"
+            }
+          }
+        },
+        "textarea-min": {
+          "$type": "dimension",
+          "$value": {
+            "value": 144,
+            "unit": "px"
+          },
+          "$description": "Text area minimum height (9rem).",
+          "$extensions": {
+            "com.desertpants": {
+              "origin": "source",
+              "source": "desertant.com assets/site.css .field textarea"
+            }
+          }
+        },
+        "result-min": {
+          "$type": "dimension",
+          "$value": {
+            "value": 176,
+            "unit": "px"
+          },
+          "$description": "Result panel minimum height (11rem).",
+          "$extensions": {
+            "com.desertpants": {
+              "origin": "source",
+              "source": "desertant.com assets/site.css .dt-result"
+            }
+          }
+        },
+        "result-min-compact": {
+          "$type": "dimension",
+          "$value": {
+            "value": 144,
+            "unit": "px"
+          },
+          "$description": "Result panel minimum height at 832px and below.",
+          "$extensions": {
+            "com.desertpants": {
+              "origin": "source",
+              "source": "desertant.com assets/site.css .dt-result @52rem"
+            }
+          }
+        }
+      }
+    },
+    "viewport": {
+      "$description": "Reference viewports for mockups, specimens and screenshot tests (not breakpoints).",
+      "phone": {
+        "width": {
+          "$type": "dimension",
+          "$value": {
+            "value": 390,
+            "unit": "px"
+          },
+          "$description": "Phone in portrait. Width.",
+          "$extensions": {
+            "com.desertpants": {
+              "origin": "addition"
+            }
+          }
+        },
+        "height": {
+          "$type": "dimension",
+          "$value": {
+            "value": 844,
+            "unit": "px"
+          },
+          "$description": "Phone in portrait. Height.",
+          "$extensions": {
+            "com.desertpants": {
+              "origin": "addition"
+            }
+          }
+        }
+      },
+      "phone-landscape": {
+        "width": {
+          "$type": "dimension",
+          "$value": {
+            "value": 844,
+            "unit": "px"
+          },
+          "$description": "Phone in landscape (a short viewport). Width.",
+          "$extensions": {
+            "com.desertpants": {
+              "origin": "addition"
+            }
+          }
+        },
+        "height": {
+          "$type": "dimension",
+          "$value": {
+            "value": 390,
+            "unit": "px"
+          },
+          "$description": "Phone in landscape (a short viewport). Height.",
+          "$extensions": {
+            "com.desertpants": {
+              "origin": "addition"
+            }
+          }
+        }
+      },
+      "tablet": {
+        "width": {
+          "$type": "dimension",
+          "$value": {
+            "value": 820,
+            "unit": "px"
+          },
+          "$description": "Tablet in portrait. Width.",
+          "$extensions": {
+            "com.desertpants": {
+              "origin": "addition"
+            }
+          }
+        },
+        "height": {
+          "$type": "dimension",
+          "$value": {
+            "value": 1180,
+            "unit": "px"
+          },
+          "$description": "Tablet in portrait. Height.",
+          "$extensions": {
+            "com.desertpants": {
+              "origin": "addition"
+            }
+          }
+        }
+      },
+      "desktop": {
+        "width": {
+          "$type": "dimension",
+          "$value": {
+            "value": 1440,
+            "unit": "px"
+          },
+          "$description": "Desktop. Width.",
+          "$extensions": {
+            "com.desertpants": {
+              "origin": "addition"
+            }
+          }
+        },
+        "height": {
+          "$type": "dimension",
+          "$value": {
+            "value": 900,
+            "unit": "px"
+          },
+          "$description": "Desktop. Height.",
+          "$extensions": {
+            "com.desertpants": {
+              "origin": "addition"
+            }
+          }
+        }
+      }
+    },
+    "keyboard": {
+      "$description": "On-screen keyboard. A focused field stays in view with gap below it; bottom bars (the tab bar) give way while the keyboard is open; sheets, toasts and bars that belong to the field ride above it. Web: the layout viewport resizes with the keyboard (meta viewport interactive-widget=resizes-content) and reference/keyboard.js reads the visual viewport where the browser lays the keyboard over the page. iOS and Android move content themselves (the SwiftUI keyboard safe area; Compose imePadding and WindowInsets.ime).",
+      "gap": {
+        "$type": "dimension",
+        "$value": "{space.4}",
+        "$description": "Space kept between the focused field, or a bar riding on the keyboard, and the keyboard's top edge.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "addition"
+          }
+        }
+      },
+      "threshold": {
+        "$type": "dimension",
+        "$value": {
+          "value": 120,
+          "unit": "px"
+        },
+        "$description": "Web: the visual viewport must lose at least this much height before the page treats the keyboard as open (smaller changes are browser toolbars).",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "addition",
+            "platforms": [
+              "web"
+            ]
+          }
+        }
+      }
+    }
+  },
+  "icon": {
+    "$description": "Iconography: 24-unit line icons, round caps and joins, stroke in currentColor; filled glyphs (play, pause) in currentColor.",
+    "size": {
+      "10": {
+        "$type": "dimension",
+        "$value": {
+          "value": 10,
+          "unit": "px"
+        },
+        "$description": "Menu caret.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com assets/site.css .lang-switch-caret"
+          }
+        }
+      },
+      "12": {
+        "$type": "dimension",
+        "$value": {
+          "value": 12,
+          "unit": "px"
+        },
+        "$description": "Chevrons in navigation (12x8).",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css .site-nav summary:after"
+          }
+        }
+      },
+      "13": {
+        "$type": "dimension",
+        "$value": {
+          "value": 13,
+          "unit": "px"
+        },
+        "$description": "Audio player play glyph.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com assets/site.css .audio-demo-play svg"
+          }
+        }
+      },
+      "14": {
+        "$type": "dimension",
+        "$value": {
+          "value": 14,
+          "unit": "px"
+        },
+        "$description": "Play and pause glyphs.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "ico-play"
+          }
+        }
+      },
+      "15": {
+        "$type": "dimension",
+        "$value": {
+          "value": 15,
+          "unit": "px"
+        },
+        "$description": "Globe and copy icons.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "lang-switch-globe / code-copy"
+          }
+        }
+      },
+      "16": {
+        "$type": "dimension",
+        "$value": {
+          "value": 16,
+          "unit": "px"
+        },
+        "$description": "Inline icons in text.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "svg width 16"
+          }
+        }
+      },
+      "18": {
+        "$type": "dimension",
+        "$value": {
+          "value": 18,
+          "unit": "px"
+        },
+        "$description": "Small-button icons; search-field icon.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css .btn--sm svg"
+          }
+        }
+      },
+      "24": {
+        "$type": "dimension",
+        "$value": {
+          "value": 24,
+          "unit": "px"
+        },
+        "$description": "Button icons, tab-bar icons, app-bar icons.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css .btn svg"
+          }
+        }
+      },
+      "28": {
+        "$type": "dimension",
+        "$value": {
+          "value": 28,
+          "unit": "px"
+        },
+        "$description": "Large standalone icons.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "svg width 28"
+          }
+        }
+      }
+    },
+    "stroke": {
+      "fine": {
+        "$type": "number",
+        "$value": 1.5,
+        "$description": "Globe and outline glyphs. Units of the 24-unit viewBox; round caps and joins.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "inline SVG stroke-width",
+            "linecap": "round",
+            "linejoin": "round"
+          }
+        }
+      },
+      "caret": {
+        "$type": "number",
+        "$value": 1.6,
+        "$description": "Carets and select chevrons (12-unit grid). Units of the 24-unit viewBox; round caps and joins.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "inline SVG stroke-width",
+            "linecap": "round",
+            "linejoin": "round"
+          }
+        }
+      },
+      "regular": {
+        "$type": "number",
+        "$value": 2,
+        "$description": "Default icon stroke (copy, arrows). Units of the 24-unit viewBox; round caps and joins.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "inline SVG stroke-width",
+            "linecap": "round",
+            "linejoin": "round"
+          }
+        }
+      },
+      "arrow": {
+        "$type": "number",
+        "$value": 2.2,
+        "$description": "Button arrows. Units of the 24-unit viewBox; round caps and joins.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "inline SVG stroke-width",
+            "linecap": "round",
+            "linejoin": "round"
+          }
+        }
+      },
+      "bold": {
+        "$type": "number",
+        "$value": 2.4,
+        "$description": "Check marks and nav chevrons. Units of the 24-unit viewBox; round caps and joins.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "inline SVG stroke-width",
+            "linecap": "round",
+            "linejoin": "round"
+          }
+        }
+      }
+    },
+    "grid": {
+      "$type": "number",
+      "$value": 24,
+      "$description": "Icon design grid (viewBox 0 0 24 24).",
+      "$extensions": {
+        "com.desertpants": {
+          "origin": "source",
+          "source": "inline SVG viewBox"
+        }
+      }
+    },
+    "$extensions": {
+      "com.desertpants": {
+        "library": "lucide",
+        "licence": "ISC",
+        "note": "The source draws its own inline icons; desert-pants substitutes Lucide at the same 24-unit grid and stroke weights. icons/manifest.json lists the curated set and the components that use each icon.",
+        "assets": [
+          "icons/manifest.json",
+          "icons/sprite.svg",
+          "icons/LICENSE-lucide.txt"
+        ]
+      }
+    }
+  },
+  "interaction": {
+    "$description": "Interaction constants.",
+    "focus": {
+      "width": {
+        "$type": "dimension",
+        "$value": "{border-width.focus}",
+        "$description": "Focus ring width.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css :focus-visible"
+          }
+        }
+      },
+      "offset": {
+        "$type": "dimension",
+        "$value": {
+          "value": 3,
+          "unit": "px"
+        },
+        "$description": "Default focus ring offset (buttons, cards, links).",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css :focus-visible"
+          }
+        }
+      },
+      "offset-tight": {
+        "$type": "dimension",
+        "$value": {
+          "value": 2,
+          "unit": "px"
+        },
+        "$description": "Focus ring offset for inputs, menu items, chips.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css .side-nav-item:focus-visible"
+          }
+        }
+      },
+      "offset-inset": {
+        "$type": "dimension",
+        "$value": {
+          "value": -3,
+          "unit": "px"
+        },
+        "$description": "Inset focus ring for full-card hit areas.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css .prompt-card-copy:focus-visible"
+          }
+        }
+      },
+      "offset-inset-tight": {
+        "$type": "dimension",
+        "$value": {
+          "value": -2,
+          "unit": "px"
+        },
+        "$description": "Inset focus ring for rows inside a scrolling list (transcript lines).",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com assets/site.css .replay-lines p:focus-visible"
+          }
+        }
+      },
+      "offset-wide": {
+        "$type": "dimension",
+        "$value": {
+          "value": 4,
+          "unit": "px"
+        },
+        "$description": "Focus ring offset around the round play button.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com assets/site.css .replay-preview:focus-visible"
+          }
+        }
+      }
+    },
+    "lift": {
+      "card": {
+        "$type": "dimension",
+        "$value": {
+          "value": 2,
+          "unit": "px"
+        },
+        "$description": "Hover lift of cards and prompt cards (translateY negative).",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css a.card:hover"
+          }
+        }
+      },
+      "pin": {
+        "$type": "dimension",
+        "$value": {
+          "value": 6,
+          "unit": "px"
+        },
+        "$description": "Hover lift of pins and post cards.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css .pin:hover"
+          }
+        }
+      },
+      "settle": {
+        "$type": "dimension",
+        "$value": {
+          "value": 8,
+          "unit": "px"
+        },
+        "$description": "Hover lift of settling tilted cards.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css .tilt--settle:hover"
+          }
+        }
+      },
+      "reveal": {
+        "$type": "dimension",
+        "$value": {
+          "value": 10,
+          "unit": "px"
+        },
+        "$description": "Start offset of rise-in reveals (translateY positive).",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css html.js .rise"
+          }
+        }
+      },
+      "drop": {
+        "$type": "dimension",
+        "$value": {
+          "value": 36,
+          "unit": "px"
+        },
+        "$description": "Start offset of drop-loader cells (translateY negative).",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css @keyframes loader-drop"
+          }
+        }
+      }
+    },
+    "press": {
+      "offset": {
+        "$type": "dimension",
+        "$value": {
+          "value": 1,
+          "unit": "px"
+        },
+        "$description": "Pressed buttons move down 1px.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css .btn:active"
+          }
+        }
+      }
+    },
+    "scale": {
+      "settle": {
+        "$type": "number",
+        "$value": 1.02,
+        "$description": "Scale of a settling tilted card on hover.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css .tilt--settle:hover"
+          }
+        }
+      },
+      "play-hover": {
+        "$type": "number",
+        "$value": 1.06,
+        "$description": "Scale of the play button on hover.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com assets/site.css .replay-preview:hover"
+          }
+        }
+      },
+      "copied-from": {
+        "$type": "number",
+        "$value": 0.97,
+        "$description": "Start scale of the copied overlay.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css .prompt-card-copied"
+          }
+        }
+      },
+      "pulse-peak": {
+        "$type": "number",
+        "$value": 1.16,
+        "$description": "Peak scale of the heartbeat ring.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css @keyframes fx-heartbeat"
+          }
+        }
+      }
+    },
+    "tilt": {
+      "$description": "Rotation angles in degrees.",
+      "card": {
+        "$type": "number",
+        "$value": 4,
+        "$description": "Tilted feature cards and photos.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css .tilt / .photo-tilt",
+            "unit": "deg"
+          }
+        }
+      },
+      "fan-start": {
+        "$type": "number",
+        "$value": -2,
+        "$description": "First card in a compact fan.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css site.css .fc--audio @860",
+            "unit": "deg"
+          }
+        }
+      },
+      "fan-end": {
+        "$type": "number",
+        "$value": 2,
+        "$description": "Last card in a compact fan.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css site.css .fc--filler @860",
+            "unit": "deg"
+          }
+        }
+      },
+      "settle-factor": {
+        "$type": "number",
+        "$value": 0.7,
+        "$description": "Tilt multiplier while settling on hover: a tilted card straightens to this share of its tilt, not flat.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css .tilt--settle:hover"
+          }
+        }
+      },
+      "scatter-1": {
+        "$type": "number",
+        "$value": -4.39,
+        "$description": "Scattered note angle 1.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css rotate(-4.39deg)",
+            "unit": "deg"
+          }
+        }
+      },
+      "scatter-2": {
+        "$type": "number",
+        "$value": -1.1,
+        "$description": "Scattered note angle 2.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css rotate(-1.1deg)",
+            "unit": "deg"
+          }
+        }
+      },
+      "scatter-3": {
+        "$type": "number",
+        "$value": -0.73,
+        "$description": "Scattered note angle 3.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css rotate(-.73deg)",
+            "unit": "deg"
+          }
+        }
+      },
+      "scatter-4": {
+        "$type": "number",
+        "$value": 3.5,
+        "$description": "Scattered note angle 4.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css rotate(3.5deg)",
+            "unit": "deg"
+          }
+        }
+      },
+      "scatter-5": {
+        "$type": "number",
+        "$value": 7.9,
+        "$description": "Scattered note angle 5.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css rotate(7.9deg)",
+            "unit": "deg"
+          }
+        }
+      },
+      "open": {
+        "$type": "number",
+        "$value": 180,
+        "$description": "Open caret / chevron rotation.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css rotate(180deg)",
+            "unit": "deg"
+          }
+        }
+      },
+      "forward": {
+        "$type": "number",
+        "$value": -90,
+        "$description": "Chevron pointing forward (see-all links, list rows).",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css .nav-all:after rotate(-90deg)",
+            "unit": "deg"
+          }
+        }
+      },
+      "close": {
+        "$type": "number",
+        "$value": 45,
+        "$description": "Hamburger lines crossing into a close icon (+/-45).",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css .nav-toggle[aria-expanded=true]",
+            "unit": "deg"
+          }
+        }
+      }
+    },
+    "fan": {
+      "overlap": {
+        "$type": "dimension",
+        "$value": {
+          "value": 40,
+          "unit": "px"
+        },
+        "$description": "Overlap between cards in a regular-width fan (negative margin).",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css .feature-cards--fan"
+          }
+        }
+      },
+      "overlap-tight": {
+        "$type": "dimension",
+        "$value": {
+          "value": 16,
+          "unit": "px"
+        },
+        "$description": "Overlap in the home fan.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com assets/site.css .home .feature-cards--fan"
+          }
+        }
+      }
+    },
+    "opacity": {
+      "hover-dim": {
+        "$type": "number",
+        "$value": "{opacity.60}",
+        "$description": "Navigation links dim to 60% on hover.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css .site-nav>a:hover"
+          }
+        }
+      },
+      "fill-button-hover": {
+        "$type": "number",
+        "$value": "{opacity.88}",
+        "$description": "Filled button on a fill hero at 88% on hover.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css .hero-model .btn:hover"
+          }
+        }
+      },
+      "soon": {
+        "$type": "number",
+        "$value": "{opacity.50}",
+        "$description": "Coming-soon card title and claim.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css .card--soon"
+          }
+        }
+      },
+      "caret": {
+        "$type": "number",
+        "$value": "{opacity.65}",
+        "$description": "Menu caret.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com assets/site.css .lang-switch-caret"
+          }
+        }
+      },
+      "anchor-hint": {
+        "$type": "number",
+        "$value": "{opacity.30}",
+        "$description": "Heading anchor while the heading is hovered.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com assets/site.css .has-anchor:hover"
+          }
+        }
+      },
+      "anchor-hover": {
+        "$type": "number",
+        "$value": "{opacity.60}",
+        "$description": "Heading anchor hovered or focused.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com assets/site.css .heading-anchor:hover"
+          }
+        }
+      }
+    },
+    "hit-slop": {
+      "copy": {
+        "$type": "dimension",
+        "$value": {
+          "value": 8,
+          "unit": "px"
+        },
+        "$description": "Invisible padding that grows the 28px copy button to a 44px target on touch.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "addition"
+          }
+        }
+      }
+    },
+    "gesture": {
+      "drag-slop": {
+        "$type": "dimension",
+        "$value": {
+          "value": 8,
+          "unit": "px"
+        },
+        "$description": "Web: pointer travel before a touch becomes a drag (bottom-sheet grabber, slider thumb, swipe rows, pull to refresh); it also cancels a long press. Native platforms use the system touch slop.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "addition",
+            "platforms": [
+              "web"
+            ]
+          }
+        }
+      },
+      "long-press": {
+        "$type": "duration",
+        "$value": {
+          "value": 500,
+          "unit": "ms"
+        },
+        "$description": "Web: hold time before a press becomes a long press (it opens the item's context menu). iOS and Android use their system recognisers (0.5 s on iOS; ViewConfiguration.getLongPressTimeout on Android).",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "addition",
+            "platforms": [
+              "web"
+            ],
+            "dwell": true
+          }
+        }
+      },
+      "fling-velocity": {
+        "$type": "number",
+        "$value": 0.5,
+        "$description": "A release faster than this completes a swipe or dismissal whatever the distance travelled (px per ms: 500 pt/s on iOS, 500 dp/s on Android).",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "addition",
+            "unit": "px/ms"
+          }
+        }
+      },
+      "rubber-band": {
+        "$type": "number",
+        "$value": 0.55,
+        "$description": "Resistance past a limit: a drag beyond the end of its travel moves the content by this share of the finger's movement.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "addition"
+          }
+        }
+      },
+      "edge-exclusion": {
+        "$type": "dimension",
+        "$value": {
+          "value": 24,
+          "unit": "px"
+        },
+        "$description": "Horizontal swipe gestures start at least this far from the screen's side edges, where the system back gesture lives (Android: at least WindowInsets.systemGestures).",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "addition"
+          }
+        }
+      }
+    },
+    "shift": {
+      "screen": {
+        "$type": "dimension",
+        "$value": "{space.8}",
+        "$description": "Distance a screen travels in a forward or back transition as it fades (motion.animation.screen-*).",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "addition"
+          }
+        }
+      },
+      "modal": {
+        "$type": "dimension",
+        "$value": "{space.12}",
+        "$description": "Distance a full-screen modal rises as it fades in (motion.animation.modal-in).",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "addition"
+          }
+        }
+      }
+    },
+    "$extensions": {
+      "com.desertpants": {
+        "hover-capable-query": "(hover: hover) and (pointer: fine)",
+        "note": "Hover effects apply only where the hover-capable query matches; touch screens use pressed states."
+      }
+    }
+  }
+}

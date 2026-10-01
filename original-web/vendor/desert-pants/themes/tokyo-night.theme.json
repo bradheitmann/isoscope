@@ -1,0 +1,777 @@
+{
+  "id": "tokyo-night",
+  "name": "Tokyo Night",
+  "description": "Enkia's Tokyo Night and Tokyo Night Light for VS Code.",
+  "sources": [
+    {
+      "id": "tokyo-night",
+      "author": "Enkia",
+      "url": "https://marketplace.visualstudio.com/items?itemName=enkia.tokyo-night",
+      "repository": "https://github.com/enkia/tokyo-night-vscode-theme",
+      "revision": "7c0f11eaef322f293621ca7befe462214b7ea468",
+      "licence": "MIT",
+      "files": [
+        "themes/tokyo-night-light-color-theme.json",
+        "themes/tokyo-night-color-theme.json"
+      ]
+    }
+  ],
+  "modes": {
+    "light": {
+      "name": "Tokyo Night Light",
+      "origin": "source",
+      "roles": {
+        "bg": {
+          "value": "#e6e7ed",
+          "source": "tokyo-night tokyo-night-light-color-theme.json: editor.background"
+        },
+        "surface": {
+          "value": "#e6e7ed",
+          "source": "tokyo-night tokyo-night-light-color-theme.json: input.background"
+        },
+        "card": {
+          "value": "#d6d8df",
+          "source": "tokyo-night tokyo-night-light-color-theme.json: sideBar.background"
+        },
+        "raised": {
+          "value": "#dcdee3",
+          "source": "tokyo-night tokyo-night-light-color-theme.json: editorSuggestWidget.background"
+        },
+        "sunken": {
+          "value": "#dedfe7",
+          "derived": "mix(bg, fg, 0.04)"
+        },
+        "inset": {
+          "value": "#d6d8e0",
+          "derived": "mix(bg, fg, 0.08)"
+        },
+        "fg": {
+          "value": "#343b59",
+          "source": "tokyo-night tokyo-night-light-color-theme.json: editor.foreground"
+        },
+        "fg-2": {
+          "value": "#707280",
+          "source": "tokyo-night tokyo-night-light-color-theme.json: descriptionForeground"
+        },
+        "fg-3": {
+          "value": "#9da0ab",
+          "source": "tokyo-night tokyo-night-light-color-theme.json: editorLineNumber.foreground"
+        },
+        "fg-4": {
+          "value": "#b2b5be",
+          "derived": "mix(fg-3, bg, 0.3)"
+        },
+        "accent": {
+          "value": "#2959aa",
+          "source": "tokyo-night tokyo-night-light-color-theme.json: textLink.foreground"
+        },
+        "on-accent": {
+          "value": "#ffffff",
+          "source": "tokyo-night tokyo-night-light-color-theme.json: button.foreground"
+        },
+        "accent-hover": {
+          "value": "#184797",
+          "derived": "accent with OKLab lightness moved 0.06 away from on-accent"
+        },
+        "accent-press": {
+          "value": "#043684",
+          "derived": "accent with OKLab lightness moved 0.12 away from on-accent"
+        },
+        "focus": {
+          "value": "#2959aa",
+          "derived": "accent"
+        },
+        "selection": {
+          "value": "#d7d9e1",
+          "source": "tokyo-night tokyo-night-light-color-theme.json: editor.selectionBackground composited over editor.background"
+        },
+        "scrim": {
+          "value": "#1a1b26",
+          "derived": "the darker of light.fg and dark.bg"
+        },
+        "red": {
+          "value": "#8c4351",
+          "source": "tokenColors and terminal colours of the same theme file (tags / ansiRed)"
+        },
+        "orange": {
+          "value": "#965027",
+          "source": "tokenColors and terminal colours of the same theme file (numbers)"
+        },
+        "yellow": {
+          "value": "#8f5e15",
+          "source": "tokenColors and terminal colours of the same theme file (ansiYellow)"
+        },
+        "green": {
+          "value": "#385f0d",
+          "source": "tokenColors and terminal colours of the same theme file (strings)"
+        },
+        "cyan": {
+          "value": "#006c86",
+          "source": "tokenColors and terminal colours of the same theme file (ansiCyan)"
+        },
+        "blue": {
+          "value": "#2959aa",
+          "source": "tokenColors and terminal colours of the same theme file (functions / ansiBlue)"
+        },
+        "purple": {
+          "value": "#65359d",
+          "source": "tokenColors and terminal colours of the same theme file (keywords)"
+        },
+        "magenta": {
+          "value": "#7b43ba",
+          "source": "tokenColors and terminal colours of the same theme file (ansiMagenta)"
+        },
+        "success": {
+          "value": "#385f0d",
+          "derived": "green"
+        },
+        "warning": {
+          "value": "#8f5e15",
+          "derived": "yellow"
+        },
+        "danger": {
+          "value": "#8c4351",
+          "derived": "red"
+        },
+        "info": {
+          "value": "#006c86",
+          "derived": "cyan"
+        },
+        "success-text": {
+          "value": "#385f0d",
+          "derived": "success (contrast solving adjusts it on each ground)"
+        },
+        "warning-text": {
+          "value": "#8f5e15",
+          "source": "tokyo-night tokyo-night-light-color-theme.json: editorWarning.foreground"
+        },
+        "danger-text": {
+          "value": "#bd4040",
+          "source": "tokyo-night tokyo-night-light-color-theme.json: editorError.foreground"
+        },
+        "info-text": {
+          "value": "#0da0ba",
+          "source": "tokyo-night tokyo-night-light-color-theme.json: editorInfo.foreground"
+        },
+        "chart-1": {
+          "value": "#2959aa",
+          "derived": "blue"
+        },
+        "chart-2": {
+          "value": "#965027",
+          "derived": "orange"
+        },
+        "chart-3": {
+          "value": "#385f0d",
+          "derived": "green"
+        },
+        "chart-4": {
+          "value": "#7b43ba",
+          "derived": "magenta"
+        },
+        "chart-5": {
+          "value": "#006c86",
+          "derived": "cyan (yellow and the hues after it sit within 0.065 OKLab of the text colour or 0.08 of an earlier chart colour)"
+        },
+        "chart-6": {
+          "value": "#5487dc",
+          "derived": "chart-1 with OKLab lightness +0.15 (no theme hue stays 0.08 apart)"
+        },
+        "ansi.black": {
+          "value": "#343b58",
+          "source": "tokyo-night tokyo-night-light-color-theme.json: terminal.ansiBlack"
+        },
+        "ansi.red": {
+          "value": "#8c4351",
+          "source": "tokyo-night tokyo-night-light-color-theme.json: terminal.ansiRed"
+        },
+        "ansi.green": {
+          "value": "#33635c",
+          "source": "tokyo-night tokyo-night-light-color-theme.json: terminal.ansiGreen"
+        },
+        "ansi.yellow": {
+          "value": "#8f5e15",
+          "source": "tokyo-night tokyo-night-light-color-theme.json: terminal.ansiYellow"
+        },
+        "ansi.blue": {
+          "value": "#2959aa",
+          "source": "tokyo-night tokyo-night-light-color-theme.json: terminal.ansiBlue"
+        },
+        "ansi.magenta": {
+          "value": "#7b43ba",
+          "source": "tokyo-night tokyo-night-light-color-theme.json: terminal.ansiMagenta"
+        },
+        "ansi.cyan": {
+          "value": "#006c86",
+          "source": "tokyo-night tokyo-night-light-color-theme.json: terminal.ansiCyan"
+        },
+        "ansi.white": {
+          "value": "#707280",
+          "source": "tokyo-night tokyo-night-light-color-theme.json: terminal.ansiWhite"
+        },
+        "ansi.bright-black": {
+          "value": "#343b58",
+          "source": "tokyo-night tokyo-night-light-color-theme.json: terminal.ansiBrightBlack"
+        },
+        "ansi.bright-red": {
+          "value": "#8c4351",
+          "source": "tokyo-night tokyo-night-light-color-theme.json: terminal.ansiBrightRed"
+        },
+        "ansi.bright-green": {
+          "value": "#33635c",
+          "source": "tokyo-night tokyo-night-light-color-theme.json: terminal.ansiBrightGreen"
+        },
+        "ansi.bright-yellow": {
+          "value": "#8f5e15",
+          "source": "tokyo-night tokyo-night-light-color-theme.json: terminal.ansiBrightYellow"
+        },
+        "ansi.bright-blue": {
+          "value": "#2959aa",
+          "source": "tokyo-night tokyo-night-light-color-theme.json: terminal.ansiBrightBlue"
+        },
+        "ansi.bright-magenta": {
+          "value": "#7b43ba",
+          "source": "tokyo-night tokyo-night-light-color-theme.json: terminal.ansiBrightMagenta"
+        },
+        "ansi.bright-cyan": {
+          "value": "#006c86",
+          "source": "tokyo-night tokyo-night-light-color-theme.json: terminal.ansiBrightCyan"
+        },
+        "ansi.bright-white": {
+          "value": "#707280",
+          "source": "tokyo-night tokyo-night-light-color-theme.json: terminal.ansiBrightWhite"
+        },
+        "syntax.keyword": {
+          "value": "#65359d",
+          "source": "tokyo-night tokyo-night-light-color-theme.json: tokenColors 'keyword' (for keyword)"
+        },
+        "syntax.control": {
+          "value": "#65359d",
+          "source": "tokyo-night tokyo-night-light-color-theme.json: tokenColors 'keyword.control' (for keyword.control.flow)"
+        },
+        "syntax.function": {
+          "value": "#2959aa",
+          "source": "tokyo-night tokyo-night-light-color-theme.json: tokenColors 'entity.name.function' (for entity.name.function)"
+        },
+        "syntax.string": {
+          "value": "#385f0d",
+          "source": "tokyo-night tokyo-night-light-color-theme.json: tokenColors 'string' (for string.quoted.double)"
+        },
+        "syntax.variable": {
+          "value": "#343b58",
+          "source": "tokyo-night tokyo-night-light-color-theme.json: tokenColors 'variable' (for variable.other.readwrite)"
+        },
+        "syntax.type": {
+          "value": "#343b58",
+          "source": "tokyo-night tokyo-night-light-color-theme.json: tokenColors 'entity.name' (for entity.name.type)"
+        },
+        "syntax.number": {
+          "value": "#965027",
+          "source": "tokyo-night tokyo-night-light-color-theme.json: tokenColors 'constant.numeric' (for constant.numeric)"
+        },
+        "syntax.comment": {
+          "value": "#888b94",
+          "source": "tokyo-night tokyo-night-light-color-theme.json: tokenColors 'comment' (for comment.line.double-slash)"
+        },
+        "fill.sage.bg": {
+          "value": "#a8b59f",
+          "derived": "desert sage lightness 0.758 and chroma 0.034 x 1.00 (the theme's green against desert's, at most the theme's own), the hue of green"
+        },
+        "fill.sage.ink": {
+          "value": "#1e2440",
+          "derived": "light.fg moved in OKLab lightness to 7.0:1 on fill.sage.bg (light.fg and light.bg reach 5.10:1)"
+        },
+        "fill.teal.bg": {
+          "value": "#c3d2d7",
+          "derived": "desert teal lightness 0.853 and chroma 0.019 x 0.98 (the theme's cyan against desert's, at most the theme's own), the hue of cyan"
+        },
+        "fill.teal.ink": {
+          "value": "#343b59",
+          "derived": "light.fg, the better of light.fg and light.bg on fill.teal.bg"
+        },
+        "fill.forest.bg": {
+          "value": "#1b1e19",
+          "derived": "desert forest lightness 0.229 and chroma 0.009 x 1.00 (the theme's green against desert's, at most the theme's own), the hue of green"
+        },
+        "fill.forest.ink": {
+          "value": "#e6e7ed",
+          "derived": "light.bg, the better of light.fg and light.bg on fill.forest.bg"
+        },
+        "fill.terracotta.bg": {
+          "value": "#c87e55",
+          "derived": "desert terracotta lightness 0.662 and chroma 0.143 x 0.75 (the theme's orange against desert's, at most the theme's own), the hue of orange"
+        },
+        "fill.terracotta.ink": {
+          "value": "#050821",
+          "derived": "light.fg moved in OKLab lightness to 6.2:1 on fill.terracotta.bg (light.fg and light.bg reach 3.43:1)"
+        },
+        "fill.sand.bg": {
+          "value": "#d7cfc7",
+          "derived": "desert sand lightness 0.859 and chroma 0.019 x 0.74 (the theme's yellow against desert's, at most the theme's own), the hue of yellow"
+        },
+        "fill.sand.ink": {
+          "value": "#343b59",
+          "derived": "light.fg, the better of light.fg and light.bg on fill.sand.bg"
+        },
+        "fill.warm-grey.bg": {
+          "value": "#b5b6bb",
+          "derived": "desert warm-grey lightness 0.776; the theme's neutral hue and chroma (at most 0.03)"
+        },
+        "fill.warm-grey.ink": {
+          "value": "#232946",
+          "derived": "light.fg moved in OKLab lightness to 7.0:1 on fill.warm-grey.bg (light.fg and light.bg reach 5.41:1)"
+        },
+        "fill.clay-red.bg": {
+          "value": "#b2596a",
+          "derived": "desert clay-red lightness 0.576 and chroma 0.200 x 0.59 (the theme's red against desert's, at most the theme's own), the hue of red"
+        },
+        "fill.clay-red.ink": {
+          "value": "#f7f8fe",
+          "derived": "light.bg moved in OKLab lightness to 4.4:1 on fill.clay-red.bg (light.fg and light.bg reach 3.76:1)"
+        },
+        "fill.dark-teal.bg": {
+          "value": "#154594",
+          "derived": "desert dark-teal lightness 0.408 and chroma 0.058 x 2.40 (the theme's blue against desert's, at most the theme's own), the hue of blue"
+        },
+        "fill.dark-teal.ink": {
+          "value": "#e6e7ed",
+          "derived": "light.bg, the better of light.fg and light.bg on fill.dark-teal.bg"
+        },
+        "fill.dusty-pink.bg": {
+          "value": "#ab91d3",
+          "derived": "desert dusty-pink lightness 0.704 and chroma 0.039 x 2.50 (the theme's magenta against desert's, at most the theme's own), the hue of magenta"
+        },
+        "fill.dusty-pink.ink": {
+          "value": "#0a0d27",
+          "derived": "light.fg moved in OKLab lightness to 7.0:1 on fill.dusty-pink.bg (light.fg and light.bg reach 4.03:1)"
+        },
+        "fill.light-peach.bg": {
+          "value": "#f3dcd1",
+          "derived": "desert light-peach lightness 0.911 and chroma 0.040 x 0.75 (the theme's orange against desert's, at most the theme's own), the hue of orange"
+        },
+        "fill.light-peach.ink": {
+          "value": "#343b59",
+          "derived": "light.fg, the better of light.fg and light.bg on fill.light-peach.bg"
+        },
+        "fill.faun.bg": {
+          "value": "#cbc5bd",
+          "derived": "desert faun lightness 0.826 and chroma 0.017 x 0.74 (the theme's yellow against desert's, at most the theme's own), the hue of yellow"
+        },
+        "fill.faun.ink": {
+          "value": "#2e3553",
+          "derived": "light.fg moved in OKLab lightness to 7.0:1 on fill.faun.bg (light.fg and light.bg reach 6.40:1)"
+        },
+        "fill.cool-grey.bg": {
+          "value": "#dcdde3",
+          "derived": "desert cool-grey lightness 0.899; the theme's neutral hue and chroma (at most 0.03)"
+        },
+        "fill.cool-grey.ink": {
+          "value": "#343b59",
+          "derived": "light.fg, the better of light.fg and light.bg on fill.cool-grey.bg"
+        },
+        "fill.stone.bg": {
+          "value": "#aeafb4",
+          "derived": "desert stone lightness 0.753; the theme's neutral hue and chroma (at most 0.03)"
+        },
+        "fill.stone.ink": {
+          "value": "#1d233f",
+          "derived": "light.fg moved in OKLab lightness to 7.0:1 on fill.stone.bg (light.fg and light.bg reach 5.01:1)"
+        },
+        "fill.dark-grey.bg": {
+          "value": "#67686d",
+          "derived": "desert dark-grey lightness 0.518; the theme's neutral hue and chroma (at most 0.03)"
+        },
+        "fill.dark-grey.ink": {
+          "value": "#f7f8fe",
+          "derived": "light.bg moved in OKLab lightness to 5.2:1 on fill.dark-grey.bg (light.fg and light.bg reach 4.50:1)"
+        },
+        "fill.ink.bg": {
+          "value": "#101014",
+          "derived": "desert ink lightness 0.175; the theme's neutral hue and chroma (at most 0.03)"
+        },
+        "fill.ink.ink": {
+          "value": "#e6e7ed",
+          "derived": "light.bg, the better of light.fg and light.bg on fill.ink.bg"
+        }
+      }
+    },
+    "dark": {
+      "name": "Tokyo Night",
+      "origin": "source",
+      "roles": {
+        "bg": {
+          "value": "#1a1b26",
+          "source": "tokyo-night tokyo-night-color-theme.json: editor.background"
+        },
+        "surface": {
+          "value": "#14141b",
+          "source": "tokyo-night tokyo-night-color-theme.json: input.background"
+        },
+        "card": {
+          "value": "#16161e",
+          "source": "tokyo-night tokyo-night-color-theme.json: sideBar.background"
+        },
+        "raised": {
+          "value": "#202330",
+          "source": "tokyo-night tokyo-night-color-theme.json: list.activeSelectionBackground"
+        },
+        "sunken": {
+          "value": "#101014",
+          "source": "tokyo-night tokyo-night-color-theme.json: notifications.background"
+        },
+        "inset": {
+          "value": "#292a38",
+          "derived": "mix(bg, fg, 0.12)"
+        },
+        "fg": {
+          "value": "#a9b1d6",
+          "source": "tokyo-night tokyo-night-color-theme.json: editor.foreground"
+        },
+        "fg-2": {
+          "value": "#787c99",
+          "source": "tokyo-night tokyo-night-color-theme.json: foreground"
+        },
+        "fg-3": {
+          "value": "#515670",
+          "source": "tokyo-night tokyo-night-color-theme.json: descriptionForeground"
+        },
+        "fg-4": {
+          "value": "#363b54",
+          "source": "tokyo-night tokyo-night-color-theme.json: editorLineNumber.foreground"
+        },
+        "accent": {
+          "value": "#3d59a1",
+          "source": "tokyo-night tokyo-night-color-theme.json: button.background #3d59a1dd with its alpha removed"
+        },
+        "on-accent": {
+          "value": "#ffffff",
+          "source": "tokyo-night tokyo-night-color-theme.json: button.foreground"
+        },
+        "accent-hover": {
+          "value": "#2d488e",
+          "derived": "accent with OKLab lightness moved 0.06 away from on-accent"
+        },
+        "accent-press": {
+          "value": "#1f377b",
+          "derived": "accent with OKLab lightness moved 0.12 away from on-accent"
+        },
+        "focus": {
+          "value": "#3d59a1",
+          "derived": "accent"
+        },
+        "selection": {
+          "value": "#2b2f41",
+          "source": "tokyo-night tokyo-night-color-theme.json: editor.selectionBackground composited over editor.background"
+        },
+        "scrim": {
+          "value": "#1a1b26",
+          "derived": "the darker of light.fg and dark.bg"
+        },
+        "red": {
+          "value": "#f7768e",
+          "source": "tokenColors and terminal colours of the same theme file (tags / ansiRed)"
+        },
+        "orange": {
+          "value": "#ff9e64",
+          "source": "tokenColors and terminal colours of the same theme file (numbers)"
+        },
+        "yellow": {
+          "value": "#e0af68",
+          "source": "tokenColors and terminal colours of the same theme file (ansiYellow)"
+        },
+        "green": {
+          "value": "#9ece6a",
+          "source": "tokenColors and terminal colours of the same theme file (strings)"
+        },
+        "cyan": {
+          "value": "#7dcfff",
+          "source": "tokenColors and terminal colours of the same theme file (ansiCyan)"
+        },
+        "blue": {
+          "value": "#7aa2f7",
+          "source": "tokenColors and terminal colours of the same theme file (functions / ansiBlue)"
+        },
+        "purple": {
+          "value": "#bb9af7",
+          "source": "tokenColors and terminal colours of the same theme file (keywords)"
+        },
+        "magenta": {
+          "value": "#bb9af7",
+          "source": "tokenColors and terminal colours of the same theme file (ansiMagenta)"
+        },
+        "success": {
+          "value": "#9ece6a",
+          "derived": "green"
+        },
+        "warning": {
+          "value": "#e0af68",
+          "derived": "yellow"
+        },
+        "danger": {
+          "value": "#f7768e",
+          "derived": "red"
+        },
+        "info": {
+          "value": "#7dcfff",
+          "derived": "cyan"
+        },
+        "success-text": {
+          "value": "#9ece6a",
+          "derived": "success (contrast solving adjusts it on each ground)"
+        },
+        "warning-text": {
+          "value": "#e0af68",
+          "source": "tokyo-night tokyo-night-color-theme.json: editorWarning.foreground"
+        },
+        "danger-text": {
+          "value": "#db4b4b",
+          "source": "tokyo-night tokyo-night-color-theme.json: editorError.foreground"
+        },
+        "info-text": {
+          "value": "#0da0ba",
+          "source": "tokyo-night tokyo-night-color-theme.json: editorInfo.foreground"
+        },
+        "chart-1": {
+          "value": "#7aa2f7",
+          "derived": "blue"
+        },
+        "chart-2": {
+          "value": "#ff9e64",
+          "derived": "orange"
+        },
+        "chart-3": {
+          "value": "#9ece6a",
+          "derived": "green"
+        },
+        "chart-4": {
+          "value": "#bb9af7",
+          "derived": "magenta"
+        },
+        "chart-5": {
+          "value": "#7dcfff",
+          "derived": "cyan (yellow and the hues after it sit within 0.065 OKLab of the text colour or 0.08 of an earlier chart colour)"
+        },
+        "chart-6": {
+          "value": "#f7768e",
+          "derived": "red (cyan and the hues after it sit within 0.065 OKLab of the text colour or 0.08 of an earlier chart colour)"
+        },
+        "ansi.black": {
+          "value": "#363b54",
+          "source": "tokyo-night tokyo-night-color-theme.json: terminal.ansiBlack"
+        },
+        "ansi.red": {
+          "value": "#f7768e",
+          "source": "tokyo-night tokyo-night-color-theme.json: terminal.ansiRed"
+        },
+        "ansi.green": {
+          "value": "#73daca",
+          "source": "tokyo-night tokyo-night-color-theme.json: terminal.ansiGreen"
+        },
+        "ansi.yellow": {
+          "value": "#e0af68",
+          "source": "tokyo-night tokyo-night-color-theme.json: terminal.ansiYellow"
+        },
+        "ansi.blue": {
+          "value": "#7aa2f7",
+          "source": "tokyo-night tokyo-night-color-theme.json: terminal.ansiBlue"
+        },
+        "ansi.magenta": {
+          "value": "#bb9af7",
+          "source": "tokyo-night tokyo-night-color-theme.json: terminal.ansiMagenta"
+        },
+        "ansi.cyan": {
+          "value": "#7dcfff",
+          "source": "tokyo-night tokyo-night-color-theme.json: terminal.ansiCyan"
+        },
+        "ansi.white": {
+          "value": "#787c99",
+          "source": "tokyo-night tokyo-night-color-theme.json: terminal.ansiWhite"
+        },
+        "ansi.bright-black": {
+          "value": "#363b54",
+          "source": "tokyo-night tokyo-night-color-theme.json: terminal.ansiBrightBlack"
+        },
+        "ansi.bright-red": {
+          "value": "#f7768e",
+          "source": "tokyo-night tokyo-night-color-theme.json: terminal.ansiBrightRed"
+        },
+        "ansi.bright-green": {
+          "value": "#73daca",
+          "source": "tokyo-night tokyo-night-color-theme.json: terminal.ansiBrightGreen"
+        },
+        "ansi.bright-yellow": {
+          "value": "#e0af68",
+          "source": "tokyo-night tokyo-night-color-theme.json: terminal.ansiBrightYellow"
+        },
+        "ansi.bright-blue": {
+          "value": "#7aa2f7",
+          "source": "tokyo-night tokyo-night-color-theme.json: terminal.ansiBrightBlue"
+        },
+        "ansi.bright-magenta": {
+          "value": "#bb9af7",
+          "source": "tokyo-night tokyo-night-color-theme.json: terminal.ansiBrightMagenta"
+        },
+        "ansi.bright-cyan": {
+          "value": "#7dcfff",
+          "source": "tokyo-night tokyo-night-color-theme.json: terminal.ansiBrightCyan"
+        },
+        "ansi.bright-white": {
+          "value": "#acb0d0",
+          "source": "tokyo-night tokyo-night-color-theme.json: terminal.ansiBrightWhite"
+        },
+        "syntax.keyword": {
+          "value": "#bb9af7",
+          "source": "tokyo-night tokyo-night-color-theme.json: tokenColors 'keyword' (for keyword)"
+        },
+        "syntax.control": {
+          "value": "#bb9af7",
+          "source": "tokyo-night tokyo-night-color-theme.json: tokenColors 'keyword.control' (for keyword.control.flow)"
+        },
+        "syntax.function": {
+          "value": "#7aa2f7",
+          "source": "tokyo-night tokyo-night-color-theme.json: tokenColors 'entity.name.function' (for entity.name.function)"
+        },
+        "syntax.string": {
+          "value": "#9ece6a",
+          "source": "tokyo-night tokyo-night-color-theme.json: tokenColors 'string' (for string.quoted.double)"
+        },
+        "syntax.variable": {
+          "value": "#c0caf5",
+          "source": "tokyo-night tokyo-night-color-theme.json: tokenColors 'variable' (for variable.other.readwrite)"
+        },
+        "syntax.type": {
+          "value": "#c0caf5",
+          "source": "tokyo-night tokyo-night-color-theme.json: tokenColors 'entity.name' (for entity.name.type)"
+        },
+        "syntax.number": {
+          "value": "#ff9e64",
+          "source": "tokyo-night tokyo-night-color-theme.json: tokenColors 'constant.numeric' (for constant.numeric)"
+        },
+        "syntax.comment": {
+          "value": "#51597d",
+          "source": "tokyo-night tokyo-night-color-theme.json: tokenColors 'comment' (for comment.line.double-slash)"
+        },
+        "fill.sage.bg": {
+          "value": "#a8b59f",
+          "derived": "light-mode fill.sage.bg (fills do not change with mode)"
+        },
+        "fill.sage.ink": {
+          "value": "#1e2440",
+          "derived": "light-mode fill.sage.ink (fills do not change with mode)"
+        },
+        "fill.teal.bg": {
+          "value": "#c3d2d7",
+          "derived": "light-mode fill.teal.bg (fills do not change with mode)"
+        },
+        "fill.teal.ink": {
+          "value": "#343b59",
+          "derived": "light-mode fill.teal.ink (fills do not change with mode)"
+        },
+        "fill.forest.bg": {
+          "value": "#1b1e19",
+          "derived": "light-mode fill.forest.bg (fills do not change with mode)"
+        },
+        "fill.forest.ink": {
+          "value": "#e6e7ed",
+          "derived": "light-mode fill.forest.ink (fills do not change with mode)"
+        },
+        "fill.terracotta.bg": {
+          "value": "#c87e55",
+          "derived": "light-mode fill.terracotta.bg (fills do not change with mode)"
+        },
+        "fill.terracotta.ink": {
+          "value": "#050821",
+          "derived": "light-mode fill.terracotta.ink (fills do not change with mode)"
+        },
+        "fill.sand.bg": {
+          "value": "#d7cfc7",
+          "derived": "light-mode fill.sand.bg (fills do not change with mode)"
+        },
+        "fill.sand.ink": {
+          "value": "#343b59",
+          "derived": "light-mode fill.sand.ink (fills do not change with mode)"
+        },
+        "fill.warm-grey.bg": {
+          "value": "#b5b6bb",
+          "derived": "light-mode fill.warm-grey.bg (fills do not change with mode)"
+        },
+        "fill.warm-grey.ink": {
+          "value": "#232946",
+          "derived": "light-mode fill.warm-grey.ink (fills do not change with mode)"
+        },
+        "fill.clay-red.bg": {
+          "value": "#b2596a",
+          "derived": "light-mode fill.clay-red.bg (fills do not change with mode)"
+        },
+        "fill.clay-red.ink": {
+          "value": "#f7f8fe",
+          "derived": "light-mode fill.clay-red.ink (fills do not change with mode)"
+        },
+        "fill.dark-teal.bg": {
+          "value": "#154594",
+          "derived": "light-mode fill.dark-teal.bg (fills do not change with mode)"
+        },
+        "fill.dark-teal.ink": {
+          "value": "#e6e7ed",
+          "derived": "light-mode fill.dark-teal.ink (fills do not change with mode)"
+        },
+        "fill.dusty-pink.bg": {
+          "value": "#ab91d3",
+          "derived": "light-mode fill.dusty-pink.bg (fills do not change with mode)"
+        },
+        "fill.dusty-pink.ink": {
+          "value": "#0a0d27",
+          "derived": "light-mode fill.dusty-pink.ink (fills do not change with mode)"
+        },
+        "fill.light-peach.bg": {
+          "value": "#f3dcd1",
+          "derived": "light-mode fill.light-peach.bg (fills do not change with mode)"
+        },
+        "fill.light-peach.ink": {
+          "value": "#343b59",
+          "derived": "light-mode fill.light-peach.ink (fills do not change with mode)"
+        },
+        "fill.faun.bg": {
+          "value": "#cbc5bd",
+          "derived": "light-mode fill.faun.bg (fills do not change with mode)"
+        },
+        "fill.faun.ink": {
+          "value": "#2e3553",
+          "derived": "light-mode fill.faun.ink (fills do not change with mode)"
+        },
+        "fill.cool-grey.bg": {
+          "value": "#dcdde3",
+          "derived": "light-mode fill.cool-grey.bg (fills do not change with mode)"
+        },
+        "fill.cool-grey.ink": {
+          "value": "#343b59",
+          "derived": "light-mode fill.cool-grey.ink (fills do not change with mode)"
+        },
+        "fill.stone.bg": {
+          "value": "#aeafb4",
+          "derived": "light-mode fill.stone.bg (fills do not change with mode)"
+        },
+        "fill.stone.ink": {
+          "value": "#1d233f",
+          "derived": "light-mode fill.stone.ink (fills do not change with mode)"
+        },
+        "fill.dark-grey.bg": {
+          "value": "#67686d",
+          "derived": "light-mode fill.dark-grey.bg (fills do not change with mode)"
+        },
+        "fill.dark-grey.ink": {
+          "value": "#f7f8fe",
+          "derived": "light-mode fill.dark-grey.ink (fills do not change with mode)"
+        },
+        "fill.ink.bg": {
+          "value": "#101014",
+          "derived": "light-mode fill.ink.bg (fills do not change with mode)"
+        },
+        "fill.ink.ink": {
+          "value": "#e6e7ed",
+          "derived": "light-mode fill.ink.ink (fills do not change with mode)"
+        }
+      }
+    }
+  }
+}

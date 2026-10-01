@@ -1,0 +1,4294 @@
+{
+  "$description": "Effects and functional gradients.",
+  "$extensions": {
+    "com.desertpants": {
+      "system": "desert-pants",
+      "format": "DTCG 2025.10",
+      "source": "Visual language derived from desertant.com (brand/index.css, assets/site.css, captured 2026-09-23/24). Logos, marks, product names, photography and copy are not included.",
+      "modes": [
+        "light",
+        "dark"
+      ]
+    }
+  },
+  "effect": {
+    "$description": "Image and text effects.",
+    "blur": {
+      "radius": {
+        "$type": "dimension",
+        "$value": "{blur.fx}",
+        "$description": "Blur applied to text in the blur effect.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css .fx-blur"
+          }
+        }
+      },
+      "shift": {
+        "$type": "dimension",
+        "$value": {
+          "value": 3,
+          "unit": "px"
+        },
+        "$description": "Vertical echo offset of the blur effect (text-shadow 1x and 2x).",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css .fx-blur --fx-shift"
+          }
+        }
+      }
+    },
+    "grain": {
+      "paper-opacity": {
+        "$type": "number",
+        "$value": "{opacity.60}",
+        "$description": "Opacity of the paper layer of grained headlines.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css .fx-grain-paper"
+          }
+        }
+      },
+      "offset": {
+        "$type": "dimension",
+        "$value": {
+          "value": 2,
+          "unit": "px"
+        },
+        "$description": "Vertical offset of the front grain layer.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css .fx-grain:after"
+          }
+        }
+      },
+      "frequency": {
+        "$type": "number",
+        "$value": 0.9,
+        "$description": "Grain noise base frequency (feTurbulence baseFrequency).",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com index.html #da-grain-*"
+          }
+        }
+      },
+      "octaves": {
+        "$type": "number",
+        "$value": 6,
+        "$description": "Grain noise octaves (feTurbulence numOctaves).",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com index.html #da-grain-*"
+          }
+        }
+      },
+      "alpha-gain": {
+        "$type": "number",
+        "$value": 1.2,
+        "$description": "Noise alpha gain (feColorMatrix alpha row, first term).",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com index.html #da-grain-*"
+          }
+        }
+      },
+      "alpha-offset": {
+        "$type": "number",
+        "$value": -0.25,
+        "$description": "Noise alpha offset (feColorMatrix alpha row, last term).",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com index.html #da-grain-*"
+          }
+        }
+      },
+      "region-x": {
+        "$type": "number",
+        "$value": -45,
+        "$description": "Filter region x, relative to the text box (%).",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com index.html #da-grain-*",
+            "unit": "%"
+          }
+        }
+      },
+      "region-y": {
+        "$type": "number",
+        "$value": -110,
+        "$description": "Filter region y (%).",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com index.html #da-grain-*",
+            "unit": "%"
+          }
+        }
+      },
+      "region-width": {
+        "$type": "number",
+        "$value": 190,
+        "$description": "Filter region width (%).",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com index.html #da-grain-*",
+            "unit": "%"
+          }
+        }
+      },
+      "region-height": {
+        "$type": "number",
+        "$value": 320,
+        "$description": "Filter region height (%).",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com index.html #da-grain-*",
+            "unit": "%"
+          }
+        }
+      },
+      "back": {
+        "blur": {
+          "$type": "dimension",
+          "$value": {
+            "value": 17.6,
+            "unit": "px"
+          },
+          "$description": "Soft back layer. Blur of the glyph alpha before the noise is subtracted.",
+          "$extensions": {
+            "com.desertpants": {
+              "origin": "source",
+              "source": "desertant.com index.html #da-grain-*"
+            }
+          }
+        },
+        "seed": {
+          "$type": "number",
+          "$value": 11,
+          "$description": "Soft back layer. Noise seed.",
+          "$extensions": {
+            "com.desertpants": {
+              "origin": "source",
+              "source": "desertant.com index.html #da-grain-*"
+            }
+          }
+        },
+        "edge": {
+          "$type": "number",
+          "$value": 0.62,
+          "$description": "Soft back layer. Weight of the blurred glyph against the noise (arithmetic k2).",
+          "$extensions": {
+            "com.desertpants": {
+              "origin": "source",
+              "source": "desertant.com index.html #da-grain-*"
+            }
+          }
+        },
+        "contrast": {
+          "$type": "number",
+          "$value": 7,
+          "$description": "Soft back layer. Stipple contrast (alpha slope).",
+          "$extensions": {
+            "com.desertpants": {
+              "origin": "source",
+              "source": "desertant.com index.html #da-grain-*"
+            }
+          }
+        }
+      },
+      "front": {
+        "blur": {
+          "$type": "dimension",
+          "$value": {
+            "value": 5.4,
+            "unit": "px"
+          },
+          "$description": "Crisp front layer. Blur of the glyph alpha before the noise is subtracted.",
+          "$extensions": {
+            "com.desertpants": {
+              "origin": "source",
+              "source": "desertant.com index.html #da-grain-*"
+            }
+          }
+        },
+        "seed": {
+          "$type": "number",
+          "$value": 23,
+          "$description": "Crisp front layer. Noise seed.",
+          "$extensions": {
+            "com.desertpants": {
+              "origin": "source",
+              "source": "desertant.com index.html #da-grain-*"
+            }
+          }
+        },
+        "edge": {
+          "$type": "number",
+          "$value": 1.05,
+          "$description": "Crisp front layer. Weight of the blurred glyph against the noise (arithmetic k2).",
+          "$extensions": {
+            "com.desertpants": {
+              "origin": "source",
+              "source": "desertant.com index.html #da-grain-*"
+            }
+          }
+        },
+        "contrast": {
+          "$type": "number",
+          "$value": 15,
+          "$description": "Crisp front layer. Stipple contrast (alpha slope).",
+          "$extensions": {
+            "com.desertpants": {
+              "origin": "source",
+              "source": "desertant.com index.html #da-grain-*"
+            }
+          }
+        }
+      },
+      "paper": {
+        "blur": {
+          "$type": "dimension",
+          "$value": {
+            "value": 4.0,
+            "unit": "px"
+          },
+          "$description": "Paper-coloured layer that bites into the ink. Blur of the glyph alpha before the noise is subtracted.",
+          "$extensions": {
+            "com.desertpants": {
+              "origin": "source",
+              "source": "desertant.com index.html #da-grain-*"
+            }
+          }
+        },
+        "seed": {
+          "$type": "number",
+          "$value": 37,
+          "$description": "Paper-coloured layer that bites into the ink. Noise seed.",
+          "$extensions": {
+            "com.desertpants": {
+              "origin": "source",
+              "source": "desertant.com index.html #da-grain-*"
+            }
+          }
+        },
+        "edge": {
+          "$type": "number",
+          "$value": 0.5,
+          "$description": "Paper-coloured layer that bites into the ink. Weight of the blurred glyph against the noise (arithmetic k2).",
+          "$extensions": {
+            "com.desertpants": {
+              "origin": "source",
+              "source": "desertant.com index.html #da-grain-*"
+            }
+          }
+        },
+        "contrast": {
+          "$type": "number",
+          "$value": 13,
+          "$description": "Paper-coloured layer that bites into the ink. Stipple contrast (alpha slope).",
+          "$extensions": {
+            "com.desertpants": {
+              "origin": "source",
+              "source": "desertant.com index.html #da-grain-*"
+            }
+          }
+        }
+      }
+    },
+    "pixelate": {
+      "max": {
+        "$type": "number",
+        "$value": 28,
+        "$description": "Largest pixel block (px) at the start of the pixelate effect.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css --fx-pixel-max"
+          }
+        }
+      },
+      "duration": {
+        "$type": "duration",
+        "$value": {
+          "value": 1400,
+          "unit": "ms"
+        },
+        "$description": "Pixelate effect duration.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css --fx-pixel-ms"
+          }
+        }
+      },
+      "easing": {
+        "$type": "cubicBezier",
+        "$value": "{easing.decelerate}",
+        "$description": "Pixelate: block size easing (cubic out).",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css [data-effect=pixelate]"
+          }
+        }
+      },
+      "hold-ratio": {
+        "$type": "number",
+        "$value": 0.6,
+        "$description": "Pixelate hold variant: resting block size as a fraction of the maximum.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css [data-fx-hold]"
+          }
+        }
+      }
+    },
+    "noise": {
+      "spread": {
+        "$type": "number",
+        "$value": 0.1,
+        "$description": "Noise spread factor.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css --fx-noise-spread"
+          }
+        }
+      },
+      "max": {
+        "$type": "number",
+        "$value": 0.3,
+        "$description": "Noise maximum amplitude.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css --fx-noise-max"
+          }
+        }
+      },
+      "amount": {
+        "$type": "number",
+        "$value": 1,
+        "$description": "Noise amount.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css --fx-noise-amount"
+          }
+        }
+      },
+      "duration": {
+        "$type": "duration",
+        "$value": {
+          "value": 1600,
+          "unit": "ms"
+        },
+        "$description": "Noise effect duration.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css --fx-noise-ms"
+          }
+        }
+      },
+      "easing": {
+        "$type": "cubicBezier",
+        "$value": "{easing.decelerate}",
+        "$description": "Noise: settling easing (cubic out).",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css [data-effect=noise]"
+          }
+        }
+      },
+      "passes": {
+        "$type": "number",
+        "$value": 3,
+        "$description": "Noise: jittered copies painted per frame.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "addition"
+          }
+        }
+      },
+      "settle-spread": {
+        "$type": "number",
+        "$value": 0.2,
+        "$description": "Noise: share of the spread kept in the jitter radius as the effect settles (the radius eases from max to spread x this).",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "addition"
+          }
+        }
+      }
+    },
+    "draw": {
+      "ms-per-100px": {
+        "$type": "number",
+        "$value": 90,
+        "$description": "Draw-in speed: milliseconds per 100px of path.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css --fx-draw-ms-per-100px"
+          }
+        }
+      },
+      "min": {
+        "$type": "duration",
+        "$value": {
+          "value": 450,
+          "unit": "ms"
+        },
+        "$description": "Shortest draw-in.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "brand/js/effects.js"
+          }
+        }
+      },
+      "max": {
+        "$type": "duration",
+        "$value": {
+          "value": 2600,
+          "unit": "ms"
+        },
+        "$description": "Longest draw-in.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "brand/js/effects.js"
+          }
+        }
+      },
+      "easing": {
+        "$type": "cubicBezier",
+        "$value": "{easing.draw}",
+        "$description": "Draw-in easing.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "brand/js/effects.js"
+          }
+        }
+      }
+    },
+    "contour": {
+      "gap": {
+        "$type": "number",
+        "$value": 0.18,
+        "$description": "Gap between contour lines, relative to glyph size.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css --fx-contour-gap"
+          }
+        }
+      },
+      "lines": {
+        "$type": "number",
+        "$value": 3,
+        "$description": "Contour: number of offset outlines drawn around the word.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "addition"
+          }
+        }
+      },
+      "stroke": {
+        "$type": "dimension",
+        "$value": "{border-width.thin}",
+        "$description": "Contour: line width.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "addition"
+          }
+        }
+      }
+    },
+    "reveal": {
+      "threshold": {
+        "$type": "number",
+        "$value": 0.15,
+        "$description": "Share of an element that must be visible before its reveal or effect starts.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/js/effects.js IntersectionObserver threshold"
+          }
+        }
+      },
+      "inset-bottom": {
+        "$type": "number",
+        "$value": 10,
+        "$description": "The trigger area stops this far above the bottom of the viewport (% of its height), so effects start once the element is clearly in view.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/js/effects.js rootMargin 0 0 -10% 0",
+            "unit": "%"
+          }
+        }
+      }
+    },
+    "marker": {
+      "color": {
+        "$type": "color",
+        "$value": "{color.palette.sage}",
+        "$description": "Highlighter marker ink: multiplied into the paper in light mode; in dark mode a deep teal band drawn normally behind cream text.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css --fx-marker",
+            "modes": {
+              "dark": "{color.palette.dark-teal}"
+            },
+            "blend": "multiply",
+            "theme": {
+              "light": "{color.fill.sage.bg}",
+              "dark": "{color.fill.dark-teal.bg}"
+            }
+          }
+        }
+      },
+      "opacity": {
+        "$type": "number",
+        "$value": "{opacity.90}",
+        "$description": "Highlighter marker ink opacity.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css .fx-marker-ink"
+          }
+        }
+      }
+    },
+    "outline": {
+      "stroke": {
+        "$type": "dimension",
+        "$value": "{border-width.thin}",
+        "$description": "Stroke of outlined text.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css .fx-outline"
+          }
+        }
+      },
+      "sweep-angle": {
+        "$type": "number",
+        "$value": 90,
+        "$description": "Direction the ink fills outlined text (deg; 90 = from the start edge). The fill is a hard-stop gradient twice the text width that slides across (effect.outline stroke, motion.transition.outline-fill).",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css .fx-outline linear-gradient(90deg)",
+            "unit": "deg"
+          }
+        }
+      }
+    },
+    "mark": {
+      "$description": "Hand-drawn marks drawn over text (strike, underline, circle and the rest). Stroke = ratio x the host line box height, never below the minimum.",
+      "strike": {
+        "stroke-ratio": {
+          "$type": "number",
+          "$value": 0.045,
+          "$description": "Strike-through scribble. Stroke as a fraction of the line box height.",
+          "$extensions": {
+            "com.desertpants": {
+              "origin": "source",
+              "source": "desertant.com brand/index.css [data-effect=strike]"
+            }
+          }
+        },
+        "stroke-min": {
+          "$type": "dimension",
+          "$value": {
+            "value": 3,
+            "unit": "px"
+          },
+          "$description": "Strike-through scribble. Minimum stroke.",
+          "$extensions": {
+            "com.desertpants": {
+              "origin": "source",
+              "source": "desertant.com brand/index.css [data-effect=strike]"
+            }
+          }
+        }
+      },
+      "underline": {
+        "stroke-ratio": {
+          "$type": "number",
+          "$value": 0.035,
+          "$description": "Hand-drawn underline. Stroke as a fraction of the line box height.",
+          "$extensions": {
+            "com.desertpants": {
+              "origin": "source",
+              "source": "desertant.com brand/index.css [data-effect=underline]"
+            }
+          }
+        },
+        "stroke-min": {
+          "$type": "dimension",
+          "$value": {
+            "value": 2.5,
+            "unit": "px"
+          },
+          "$description": "Hand-drawn underline. Minimum stroke.",
+          "$extensions": {
+            "com.desertpants": {
+              "origin": "source",
+              "source": "desertant.com brand/index.css [data-effect=underline]"
+            }
+          }
+        }
+      },
+      "underline-thick": {
+        "stroke-ratio": {
+          "$type": "number",
+          "$value": 0.11,
+          "$description": "Thick marker underline. Stroke as a fraction of the line box height.",
+          "$extensions": {
+            "com.desertpants": {
+              "origin": "source",
+              "source": "desertant.com brand/index.css [data-effect=underline-thick]"
+            }
+          }
+        },
+        "stroke-min": {
+          "$type": "dimension",
+          "$value": {
+            "value": 4,
+            "unit": "px"
+          },
+          "$description": "Thick marker underline. Minimum stroke.",
+          "$extensions": {
+            "com.desertpants": {
+              "origin": "source",
+              "source": "desertant.com brand/index.css [data-effect=underline-thick]"
+            }
+          }
+        }
+      },
+      "bubble": {
+        "stroke-ratio": {
+          "$type": "number",
+          "$value": 0.04,
+          "$description": "Speech-bubble outline. Stroke as a fraction of the line box height.",
+          "$extensions": {
+            "com.desertpants": {
+              "origin": "source",
+              "source": "desertant.com brand/index.css [data-effect=bubble]"
+            }
+          }
+        },
+        "stroke-min": {
+          "$type": "dimension",
+          "$value": {
+            "value": 3,
+            "unit": "px"
+          },
+          "$description": "Speech-bubble outline. Minimum stroke.",
+          "$extensions": {
+            "com.desertpants": {
+              "origin": "source",
+              "source": "desertant.com brand/index.css [data-effect=bubble]"
+            }
+          }
+        },
+        "pad-x": {
+          "$type": "dimension",
+          "$value": {
+            "value": 8,
+            "unit": "px"
+          },
+          "$description": "Speech bubble: space between the word and the outline, left and right (added to 7% of the word width).",
+          "$extensions": {
+            "com.desertpants": {
+              "origin": "addition"
+            }
+          }
+        },
+        "pad-y": {
+          "$type": "dimension",
+          "$value": {
+            "value": 4,
+            "unit": "px"
+          },
+          "$description": "Speech bubble: space between the word and the outline, above and below (added to 12% of the line box).",
+          "$extensions": {
+            "com.desertpants": {
+              "origin": "addition"
+            }
+          }
+        },
+        "corner-max": {
+          "$type": "dimension",
+          "$value": {
+            "value": 60,
+            "unit": "px"
+          },
+          "$description": "Speech bubble: largest corner size (the corner is 55% of the line box up to this).",
+          "$extensions": {
+            "com.desertpants": {
+              "origin": "addition"
+            }
+          }
+        },
+        "close-overshoot-x": {
+          "$type": "dimension",
+          "$value": {
+            "value": 6,
+            "unit": "px"
+          },
+          "$description": "Speech bubble: how far the stroke runs past its start where it closes, horizontally (the hand-drawn overlap).",
+          "$extensions": {
+            "com.desertpants": {
+              "origin": "addition"
+            }
+          }
+        },
+        "close-overshoot-y": {
+          "$type": "dimension",
+          "$value": {
+            "value": 2,
+            "unit": "px"
+          },
+          "$description": "Speech bubble: how far the closing stroke drifts from its start, vertically.",
+          "$extensions": {
+            "com.desertpants": {
+              "origin": "addition"
+            }
+          }
+        }
+      },
+      "scribble": {
+        "stroke-ratio": {
+          "$type": "number",
+          "$value": 0.06,
+          "$description": "Zig-zag scribble. Stroke as a fraction of the line box height.",
+          "$extensions": {
+            "com.desertpants": {
+              "origin": "source",
+              "source": "desertant.com brand/index.css [data-effect=scribble]"
+            }
+          }
+        },
+        "stroke-min": {
+          "$type": "dimension",
+          "$value": {
+            "value": 3,
+            "unit": "px"
+          },
+          "$description": "Zig-zag scribble. Minimum stroke.",
+          "$extensions": {
+            "com.desertpants": {
+              "origin": "source",
+              "source": "desertant.com brand/index.css [data-effect=scribble]"
+            }
+          }
+        }
+      },
+      "rays": {
+        "stroke-ratio": {
+          "$type": "number",
+          "$value": 0.045,
+          "$description": "Emphasis rays. Stroke as a fraction of the line box height.",
+          "$extensions": {
+            "com.desertpants": {
+              "origin": "source",
+              "source": "desertant.com brand/index.css [data-effect=rays]"
+            }
+          }
+        },
+        "stroke-min": {
+          "$type": "dimension",
+          "$value": {
+            "value": 2.5,
+            "unit": "px"
+          },
+          "$description": "Emphasis rays. Minimum stroke.",
+          "$extensions": {
+            "com.desertpants": {
+              "origin": "source",
+              "source": "desertant.com brand/index.css [data-effect=rays]"
+            }
+          }
+        }
+      },
+      "circle": {
+        "stroke-ratio": {
+          "$type": "number",
+          "$value": 0.045,
+          "$description": "Hand-drawn circle. Stroke as a fraction of the line box height.",
+          "$extensions": {
+            "com.desertpants": {
+              "origin": "source",
+              "source": "desertant.com brand/index.css [data-effect=circle]"
+            }
+          }
+        },
+        "stroke-min": {
+          "$type": "dimension",
+          "$value": {
+            "value": 2.5,
+            "unit": "px"
+          },
+          "$description": "Hand-drawn circle. Minimum stroke.",
+          "$extensions": {
+            "com.desertpants": {
+              "origin": "source",
+              "source": "desertant.com brand/index.css [data-effect=circle]"
+            }
+          }
+        }
+      },
+      "box": {
+        "stroke-ratio": {
+          "$type": "number",
+          "$value": 0.045,
+          "$description": "Hand-drawn box. Stroke as a fraction of the line box height.",
+          "$extensions": {
+            "com.desertpants": {
+              "origin": "source",
+              "source": "desertant.com brand/index.css [data-effect=box]"
+            }
+          }
+        },
+        "stroke-min": {
+          "$type": "dimension",
+          "$value": {
+            "value": 2.5,
+            "unit": "px"
+          },
+          "$description": "Hand-drawn box. Minimum stroke.",
+          "$extensions": {
+            "com.desertpants": {
+              "origin": "source",
+              "source": "desertant.com brand/index.css [data-effect=box]"
+            }
+          }
+        }
+      },
+      "focus": {
+        "stroke-ratio": {
+          "$type": "number",
+          "$value": 0.05,
+          "$description": "Focus corners. Stroke as a fraction of the line box height.",
+          "$extensions": {
+            "com.desertpants": {
+              "origin": "source",
+              "source": "desertant.com brand/index.css [data-effect=focus]"
+            }
+          }
+        },
+        "stroke-min": {
+          "$type": "dimension",
+          "$value": {
+            "value": 2.5,
+            "unit": "px"
+          },
+          "$description": "Focus corners. Minimum stroke.",
+          "$extensions": {
+            "com.desertpants": {
+              "origin": "source",
+              "source": "desertant.com brand/index.css [data-effect=focus]"
+            }
+          }
+        }
+      },
+      "wave": {
+        "stroke-ratio": {
+          "$type": "number",
+          "$value": 0.03,
+          "$description": "Wavy underline. Stroke as a fraction of the line box height.",
+          "$extensions": {
+            "com.desertpants": {
+              "origin": "source",
+              "source": "desertant.com brand/index.css [data-effect=wave]"
+            }
+          }
+        },
+        "stroke-min": {
+          "$type": "dimension",
+          "$value": {
+            "value": 2,
+            "unit": "px"
+          },
+          "$description": "Wavy underline. Minimum stroke.",
+          "$extensions": {
+            "com.desertpants": {
+              "origin": "source",
+              "source": "desertant.com brand/index.css [data-effect=wave]"
+            }
+          }
+        }
+      },
+      "cut": {
+        "stroke-ratio": {
+          "$type": "number",
+          "$value": 0.035,
+          "$description": "Cut line. Stroke as a fraction of the line box height.",
+          "$extensions": {
+            "com.desertpants": {
+              "origin": "source",
+              "source": "desertant.com brand/index.css [data-effect=cut]"
+            }
+          }
+        },
+        "stroke-min": {
+          "$type": "dimension",
+          "$value": {
+            "value": 2,
+            "unit": "px"
+          },
+          "$description": "Cut line. Minimum stroke.",
+          "$extensions": {
+            "com.desertpants": {
+              "origin": "source",
+              "source": "desertant.com brand/index.css [data-effect=cut]"
+            }
+          }
+        }
+      },
+      "question": {
+        "stroke-ratio": {
+          "$type": "number",
+          "$value": 0.065,
+          "$description": "Question squiggle. Stroke as a fraction of the line box height.",
+          "$extensions": {
+            "com.desertpants": {
+              "origin": "source",
+              "source": "desertant.com brand/index.css [data-effect=question]"
+            }
+          }
+        },
+        "stroke-min": {
+          "$type": "dimension",
+          "$value": {
+            "value": 3,
+            "unit": "px"
+          },
+          "$description": "Question squiggle. Minimum stroke.",
+          "$extensions": {
+            "com.desertpants": {
+              "origin": "source",
+              "source": "desertant.com brand/index.css [data-effect=question]"
+            }
+          }
+        }
+      },
+      "marker": {
+        "stroke-ratio": {
+          "$type": "number",
+          "$value": 0.78,
+          "$description": "Highlighter band behind the word. Stroke as a fraction of the line box height.",
+          "$extensions": {
+            "com.desertpants": {
+              "origin": "source",
+              "source": "desertant.com brand/index.css [data-effect=marker]"
+            }
+          }
+        },
+        "stroke-min": {
+          "$type": "dimension",
+          "$value": {
+            "value": 8,
+            "unit": "px"
+          },
+          "$description": "Highlighter band behind the word. Minimum stroke.",
+          "$extensions": {
+            "com.desertpants": {
+              "origin": "source",
+              "source": "desertant.com brand/index.css [data-effect=marker]"
+            }
+          }
+        }
+      },
+      "redact": {
+        "stroke-ratio": {
+          "$type": "number",
+          "$value": 0.9,
+          "$description": "Redaction bar over the word. Stroke as a fraction of the line box height.",
+          "$extensions": {
+            "com.desertpants": {
+              "origin": "source",
+              "source": "desertant.com brand/index.css [data-effect=redact]"
+            }
+          }
+        },
+        "stroke-min": {
+          "$type": "dimension",
+          "$value": {
+            "value": 8,
+            "unit": "px"
+          },
+          "$description": "Redaction bar over the word. Minimum stroke.",
+          "$extensions": {
+            "com.desertpants": {
+              "origin": "source",
+              "source": "desertant.com brand/index.css [data-effect=redact]"
+            }
+          }
+        }
+      },
+      "ticks": {
+        "stroke-ratio": {
+          "$type": "number",
+          "$value": 0.035,
+          "$description": "Measured rule with end ticks. Stroke as a fraction of the line box height.",
+          "$extensions": {
+            "com.desertpants": {
+              "origin": "source",
+              "source": "desertant.com brand/index.css [data-effect=ticks]"
+            }
+          }
+        },
+        "stroke-min": {
+          "$type": "dimension",
+          "$value": {
+            "value": 2,
+            "unit": "px"
+          },
+          "$description": "Measured rule with end ticks. Minimum stroke.",
+          "$extensions": {
+            "com.desertpants": {
+              "origin": "source",
+              "source": "desertant.com brand/index.css [data-effect=ticks]"
+            }
+          }
+        }
+      },
+      "bleed": {
+        "$type": "dimension",
+        "$value": {
+          "value": 8,
+          "unit": "px"
+        },
+        "$description": "Room left around every mark's path inside its drawing box, so strokes and their round caps are never clipped. The room is transparent.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "addition"
+          }
+        }
+      }
+    },
+    "redact": {
+      "in": {
+        "$type": "duration",
+        "$value": {
+          "value": 460,
+          "unit": "ms"
+        },
+        "$description": "Redact: bar draws across the word.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css [data-effect=redact]"
+          }
+        }
+      },
+      "hold": {
+        "$type": "duration",
+        "$value": {
+          "value": 620,
+          "unit": "ms"
+        },
+        "$description": "Redact: bar holds on hover before lifting.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css [data-effect=redact]"
+          }
+        }
+      },
+      "out": {
+        "$type": "duration",
+        "$value": {
+          "value": 620,
+          "unit": "ms"
+        },
+        "$description": "Redact: bar lifts off the word.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css [data-effect=redact]"
+          }
+        }
+      },
+      "easing": {
+        "$type": "cubicBezier",
+        "$value": "{easing.draw-mark}",
+        "$description": "Redact: bar easing.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css [data-effect=redact]"
+          }
+        }
+      }
+    },
+    "wipe": {
+      "duration": {
+        "$type": "duration",
+        "$value": {
+          "value": 900,
+          "unit": "ms"
+        },
+        "$description": "Wipe: reveal sweep.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css [data-effect=wipe]"
+          }
+        }
+      },
+      "hover-in": {
+        "$type": "duration",
+        "$value": {
+          "value": 650,
+          "unit": "ms"
+        },
+        "$description": "Wipe: sweep out on hover.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css [data-effect=wipe]"
+          }
+        }
+      },
+      "hold": {
+        "$type": "duration",
+        "$value": {
+          "value": 350,
+          "unit": "ms"
+        },
+        "$description": "Wipe: hold between sweeps on hover.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css [data-effect=wipe]"
+          }
+        }
+      },
+      "easing": {
+        "$type": "cubicBezier",
+        "$value": "{easing.in-out}",
+        "$description": "Wipe: sweep easing (cubic in-out).",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css [data-effect=wipe]"
+          }
+        }
+      },
+      "edge": {
+        "$type": "number",
+        "$value": 0.06,
+        "$description": "Wipe: width of the soft sweep edge as a fraction of the word width.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "addition"
+          }
+        }
+      },
+      "edge-min": {
+        "$type": "dimension",
+        "$value": {
+          "value": 8,
+          "unit": "px"
+        },
+        "$description": "Wipe: minimum soft edge width.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "addition"
+          }
+        }
+      }
+    },
+    "dissolve": {
+      "duration": {
+        "$type": "duration",
+        "$value": {
+          "value": 1400,
+          "unit": "ms"
+        },
+        "$description": "Dissolve: particles settle into the word.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css [data-effect=dissolve]"
+          }
+        }
+      },
+      "hover-in": {
+        "$type": "duration",
+        "$value": {
+          "value": 900,
+          "unit": "ms"
+        },
+        "$description": "Dissolve: particles leave on hover.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css [data-effect=dissolve]"
+          }
+        }
+      },
+      "hold": {
+        "$type": "duration",
+        "$value": {
+          "value": 200,
+          "unit": "ms"
+        },
+        "$description": "Dissolve: hold before settling again.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css [data-effect=dissolve]"
+          }
+        }
+      },
+      "hover-out": {
+        "$type": "duration",
+        "$value": {
+          "value": 1300,
+          "unit": "ms"
+        },
+        "$description": "Dissolve: particles return after hover.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css [data-effect=dissolve]"
+          }
+        }
+      },
+      "easing": {
+        "$type": "cubicBezier",
+        "$value": "{easing.accelerate}",
+        "$description": "Dissolve: particle easing (cubic in).",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css [data-effect=dissolve]"
+          }
+        }
+      },
+      "particles": {
+        "$type": "number",
+        "$value": 2200,
+        "$description": "Dissolve: target number of particles across the word box (the particle size follows).",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "addition"
+          }
+        }
+      },
+      "particle-min": {
+        "$type": "dimension",
+        "$value": {
+          "value": 2,
+          "unit": "px"
+        },
+        "$description": "Dissolve: smallest particle.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "addition"
+          }
+        }
+      },
+      "stagger": {
+        "$type": "number",
+        "$value": 0.5,
+        "$description": "Dissolve: particles start moving across this share of the sweep, one after another.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "addition"
+          }
+        }
+      },
+      "window": {
+        "$type": "number",
+        "$value": 0.5,
+        "$description": "Dissolve: share of the sweep one particle takes to leave or return.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "addition"
+          }
+        }
+      },
+      "sweep": {
+        "$type": "number",
+        "$value": 1.5,
+        "$description": "Dissolve: length of the whole sweep in the same units: stagger plus window, plus a hold while every particle is away.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "addition"
+          }
+        }
+      },
+      "scatter-x": {
+        "$type": "number",
+        "$value": 1.6,
+        "$description": "Dissolve: horizontal scatter range of a particle, in line box heights (centred on its place in the word).",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "addition"
+          }
+        }
+      },
+      "rise-min": {
+        "$type": "number",
+        "$value": 0.3,
+        "$description": "Dissolve: least a particle rises, in line box heights.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "addition"
+          }
+        }
+      },
+      "rise-range": {
+        "$type": "number",
+        "$value": 1.1,
+        "$description": "Dissolve: extra rise a particle may take on top of rise-min, in line box heights.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "addition"
+          }
+        }
+      }
+    },
+    "speak": {
+      "duration": {
+        "$type": "duration",
+        "$value": {
+          "value": 520,
+          "unit": "ms"
+        },
+        "$description": "Speak: the word types in behind a voice meter.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css [data-effect=speak]"
+          }
+        }
+      },
+      "easing": {
+        "$type": "cubicBezier",
+        "$value": "{easing.in-out}",
+        "$description": "Speak: reveal easing.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css [data-effect=speak]"
+          }
+        }
+      },
+      "bars": {
+        "$type": "number",
+        "$value": 6,
+        "$description": "Speak: bars in the voice meter that leads the reveal.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "addition"
+          }
+        }
+      },
+      "bar-width": {
+        "$type": "number",
+        "$value": 0.03,
+        "$description": "Speak: meter bar width as a fraction of the line box height.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "addition"
+          }
+        }
+      },
+      "bar-min": {
+        "$type": "dimension",
+        "$value": {
+          "value": 2,
+          "unit": "px"
+        },
+        "$description": "Speak: minimum meter bar width.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "addition"
+          }
+        }
+      },
+      "bar-height": {
+        "$type": "number",
+        "$value": 0.3,
+        "$description": "Speak: tallest meter bar, above and below the centre line, as a fraction of the line box height (bars shorten towards the tail).",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "addition"
+          }
+        }
+      },
+      "bar-jitter": {
+        "$type": "number",
+        "$value": 0.4,
+        "$description": "Speak: a bar's height varies between this share of its height and the full height, redrawn each frame.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "addition"
+          }
+        }
+      },
+      "bar-pitch": {
+        "$type": "number",
+        "$value": 2,
+        "$description": "Speak: distance from one bar's start to the next, in bar widths. The gap before the first bar, at the reveal edge, matches the gap between bars.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "addition"
+          }
+        }
+      }
+    },
+    "pulse": {
+      "origin-x": {
+        "$type": "number",
+        "$value": 50,
+        "$description": "Heartbeat ring transform origin, horizontal (%).",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css .fx-pulse-ring",
+            "unit": "%"
+          }
+        }
+      },
+      "origin-y": {
+        "$type": "number",
+        "$value": 58,
+        "$description": "Heartbeat ring transform origin, vertical (%): slightly below centre, under the glyph's optical middle.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css .fx-pulse-ring",
+            "unit": "%"
+          }
+        }
+      },
+      "start-opacity": {
+        "$type": "number",
+        "$value": "{opacity.30}",
+        "$description": "Ring opacity as a beat starts.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css @keyframes fx-heartbeat 0%"
+          }
+        }
+      },
+      "beat-scale": {
+        "$type": "number",
+        "$value": 1.08,
+        "$description": "Ring scale at the first beat (14% of the cycle).",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css @keyframes fx-heartbeat 14%"
+          }
+        }
+      },
+      "beat-opacity": {
+        "$type": "number",
+        "$value": 0.12,
+        "$description": "Ring opacity at the first beat.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css @keyframes fx-heartbeat 14%"
+          }
+        }
+      },
+      "echo-scale": {
+        "$type": "number",
+        "$value": 1.02,
+        "$description": "Ring scale as it settles between beats (26% of the cycle).",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css @keyframes fx-heartbeat 26%"
+          }
+        }
+      },
+      "echo-opacity": {
+        "$type": "number",
+        "$value": 0.26,
+        "$description": "Ring opacity as it settles between beats.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css @keyframes fx-heartbeat 26%"
+          }
+        }
+      },
+      "peak-scale": {
+        "$type": "number",
+        "$value": "{interaction.scale.pulse-peak}",
+        "$description": "Largest ring scale in a beat (42% to the end of the cycle, fading out).",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css @keyframes fx-heartbeat"
+          }
+        }
+      }
+    },
+    "title-deco": {
+      "$description": "Hand-drawn title decorations, positioned in % of the title box.",
+      "strike": {
+        "left": {
+          "$type": "number",
+          "$value": -10,
+          "$description": "Strike-through scribble. left (%).",
+          "$extensions": {
+            "com.desertpants": {
+              "origin": "source",
+              "source": "desertant.com brand/index.css .title-deco--strike",
+              "unit": "%"
+            }
+          }
+        },
+        "top": {
+          "$type": "number",
+          "$value": 38,
+          "$description": "Strike-through scribble. top (%).",
+          "$extensions": {
+            "com.desertpants": {
+              "origin": "source",
+              "source": "desertant.com brand/index.css .title-deco--strike",
+              "unit": "%"
+            }
+          }
+        },
+        "width": {
+          "$type": "number",
+          "$value": 120,
+          "$description": "Strike-through scribble. width (%).",
+          "$extensions": {
+            "com.desertpants": {
+              "origin": "source",
+              "source": "desertant.com brand/index.css .title-deco--strike",
+              "unit": "%"
+            }
+          }
+        }
+      },
+      "bubble": {
+        "left": {
+          "$type": "number",
+          "$value": -8,
+          "$description": "Speech-bubble outline. left (%).",
+          "$extensions": {
+            "com.desertpants": {
+              "origin": "source",
+              "source": "desertant.com brand/index.css .title-deco--bubble",
+              "unit": "%"
+            }
+          }
+        },
+        "top": {
+          "$type": "number",
+          "$value": -32,
+          "$description": "Speech-bubble outline. top (%).",
+          "$extensions": {
+            "com.desertpants": {
+              "origin": "source",
+              "source": "desertant.com brand/index.css .title-deco--bubble",
+              "unit": "%"
+            }
+          }
+        },
+        "width": {
+          "$type": "number",
+          "$value": 118,
+          "$description": "Speech-bubble outline. width (%).",
+          "$extensions": {
+            "com.desertpants": {
+              "origin": "source",
+              "source": "desertant.com brand/index.css .title-deco--bubble",
+              "unit": "%"
+            }
+          }
+        },
+        "height": {
+          "$type": "number",
+          "$value": 160,
+          "$description": "Speech-bubble outline. height (%).",
+          "$extensions": {
+            "com.desertpants": {
+              "origin": "source",
+              "source": "desertant.com brand/index.css .title-deco--bubble",
+              "unit": "%"
+            }
+          }
+        }
+      },
+      "scribble": {
+        "left": {
+          "$type": "number",
+          "$value": 69,
+          "$description": "Corner scribble. left (%).",
+          "$extensions": {
+            "com.desertpants": {
+              "origin": "source",
+              "source": "desertant.com brand/index.css .title-deco--scribble",
+              "unit": "%"
+            }
+          }
+        },
+        "top": {
+          "$type": "number",
+          "$value": 14,
+          "$description": "Corner scribble. top (%).",
+          "$extensions": {
+            "com.desertpants": {
+              "origin": "source",
+              "source": "desertant.com brand/index.css .title-deco--scribble",
+              "unit": "%"
+            }
+          }
+        },
+        "width": {
+          "$type": "number",
+          "$value": 27,
+          "$description": "Corner scribble. width (%).",
+          "$extensions": {
+            "com.desertpants": {
+              "origin": "source",
+              "source": "desertant.com brand/index.css .title-deco--scribble",
+              "unit": "%"
+            }
+          }
+        }
+      },
+      "stroke": {
+        "$type": "dimension",
+        "$value": "{border-width.marker}",
+        "$description": "Stroke of the strike decoration.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css .title-deco--strike path"
+          }
+        }
+      }
+    },
+    "progress": {
+      "played": {
+        "$type": "color",
+        "$value": "{color.palette.cream}",
+        "$description": "Played portion of media progress on dark fills.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com assets/site.css replay progress",
+            "theme": {
+              "fixed": "media controls sit on video and photographs, whose colours no theme changes"
+            }
+          }
+        }
+      },
+      "unplayed": {
+        "$type": "color",
+        "$value": "{color.alpha.cream-35}",
+        "$description": "Unplayed portion of media progress on dark fills.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com assets/site.css replay progress",
+            "theme": {
+              "fixed": "media controls sit on video and photographs, whose colours no theme changes"
+            }
+          }
+        }
+      }
+    }
+  },
+  "gradient": {
+    "$description": "Gradients: functional scrims and fades only (behind text on photos, or blending a fill into a photo). Never decorative.",
+    "photo-scrim": {
+      "$type": "gradient",
+      "$value": [
+        {
+          "color": "{color.overlay.photo-strong}",
+          "position": 0
+        },
+        {
+          "color": "{color.overlay.photo-mid}",
+          "position": 0.38
+        },
+        {
+          "color": {
+            "colorSpace": "srgb",
+            "components": [
+              0.054902,
+              0.066667,
+              0.07451
+            ],
+            "alpha": 0.0,
+            "hex": "#0e1113"
+          },
+          "position": 1
+        }
+      ],
+      "$description": "Bottom-up scrim behind text set on photographs (covers the lower 62%).",
+      "$extensions": {
+        "com.desertpants": {
+          "origin": "source",
+          "source": "assets/site.css .uc-figure:after",
+          "angle-deg": 0,
+          "coverage": 0.62,
+          "theme": {
+            "fixed": "sits on photographs, whose colours no theme changes"
+          }
+        }
+      }
+    },
+    "video-scrim": {
+      "$type": "gradient",
+      "$value": [
+        {
+          "color": "{color.alpha.ink-42}",
+          "position": 0
+        },
+        {
+          "color": "{color.alpha.ink-16}",
+          "position": 0.55
+        },
+        {
+          "color": {
+            "colorSpace": "srgb",
+            "components": [
+              0.054902,
+              0.066667,
+              0.07451
+            ],
+            "alpha": 0.0,
+            "hex": "#0e1113"
+          },
+          "position": 1
+        }
+      ],
+      "$description": "Bottom-up scrim behind video controls.",
+      "$extensions": {
+        "com.desertpants": {
+          "origin": "source",
+          "source": "assets/site.css .post-video-bar",
+          "angle-deg": 0,
+          "theme": {
+            "fixed": "sits on video, whose colours no theme changes"
+          }
+        }
+      }
+    },
+    "sage": {
+      "$description": "sage fades.",
+      "card-bleed": {
+        "$type": "gradient",
+        "$value": [
+          {
+            "color": "{color.fill.sage.bg}",
+            "position": 0
+          },
+          {
+            "color": "{color.fill.sage.bg}",
+            "position": 0.08
+          },
+          {
+            "color": {
+              "colorSpace": "srgb",
+              "components": [
+                0.678431,
+                0.705882,
+                0.611765
+              ],
+              "alpha": 0.0,
+              "hex": "#adb49c"
+            },
+            "position": 1
+          }
+        ],
+        "$description": "Top of a sage feature-card image fading from the card ground (covers 38% of the image).",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css .fc-img--bleed:before",
+            "angle-deg": 180,
+            "coverage": 0.38,
+            "theme": {
+              "colors": [
+                "alpha({color.fill.sage.bg}, 0)"
+              ]
+            }
+          }
+        }
+      },
+      "hero-side": {
+        "$type": "gradient",
+        "$value": [
+          {
+            "color": "{color.fill.sage.bg}",
+            "position": 0
+          },
+          {
+            "color": {
+              "colorSpace": "srgb",
+              "components": [
+                0.678431,
+                0.705882,
+                0.611765
+              ],
+              "alpha": 0.0,
+              "hex": "#adb49c"
+            },
+            "position": 1
+          }
+        ],
+        "$description": "Left edge of a sage fill-hero photo (covers 54% of the width).",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css .hero-model-photo:before",
+            "angle-deg": 90,
+            "coverage": 0.54,
+            "theme": {
+              "colors": [
+                "alpha({color.fill.sage.bg}, 0)"
+              ]
+            }
+          }
+        }
+      },
+      "hero-top": {
+        "$type": "gradient",
+        "$value": [
+          {
+            "color": "{color.fill.sage.bg}",
+            "position": 0
+          },
+          {
+            "color": {
+              "colorSpace": "srgb",
+              "components": [
+                0.678431,
+                0.705882,
+                0.611765
+              ],
+              "alpha": 0.9,
+              "hex": "#adb49c"
+            },
+            "position": 0.45
+          },
+          {
+            "color": {
+              "colorSpace": "srgb",
+              "components": [
+                0.678431,
+                0.705882,
+                0.611765
+              ],
+              "alpha": 0.0,
+              "hex": "#adb49c"
+            },
+            "position": 1
+          }
+        ],
+        "$description": "Top of a sage fill-hero photo behind the header (height: 2 x header height).",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css .hero-model-photo:after",
+            "angle-deg": 180,
+            "theme": {
+              "colors": [
+                "alpha({color.fill.sage.bg}, 0.9)",
+                "alpha({color.fill.sage.bg}, 0)"
+              ]
+            }
+          }
+        }
+      },
+      "hero-top-compact": {
+        "$type": "gradient",
+        "$value": [
+          {
+            "color": "{color.fill.sage.bg}",
+            "position": 0
+          },
+          {
+            "color": {
+              "colorSpace": "srgb",
+              "components": [
+                0.678431,
+                0.705882,
+                0.611765
+              ],
+              "alpha": 0.0,
+              "hex": "#adb49c"
+            },
+            "position": 1
+          }
+        ],
+        "$description": "Top of a sage fill-hero photo at 860px and below (covers 46% of the height).",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css .hero-model-photo:before @860",
+            "angle-deg": 180,
+            "coverage": 0.46,
+            "theme": {
+              "colors": [
+                "alpha({color.fill.sage.bg}, 0)"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "teal": {
+      "$description": "teal fades.",
+      "card-bleed": {
+        "$type": "gradient",
+        "$value": [
+          {
+            "color": "{color.fill.teal.bg}",
+            "position": 0
+          },
+          {
+            "color": "{color.fill.teal.bg}",
+            "position": 0.08
+          },
+          {
+            "color": {
+              "colorSpace": "srgb",
+              "components": [
+                0.764706,
+                0.827451,
+                0.807843
+              ],
+              "alpha": 0.0,
+              "hex": "#c3d3ce"
+            },
+            "position": 1
+          }
+        ],
+        "$description": "Top of a teal feature-card image fading from the card ground (covers 38% of the image).",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css .fc-img--bleed:before",
+            "angle-deg": 180,
+            "coverage": 0.38,
+            "theme": {
+              "colors": [
+                "alpha({color.fill.teal.bg}, 0)"
+              ]
+            }
+          }
+        }
+      },
+      "hero-side": {
+        "$type": "gradient",
+        "$value": [
+          {
+            "color": "{color.fill.teal.bg}",
+            "position": 0
+          },
+          {
+            "color": {
+              "colorSpace": "srgb",
+              "components": [
+                0.764706,
+                0.827451,
+                0.807843
+              ],
+              "alpha": 0.0,
+              "hex": "#c3d3ce"
+            },
+            "position": 1
+          }
+        ],
+        "$description": "Left edge of a teal fill-hero photo (covers 54% of the width).",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css .hero-model-photo:before",
+            "angle-deg": 90,
+            "coverage": 0.54,
+            "theme": {
+              "colors": [
+                "alpha({color.fill.teal.bg}, 0)"
+              ]
+            }
+          }
+        }
+      },
+      "hero-top": {
+        "$type": "gradient",
+        "$value": [
+          {
+            "color": "{color.fill.teal.bg}",
+            "position": 0
+          },
+          {
+            "color": {
+              "colorSpace": "srgb",
+              "components": [
+                0.764706,
+                0.827451,
+                0.807843
+              ],
+              "alpha": 0.9,
+              "hex": "#c3d3ce"
+            },
+            "position": 0.45
+          },
+          {
+            "color": {
+              "colorSpace": "srgb",
+              "components": [
+                0.764706,
+                0.827451,
+                0.807843
+              ],
+              "alpha": 0.0,
+              "hex": "#c3d3ce"
+            },
+            "position": 1
+          }
+        ],
+        "$description": "Top of a teal fill-hero photo behind the header (height: 2 x header height).",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css .hero-model-photo:after",
+            "angle-deg": 180,
+            "theme": {
+              "colors": [
+                "alpha({color.fill.teal.bg}, 0.9)",
+                "alpha({color.fill.teal.bg}, 0)"
+              ]
+            }
+          }
+        }
+      },
+      "hero-top-compact": {
+        "$type": "gradient",
+        "$value": [
+          {
+            "color": "{color.fill.teal.bg}",
+            "position": 0
+          },
+          {
+            "color": {
+              "colorSpace": "srgb",
+              "components": [
+                0.764706,
+                0.827451,
+                0.807843
+              ],
+              "alpha": 0.0,
+              "hex": "#c3d3ce"
+            },
+            "position": 1
+          }
+        ],
+        "$description": "Top of a teal fill-hero photo at 860px and below (covers 46% of the height).",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css .hero-model-photo:before @860",
+            "angle-deg": 180,
+            "coverage": 0.46,
+            "theme": {
+              "colors": [
+                "alpha({color.fill.teal.bg}, 0)"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "forest": {
+      "$description": "forest fades.",
+      "card-bleed": {
+        "$type": "gradient",
+        "$value": [
+          {
+            "color": "{color.fill.forest.bg}",
+            "position": 0
+          },
+          {
+            "color": "{color.fill.forest.bg}",
+            "position": 0.08
+          },
+          {
+            "color": {
+              "colorSpace": "srgb",
+              "components": [
+                0.094118,
+                0.117647,
+                0.113725
+              ],
+              "alpha": 0.0,
+              "hex": "#181e1d"
+            },
+            "position": 1
+          }
+        ],
+        "$description": "Top of a forest feature-card image fading from the card ground (covers 38% of the image).",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css .fc-img--bleed:before",
+            "angle-deg": 180,
+            "coverage": 0.38,
+            "theme": {
+              "colors": [
+                "alpha({color.fill.forest.bg}, 0)"
+              ]
+            }
+          }
+        }
+      },
+      "hero-side": {
+        "$type": "gradient",
+        "$value": [
+          {
+            "color": "{color.fill.forest.bg}",
+            "position": 0
+          },
+          {
+            "color": {
+              "colorSpace": "srgb",
+              "components": [
+                0.094118,
+                0.117647,
+                0.113725
+              ],
+              "alpha": 0.0,
+              "hex": "#181e1d"
+            },
+            "position": 1
+          }
+        ],
+        "$description": "Left edge of a forest fill-hero photo (covers 54% of the width).",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css .hero-model-photo:before",
+            "angle-deg": 90,
+            "coverage": 0.54,
+            "theme": {
+              "colors": [
+                "alpha({color.fill.forest.bg}, 0)"
+              ]
+            }
+          }
+        }
+      },
+      "hero-top": {
+        "$type": "gradient",
+        "$value": [
+          {
+            "color": "{color.fill.forest.bg}",
+            "position": 0
+          },
+          {
+            "color": {
+              "colorSpace": "srgb",
+              "components": [
+                0.094118,
+                0.117647,
+                0.113725
+              ],
+              "alpha": 0.9,
+              "hex": "#181e1d"
+            },
+            "position": 0.45
+          },
+          {
+            "color": {
+              "colorSpace": "srgb",
+              "components": [
+                0.094118,
+                0.117647,
+                0.113725
+              ],
+              "alpha": 0.0,
+              "hex": "#181e1d"
+            },
+            "position": 1
+          }
+        ],
+        "$description": "Top of a forest fill-hero photo behind the header (height: 2 x header height).",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css .hero-model-photo:after",
+            "angle-deg": 180,
+            "theme": {
+              "colors": [
+                "alpha({color.fill.forest.bg}, 0.9)",
+                "alpha({color.fill.forest.bg}, 0)"
+              ]
+            }
+          }
+        }
+      },
+      "hero-top-compact": {
+        "$type": "gradient",
+        "$value": [
+          {
+            "color": "{color.fill.forest.bg}",
+            "position": 0
+          },
+          {
+            "color": {
+              "colorSpace": "srgb",
+              "components": [
+                0.094118,
+                0.117647,
+                0.113725
+              ],
+              "alpha": 0.0,
+              "hex": "#181e1d"
+            },
+            "position": 1
+          }
+        ],
+        "$description": "Top of a forest fill-hero photo at 860px and below (covers 46% of the height).",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css .hero-model-photo:before @860",
+            "angle-deg": 180,
+            "coverage": 0.46,
+            "theme": {
+              "colors": [
+                "alpha({color.fill.forest.bg}, 0)"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "terracotta": {
+      "$description": "terracotta fades.",
+      "card-bleed": {
+        "$type": "gradient",
+        "$value": [
+          {
+            "color": "{color.fill.terracotta.bg}",
+            "position": 0
+          },
+          {
+            "color": "{color.fill.terracotta.bg}",
+            "position": 0.08
+          },
+          {
+            "color": {
+              "colorSpace": "srgb",
+              "components": [
+                0.858824,
+                0.439216,
+                0.298039
+              ],
+              "alpha": 0.0,
+              "hex": "#db704c"
+            },
+            "position": 1
+          }
+        ],
+        "$description": "Top of a terracotta feature-card image fading from the card ground (covers 38% of the image).",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css .fc-img--bleed:before",
+            "angle-deg": 180,
+            "coverage": 0.38,
+            "theme": {
+              "colors": [
+                "alpha({color.fill.terracotta.bg}, 0)"
+              ]
+            }
+          }
+        }
+      },
+      "hero-side": {
+        "$type": "gradient",
+        "$value": [
+          {
+            "color": "{color.fill.terracotta.bg}",
+            "position": 0
+          },
+          {
+            "color": {
+              "colorSpace": "srgb",
+              "components": [
+                0.858824,
+                0.439216,
+                0.298039
+              ],
+              "alpha": 0.0,
+              "hex": "#db704c"
+            },
+            "position": 1
+          }
+        ],
+        "$description": "Left edge of a terracotta fill-hero photo (covers 54% of the width).",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css .hero-model-photo:before",
+            "angle-deg": 90,
+            "coverage": 0.54,
+            "theme": {
+              "colors": [
+                "alpha({color.fill.terracotta.bg}, 0)"
+              ]
+            }
+          }
+        }
+      },
+      "hero-top": {
+        "$type": "gradient",
+        "$value": [
+          {
+            "color": "{color.fill.terracotta.bg}",
+            "position": 0
+          },
+          {
+            "color": {
+              "colorSpace": "srgb",
+              "components": [
+                0.858824,
+                0.439216,
+                0.298039
+              ],
+              "alpha": 0.9,
+              "hex": "#db704c"
+            },
+            "position": 0.45
+          },
+          {
+            "color": {
+              "colorSpace": "srgb",
+              "components": [
+                0.858824,
+                0.439216,
+                0.298039
+              ],
+              "alpha": 0.0,
+              "hex": "#db704c"
+            },
+            "position": 1
+          }
+        ],
+        "$description": "Top of a terracotta fill-hero photo behind the header (height: 2 x header height).",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css .hero-model-photo:after",
+            "angle-deg": 180,
+            "theme": {
+              "colors": [
+                "alpha({color.fill.terracotta.bg}, 0.9)",
+                "alpha({color.fill.terracotta.bg}, 0)"
+              ]
+            }
+          }
+        }
+      },
+      "hero-top-compact": {
+        "$type": "gradient",
+        "$value": [
+          {
+            "color": "{color.fill.terracotta.bg}",
+            "position": 0
+          },
+          {
+            "color": {
+              "colorSpace": "srgb",
+              "components": [
+                0.858824,
+                0.439216,
+                0.298039
+              ],
+              "alpha": 0.0,
+              "hex": "#db704c"
+            },
+            "position": 1
+          }
+        ],
+        "$description": "Top of a terracotta fill-hero photo at 860px and below (covers 46% of the height).",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css .hero-model-photo:before @860",
+            "angle-deg": 180,
+            "coverage": 0.46,
+            "theme": {
+              "colors": [
+                "alpha({color.fill.terracotta.bg}, 0)"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "sand": {
+      "$description": "sand fades.",
+      "card-bleed": {
+        "$type": "gradient",
+        "$value": [
+          {
+            "color": "{color.fill.sand.bg}",
+            "position": 0
+          },
+          {
+            "color": "{color.fill.sand.bg}",
+            "position": 0.08
+          },
+          {
+            "color": {
+              "colorSpace": "srgb",
+              "components": [
+                0.839216,
+                0.815686,
+                0.764706
+              ],
+              "alpha": 0.0,
+              "hex": "#d6d0c3"
+            },
+            "position": 1
+          }
+        ],
+        "$description": "Top of a sand feature-card image fading from the card ground (covers 38% of the image).",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css .fc-img--bleed:before",
+            "angle-deg": 180,
+            "coverage": 0.38,
+            "theme": {
+              "colors": [
+                "alpha({color.fill.sand.bg}, 0)"
+              ]
+            }
+          }
+        }
+      },
+      "hero-side": {
+        "$type": "gradient",
+        "$value": [
+          {
+            "color": "{color.fill.sand.bg}",
+            "position": 0
+          },
+          {
+            "color": {
+              "colorSpace": "srgb",
+              "components": [
+                0.839216,
+                0.815686,
+                0.764706
+              ],
+              "alpha": 0.0,
+              "hex": "#d6d0c3"
+            },
+            "position": 1
+          }
+        ],
+        "$description": "Left edge of a sand fill-hero photo (covers 54% of the width).",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css .hero-model-photo:before",
+            "angle-deg": 90,
+            "coverage": 0.54,
+            "theme": {
+              "colors": [
+                "alpha({color.fill.sand.bg}, 0)"
+              ]
+            }
+          }
+        }
+      },
+      "hero-top": {
+        "$type": "gradient",
+        "$value": [
+          {
+            "color": "{color.fill.sand.bg}",
+            "position": 0
+          },
+          {
+            "color": {
+              "colorSpace": "srgb",
+              "components": [
+                0.839216,
+                0.815686,
+                0.764706
+              ],
+              "alpha": 0.9,
+              "hex": "#d6d0c3"
+            },
+            "position": 0.45
+          },
+          {
+            "color": {
+              "colorSpace": "srgb",
+              "components": [
+                0.839216,
+                0.815686,
+                0.764706
+              ],
+              "alpha": 0.0,
+              "hex": "#d6d0c3"
+            },
+            "position": 1
+          }
+        ],
+        "$description": "Top of a sand fill-hero photo behind the header (height: 2 x header height).",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css .hero-model-photo:after",
+            "angle-deg": 180,
+            "theme": {
+              "colors": [
+                "alpha({color.fill.sand.bg}, 0.9)",
+                "alpha({color.fill.sand.bg}, 0)"
+              ]
+            }
+          }
+        }
+      },
+      "hero-top-compact": {
+        "$type": "gradient",
+        "$value": [
+          {
+            "color": "{color.fill.sand.bg}",
+            "position": 0
+          },
+          {
+            "color": {
+              "colorSpace": "srgb",
+              "components": [
+                0.839216,
+                0.815686,
+                0.764706
+              ],
+              "alpha": 0.0,
+              "hex": "#d6d0c3"
+            },
+            "position": 1
+          }
+        ],
+        "$description": "Top of a sand fill-hero photo at 860px and below (covers 46% of the height).",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css .hero-model-photo:before @860",
+            "angle-deg": 180,
+            "coverage": 0.46,
+            "theme": {
+              "colors": [
+                "alpha({color.fill.sand.bg}, 0)"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "warm-grey": {
+      "$description": "warm-grey fades.",
+      "card-bleed": {
+        "$type": "gradient",
+        "$value": [
+          {
+            "color": "{color.fill.warm-grey.bg}",
+            "position": 0
+          },
+          {
+            "color": "{color.fill.warm-grey.bg}",
+            "position": 0.08
+          },
+          {
+            "color": {
+              "colorSpace": "srgb",
+              "components": [
+                0.717647,
+                0.713725,
+                0.705882
+              ],
+              "alpha": 0.0,
+              "hex": "#b7b6b4"
+            },
+            "position": 1
+          }
+        ],
+        "$description": "Top of a warm-grey feature-card image fading from the card ground (covers 38% of the image).",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css .fc-img--bleed:before",
+            "angle-deg": 180,
+            "coverage": 0.38,
+            "theme": {
+              "colors": [
+                "alpha({color.fill.warm-grey.bg}, 0)"
+              ]
+            }
+          }
+        }
+      },
+      "hero-side": {
+        "$type": "gradient",
+        "$value": [
+          {
+            "color": "{color.fill.warm-grey.bg}",
+            "position": 0
+          },
+          {
+            "color": {
+              "colorSpace": "srgb",
+              "components": [
+                0.717647,
+                0.713725,
+                0.705882
+              ],
+              "alpha": 0.0,
+              "hex": "#b7b6b4"
+            },
+            "position": 1
+          }
+        ],
+        "$description": "Left edge of a warm-grey fill-hero photo (covers 54% of the width).",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css .hero-model-photo:before",
+            "angle-deg": 90,
+            "coverage": 0.54,
+            "theme": {
+              "colors": [
+                "alpha({color.fill.warm-grey.bg}, 0)"
+              ]
+            }
+          }
+        }
+      },
+      "hero-top": {
+        "$type": "gradient",
+        "$value": [
+          {
+            "color": "{color.fill.warm-grey.bg}",
+            "position": 0
+          },
+          {
+            "color": {
+              "colorSpace": "srgb",
+              "components": [
+                0.717647,
+                0.713725,
+                0.705882
+              ],
+              "alpha": 0.9,
+              "hex": "#b7b6b4"
+            },
+            "position": 0.45
+          },
+          {
+            "color": {
+              "colorSpace": "srgb",
+              "components": [
+                0.717647,
+                0.713725,
+                0.705882
+              ],
+              "alpha": 0.0,
+              "hex": "#b7b6b4"
+            },
+            "position": 1
+          }
+        ],
+        "$description": "Top of a warm-grey fill-hero photo behind the header (height: 2 x header height).",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css .hero-model-photo:after",
+            "angle-deg": 180,
+            "theme": {
+              "colors": [
+                "alpha({color.fill.warm-grey.bg}, 0.9)",
+                "alpha({color.fill.warm-grey.bg}, 0)"
+              ]
+            }
+          }
+        }
+      },
+      "hero-top-compact": {
+        "$type": "gradient",
+        "$value": [
+          {
+            "color": "{color.fill.warm-grey.bg}",
+            "position": 0
+          },
+          {
+            "color": {
+              "colorSpace": "srgb",
+              "components": [
+                0.717647,
+                0.713725,
+                0.705882
+              ],
+              "alpha": 0.0,
+              "hex": "#b7b6b4"
+            },
+            "position": 1
+          }
+        ],
+        "$description": "Top of a warm-grey fill-hero photo at 860px and below (covers 46% of the height).",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css .hero-model-photo:before @860",
+            "angle-deg": 180,
+            "coverage": 0.46,
+            "theme": {
+              "colors": [
+                "alpha({color.fill.warm-grey.bg}, 0)"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "clay-red": {
+      "$description": "clay-red fades.",
+      "card-bleed": {
+        "$type": "gradient",
+        "$value": [
+          {
+            "color": "{color.fill.clay-red.bg}",
+            "position": 0
+          },
+          {
+            "color": "{color.fill.clay-red.bg}",
+            "position": 0.08
+          },
+          {
+            "color": {
+              "colorSpace": "srgb",
+              "components": [
+                0.835294,
+                0.215686,
+                0.070588
+              ],
+              "alpha": 0.0,
+              "hex": "#d53712"
+            },
+            "position": 1
+          }
+        ],
+        "$description": "Top of a clay-red feature-card image fading from the card ground (covers 38% of the image).",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css .fc-img--bleed:before",
+            "angle-deg": 180,
+            "coverage": 0.38,
+            "theme": {
+              "colors": [
+                "alpha({color.fill.clay-red.bg}, 0)"
+              ]
+            }
+          }
+        }
+      },
+      "hero-side": {
+        "$type": "gradient",
+        "$value": [
+          {
+            "color": "{color.fill.clay-red.bg}",
+            "position": 0
+          },
+          {
+            "color": {
+              "colorSpace": "srgb",
+              "components": [
+                0.835294,
+                0.215686,
+                0.070588
+              ],
+              "alpha": 0.0,
+              "hex": "#d53712"
+            },
+            "position": 1
+          }
+        ],
+        "$description": "Left edge of a clay-red fill-hero photo (covers 54% of the width).",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css .hero-model-photo:before",
+            "angle-deg": 90,
+            "coverage": 0.54,
+            "theme": {
+              "colors": [
+                "alpha({color.fill.clay-red.bg}, 0)"
+              ]
+            }
+          }
+        }
+      },
+      "hero-top": {
+        "$type": "gradient",
+        "$value": [
+          {
+            "color": "{color.fill.clay-red.bg}",
+            "position": 0
+          },
+          {
+            "color": {
+              "colorSpace": "srgb",
+              "components": [
+                0.835294,
+                0.215686,
+                0.070588
+              ],
+              "alpha": 0.9,
+              "hex": "#d53712"
+            },
+            "position": 0.45
+          },
+          {
+            "color": {
+              "colorSpace": "srgb",
+              "components": [
+                0.835294,
+                0.215686,
+                0.070588
+              ],
+              "alpha": 0.0,
+              "hex": "#d53712"
+            },
+            "position": 1
+          }
+        ],
+        "$description": "Top of a clay-red fill-hero photo behind the header (height: 2 x header height).",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css .hero-model-photo:after",
+            "angle-deg": 180,
+            "theme": {
+              "colors": [
+                "alpha({color.fill.clay-red.bg}, 0.9)",
+                "alpha({color.fill.clay-red.bg}, 0)"
+              ]
+            }
+          }
+        }
+      },
+      "hero-top-compact": {
+        "$type": "gradient",
+        "$value": [
+          {
+            "color": "{color.fill.clay-red.bg}",
+            "position": 0
+          },
+          {
+            "color": {
+              "colorSpace": "srgb",
+              "components": [
+                0.835294,
+                0.215686,
+                0.070588
+              ],
+              "alpha": 0.0,
+              "hex": "#d53712"
+            },
+            "position": 1
+          }
+        ],
+        "$description": "Top of a clay-red fill-hero photo at 860px and below (covers 46% of the height).",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css .hero-model-photo:before @860",
+            "angle-deg": 180,
+            "coverage": 0.46,
+            "theme": {
+              "colors": [
+                "alpha({color.fill.clay-red.bg}, 0)"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "dark-teal": {
+      "$description": "dark-teal fades.",
+      "card-bleed": {
+        "$type": "gradient",
+        "$value": [
+          {
+            "color": "{color.fill.dark-teal.bg}",
+            "position": 0
+          },
+          {
+            "color": "{color.fill.dark-teal.bg}",
+            "position": 0.08
+          },
+          {
+            "color": {
+              "colorSpace": "srgb",
+              "components": [
+                0.109804,
+                0.321569,
+                0.364706
+              ],
+              "alpha": 0.0,
+              "hex": "#1c525d"
+            },
+            "position": 1
+          }
+        ],
+        "$description": "Top of a dark-teal feature-card image fading from the card ground (covers 38% of the image).",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css .fc-img--bleed:before",
+            "angle-deg": 180,
+            "coverage": 0.38,
+            "theme": {
+              "colors": [
+                "alpha({color.fill.dark-teal.bg}, 0)"
+              ]
+            }
+          }
+        }
+      },
+      "hero-side": {
+        "$type": "gradient",
+        "$value": [
+          {
+            "color": "{color.fill.dark-teal.bg}",
+            "position": 0
+          },
+          {
+            "color": {
+              "colorSpace": "srgb",
+              "components": [
+                0.109804,
+                0.321569,
+                0.364706
+              ],
+              "alpha": 0.0,
+              "hex": "#1c525d"
+            },
+            "position": 1
+          }
+        ],
+        "$description": "Left edge of a dark-teal fill-hero photo (covers 54% of the width).",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css .hero-model-photo:before",
+            "angle-deg": 90,
+            "coverage": 0.54,
+            "theme": {
+              "colors": [
+                "alpha({color.fill.dark-teal.bg}, 0)"
+              ]
+            }
+          }
+        }
+      },
+      "hero-top": {
+        "$type": "gradient",
+        "$value": [
+          {
+            "color": "{color.fill.dark-teal.bg}",
+            "position": 0
+          },
+          {
+            "color": {
+              "colorSpace": "srgb",
+              "components": [
+                0.109804,
+                0.321569,
+                0.364706
+              ],
+              "alpha": 0.9,
+              "hex": "#1c525d"
+            },
+            "position": 0.45
+          },
+          {
+            "color": {
+              "colorSpace": "srgb",
+              "components": [
+                0.109804,
+                0.321569,
+                0.364706
+              ],
+              "alpha": 0.0,
+              "hex": "#1c525d"
+            },
+            "position": 1
+          }
+        ],
+        "$description": "Top of a dark-teal fill-hero photo behind the header (height: 2 x header height).",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css .hero-model-photo:after",
+            "angle-deg": 180,
+            "theme": {
+              "colors": [
+                "alpha({color.fill.dark-teal.bg}, 0.9)",
+                "alpha({color.fill.dark-teal.bg}, 0)"
+              ]
+            }
+          }
+        }
+      },
+      "hero-top-compact": {
+        "$type": "gradient",
+        "$value": [
+          {
+            "color": "{color.fill.dark-teal.bg}",
+            "position": 0
+          },
+          {
+            "color": {
+              "colorSpace": "srgb",
+              "components": [
+                0.109804,
+                0.321569,
+                0.364706
+              ],
+              "alpha": 0.0,
+              "hex": "#1c525d"
+            },
+            "position": 1
+          }
+        ],
+        "$description": "Top of a dark-teal fill-hero photo at 860px and below (covers 46% of the height).",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css .hero-model-photo:before @860",
+            "angle-deg": 180,
+            "coverage": 0.46,
+            "theme": {
+              "colors": [
+                "alpha({color.fill.dark-teal.bg}, 0)"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "dusty-pink": {
+      "$description": "dusty-pink fades.",
+      "card-bleed": {
+        "$type": "gradient",
+        "$value": [
+          {
+            "color": "{color.fill.dusty-pink.bg}",
+            "position": 0
+          },
+          {
+            "color": "{color.fill.dusty-pink.bg}",
+            "position": 0.08
+          },
+          {
+            "color": {
+              "colorSpace": "srgb",
+              "components": [
+                0.713725,
+                0.588235,
+                0.615686
+              ],
+              "alpha": 0.0,
+              "hex": "#b6969d"
+            },
+            "position": 1
+          }
+        ],
+        "$description": "Top of a dusty-pink feature-card image fading from the card ground (covers 38% of the image).",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css .fc-img--bleed:before",
+            "angle-deg": 180,
+            "coverage": 0.38,
+            "theme": {
+              "colors": [
+                "alpha({color.fill.dusty-pink.bg}, 0)"
+              ]
+            }
+          }
+        }
+      },
+      "hero-side": {
+        "$type": "gradient",
+        "$value": [
+          {
+            "color": "{color.fill.dusty-pink.bg}",
+            "position": 0
+          },
+          {
+            "color": {
+              "colorSpace": "srgb",
+              "components": [
+                0.713725,
+                0.588235,
+                0.615686
+              ],
+              "alpha": 0.0,
+              "hex": "#b6969d"
+            },
+            "position": 1
+          }
+        ],
+        "$description": "Left edge of a dusty-pink fill-hero photo (covers 54% of the width).",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css .hero-model-photo:before",
+            "angle-deg": 90,
+            "coverage": 0.54,
+            "theme": {
+              "colors": [
+                "alpha({color.fill.dusty-pink.bg}, 0)"
+              ]
+            }
+          }
+        }
+      },
+      "hero-top": {
+        "$type": "gradient",
+        "$value": [
+          {
+            "color": "{color.fill.dusty-pink.bg}",
+            "position": 0
+          },
+          {
+            "color": {
+              "colorSpace": "srgb",
+              "components": [
+                0.713725,
+                0.588235,
+                0.615686
+              ],
+              "alpha": 0.9,
+              "hex": "#b6969d"
+            },
+            "position": 0.45
+          },
+          {
+            "color": {
+              "colorSpace": "srgb",
+              "components": [
+                0.713725,
+                0.588235,
+                0.615686
+              ],
+              "alpha": 0.0,
+              "hex": "#b6969d"
+            },
+            "position": 1
+          }
+        ],
+        "$description": "Top of a dusty-pink fill-hero photo behind the header (height: 2 x header height).",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css .hero-model-photo:after",
+            "angle-deg": 180,
+            "theme": {
+              "colors": [
+                "alpha({color.fill.dusty-pink.bg}, 0.9)",
+                "alpha({color.fill.dusty-pink.bg}, 0)"
+              ]
+            }
+          }
+        }
+      },
+      "hero-top-compact": {
+        "$type": "gradient",
+        "$value": [
+          {
+            "color": "{color.fill.dusty-pink.bg}",
+            "position": 0
+          },
+          {
+            "color": {
+              "colorSpace": "srgb",
+              "components": [
+                0.713725,
+                0.588235,
+                0.615686
+              ],
+              "alpha": 0.0,
+              "hex": "#b6969d"
+            },
+            "position": 1
+          }
+        ],
+        "$description": "Top of a dusty-pink fill-hero photo at 860px and below (covers 46% of the height).",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css .hero-model-photo:before @860",
+            "angle-deg": 180,
+            "coverage": 0.46,
+            "theme": {
+              "colors": [
+                "alpha({color.fill.dusty-pink.bg}, 0)"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "light-peach": {
+      "$description": "light-peach fades.",
+      "card-bleed": {
+        "$type": "gradient",
+        "$value": [
+          {
+            "color": "{color.fill.light-peach.bg}",
+            "position": 0
+          },
+          {
+            "color": "{color.fill.light-peach.bg}",
+            "position": 0.08
+          },
+          {
+            "color": {
+              "colorSpace": "srgb",
+              "components": [
+                0.972549,
+                0.858824,
+                0.792157
+              ],
+              "alpha": 0.0,
+              "hex": "#f8dbca"
+            },
+            "position": 1
+          }
+        ],
+        "$description": "Top of a light-peach feature-card image fading from the card ground (covers 38% of the image).",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css .fc-img--bleed:before",
+            "angle-deg": 180,
+            "coverage": 0.38,
+            "theme": {
+              "colors": [
+                "alpha({color.fill.light-peach.bg}, 0)"
+              ]
+            }
+          }
+        }
+      },
+      "hero-side": {
+        "$type": "gradient",
+        "$value": [
+          {
+            "color": "{color.fill.light-peach.bg}",
+            "position": 0
+          },
+          {
+            "color": {
+              "colorSpace": "srgb",
+              "components": [
+                0.972549,
+                0.858824,
+                0.792157
+              ],
+              "alpha": 0.0,
+              "hex": "#f8dbca"
+            },
+            "position": 1
+          }
+        ],
+        "$description": "Left edge of a light-peach fill-hero photo (covers 54% of the width).",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css .hero-model-photo:before",
+            "angle-deg": 90,
+            "coverage": 0.54,
+            "theme": {
+              "colors": [
+                "alpha({color.fill.light-peach.bg}, 0)"
+              ]
+            }
+          }
+        }
+      },
+      "hero-top": {
+        "$type": "gradient",
+        "$value": [
+          {
+            "color": "{color.fill.light-peach.bg}",
+            "position": 0
+          },
+          {
+            "color": {
+              "colorSpace": "srgb",
+              "components": [
+                0.972549,
+                0.858824,
+                0.792157
+              ],
+              "alpha": 0.9,
+              "hex": "#f8dbca"
+            },
+            "position": 0.45
+          },
+          {
+            "color": {
+              "colorSpace": "srgb",
+              "components": [
+                0.972549,
+                0.858824,
+                0.792157
+              ],
+              "alpha": 0.0,
+              "hex": "#f8dbca"
+            },
+            "position": 1
+          }
+        ],
+        "$description": "Top of a light-peach fill-hero photo behind the header (height: 2 x header height).",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css .hero-model-photo:after",
+            "angle-deg": 180,
+            "theme": {
+              "colors": [
+                "alpha({color.fill.light-peach.bg}, 0.9)",
+                "alpha({color.fill.light-peach.bg}, 0)"
+              ]
+            }
+          }
+        }
+      },
+      "hero-top-compact": {
+        "$type": "gradient",
+        "$value": [
+          {
+            "color": "{color.fill.light-peach.bg}",
+            "position": 0
+          },
+          {
+            "color": {
+              "colorSpace": "srgb",
+              "components": [
+                0.972549,
+                0.858824,
+                0.792157
+              ],
+              "alpha": 0.0,
+              "hex": "#f8dbca"
+            },
+            "position": 1
+          }
+        ],
+        "$description": "Top of a light-peach fill-hero photo at 860px and below (covers 46% of the height).",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css .hero-model-photo:before @860",
+            "angle-deg": 180,
+            "coverage": 0.46,
+            "theme": {
+              "colors": [
+                "alpha({color.fill.light-peach.bg}, 0)"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "faun": {
+      "$description": "faun fades.",
+      "card-bleed": {
+        "$type": "gradient",
+        "$value": [
+          {
+            "color": "{color.fill.faun.bg}",
+            "position": 0
+          },
+          {
+            "color": "{color.fill.faun.bg}",
+            "position": 0.08
+          },
+          {
+            "color": {
+              "colorSpace": "srgb",
+              "components": [
+                0.807843,
+                0.768627,
+                0.733333
+              ],
+              "alpha": 0.0,
+              "hex": "#cec4bb"
+            },
+            "position": 1
+          }
+        ],
+        "$description": "Top of a faun feature-card image fading from the card ground (covers 38% of the image).",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css .fc-img--bleed:before",
+            "angle-deg": 180,
+            "coverage": 0.38,
+            "theme": {
+              "colors": [
+                "alpha({color.fill.faun.bg}, 0)"
+              ]
+            }
+          }
+        }
+      },
+      "hero-side": {
+        "$type": "gradient",
+        "$value": [
+          {
+            "color": "{color.fill.faun.bg}",
+            "position": 0
+          },
+          {
+            "color": {
+              "colorSpace": "srgb",
+              "components": [
+                0.807843,
+                0.768627,
+                0.733333
+              ],
+              "alpha": 0.0,
+              "hex": "#cec4bb"
+            },
+            "position": 1
+          }
+        ],
+        "$description": "Left edge of a faun fill-hero photo (covers 54% of the width).",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css .hero-model-photo:before",
+            "angle-deg": 90,
+            "coverage": 0.54,
+            "theme": {
+              "colors": [
+                "alpha({color.fill.faun.bg}, 0)"
+              ]
+            }
+          }
+        }
+      },
+      "hero-top": {
+        "$type": "gradient",
+        "$value": [
+          {
+            "color": "{color.fill.faun.bg}",
+            "position": 0
+          },
+          {
+            "color": {
+              "colorSpace": "srgb",
+              "components": [
+                0.807843,
+                0.768627,
+                0.733333
+              ],
+              "alpha": 0.9,
+              "hex": "#cec4bb"
+            },
+            "position": 0.45
+          },
+          {
+            "color": {
+              "colorSpace": "srgb",
+              "components": [
+                0.807843,
+                0.768627,
+                0.733333
+              ],
+              "alpha": 0.0,
+              "hex": "#cec4bb"
+            },
+            "position": 1
+          }
+        ],
+        "$description": "Top of a faun fill-hero photo behind the header (height: 2 x header height).",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css .hero-model-photo:after",
+            "angle-deg": 180,
+            "theme": {
+              "colors": [
+                "alpha({color.fill.faun.bg}, 0.9)",
+                "alpha({color.fill.faun.bg}, 0)"
+              ]
+            }
+          }
+        }
+      },
+      "hero-top-compact": {
+        "$type": "gradient",
+        "$value": [
+          {
+            "color": "{color.fill.faun.bg}",
+            "position": 0
+          },
+          {
+            "color": {
+              "colorSpace": "srgb",
+              "components": [
+                0.807843,
+                0.768627,
+                0.733333
+              ],
+              "alpha": 0.0,
+              "hex": "#cec4bb"
+            },
+            "position": 1
+          }
+        ],
+        "$description": "Top of a faun fill-hero photo at 860px and below (covers 46% of the height).",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css .hero-model-photo:before @860",
+            "angle-deg": 180,
+            "coverage": 0.46,
+            "theme": {
+              "colors": [
+                "alpha({color.fill.faun.bg}, 0)"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "cool-grey": {
+      "$description": "cool-grey fades.",
+      "card-bleed": {
+        "$type": "gradient",
+        "$value": [
+          {
+            "color": "{color.fill.cool-grey.bg}",
+            "position": 0
+          },
+          {
+            "color": "{color.fill.cool-grey.bg}",
+            "position": 0.08
+          },
+          {
+            "color": {
+              "colorSpace": "srgb",
+              "components": [
+                0.862745,
+                0.870588,
+                0.87451
+              ],
+              "alpha": 0.0,
+              "hex": "#dcdedf"
+            },
+            "position": 1
+          }
+        ],
+        "$description": "Top of a cool-grey feature-card image fading from the card ground (covers 38% of the image).",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css .fc-img--bleed:before",
+            "angle-deg": 180,
+            "coverage": 0.38,
+            "theme": {
+              "colors": [
+                "alpha({color.fill.cool-grey.bg}, 0)"
+              ]
+            }
+          }
+        }
+      },
+      "hero-side": {
+        "$type": "gradient",
+        "$value": [
+          {
+            "color": "{color.fill.cool-grey.bg}",
+            "position": 0
+          },
+          {
+            "color": {
+              "colorSpace": "srgb",
+              "components": [
+                0.862745,
+                0.870588,
+                0.87451
+              ],
+              "alpha": 0.0,
+              "hex": "#dcdedf"
+            },
+            "position": 1
+          }
+        ],
+        "$description": "Left edge of a cool-grey fill-hero photo (covers 54% of the width).",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css .hero-model-photo:before",
+            "angle-deg": 90,
+            "coverage": 0.54,
+            "theme": {
+              "colors": [
+                "alpha({color.fill.cool-grey.bg}, 0)"
+              ]
+            }
+          }
+        }
+      },
+      "hero-top": {
+        "$type": "gradient",
+        "$value": [
+          {
+            "color": "{color.fill.cool-grey.bg}",
+            "position": 0
+          },
+          {
+            "color": {
+              "colorSpace": "srgb",
+              "components": [
+                0.862745,
+                0.870588,
+                0.87451
+              ],
+              "alpha": 0.9,
+              "hex": "#dcdedf"
+            },
+            "position": 0.45
+          },
+          {
+            "color": {
+              "colorSpace": "srgb",
+              "components": [
+                0.862745,
+                0.870588,
+                0.87451
+              ],
+              "alpha": 0.0,
+              "hex": "#dcdedf"
+            },
+            "position": 1
+          }
+        ],
+        "$description": "Top of a cool-grey fill-hero photo behind the header (height: 2 x header height).",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css .hero-model-photo:after",
+            "angle-deg": 180,
+            "theme": {
+              "colors": [
+                "alpha({color.fill.cool-grey.bg}, 0.9)",
+                "alpha({color.fill.cool-grey.bg}, 0)"
+              ]
+            }
+          }
+        }
+      },
+      "hero-top-compact": {
+        "$type": "gradient",
+        "$value": [
+          {
+            "color": "{color.fill.cool-grey.bg}",
+            "position": 0
+          },
+          {
+            "color": {
+              "colorSpace": "srgb",
+              "components": [
+                0.862745,
+                0.870588,
+                0.87451
+              ],
+              "alpha": 0.0,
+              "hex": "#dcdedf"
+            },
+            "position": 1
+          }
+        ],
+        "$description": "Top of a cool-grey fill-hero photo at 860px and below (covers 46% of the height).",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css .hero-model-photo:before @860",
+            "angle-deg": 180,
+            "coverage": 0.46,
+            "theme": {
+              "colors": [
+                "alpha({color.fill.cool-grey.bg}, 0)"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "stone": {
+      "$description": "stone fades.",
+      "card-bleed": {
+        "$type": "gradient",
+        "$value": [
+          {
+            "color": "{color.fill.stone.bg}",
+            "position": 0
+          },
+          {
+            "color": "{color.fill.stone.bg}",
+            "position": 0.08
+          },
+          {
+            "color": {
+              "colorSpace": "srgb",
+              "components": [
+                0.705882,
+                0.682353,
+                0.65098
+              ],
+              "alpha": 0.0,
+              "hex": "#b4aea6"
+            },
+            "position": 1
+          }
+        ],
+        "$description": "Top of a stone feature-card image fading from the card ground (covers 38% of the image).",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css .fc-img--bleed:before",
+            "angle-deg": 180,
+            "coverage": 0.38,
+            "theme": {
+              "colors": [
+                "alpha({color.fill.stone.bg}, 0)"
+              ]
+            }
+          }
+        }
+      },
+      "hero-side": {
+        "$type": "gradient",
+        "$value": [
+          {
+            "color": "{color.fill.stone.bg}",
+            "position": 0
+          },
+          {
+            "color": {
+              "colorSpace": "srgb",
+              "components": [
+                0.705882,
+                0.682353,
+                0.65098
+              ],
+              "alpha": 0.0,
+              "hex": "#b4aea6"
+            },
+            "position": 1
+          }
+        ],
+        "$description": "Left edge of a stone fill-hero photo (covers 54% of the width).",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css .hero-model-photo:before",
+            "angle-deg": 90,
+            "coverage": 0.54,
+            "theme": {
+              "colors": [
+                "alpha({color.fill.stone.bg}, 0)"
+              ]
+            }
+          }
+        }
+      },
+      "hero-top": {
+        "$type": "gradient",
+        "$value": [
+          {
+            "color": "{color.fill.stone.bg}",
+            "position": 0
+          },
+          {
+            "color": {
+              "colorSpace": "srgb",
+              "components": [
+                0.705882,
+                0.682353,
+                0.65098
+              ],
+              "alpha": 0.9,
+              "hex": "#b4aea6"
+            },
+            "position": 0.45
+          },
+          {
+            "color": {
+              "colorSpace": "srgb",
+              "components": [
+                0.705882,
+                0.682353,
+                0.65098
+              ],
+              "alpha": 0.0,
+              "hex": "#b4aea6"
+            },
+            "position": 1
+          }
+        ],
+        "$description": "Top of a stone fill-hero photo behind the header (height: 2 x header height).",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css .hero-model-photo:after",
+            "angle-deg": 180,
+            "theme": {
+              "colors": [
+                "alpha({color.fill.stone.bg}, 0.9)",
+                "alpha({color.fill.stone.bg}, 0)"
+              ]
+            }
+          }
+        }
+      },
+      "hero-top-compact": {
+        "$type": "gradient",
+        "$value": [
+          {
+            "color": "{color.fill.stone.bg}",
+            "position": 0
+          },
+          {
+            "color": {
+              "colorSpace": "srgb",
+              "components": [
+                0.705882,
+                0.682353,
+                0.65098
+              ],
+              "alpha": 0.0,
+              "hex": "#b4aea6"
+            },
+            "position": 1
+          }
+        ],
+        "$description": "Top of a stone fill-hero photo at 860px and below (covers 46% of the height).",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css .hero-model-photo:before @860",
+            "angle-deg": 180,
+            "coverage": 0.46,
+            "theme": {
+              "colors": [
+                "alpha({color.fill.stone.bg}, 0)"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "dark-grey": {
+      "$description": "dark-grey fades.",
+      "card-bleed": {
+        "$type": "gradient",
+        "$value": [
+          {
+            "color": "{color.fill.dark-grey.bg}",
+            "position": 0
+          },
+          {
+            "color": "{color.fill.dark-grey.bg}",
+            "position": 0.08
+          },
+          {
+            "color": {
+              "colorSpace": "srgb",
+              "components": [
+                0.4,
+                0.411765,
+                0.403922
+              ],
+              "alpha": 0.0,
+              "hex": "#666967"
+            },
+            "position": 1
+          }
+        ],
+        "$description": "Top of a dark-grey feature-card image fading from the card ground (covers 38% of the image).",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css .fc-img--bleed:before",
+            "angle-deg": 180,
+            "coverage": 0.38,
+            "theme": {
+              "colors": [
+                "alpha({color.fill.dark-grey.bg}, 0)"
+              ]
+            }
+          }
+        }
+      },
+      "hero-side": {
+        "$type": "gradient",
+        "$value": [
+          {
+            "color": "{color.fill.dark-grey.bg}",
+            "position": 0
+          },
+          {
+            "color": {
+              "colorSpace": "srgb",
+              "components": [
+                0.4,
+                0.411765,
+                0.403922
+              ],
+              "alpha": 0.0,
+              "hex": "#666967"
+            },
+            "position": 1
+          }
+        ],
+        "$description": "Left edge of a dark-grey fill-hero photo (covers 54% of the width).",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css .hero-model-photo:before",
+            "angle-deg": 90,
+            "coverage": 0.54,
+            "theme": {
+              "colors": [
+                "alpha({color.fill.dark-grey.bg}, 0)"
+              ]
+            }
+          }
+        }
+      },
+      "hero-top": {
+        "$type": "gradient",
+        "$value": [
+          {
+            "color": "{color.fill.dark-grey.bg}",
+            "position": 0
+          },
+          {
+            "color": {
+              "colorSpace": "srgb",
+              "components": [
+                0.4,
+                0.411765,
+                0.403922
+              ],
+              "alpha": 0.9,
+              "hex": "#666967"
+            },
+            "position": 0.45
+          },
+          {
+            "color": {
+              "colorSpace": "srgb",
+              "components": [
+                0.4,
+                0.411765,
+                0.403922
+              ],
+              "alpha": 0.0,
+              "hex": "#666967"
+            },
+            "position": 1
+          }
+        ],
+        "$description": "Top of a dark-grey fill-hero photo behind the header (height: 2 x header height).",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css .hero-model-photo:after",
+            "angle-deg": 180,
+            "theme": {
+              "colors": [
+                "alpha({color.fill.dark-grey.bg}, 0.9)",
+                "alpha({color.fill.dark-grey.bg}, 0)"
+              ]
+            }
+          }
+        }
+      },
+      "hero-top-compact": {
+        "$type": "gradient",
+        "$value": [
+          {
+            "color": "{color.fill.dark-grey.bg}",
+            "position": 0
+          },
+          {
+            "color": {
+              "colorSpace": "srgb",
+              "components": [
+                0.4,
+                0.411765,
+                0.403922
+              ],
+              "alpha": 0.0,
+              "hex": "#666967"
+            },
+            "position": 1
+          }
+        ],
+        "$description": "Top of a dark-grey fill-hero photo at 860px and below (covers 46% of the height).",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css .hero-model-photo:before @860",
+            "angle-deg": 180,
+            "coverage": 0.46,
+            "theme": {
+              "colors": [
+                "alpha({color.fill.dark-grey.bg}, 0)"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "ink": {
+      "$description": "ink fades.",
+      "card-bleed": {
+        "$type": "gradient",
+        "$value": [
+          {
+            "color": "{color.fill.ink.bg}",
+            "position": 0
+          },
+          {
+            "color": "{color.fill.ink.bg}",
+            "position": 0.08
+          },
+          {
+            "color": {
+              "colorSpace": "srgb",
+              "components": [
+                0.054902,
+                0.066667,
+                0.07451
+              ],
+              "alpha": 0.0,
+              "hex": "#0e1113"
+            },
+            "position": 1
+          }
+        ],
+        "$description": "Top of a ink feature-card image fading from the card ground (covers 38% of the image).",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css .fc-img--bleed:before",
+            "angle-deg": 180,
+            "coverage": 0.38,
+            "theme": {
+              "colors": [
+                "alpha({color.fill.ink.bg}, 0)"
+              ]
+            }
+          }
+        }
+      },
+      "hero-side": {
+        "$type": "gradient",
+        "$value": [
+          {
+            "color": "{color.fill.ink.bg}",
+            "position": 0
+          },
+          {
+            "color": {
+              "colorSpace": "srgb",
+              "components": [
+                0.054902,
+                0.066667,
+                0.07451
+              ],
+              "alpha": 0.0,
+              "hex": "#0e1113"
+            },
+            "position": 1
+          }
+        ],
+        "$description": "Left edge of a ink fill-hero photo (covers 54% of the width).",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css .hero-model-photo:before",
+            "angle-deg": 90,
+            "coverage": 0.54,
+            "theme": {
+              "colors": [
+                "alpha({color.fill.ink.bg}, 0)"
+              ]
+            }
+          }
+        }
+      },
+      "hero-top": {
+        "$type": "gradient",
+        "$value": [
+          {
+            "color": "{color.fill.ink.bg}",
+            "position": 0
+          },
+          {
+            "color": {
+              "colorSpace": "srgb",
+              "components": [
+                0.054902,
+                0.066667,
+                0.07451
+              ],
+              "alpha": 0.9,
+              "hex": "#0e1113"
+            },
+            "position": 0.45
+          },
+          {
+            "color": {
+              "colorSpace": "srgb",
+              "components": [
+                0.054902,
+                0.066667,
+                0.07451
+              ],
+              "alpha": 0.0,
+              "hex": "#0e1113"
+            },
+            "position": 1
+          }
+        ],
+        "$description": "Top of a ink fill-hero photo behind the header (height: 2 x header height).",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css .hero-model-photo:after",
+            "angle-deg": 180,
+            "theme": {
+              "colors": [
+                "alpha({color.fill.ink.bg}, 0.9)",
+                "alpha({color.fill.ink.bg}, 0)"
+              ]
+            }
+          }
+        }
+      },
+      "hero-top-compact": {
+        "$type": "gradient",
+        "$value": [
+          {
+            "color": "{color.fill.ink.bg}",
+            "position": 0
+          },
+          {
+            "color": {
+              "colorSpace": "srgb",
+              "components": [
+                0.054902,
+                0.066667,
+                0.07451
+              ],
+              "alpha": 0.0,
+              "hex": "#0e1113"
+            },
+            "position": 1
+          }
+        ],
+        "$description": "Top of a ink fill-hero photo at 860px and below (covers 46% of the height).",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css .hero-model-photo:before @860",
+            "angle-deg": 180,
+            "coverage": 0.46,
+            "theme": {
+              "colors": [
+                "alpha({color.fill.ink.bg}, 0)"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "context": {
+      "card-bleed": {
+        "$type": "gradient",
+        "$value": [
+          {
+            "color": "{color.context.bg}",
+            "position": 0
+          },
+          {
+            "color": "{color.context.bg}",
+            "position": 0.08
+          },
+          {
+            "color": "{color.alpha.transparent}",
+            "position": 1
+          }
+        ],
+        "$description": "Top of a context feature-card image fading from the ground of the fill theme in scope (covers 38% of the image).",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "addition",
+            "angle-deg": 180,
+            "coverage": 0.38
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,781 @@
+{
+  "id": "jetbrains",
+  "name": "JetBrains",
+  "description": "The Light and Dark themes of the JetBrains IDEs' new UI, with their editor colour schemes.",
+  "sources": [
+    {
+      "id": "intellij-community",
+      "author": "JetBrains",
+      "url": "https://www.jetbrains.com/help/idea/user-interface-themes.html",
+      "repository": "https://github.com/JetBrains/intellij-community",
+      "revision": "d8993bba1aee64d1c6c6e88431de7bc41253cfd1",
+      "licence": "Apache-2.0",
+      "files": [
+        "platform/platform-resources/src/themes/expUI/expUI_light.theme.json",
+        "platform/platform-resources/src/themes/expUI/expUI_dark.theme.json",
+        "platform/platform-resources/src/themes/expUI/expUI_lightScheme.xml",
+        "platform/platform-resources/src/themes/expUI/expUI_darkScheme.xml",
+        "platform/platform-resources/src/DefaultColorSchemesManager.xml (parent schemes Default and Darcula: console colours)"
+      ],
+      "note": "The Light and Dark themes of the JetBrains new UI with their editor schemes. Source files are Apache-2.0."
+    }
+  ],
+  "modes": {
+    "light": {
+      "name": "Light",
+      "origin": "source",
+      "roles": {
+        "bg": {
+          "value": "#ffffff",
+          "source": "expUI_lightScheme TEXT background"
+        },
+        "surface": {
+          "value": "#ffffff",
+          "source": "expUI_light TextField.background"
+        },
+        "card": {
+          "value": "#f7f8fa",
+          "source": "expUI_light * background (tool windows)"
+        },
+        "raised": {
+          "value": "#ffffff",
+          "source": "expUI_light Popup.background"
+        },
+        "sunken": {
+          "value": "#f5f8fe",
+          "source": "expUI_lightScheme CARET_ROW_COLOR"
+        },
+        "inset": {
+          "value": "#e8e8e8",
+          "derived": "mix(bg, fg, 0.08)"
+        },
+        "fg": {
+          "value": "#080808",
+          "source": "expUI_lightScheme TEXT foreground"
+        },
+        "fg-2": {
+          "value": "#818594",
+          "source": "expUI_light * infoForeground"
+        },
+        "fg-3": {
+          "value": "#aeb3c2",
+          "source": "expUI_lightScheme LINE_NUMBERS_COLOR"
+        },
+        "fg-4": {
+          "value": "#a8adbd",
+          "source": "expUI_light * disabledForeground"
+        },
+        "accent": {
+          "value": "#3574f0",
+          "source": "expUI_light Button.default.startBackground"
+        },
+        "on-accent": {
+          "value": "#ffffff",
+          "source": "expUI_light Button.default.foreground"
+        },
+        "accent-hover": {
+          "value": "#2361db",
+          "derived": "accent with OKLab lightness moved 0.06 away from on-accent"
+        },
+        "accent-press": {
+          "value": "#0f4dc7",
+          "derived": "accent with OKLab lightness moved 0.12 away from on-accent"
+        },
+        "focus": {
+          "value": "#3574f0",
+          "source": "expUI_light * focusColor"
+        },
+        "selection": {
+          "value": "#a6d2ff",
+          "source": "expUI_lightScheme SELECTION_BACKGROUND"
+        },
+        "scrim": {
+          "value": "#080808",
+          "derived": "the darker of light.fg and dark.bg"
+        },
+        "red": {
+          "value": "#ce0505",
+          "source": "Default scheme CONSOLE_RED_OUTPUT"
+        },
+        "orange": {
+          "value": "#a46704",
+          "source": "expUI_light Label.warningForeground"
+        },
+        "yellow": {
+          "value": "#b28c00",
+          "source": "Default scheme CONSOLE_YELLOW_OUTPUT"
+        },
+        "green": {
+          "value": "#067d17",
+          "source": "Default scheme CONSOLE_GREEN_OUTPUT"
+        },
+        "cyan": {
+          "value": "#028e8e",
+          "source": "Default scheme CONSOLE_CYAN_OUTPUT"
+        },
+        "blue": {
+          "value": "#063fdb",
+          "source": "Default scheme CONSOLE_BLUE_OUTPUT"
+        },
+        "purple": {
+          "value": "#871094",
+          "source": "expUI_lightScheme DEFAULT_CONSTANT"
+        },
+        "magenta": {
+          "value": "#b309b3",
+          "source": "Default scheme CONSOLE_MAGENTA_OUTPUT"
+        },
+        "success": {
+          "value": "#067d17",
+          "derived": "green"
+        },
+        "warning": {
+          "value": "#b28c00",
+          "derived": "yellow"
+        },
+        "danger": {
+          "value": "#ce0505",
+          "derived": "red"
+        },
+        "info": {
+          "value": "#028e8e",
+          "derived": "cyan"
+        },
+        "success-text": {
+          "value": "#067d17",
+          "derived": "success (contrast solving adjusts it on each ground)"
+        },
+        "warning-text": {
+          "value": "#a46704",
+          "source": "expUI_light Label.warningForeground"
+        },
+        "danger-text": {
+          "value": "#db3b4b",
+          "source": "expUI_light Label.errorForeground"
+        },
+        "info-text": {
+          "value": "#028e8e",
+          "derived": "info (contrast solving adjusts it on each ground)"
+        },
+        "chart-1": {
+          "value": "#063fdb",
+          "derived": "blue"
+        },
+        "chart-2": {
+          "value": "#a46704",
+          "derived": "orange"
+        },
+        "chart-3": {
+          "value": "#067d17",
+          "derived": "green"
+        },
+        "chart-4": {
+          "value": "#b309b3",
+          "derived": "magenta"
+        },
+        "chart-5": {
+          "value": "#b28c00",
+          "derived": "yellow"
+        },
+        "chart-6": {
+          "value": "#028e8e",
+          "derived": "cyan"
+        },
+        "ansi.black": {
+          "value": "#000000",
+          "source": "Default scheme CONSOLE_BLACK_OUTPUT (console ANSI black)"
+        },
+        "ansi.red": {
+          "value": "#ce0505",
+          "source": "Default scheme CONSOLE_RED_OUTPUT (console ANSI red)"
+        },
+        "ansi.green": {
+          "value": "#067d17",
+          "source": "Default scheme CONSOLE_GREEN_OUTPUT (console ANSI green)"
+        },
+        "ansi.yellow": {
+          "value": "#b28c00",
+          "source": "Default scheme CONSOLE_YELLOW_OUTPUT (console ANSI yellow)"
+        },
+        "ansi.blue": {
+          "value": "#063fdb",
+          "source": "Default scheme CONSOLE_BLUE_OUTPUT (console ANSI blue)"
+        },
+        "ansi.magenta": {
+          "value": "#b309b3",
+          "source": "Default scheme CONSOLE_MAGENTA_OUTPUT (console ANSI magenta)"
+        },
+        "ansi.cyan": {
+          "value": "#028e8e",
+          "source": "Default scheme CONSOLE_CYAN_OUTPUT (console ANSI cyan)"
+        },
+        "ansi.white": {
+          "value": "#929292",
+          "source": "Default scheme CONSOLE_GRAY_OUTPUT (console ANSI white)"
+        },
+        "ansi.bright-black": {
+          "value": "#656565",
+          "source": "Default scheme CONSOLE_DARKGRAY_OUTPUT (console ANSI bright-black)"
+        },
+        "ansi.bright-red": {
+          "value": "#ff1616",
+          "source": "Default scheme CONSOLE_RED_BRIGHT_OUTPUT (console ANSI bright-red)"
+        },
+        "ansi.bright-green": {
+          "value": "#16b42c",
+          "source": "Default scheme CONSOLE_GREEN_BRIGHT_OUTPUT (console ANSI bright-green)"
+        },
+        "ansi.bright-yellow": {
+          "value": "#ecc32c",
+          "source": "Default scheme CONSOLE_YELLOW_BRIGHT_OUTPUT (console ANSI bright-yellow)"
+        },
+        "ansi.bright-blue": {
+          "value": "#2d61f0",
+          "source": "Default scheme CONSOLE_BLUE_BRIGHT_OUTPUT (console ANSI bright-blue)"
+        },
+        "ansi.bright-magenta": {
+          "value": "#e617e6",
+          "source": "Default scheme CONSOLE_MAGENTA_BRIGHT_OUTPUT (console ANSI bright-magenta)"
+        },
+        "ansi.bright-cyan": {
+          "value": "#15c1c1",
+          "source": "Default scheme CONSOLE_CYAN_BRIGHT_OUTPUT (console ANSI bright-cyan)"
+        },
+        "ansi.bright-white": {
+          "value": "#c9c9c9",
+          "source": "Default scheme CONSOLE_WHITE_OUTPUT (console ANSI bright-white)"
+        },
+        "syntax.keyword": {
+          "value": "#0033b3",
+          "source": "expUI_lightScheme DEFAULT_KEYWORD"
+        },
+        "syntax.control": {
+          "value": "#0033b3",
+          "source": "expUI_lightScheme DEFAULT_KEYWORD"
+        },
+        "syntax.function": {
+          "value": "#00627a",
+          "source": "expUI_lightScheme DEFAULT_FUNCTION_DECLARATION"
+        },
+        "syntax.string": {
+          "value": "#067d17",
+          "source": "expUI_lightScheme DEFAULT_STRING"
+        },
+        "syntax.variable": {
+          "value": "#871094",
+          "source": "expUI_lightScheme DEFAULT_INSTANCE_FIELD"
+        },
+        "syntax.type": {
+          "value": "#9e880d",
+          "source": "expUI_lightScheme DEFAULT_METADATA (annotations)"
+        },
+        "syntax.number": {
+          "value": "#1750eb",
+          "source": "expUI_lightScheme DEFAULT_NUMBER"
+        },
+        "syntax.comment": {
+          "value": "#8c8c8c",
+          "source": "expUI_lightScheme DEFAULT_LINE_COMMENT"
+        },
+        "fill.sage.bg": {
+          "value": "#9eb99d",
+          "derived": "desert sage lightness 0.758 and chroma 0.034 x 1.43 (the theme's green against desert's, at most the theme's own), the hue of green"
+        },
+        "fill.sage.ink": {
+          "value": "#080808",
+          "derived": "light.fg, the better of light.fg and light.bg on fill.sage.bg"
+        },
+        "fill.teal.bg": {
+          "value": "#c1d3d3",
+          "derived": "desert teal lightness 0.853 and chroma 0.019 x 1.08 (the theme's cyan against desert's, at most the theme's own), the hue of cyan"
+        },
+        "fill.teal.ink": {
+          "value": "#080808",
+          "derived": "light.fg, the better of light.fg and light.bg on fill.teal.bg"
+        },
+        "fill.forest.bg": {
+          "value": "#191e19",
+          "derived": "desert forest lightness 0.229 and chroma 0.009 x 1.43 (the theme's green against desert's, at most the theme's own), the hue of green"
+        },
+        "fill.forest.ink": {
+          "value": "#ffffff",
+          "derived": "light.bg, the better of light.fg and light.bg on fill.forest.bg"
+        },
+        "fill.terracotta.bg": {
+          "value": "#c38433",
+          "derived": "desert terracotta lightness 0.662 and chroma 0.143 x 0.85 (the theme's orange against desert's, at most the theme's own), the hue of orange"
+        },
+        "fill.terracotta.ink": {
+          "value": "#080808",
+          "derived": "light.fg, the better of light.fg and light.bg on fill.terracotta.bg"
+        },
+        "fill.sand.bg": {
+          "value": "#d5d0c4",
+          "derived": "desert sand lightness 0.859 and chroma 0.019 x 0.95 (the theme's yellow against desert's, at most the theme's own), the hue of yellow"
+        },
+        "fill.sand.ink": {
+          "value": "#080808",
+          "derived": "light.fg, the better of light.fg and light.bg on fill.sand.bg"
+        },
+        "fill.warm-grey.bg": {
+          "value": "#b6b6b6",
+          "derived": "desert warm-grey lightness 0.776; the theme's neutral hue and chroma (at most 0.03)"
+        },
+        "fill.warm-grey.ink": {
+          "value": "#080808",
+          "derived": "light.fg, the better of light.fg and light.bg on fill.warm-grey.bg"
+        },
+        "fill.clay-red.bg": {
+          "value": "#dd241b",
+          "derived": "desert clay-red lightness 0.576 and chroma 0.200 x 1.28 (the theme's red against desert's, at most the theme's own), the hue of red"
+        },
+        "fill.clay-red.ink": {
+          "value": "#ffffff",
+          "derived": "light.bg, the better of light.fg and light.bg on fill.clay-red.bg"
+        },
+        "fill.dark-teal.bg": {
+          "value": "#1e4298",
+          "derived": "desert dark-teal lightness 0.408 and chroma 0.058 x 2.50 (the theme's blue against desert's, at most the theme's own), the hue of blue"
+        },
+        "fill.dark-teal.ink": {
+          "value": "#ffffff",
+          "derived": "light.bg, the better of light.fg and light.bg on fill.dark-teal.bg"
+        },
+        "fill.dusty-pink.bg": {
+          "value": "#c18abf",
+          "derived": "desert dusty-pink lightness 0.704 and chroma 0.039 x 2.50 (the theme's magenta against desert's, at most the theme's own), the hue of magenta"
+        },
+        "fill.dusty-pink.ink": {
+          "value": "#080808",
+          "derived": "light.fg, the better of light.fg and light.bg on fill.dusty-pink.bg"
+        },
+        "fill.light-peach.bg": {
+          "value": "#f1deca",
+          "derived": "desert light-peach lightness 0.911 and chroma 0.040 x 0.85 (the theme's orange against desert's, at most the theme's own), the hue of orange"
+        },
+        "fill.light-peach.ink": {
+          "value": "#080808",
+          "derived": "light.fg, the better of light.fg and light.bg on fill.light-peach.bg"
+        },
+        "fill.faun.bg": {
+          "value": "#cac6bb",
+          "derived": "desert faun lightness 0.826 and chroma 0.017 x 0.95 (the theme's yellow against desert's, at most the theme's own), the hue of yellow"
+        },
+        "fill.faun.ink": {
+          "value": "#080808",
+          "derived": "light.fg, the better of light.fg and light.bg on fill.faun.bg"
+        },
+        "fill.cool-grey.bg": {
+          "value": "#dedede",
+          "derived": "desert cool-grey lightness 0.899; the theme's neutral hue and chroma (at most 0.03)"
+        },
+        "fill.cool-grey.ink": {
+          "value": "#080808",
+          "derived": "light.fg, the better of light.fg and light.bg on fill.cool-grey.bg"
+        },
+        "fill.stone.bg": {
+          "value": "#afafaf",
+          "derived": "desert stone lightness 0.753; the theme's neutral hue and chroma (at most 0.03)"
+        },
+        "fill.stone.ink": {
+          "value": "#080808",
+          "derived": "light.fg, the better of light.fg and light.bg on fill.stone.bg"
+        },
+        "fill.dark-grey.bg": {
+          "value": "#686868",
+          "derived": "desert dark-grey lightness 0.518; the theme's neutral hue and chroma (at most 0.03)"
+        },
+        "fill.dark-grey.ink": {
+          "value": "#ffffff",
+          "derived": "light.bg, the better of light.fg and light.bg on fill.dark-grey.bg"
+        },
+        "fill.ink.bg": {
+          "value": "#101010",
+          "derived": "desert ink lightness 0.175; the theme's neutral hue and chroma (at most 0.03)"
+        },
+        "fill.ink.ink": {
+          "value": "#ffffff",
+          "derived": "light.bg, the better of light.fg and light.bg on fill.ink.bg"
+        }
+      }
+    },
+    "dark": {
+      "name": "Dark",
+      "origin": "source",
+      "roles": {
+        "bg": {
+          "value": "#1e1f22",
+          "source": "expUI_darkScheme TEXT background"
+        },
+        "surface": {
+          "value": "#2b2d30",
+          "source": "expUI_dark TextField.background"
+        },
+        "card": {
+          "value": "#2b2d30",
+          "source": "expUI_dark * background (tool windows)"
+        },
+        "raised": {
+          "value": "#2b2d30",
+          "source": "expUI_darkScheme LOOKUP_COLOR (completion popup)"
+        },
+        "sunken": {
+          "value": "#1e1f22",
+          "source": "expUI_darkScheme CONSOLE_BACKGROUND_KEY"
+        },
+        "inset": {
+          "value": "#393b40",
+          "source": "expUI_dark * hoverBackground"
+        },
+        "fg": {
+          "value": "#bcbec4",
+          "source": "expUI_darkScheme TEXT foreground"
+        },
+        "fg-2": {
+          "value": "#6f737a",
+          "source": "expUI_dark * infoForeground"
+        },
+        "fg-3": {
+          "value": "#4b5059",
+          "source": "expUI_darkScheme LINE_NUMBERS_COLOR"
+        },
+        "fg-4": {
+          "value": "#5a5d63",
+          "source": "expUI_dark * disabledForeground"
+        },
+        "accent": {
+          "value": "#3574f0",
+          "source": "expUI_dark Button.default.startBackground"
+        },
+        "on-accent": {
+          "value": "#ffffff",
+          "source": "expUI_dark Button.default.foreground"
+        },
+        "accent-hover": {
+          "value": "#2361db",
+          "derived": "accent with OKLab lightness moved 0.06 away from on-accent"
+        },
+        "accent-press": {
+          "value": "#0f4dc7",
+          "derived": "accent with OKLab lightness moved 0.12 away from on-accent"
+        },
+        "focus": {
+          "value": "#3574f0",
+          "source": "expUI_dark * focusColor"
+        },
+        "selection": {
+          "value": "#214283",
+          "source": "Darcula SELECTION_BACKGROUND (inherited by the Dark scheme)"
+        },
+        "scrim": {
+          "value": "#080808",
+          "derived": "the darker of light.fg and dark.bg"
+        },
+        "red": {
+          "value": "#f0524f",
+          "source": "Darcula scheme CONSOLE_RED_OUTPUT"
+        },
+        "orange": {
+          "value": "#cf8e6d",
+          "source": "expUI_darkScheme DEFAULT_KEYWORD"
+        },
+        "yellow": {
+          "value": "#a68a0d",
+          "source": "Darcula scheme CONSOLE_YELLOW_OUTPUT"
+        },
+        "green": {
+          "value": "#5c962c",
+          "source": "Darcula scheme CONSOLE_GREEN_OUTPUT"
+        },
+        "cyan": {
+          "value": "#00a3a3",
+          "source": "Darcula scheme CONSOLE_CYAN_OUTPUT"
+        },
+        "blue": {
+          "value": "#3993d4",
+          "source": "Darcula scheme CONSOLE_BLUE_OUTPUT"
+        },
+        "purple": {
+          "value": "#c77dbb",
+          "source": "expUI_darkScheme DEFAULT_CONSTANT"
+        },
+        "magenta": {
+          "value": "#a771bf",
+          "source": "Darcula scheme CONSOLE_MAGENTA_OUTPUT"
+        },
+        "success": {
+          "value": "#5c962c",
+          "derived": "green"
+        },
+        "warning": {
+          "value": "#a68a0d",
+          "derived": "yellow"
+        },
+        "danger": {
+          "value": "#f0524f",
+          "derived": "red"
+        },
+        "info": {
+          "value": "#00a3a3",
+          "derived": "cyan"
+        },
+        "success-text": {
+          "value": "#5c962c",
+          "derived": "success (contrast solving adjusts it on each ground)"
+        },
+        "warning-text": {
+          "value": "#ba9752",
+          "source": "expUI_dark Label.warningForeground"
+        },
+        "danger-text": {
+          "value": "#db5c5c",
+          "source": "expUI_dark Label.errorForeground"
+        },
+        "info-text": {
+          "value": "#00a3a3",
+          "derived": "info (contrast solving adjusts it on each ground)"
+        },
+        "chart-1": {
+          "value": "#3993d4",
+          "derived": "blue"
+        },
+        "chart-2": {
+          "value": "#cf8e6d",
+          "derived": "orange"
+        },
+        "chart-3": {
+          "value": "#5c962c",
+          "derived": "green"
+        },
+        "chart-4": {
+          "value": "#a771bf",
+          "derived": "magenta"
+        },
+        "chart-5": {
+          "value": "#a68a0d",
+          "derived": "yellow"
+        },
+        "chart-6": {
+          "value": "#00a3a3",
+          "derived": "cyan"
+        },
+        "ansi.black": {
+          "value": "#000000",
+          "source": "Darcula scheme CONSOLE_BLACK_OUTPUT (console ANSI black)"
+        },
+        "ansi.red": {
+          "value": "#f0524f",
+          "source": "Darcula scheme CONSOLE_RED_OUTPUT (console ANSI red)"
+        },
+        "ansi.green": {
+          "value": "#5c962c",
+          "source": "Darcula scheme CONSOLE_GREEN_OUTPUT (console ANSI green)"
+        },
+        "ansi.yellow": {
+          "value": "#a68a0d",
+          "source": "Darcula scheme CONSOLE_YELLOW_OUTPUT (console ANSI yellow)"
+        },
+        "ansi.blue": {
+          "value": "#3993d4",
+          "source": "Darcula scheme CONSOLE_BLUE_OUTPUT (console ANSI blue)"
+        },
+        "ansi.magenta": {
+          "value": "#a771bf",
+          "source": "Darcula scheme CONSOLE_MAGENTA_OUTPUT (console ANSI magenta)"
+        },
+        "ansi.cyan": {
+          "value": "#00a3a3",
+          "source": "Darcula scheme CONSOLE_CYAN_OUTPUT (console ANSI cyan)"
+        },
+        "ansi.white": {
+          "value": "#808080",
+          "source": "Darcula scheme CONSOLE_GRAY_OUTPUT (console ANSI white)"
+        },
+        "ansi.bright-black": {
+          "value": "#595959",
+          "source": "Darcula scheme CONSOLE_DARKGRAY_OUTPUT (console ANSI bright-black)"
+        },
+        "ansi.bright-red": {
+          "value": "#ff4050",
+          "source": "Darcula scheme CONSOLE_RED_BRIGHT_OUTPUT (console ANSI bright-red)"
+        },
+        "ansi.bright-green": {
+          "value": "#4fc414",
+          "source": "Darcula scheme CONSOLE_GREEN_BRIGHT_OUTPUT (console ANSI bright-green)"
+        },
+        "ansi.bright-yellow": {
+          "value": "#e5bf00",
+          "source": "Darcula scheme CONSOLE_YELLOW_BRIGHT_OUTPUT (console ANSI bright-yellow)"
+        },
+        "ansi.bright-blue": {
+          "value": "#1fb0ff",
+          "source": "Darcula scheme CONSOLE_BLUE_BRIGHT_OUTPUT (console ANSI bright-blue)"
+        },
+        "ansi.bright-magenta": {
+          "value": "#ed7eed",
+          "source": "Darcula scheme CONSOLE_MAGENTA_BRIGHT_OUTPUT (console ANSI bright-magenta)"
+        },
+        "ansi.bright-cyan": {
+          "value": "#00e5e5",
+          "source": "Darcula scheme CONSOLE_CYAN_BRIGHT_OUTPUT (console ANSI bright-cyan)"
+        },
+        "ansi.bright-white": {
+          "value": "#ffffff",
+          "source": "Darcula scheme CONSOLE_WHITE_OUTPUT (console ANSI bright-white)"
+        },
+        "syntax.keyword": {
+          "value": "#cf8e6d",
+          "source": "expUI_darkScheme DEFAULT_KEYWORD"
+        },
+        "syntax.control": {
+          "value": "#cf8e6d",
+          "source": "expUI_darkScheme DEFAULT_KEYWORD"
+        },
+        "syntax.function": {
+          "value": "#56a8f5",
+          "source": "expUI_darkScheme DEFAULT_FUNCTION_DECLARATION"
+        },
+        "syntax.string": {
+          "value": "#6aab73",
+          "source": "expUI_darkScheme DEFAULT_STRING"
+        },
+        "syntax.variable": {
+          "value": "#c77dbb",
+          "source": "expUI_darkScheme DEFAULT_INSTANCE_FIELD"
+        },
+        "syntax.type": {
+          "value": "#b3ae60",
+          "source": "expUI_darkScheme DEFAULT_METADATA (annotations)"
+        },
+        "syntax.number": {
+          "value": "#2aacb8",
+          "source": "expUI_darkScheme DEFAULT_NUMBER"
+        },
+        "syntax.comment": {
+          "value": "#7a7e85",
+          "source": "expUI_darkScheme DEFAULT_LINE_COMMENT"
+        },
+        "fill.sage.bg": {
+          "value": "#9eb99d",
+          "derived": "light-mode fill.sage.bg (fills do not change with mode)"
+        },
+        "fill.sage.ink": {
+          "value": "#080808",
+          "derived": "light-mode fill.sage.ink (fills do not change with mode)"
+        },
+        "fill.teal.bg": {
+          "value": "#c1d3d3",
+          "derived": "light-mode fill.teal.bg (fills do not change with mode)"
+        },
+        "fill.teal.ink": {
+          "value": "#080808",
+          "derived": "light-mode fill.teal.ink (fills do not change with mode)"
+        },
+        "fill.forest.bg": {
+          "value": "#191e19",
+          "derived": "light-mode fill.forest.bg (fills do not change with mode)"
+        },
+        "fill.forest.ink": {
+          "value": "#ffffff",
+          "derived": "light-mode fill.forest.ink (fills do not change with mode)"
+        },
+        "fill.terracotta.bg": {
+          "value": "#c38433",
+          "derived": "light-mode fill.terracotta.bg (fills do not change with mode)"
+        },
+        "fill.terracotta.ink": {
+          "value": "#080808",
+          "derived": "light-mode fill.terracotta.ink (fills do not change with mode)"
+        },
+        "fill.sand.bg": {
+          "value": "#d5d0c4",
+          "derived": "light-mode fill.sand.bg (fills do not change with mode)"
+        },
+        "fill.sand.ink": {
+          "value": "#080808",
+          "derived": "light-mode fill.sand.ink (fills do not change with mode)"
+        },
+        "fill.warm-grey.bg": {
+          "value": "#b6b6b6",
+          "derived": "light-mode fill.warm-grey.bg (fills do not change with mode)"
+        },
+        "fill.warm-grey.ink": {
+          "value": "#080808",
+          "derived": "light-mode fill.warm-grey.ink (fills do not change with mode)"
+        },
+        "fill.clay-red.bg": {
+          "value": "#dd241b",
+          "derived": "light-mode fill.clay-red.bg (fills do not change with mode)"
+        },
+        "fill.clay-red.ink": {
+          "value": "#ffffff",
+          "derived": "light-mode fill.clay-red.ink (fills do not change with mode)"
+        },
+        "fill.dark-teal.bg": {
+          "value": "#1e4298",
+          "derived": "light-mode fill.dark-teal.bg (fills do not change with mode)"
+        },
+        "fill.dark-teal.ink": {
+          "value": "#ffffff",
+          "derived": "light-mode fill.dark-teal.ink (fills do not change with mode)"
+        },
+        "fill.dusty-pink.bg": {
+          "value": "#c18abf",
+          "derived": "light-mode fill.dusty-pink.bg (fills do not change with mode)"
+        },
+        "fill.dusty-pink.ink": {
+          "value": "#080808",
+          "derived": "light-mode fill.dusty-pink.ink (fills do not change with mode)"
+        },
+        "fill.light-peach.bg": {
+          "value": "#f1deca",
+          "derived": "light-mode fill.light-peach.bg (fills do not change with mode)"
+        },
+        "fill.light-peach.ink": {
+          "value": "#080808",
+          "derived": "light-mode fill.light-peach.ink (fills do not change with mode)"
+        },
+        "fill.faun.bg": {
+          "value": "#cac6bb",
+          "derived": "light-mode fill.faun.bg (fills do not change with mode)"
+        },
+        "fill.faun.ink": {
+          "value": "#080808",
+          "derived": "light-mode fill.faun.ink (fills do not change with mode)"
+        },
+        "fill.cool-grey.bg": {
+          "value": "#dedede",
+          "derived": "light-mode fill.cool-grey.bg (fills do not change with mode)"
+        },
+        "fill.cool-grey.ink": {
+          "value": "#080808",
+          "derived": "light-mode fill.cool-grey.ink (fills do not change with mode)"
+        },
+        "fill.stone.bg": {
+          "value": "#afafaf",
+          "derived": "light-mode fill.stone.bg (fills do not change with mode)"
+        },
+        "fill.stone.ink": {
+          "value": "#080808",
+          "derived": "light-mode fill.stone.ink (fills do not change with mode)"
+        },
+        "fill.dark-grey.bg": {
+          "value": "#686868",
+          "derived": "light-mode fill.dark-grey.bg (fills do not change with mode)"
+        },
+        "fill.dark-grey.ink": {
+          "value": "#ffffff",
+          "derived": "light-mode fill.dark-grey.ink (fills do not change with mode)"
+        },
+        "fill.ink.bg": {
+          "value": "#101010",
+          "derived": "light-mode fill.ink.bg (fills do not change with mode)"
+        },
+        "fill.ink.ink": {
+          "value": "#ffffff",
+          "derived": "light-mode fill.ink.ink (fills do not change with mode)"
+        }
+      }
+    }
+  }
+}

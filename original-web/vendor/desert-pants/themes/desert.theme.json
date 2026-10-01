@@ -1,0 +1,605 @@
+{
+  "id": "desert",
+  "name": "Desert",
+  "description": "The desert-pants brand palette from desertant.com: cream paper and near-black ink, forest at night, earthy fills. Every role reads a primitive in tokens/01-primitives.tokens.json; roles the brand does not define are designed here and marked derived.",
+  "sources": [],
+  "modes": {
+    "light": {
+      "name": "Desert",
+      "origin": "source",
+      "roles": {
+        "bg": {
+          "token": "color.palette.cream"
+        },
+        "surface": {
+          "token": "color.palette.paper"
+        },
+        "card": {
+          "token": "color.palette.cream-dark"
+        },
+        "raised": {
+          "token": "color.palette.white"
+        },
+        "sunken": {
+          "token": "color.palette.cream-sunken"
+        },
+        "inset": {
+          "token": "color.palette.cream-inset"
+        },
+        "fg": {
+          "token": "color.palette.ink"
+        },
+        "fg-2": {
+          "token": "color.palette.graphite"
+        },
+        "fg-3": {
+          "token": "color.palette.mist"
+        },
+        "fg-4": {
+          "token": "color.palette.pebble"
+        },
+        "accent": {
+          "token": "color.palette.ink"
+        },
+        "on-accent": {
+          "token": "color.palette.cream"
+        },
+        "accent-hover": {
+          "token": "color.palette.graphite"
+        },
+        "accent-press": {
+          "token": "color.palette.black"
+        },
+        "focus": {
+          "token": "color.palette.ink"
+        },
+        "selection": {
+          "token": "color.palette.teal"
+        },
+        "scrim": {
+          "token": "color.palette.ink"
+        },
+        "red": {
+          "token": "color.palette.signal-red"
+        },
+        "orange": {
+          "token": "color.palette.terracotta"
+        },
+        "yellow": {
+          "token": "color.palette.signal-amber"
+        },
+        "green": {
+          "token": "color.palette.signal-green"
+        },
+        "cyan": {
+          "token": "color.palette.signal-cyan"
+        },
+        "blue": {
+          "token": "color.palette.dark-teal"
+        },
+        "purple": {
+          "token": "color.palette.dusty-pink"
+        },
+        "magenta": {
+          "token": "color.palette.dusty-pink"
+        },
+        "success": {
+          "token": "color.palette.signal-green"
+        },
+        "warning": {
+          "token": "color.palette.signal-amber"
+        },
+        "danger": {
+          "token": "color.palette.signal-red"
+        },
+        "info": {
+          "token": "color.palette.signal-cyan"
+        },
+        "success-text": {
+          "token": "color.palette.signal-green-deep"
+        },
+        "warning-text": {
+          "token": "color.palette.signal-amber-deep"
+        },
+        "danger-text": {
+          "token": "color.palette.signal-red-deep"
+        },
+        "info-text": {
+          "token": "color.palette.signal-cyan-deep"
+        },
+        "chart-1": {
+          "token": "color.palette.dark-teal"
+        },
+        "chart-2": {
+          "token": "color.palette.terracotta"
+        },
+        "chart-3": {
+          "token": "color.palette.sage"
+        },
+        "chart-4": {
+          "token": "color.palette.dusty-pink"
+        },
+        "chart-5": {
+          "token": "color.palette.sand"
+        },
+        "chart-6": {
+          "token": "color.palette.dark-grey"
+        },
+        "ansi.black": {
+          "token": "color.palette.ink"
+        },
+        "ansi.red": {
+          "token": "color.palette.signal-red-deep"
+        },
+        "ansi.green": {
+          "token": "color.palette.signal-green-deep"
+        },
+        "ansi.yellow": {
+          "token": "color.palette.signal-amber-deep"
+        },
+        "ansi.blue": {
+          "token": "color.palette.dark-teal"
+        },
+        "ansi.magenta": {
+          "value": "#896b72",
+          "derived": "extension: dusty-pink, OKLab lightness lowered to 4.5:1 on cream"
+        },
+        "ansi.cyan": {
+          "token": "color.palette.signal-cyan-deep"
+        },
+        "ansi.white": {
+          "token": "color.palette.cream-inset"
+        },
+        "ansi.bright-black": {
+          "token": "color.palette.mist"
+        },
+        "ansi.bright-red": {
+          "token": "color.palette.signal-red"
+        },
+        "ansi.bright-green": {
+          "token": "color.palette.signal-green"
+        },
+        "ansi.bright-yellow": {
+          "token": "color.palette.signal-amber"
+        },
+        "ansi.bright-blue": {
+          "value": "#548894",
+          "derived": "extension: dark-teal at the lightest OKLab lightness that keeps 3:1 on cream"
+        },
+        "ansi.bright-magenta": {
+          "value": "#a8888f",
+          "derived": "extension: dusty-pink, OKLab lightness lowered to 3:1 on cream"
+        },
+        "ansi.bright-cyan": {
+          "token": "color.palette.signal-cyan"
+        },
+        "ansi.bright-white": {
+          "token": "color.palette.white"
+        },
+        "syntax.keyword": {
+          "value": "#0000ff",
+          "source": "desert code colours (VS Code Light+ and Dark+ hues; light values darkened to 4.5:1 on code grounds)"
+        },
+        "syntax.control": {
+          "value": "#af00db",
+          "source": "desert code colours (VS Code Light+ and Dark+ hues; light values darkened to 4.5:1 on code grounds)"
+        },
+        "syntax.function": {
+          "value": "#795e26",
+          "source": "desert code colours (VS Code Light+ and Dark+ hues; light values darkened to 4.5:1 on code grounds)"
+        },
+        "syntax.string": {
+          "value": "#a31515",
+          "source": "desert code colours (VS Code Light+ and Dark+ hues; light values darkened to 4.5:1 on code grounds)"
+        },
+        "syntax.variable": {
+          "value": "#001080",
+          "source": "desert code colours (VS Code Light+ and Dark+ hues; light values darkened to 4.5:1 on code grounds)"
+        },
+        "syntax.type": {
+          "value": "#1d6377",
+          "source": "desert code colours (VS Code Light+ and Dark+ hues; light values darkened to 4.5:1 on code grounds)"
+        },
+        "syntax.number": {
+          "value": "#077a52",
+          "source": "desert code colours (VS Code Light+ and Dark+ hues; light values darkened to 4.5:1 on code grounds)"
+        },
+        "syntax.comment": {
+          "value": "#0a6b0a",
+          "source": "desert code colours (VS Code Light+ and Dark+ hues; light values darkened to 4.5:1 on code grounds)"
+        },
+        "fill.sage.bg": {
+          "token": "color.palette.sage"
+        },
+        "fill.sage.ink": {
+          "token": "color.palette.ink"
+        },
+        "fill.teal.bg": {
+          "token": "color.palette.teal"
+        },
+        "fill.teal.ink": {
+          "token": "color.palette.ink"
+        },
+        "fill.forest.bg": {
+          "token": "color.palette.forest"
+        },
+        "fill.forest.ink": {
+          "token": "color.palette.cream"
+        },
+        "fill.terracotta.bg": {
+          "token": "color.palette.terracotta"
+        },
+        "fill.terracotta.ink": {
+          "token": "color.palette.ink"
+        },
+        "fill.sand.bg": {
+          "token": "color.palette.sand"
+        },
+        "fill.sand.ink": {
+          "token": "color.palette.ink"
+        },
+        "fill.warm-grey.bg": {
+          "token": "color.palette.warm-grey"
+        },
+        "fill.warm-grey.ink": {
+          "token": "color.palette.ink"
+        },
+        "fill.clay-red.bg": {
+          "token": "color.palette.clay-red"
+        },
+        "fill.clay-red.ink": {
+          "token": "color.palette.cream"
+        },
+        "fill.dark-teal.bg": {
+          "token": "color.palette.dark-teal"
+        },
+        "fill.dark-teal.ink": {
+          "token": "color.palette.cream"
+        },
+        "fill.dusty-pink.bg": {
+          "token": "color.palette.dusty-pink"
+        },
+        "fill.dusty-pink.ink": {
+          "token": "color.palette.ink"
+        },
+        "fill.light-peach.bg": {
+          "token": "color.palette.light-peach"
+        },
+        "fill.light-peach.ink": {
+          "token": "color.palette.ink"
+        },
+        "fill.faun.bg": {
+          "token": "color.palette.faun"
+        },
+        "fill.faun.ink": {
+          "token": "color.palette.ink"
+        },
+        "fill.cool-grey.bg": {
+          "token": "color.palette.cool-grey"
+        },
+        "fill.cool-grey.ink": {
+          "token": "color.palette.ink"
+        },
+        "fill.stone.bg": {
+          "token": "color.palette.stone"
+        },
+        "fill.stone.ink": {
+          "token": "color.palette.ink"
+        },
+        "fill.dark-grey.bg": {
+          "token": "color.palette.dark-grey"
+        },
+        "fill.dark-grey.ink": {
+          "token": "color.palette.cream"
+        },
+        "fill.ink.bg": {
+          "token": "color.palette.ink"
+        },
+        "fill.ink.ink": {
+          "token": "color.palette.cream"
+        }
+      }
+    },
+    "dark": {
+      "name": "Desert Night",
+      "origin": "source",
+      "roles": {
+        "bg": {
+          "token": "color.palette.forest"
+        },
+        "surface": {
+          "token": "color.palette.forest-surface"
+        },
+        "card": {
+          "token": "color.palette.forest-surface"
+        },
+        "raised": {
+          "token": "color.palette.forest-raised"
+        },
+        "sunken": {
+          "token": "color.palette.forest-sunken"
+        },
+        "inset": {
+          "token": "color.palette.forest-inset"
+        },
+        "fg": {
+          "token": "color.palette.cream"
+        },
+        "fg-2": {
+          "token": "color.palette.fog"
+        },
+        "fg-3": {
+          "token": "color.palette.lichen"
+        },
+        "fg-4": {
+          "token": "color.palette.moss-grey"
+        },
+        "accent": {
+          "token": "color.palette.cream"
+        },
+        "on-accent": {
+          "token": "color.palette.ink"
+        },
+        "accent-hover": {
+          "token": "color.palette.white"
+        },
+        "accent-press": {
+          "token": "color.palette.teal"
+        },
+        "focus": {
+          "token": "color.palette.cream"
+        },
+        "selection": {
+          "token": "color.palette.forest-selection"
+        },
+        "scrim": {
+          "token": "color.palette.ink"
+        },
+        "red": {
+          "token": "color.palette.signal-red-light"
+        },
+        "orange": {
+          "token": "color.palette.terracotta"
+        },
+        "yellow": {
+          "token": "color.palette.signal-amber-light"
+        },
+        "green": {
+          "token": "color.palette.signal-green-light"
+        },
+        "cyan": {
+          "token": "color.palette.signal-cyan-light"
+        },
+        "blue": {
+          "value": "#79afbb",
+          "derived": "extension: dark-teal at OKLab lightness 0.72 (desert has no light blue)"
+        },
+        "purple": {
+          "token": "color.palette.dusty-pink"
+        },
+        "magenta": {
+          "token": "color.palette.dusty-pink"
+        },
+        "success": {
+          "token": "color.palette.signal-green"
+        },
+        "warning": {
+          "token": "color.palette.signal-amber"
+        },
+        "danger": {
+          "token": "color.palette.signal-red"
+        },
+        "info": {
+          "token": "color.palette.signal-cyan"
+        },
+        "success-text": {
+          "token": "color.palette.signal-green-light"
+        },
+        "warning-text": {
+          "token": "color.palette.signal-amber-light"
+        },
+        "danger-text": {
+          "token": "color.palette.signal-red-light"
+        },
+        "info-text": {
+          "token": "color.palette.signal-cyan-light"
+        },
+        "chart-1": {
+          "token": "color.palette.dark-teal"
+        },
+        "chart-2": {
+          "token": "color.palette.terracotta"
+        },
+        "chart-3": {
+          "token": "color.palette.sage"
+        },
+        "chart-4": {
+          "token": "color.palette.dusty-pink"
+        },
+        "chart-5": {
+          "token": "color.palette.sand"
+        },
+        "chart-6": {
+          "token": "color.palette.dark-grey"
+        },
+        "ansi.black": {
+          "token": "color.palette.forest-raised"
+        },
+        "ansi.red": {
+          "token": "color.palette.signal-red-light"
+        },
+        "ansi.green": {
+          "token": "color.palette.signal-green-light"
+        },
+        "ansi.yellow": {
+          "token": "color.palette.signal-amber-light"
+        },
+        "ansi.blue": {
+          "value": "#79afbb",
+          "derived": "extension: dark-teal at OKLab lightness 0.72"
+        },
+        "ansi.magenta": {
+          "token": "color.palette.dusty-pink"
+        },
+        "ansi.cyan": {
+          "token": "color.palette.signal-cyan-light"
+        },
+        "ansi.white": {
+          "token": "color.palette.fog"
+        },
+        "ansi.bright-black": {
+          "token": "color.palette.moss-grey"
+        },
+        "ansi.bright-red": {
+          "value": "#ff9586",
+          "derived": "ansi.red with OKLab lightness +0.07"
+        },
+        "ansi.bright-green": {
+          "value": "#74c186",
+          "derived": "ansi.green with OKLab lightness +0.07"
+        },
+        "ansi.bright-yellow": {
+          "value": "#f89a54",
+          "derived": "ansi.yellow with OKLab lightness +0.07"
+        },
+        "ansi.bright-blue": {
+          "value": "#8fc5d2",
+          "derived": "ansi.blue with OKLab lightness +0.07"
+        },
+        "ansi.bright-magenta": {
+          "value": "#ccacb3",
+          "derived": "ansi.magenta with OKLab lightness +0.07"
+        },
+        "ansi.bright-cyan": {
+          "value": "#5dc0bf",
+          "derived": "ansi.cyan with OKLab lightness +0.07"
+        },
+        "ansi.bright-white": {
+          "token": "color.palette.cream"
+        },
+        "syntax.keyword": {
+          "value": "#569cd6",
+          "source": "desert code colours (VS Code Light+ and Dark+ hues; light values darkened to 4.5:1 on code grounds)"
+        },
+        "syntax.control": {
+          "value": "#c586c0",
+          "source": "desert code colours (VS Code Light+ and Dark+ hues; light values darkened to 4.5:1 on code grounds)"
+        },
+        "syntax.function": {
+          "value": "#dcdcaa",
+          "source": "desert code colours (VS Code Light+ and Dark+ hues; light values darkened to 4.5:1 on code grounds)"
+        },
+        "syntax.string": {
+          "value": "#ce9178",
+          "source": "desert code colours (VS Code Light+ and Dark+ hues; light values darkened to 4.5:1 on code grounds)"
+        },
+        "syntax.variable": {
+          "value": "#9cdcfe",
+          "source": "desert code colours (VS Code Light+ and Dark+ hues; light values darkened to 4.5:1 on code grounds)"
+        },
+        "syntax.type": {
+          "value": "#4ec9b0",
+          "source": "desert code colours (VS Code Light+ and Dark+ hues; light values darkened to 4.5:1 on code grounds)"
+        },
+        "syntax.number": {
+          "value": "#b5cea8",
+          "source": "desert code colours (VS Code Light+ and Dark+ hues; light values darkened to 4.5:1 on code grounds)"
+        },
+        "syntax.comment": {
+          "value": "#6a9955",
+          "source": "desert code colours (VS Code Light+ and Dark+ hues; light values darkened to 4.5:1 on code grounds)"
+        },
+        "fill.sage.bg": {
+          "token": "color.palette.sage"
+        },
+        "fill.sage.ink": {
+          "token": "color.palette.ink"
+        },
+        "fill.teal.bg": {
+          "token": "color.palette.teal"
+        },
+        "fill.teal.ink": {
+          "token": "color.palette.ink"
+        },
+        "fill.forest.bg": {
+          "token": "color.palette.forest"
+        },
+        "fill.forest.ink": {
+          "token": "color.palette.cream"
+        },
+        "fill.terracotta.bg": {
+          "token": "color.palette.terracotta"
+        },
+        "fill.terracotta.ink": {
+          "token": "color.palette.ink"
+        },
+        "fill.sand.bg": {
+          "token": "color.palette.sand"
+        },
+        "fill.sand.ink": {
+          "token": "color.palette.ink"
+        },
+        "fill.warm-grey.bg": {
+          "token": "color.palette.warm-grey"
+        },
+        "fill.warm-grey.ink": {
+          "token": "color.palette.ink"
+        },
+        "fill.clay-red.bg": {
+          "token": "color.palette.clay-red"
+        },
+        "fill.clay-red.ink": {
+          "token": "color.palette.cream"
+        },
+        "fill.dark-teal.bg": {
+          "token": "color.palette.dark-teal"
+        },
+        "fill.dark-teal.ink": {
+          "token": "color.palette.cream"
+        },
+        "fill.dusty-pink.bg": {
+          "token": "color.palette.dusty-pink"
+        },
+        "fill.dusty-pink.ink": {
+          "token": "color.palette.ink"
+        },
+        "fill.light-peach.bg": {
+          "token": "color.palette.light-peach"
+        },
+        "fill.light-peach.ink": {
+          "token": "color.palette.ink"
+        },
+        "fill.faun.bg": {
+          "token": "color.palette.faun"
+        },
+        "fill.faun.ink": {
+          "token": "color.palette.ink"
+        },
+        "fill.cool-grey.bg": {
+          "token": "color.palette.cool-grey"
+        },
+        "fill.cool-grey.ink": {
+          "token": "color.palette.ink"
+        },
+        "fill.stone.bg": {
+          "token": "color.palette.stone"
+        },
+        "fill.stone.ink": {
+          "token": "color.palette.ink"
+        },
+        "fill.dark-grey.bg": {
+          "token": "color.palette.dark-grey"
+        },
+        "fill.dark-grey.ink": {
+          "token": "color.palette.cream"
+        },
+        "fill.ink.bg": {
+          "token": "color.palette.ink"
+        },
+        "fill.ink.ink": {
+          "token": "color.palette.cream"
+        }
+      }
+    }
+  }
+}

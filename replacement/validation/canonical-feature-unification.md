@@ -23,7 +23,9 @@ standalone content hash
 Independent bounded delta review passed at exact source
 `eed65460e238c888c5874dd60346e7ca65049988`: 26 tests under each feature mode,
 strict feature clippy, and independent array-order/raw-shape probes. See
-[the original report](canonical-independent.md). Its reviewer did not have the
+[the archived reviewer summary](canonical-independent.md). The supplied report
+path currently contains that summary only; the detailed command receipt is
+pending archive verification. Its reviewer did not have the
 historical real capture, so the real replay above remains implementer-run
 evidence. This verdict accepts the canonical source delta, not the clients or
 whole runtime product. The accepted immutable 16b64cd scheduled executable

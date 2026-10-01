@@ -11,9 +11,18 @@ pub struct Config {
     #[serde(default)]
     pub owner_observations: Vec<Observation>,
 }
-fn freshness() -> i64 { 600 }
+fn freshness() -> i64 {
+    600
+}
 impl Default for Config {
-    fn default() -> Self { Self { repository: "bradheitmann/leitting".into(), plan_path: "plan-views/build-dag.json".into(), stale_after_seconds: 600, owner_observations: vec![] } }
+    fn default() -> Self {
+        Self {
+            repository: "bradheitmann/leitting".into(),
+            plan_path: "plan-views/build-dag.json".into(),
+            stale_after_seconds: 600,
+            owner_observations: vec![],
+        }
+    }
 }
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Observation {
@@ -42,7 +51,19 @@ pub struct Raw {
 }
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq, PartialOrd, Ord)]
 #[serde(rename_all = "snake_case")]
-pub enum Stage { Planned, Ready, Claimed, Running, Blocked, Delivered, Qa, Guard, Merged, Closed, Unknown }
+pub enum Stage {
+    Planned,
+    Ready,
+    Claimed,
+    Running,
+    Blocked,
+    Delivered,
+    Qa,
+    Guard,
+    Merged,
+    Closed,
+    Unknown,
+}
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Evidence {
     pub id: String,

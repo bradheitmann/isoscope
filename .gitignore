@@ -5,3 +5,8 @@ node_modules/
 advisory/*/screens/
 *.log
 .odin/
+
+/target/
+/replacement/state/
+/replacement/web/node_modules/
+/replacement/web/dist/

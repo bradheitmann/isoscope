@@ -214,12 +214,16 @@ function computePalette(): void {
 }
 computePalette();
 /* ————— advisory gradient language (the art's living signal) —————
-   Brand discipline: signal colour + a word/icon, low-chroma, no decorative neon.
-   Each advisory face carries a vertical band: category washes at the crown easing
-   into the category deeps at the foot. Multi-category modules blend every category
-   evenly. The gradient is a live shader plane masked to the face; it moves only
-   while Flow is pressed and the module is energized, else it holds a quiet frame. */
-const SIGNAL_BASES: Record<string, string> = { red: "danger", amber: "warning", you: "accent" };
+   Brand discipline: the palette's gradient fill families, translucent so the hatch
+   shows through; a wash at the crown easing to its deep at the foot; no neon.
+   Multi-category modules blend every category evenly. The band is a live shader
+   plane masked to the face; it moves only while Flow is pressed and the module is
+   energized, else it holds a quiet frame. Deselected keeps a lighter veil. */
+const ADVISORY_FILL: Record<string, { wash: string; deep: string }> = {
+ red:   { wash: "--dp-color-fill-clay-red-bg",  deep: "--dp-color-signal-danger-text" },
+ amber: { wash: "--dp-color-fill-terracotta-bg", deep: "--dp-color-signal-warning-text" },
+ you:   { wash: "--dp-color-fill-dark-teal-bg",  deep: "--dp-color-accent-default" }
+};
 function probeVar(variable: string): THREE.Color {
  const probe=document.createElement("span");
  probe.className="dp-color-probe";probe.style.color=`var(${variable})`;document.body.append(probe);
@@ -229,12 +233,7 @@ function probeVar(variable: string): THREE.Color {
 }
 const ADVISORY: Record<string, { wash: THREE.Color; deep: THREE.Color }> = {}; /* per-category, rebuilt on theme */
 function computeAdvisory(): void {
- for(const [cat,base] of Object.entries(SIGNAL_BASES)){
-  ADVISORY[cat]={
-   wash: base==="accent"?probeVar("--dp-color-accent-hover"):probeVar(`--dp-color-signal-${base}-fill`),
-   deep: base==="accent"?probeVar("--dp-color-accent-default"):probeVar(`--dp-color-signal-${base}-text`)
-  };
- }
+ for(const [cat,f] of Object.entries(ADVISORY_FILL)) ADVISORY[cat]={wash:probeVar(f.wash),deep:probeVar(f.deep)};
 }
 computeAdvisory();
 const themed: ThemedMaterial[] = []; /* Original scene materials repaint from live theme tokens. */
@@ -298,7 +297,6 @@ function makeGrid(){
 makeGrid();
 
 
-
 /* nodes: pure status roofs (Bass), severity in the FOUNDATION (Tufte — ink the
    object already owns), counts as typography in the labels (Vignelli). */
 const SHORT=SPEC.short||{};
@@ -319,7 +317,7 @@ const ADVISORY_VERT=`
 `;
 const ADVISORY_FRAG=`
  uniform vec3 uColors[3]; uniform int uCount;
- uniform float uPhase; uniform float uMotion;
+ uniform float uPhase; uniform float uMotion; uniform float uVeil;
  varying vec2 vUv;
  void main(){
   float t=clamp(vUv.y+uPhase*uMotion,0.0,1.0);
@@ -328,8 +326,11 @@ const ADVISORY_FRAG=`
    float f=t*float(uCount-1); int i=int(floor(f)); float fr=f-float(i);
    col=mix(uColors[min(i,2)],uColors[min(i+1,2)],smoothstep(0.0,1.0,fr));
   }
-  float shade=0.82+0.18*sin((vUv.x+vUv.y)*6.28318+uPhase*6.28318*uMotion);
-  gl_FragColor=vec4(col*shade,0.92);
+  /* translucent wash: strong at the crown, easing to clear at the foot, hatch shows through */
+  float band=smoothstep(1.05,0.25,vUv.y);
+  float shade=0.9+0.1*sin((vUv.x+vUv.y)*6.28318+uPhase*6.28318*uMotion);
+  float alpha=band*mix(0.42,0.2,uVeil); /* energized ~42%, deselected veil ~20% */
+  gl_FragColor=vec4(col*shade,alpha);
  }
 `;
 function advisoryPlane(n: MapNode,cats: string[]): THREE.Mesh<THREE.PlaneGeometry, THREE.ShaderMaterial> | null {
@@ -341,7 +342,7 @@ function advisoryPlane(n: MapNode,cats: string[]): THREE.Mesh<THREE.PlaneGeometr
  const uColors=[cols[0],cols[1]??cols[0],cols[2]??cols[cols.length-1]??cols[0]];
  const mat=new THREE.ShaderMaterial({
   vertexShader:ADVISORY_VERT,fragmentShader:ADVISORY_FRAG,transparent:true,depthWrite:false,
-  uniforms:{uColors:{value:uColors},uCount:{value:Math.min(3,cols.length)},uPhase:{value:0},uMotion:{value:0}}
+  uniforms:{uColors:{value:uColors},uCount:{value:Math.min(3,cols.length)},uPhase:{value:0},uMotion:{value:0},uVeil:{value:0}}
  });
  const h=Math.max(n.h,0.6);
  const plane=new THREE.Mesh(new THREE.PlaneGeometry(n.w,h),mat);
@@ -350,7 +351,7 @@ function advisoryPlane(n: MapNode,cats: string[]): THREE.Mesh<THREE.PlaneGeometr
  return plane;
 }
 function refreshAdvisory(n: MapNode): void {
- const cats=Array.from(new Set((n.items||[]).map(i=>i.c).filter(c=>SIGNAL_BASES[c])));
+ const cats=Array.from(new Set((n.items||[]).map(i=>i.c).filter(c=>ADVISORY_FILL[c])));
  const old=advisoryById[n.id]||[];
  old.forEach(p=>{const par=p.parent;if(par)par.remove(p);p.geometry.dispose();p.material.dispose();});
  advisoryById[n.id]=[];
@@ -791,11 +792,10 @@ function paintCircuit(){
   meshById[n.id].traverse((o: THREE.Object3D)=>{
     materialsOf(o).forEach((m: THREE.Material)=>{const r=Number(m.userData.op0??1);
       m.transparent=!on||r<1;m.opacity=on?r:(o instanceof THREE.Mesh?0.32:0.22);m.needsUpdate=true;});});
-  /* advisory bands stay legible when deselected (a lighter veil, never erased) */
+  /* advisory bands stay legible when deselected: a lighter veil, never erased */
   (advisoryById[n.id]||[]).forEach(p=>{
    p.material.uniforms.uMotion.value=on?1:0;
-   p.material.opacity=on?1:0.5; /* veil: present but quiet until the module is energized */
-   p.material.needsUpdate=true;
+   p.material.uniforms.uVeil.value=on?0:1;
   });
  });
 }
@@ -1001,7 +1001,7 @@ function refreshTheme(): void {
  NODES.forEach(n=>{
   const planes=advisoryById[n.id]||[];
   if(!planes.length)return;
-  const cats=Array.from(new Set((n.items||[]).map(i=>i.c).filter(c=>SIGNAL_BASES[c])));
+  const cats=Array.from(new Set((n.items||[]).map(i=>i.c).filter(c=>ADVISORY_FILL[c])));
   planes.forEach(p=>{
    const cols: THREE.Color[]=[];
    cats.forEach(c=>{cols.push(ADVISORY[c].wash);});
@@ -1011,6 +1011,8 @@ function refreshTheme(): void {
   });
  });
  paintCircuit();
+ /* the redline repaints to the theme's risk ink */
+ try{redline.rebuild();}catch(e){if(e instanceof ReferenceError){/* not yet initialised on first build */}else throw e;}
  /* browser chrome follows the canvas (token color.chrome.theme = bg-canvas) */
  const chromeMeta=document.querySelector('meta[name="theme-color"]');
  if(chromeMeta)chromeMeta.setAttribute("content","#"+COL.paper.getHexString());
@@ -1146,7 +1148,7 @@ NODES.forEach(n=>{
    const m=new THREE.Mesh(geo,[side,side,roof,side,side,side]);
    m.position.set(cx,h0+hh/2,cz);m.userData.id=n.id;
    grp.add(m);pickables.push(m);
-   const egm=new THREE.LineBasicMaterial({color:COL.fg1,transparent:true,opacity:0.8});
+   const egm=new THREE.LineBasicMaterial({color:COL.fg1,transparent:true,opacity:1});
    themed.push({m:egm,get:()=>COL.fg1});
    const eg=new THREE.LineSegments(new THREE.EdgesGeometry(geo),egm);
    eg.position.copy(m.position);grp.add(eg);
@@ -1270,6 +1272,7 @@ function applySpec(next: Spec): void{
  if(ti>=TRACE.length||ti<0||!EDGES.some(e=>e[0]+"-"+e[1]===TRACE[ti]))ti=-1;
  hoverId=null;flyGoal=null;
  buildScene(SPEC);refreshTheme();resize();
+ redline.rebuild();
  const reds=NODES.filter(n=>n.items.some(i=>i.c==="red"));
  if(reds.some(n=>!oldReds.has(n.id))){blastIncident();return;}
  if(incidentActive&&!reds.length){cordon.clear();incidentActive=false;}
@@ -1285,6 +1288,62 @@ function applySpec(next: Spec): void{
 buildScene(SPEC);
 renderPanel(null);
 blastIncident();
+
+/* ————— the redline (the one broken rule) —————
+   A hand-drawn ink circle scribbled around the module that most needs a human,
+   stroke by stroke, the way you'd circle a line on a printed plan. It breathes
+   until you pin something, then politely lifts. Brand rule bent on purpose:
+   no decoration, everything semantic — this is deliberately, playfully human. */
+const redline=(()=>{
+ const group=new THREE.Group();group.renderOrder=3;
+ const mats: THREE.LineBasicMaterial[]=[];
+ let targetId: string | null=null;let drawn=0;let wobbleSeed=Math.random()*1000;
+ function worst(): MapNode | null {
+  const withRed=NODES.filter(n=>(n.items||[]).some(i=>i.c==="red"));
+  const pool=withRed.length?withRed:NODES.filter(n=>(n.items||[]).some(i=>i.c==="you"));
+  if(!pool.length)return null;
+  return pool.reduce((a,b)=>((b.items||[]).length>=(a.items||[]).length?b:a));
+ }
+ function rebuild(): void {
+  while(group.children.length){const c=group.children[0];group.remove(c);const g=(c as THREE.Line).geometry;if(g)g.dispose();}
+  mats.length=0;
+  const n=targetId?byId[targetId]:worst();if(!n)return;
+  targetId=n.id;
+  const cx=n.x+n.w/2,cz=n.y+n.d/2,y=(n._ly||0)+0.06;
+  const r=Math.max(n.w,n.d)*0.9+0.5;
+  /* three slightly-offset wobbly loops = a pen going round twice-and-a-bit */
+  const loops=[{rr:1,off:0},{rr:1.06,off:2.1},{rr:0.94,off:4.3}];
+  loops.forEach(L=>{
+   const pts: THREE.Vector3[]=[];const SEG=64;
+   for(let k=0;k<=SEG;k++){
+    const a=(k/SEG)*Math.PI*2+L.off;
+    const wob=1+Math.sin(a*3+wobbleSeed+L.off)*0.05+Math.sin(a*7+wobbleSeed*1.7)*0.03;
+    pts.push(new THREE.Vector3(cx+Math.cos(a)*r*L.rr*wob,y,cz+Math.sin(a)*r*L.rr*wob));
+   }
+   const geo=new THREE.BufferGeometry().setFromPoints(pts);
+   const m=new THREE.LineBasicMaterial({color:COL.risk,transparent:true,opacity:0});
+   mats.push(m);
+   const line=new THREE.Line(geo,m);line.userData.seg=SEG;group.add(line);
+  });
+  scene.add(group);drawn=0;
+ }
+ function tick(): void {
+  if(!group.children.length)return;
+  const n=byId[targetId||""];if(!n){return;}
+  group.position.y=(n._ly||0)+0.06-((n._ly||0)+0.06); /* rides the module's level */
+  /* draw-on over ~1s, then a soft breathing opacity until the user engages */
+  const wantsAttention=!pinned&&!incidentActive;
+  if(drawn<1)drawn=Math.min(1,drawn+0.02);
+  const breathe=wantsAttention?0.55+0.2*Math.sin(performance.now()*0.0016):0.0;
+  mats.forEach(m=>{
+   const target=(wantsAttention?breathe:0)*drawn;
+   m.opacity+=(target-m.opacity)*0.08;
+  });
+  group.visible=wantsAttention||mats.some(m=>m.opacity>0.02);
+ }
+ return {rebuild,tick,setTarget(id: string | null){targetId=id;rebuild();},rewobble(){wobbleSeed=Math.random()*1000;}};
+})();
+redline.rebuild();
 
 /* ————— frame loop ————— */
 function resize(){
@@ -1388,6 +1447,7 @@ function tick(){
    if(!hit)placed.push(r);
  });
  renderer.render(scene,camera);
+ redline.tick();
 }
 document.fonts.ready.then(()=>{window.__lblMeasured=false;});
 /* ————— R30 phase 1: restore the view after a live reload; remember theme + weights across sessions ————— */

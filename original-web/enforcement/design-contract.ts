@@ -60,6 +60,11 @@ const CANONICAL_CSS_IMPORTS = [
 ] as const;
 
 type Declarations = Map<string, string>;
+interface ConsumerRule {
+  readonly selector: string;
+  readonly declarations: Declarations;
+  readonly media: readonly string[];
+}
 
 export interface ContractFinding {
   readonly file: string;
@@ -252,12 +257,12 @@ function parseConsumerDeclarations(body: string): Declarations {
   return declarations;
 }
 
-function cssRules(css: string): Array<{ selector: string; declarations: Declarations }> {
+function cssRules(css: string): ConsumerRule[] {
   const source = stripCssComments(css);
-  const rules: Array<{ selector: string; declarations: Declarations }> = [];
+  const rules: ConsumerRule[] = [];
   const imports: string[] = [];
 
-  function parseRuleList(startAt: number, allowAtRules: boolean, allowClosingBrace: boolean): number {
+  function parseRuleList(startAt: number, allowAtRules: boolean, allowClosingBrace: boolean, media: readonly string[]): number {
     let position = startAt;
     while (position < source.length) {
       while (/\s/.test(source[position] ?? "")) position += 1;
@@ -285,17 +290,17 @@ function cssRules(css: string): Array<{ selector: string; declarations: Declarat
       const body = source.slice(delimiter + 1, end);
       if (head.startsWith("@")) {
         if (!allowAtRules || !/^@media\b/.test(head)) throw new Error(`unsupported consumer CSS at-rule: ${head}`);
-        const nestedEnd = parseRuleList(delimiter + 1, true, true);
+        const nestedEnd = parseRuleList(delimiter + 1, true, true, [...media, head.toLowerCase().replace(/\s+/g, " ")]);
         if (source[nestedEnd] !== "}") throw new Error(`unclosed consumer CSS at-rule: ${head}`);
       } else {
-        rules.push({ selector: head, declarations: parseConsumerDeclarations(body) });
+        rules.push({ selector: head, declarations: parseConsumerDeclarations(body), media });
       }
       position = end + 1;
     }
     return position;
   }
 
-  const finalPosition = parseRuleList(0, true, false);
+  const finalPosition = parseRuleList(0, true, false, []);
   if (finalPosition !== source.length) throw new Error("consumer CSS has trailing unsupported syntax");
   if (JSON.stringify(imports) !== JSON.stringify(CANONICAL_CSS_IMPORTS)) {
     throw new Error("consumer CSS must import exactly the five pinned Desert Pants stylesheets in canonical order");
@@ -354,6 +359,14 @@ export function typographyRoleFindings(canonicalCss: string, consumerCss: string
       continue;
     }
     const roleClass = roleClasses[0];
+    if (roleClass && rule.selector !== `.${roleClass}`) {
+      findings.push({ file, message: `${rule.selector} must use a direct single-role selector subject; selector branches and polarity are unsupported` });
+      continue;
+    }
+    if (roleClass && [...rule.declarations.keys()].some(property => !TYPOGRAPHY_PROPERTIES.includes(property as (typeof TYPOGRAPHY_PROPERTIES)[number]))) {
+      findings.push({ file, message: `${rule.selector} only declares canonical typography axes; component color/state styling belongs on semantic component selectors` });
+      continue;
+    }
     const recipe = roleClass ? recipes.get(roleClass) : undefined;
     if (roleClass && !recipe) {
       findings.push({ file, message: `${rule.selector} uses undefined canonical typography role .${roleClass}` });
@@ -380,6 +393,64 @@ export function typographyRoleFindings(canonicalCss: string, consumerCss: string
     }
     if (rule.declarations.has("font")) findings.push({ file, message: `${rule.selector} uses font shorthand instead of explicit whole-role typography axes` });
   }
+  return findings;
+}
+
+/** Bind the authored workflow grid to the pinned Desert Pants workbench recipe. */
+export function workbenchLayoutFindings(canonicalCss: string, consumerCss: string, file = "styles.css"): ContractFinding[] {
+  const findings: ContractFinding[] = [];
+  const allRules = cssRules(consumerCss);
+  const layoutProperties = new Set([
+    "display", "grid", "grid-template", "grid-template-columns", "grid-template-rows", "grid-template-areas",
+    "grid-auto-columns", "grid-auto-flow", "grid-auto-rows", "grid-column", "grid-row", "grid-area",
+    "gap", "row-gap", "column-gap", "place-content", "place-items"
+  ]);
+  for (const rule of allRules) {
+    if (rule.selector.includes("workbench") && rule.selector !== ".workbench" && [...rule.declarations.keys()].some(property => layoutProperties.has(property))) {
+      findings.push({ file, message: `${rule.selector} cannot alter the workbench grid; use the direct canonical .workbench recipe selector` });
+    }
+  }
+  const rules = allRules.filter(rule => rule.selector === ".workbench");
+  const wide = rules.filter(rule => rule.media.length === 0);
+  const breakpointValues = [...canonicalCss.matchAll(/(?:^|\n)\s*--dp-breakpoint-lg:\s*([0-9]+px);/g)].map(match => match[1]);
+  if (breakpointValues.length !== 1) findings.push({ file: "tokens.css", message: `expected one canonical breakpoint.lg value, found ${breakpointValues.length}` });
+  const breakpoint = breakpointValues[0] ?? "unresolved-canonical-breakpoint";
+  const compact = rules.filter(rule => rule.media.length === 1 && rule.media[0] === `@media (max-width: ${breakpoint})`);
+  if (rules.length !== wide.length + compact.length) {
+    findings.push({ file, message: ".workbench layout rules use an unapproved media context" });
+  }
+  if (wide.length !== 1) findings.push({ file, message: `expected one wide workbench grid rule, found ${wide.length}` });
+  if (compact.length !== 1) findings.push({ file, message: `expected one compact workbench grid rule, found ${compact.length}` });
+
+  const tokenPrefix = "--dp-layout-grid-component-visualization-workbench-";
+  const expectedWide = {
+    display: "grid",
+    "grid-template-columns": `var(${tokenPrefix}rail-width) minmax(0, 1fr) minmax(var(${tokenPrefix}reading-min-width), var(${tokenPrefix}reading-preferred-width))`,
+    gap: `var(${tokenPrefix}gap)`
+  } as const;
+  const expectedCompact = {
+    "grid-template-columns": `var(${tokenPrefix}rail-width) minmax(0, 1fr)`,
+    gap: `var(${tokenPrefix}compact-gap)`
+  } as const;
+  const declared = new Set([...canonicalCss.matchAll(/(--dp-[a-z0-9-]+)\s*:/g)].map(match => match[1]));
+  const required = ["rail-width", "reading-min-width", "reading-preferred-width", "gap", "compact-gap", "reading-breakpoint"];
+  for (const token of required) {
+    if (!declared.has(`${tokenPrefix}${token}`)) findings.push({ file: "tokens.css", message: `pinned workbench grid recipe is missing ${tokenPrefix}${token}` });
+  }
+  const breakpointAlias = [...canonicalCss.matchAll(new RegExp(`(?:^|\\n)\\s*${tokenPrefix}reading-breakpoint:\\s*([^;]+);`, "g"))].map(match => match[1]);
+  if (breakpointAlias.length !== 1 || breakpointAlias[0] !== "var(--dp-breakpoint-lg)") {
+    findings.push({ file: "tokens.css", message: "workbench reading-breakpoint must resolve through canonical breakpoint.lg" });
+  }
+  const check = (rule: ConsumerRule | undefined, expected: Readonly<Record<string, string>>, label: string): void => {
+    if (!rule) return;
+    for (const [property, value] of Object.entries(expected)) {
+      if (rule.declarations.get(property) !== value) {
+        findings.push({ file, message: `${label} workbench grid requires ${property}: ${value}` });
+      }
+    }
+  };
+  check(wide[0], expectedWide, "wide");
+  check(compact[0], expectedCompact, "compact");
   return findings;
 }
 
@@ -415,7 +486,7 @@ export function missingTokenFindings(canonicalCss: string, consumerCss: string, 
   const declared = new Set<string>();
   for (const match of canonicalCss.matchAll(/(--dp-[a-z0-9-]+)\s*:/g)) declared.add(match[1]);
   const findings: ContractFinding[] = [];
-  for (const match of consumerCss.matchAll(/var\(\s*(--dp-[a-z0-9-]+)/g)) {
+  for (const match of consumerCss.matchAll(/var\(\s*(--dp-[a-z0-9-]+)/gi)) {
     if (!declared.has(match[1])) findings.push({ file, message: `references undefined canonical token ${match[1]}` });
   }
   return findings;
@@ -443,7 +514,8 @@ function parseHtmlAttributes(source: string): Map<string, string | null> {
   let position = 0;
   while (position < source.length) {
     while (/\s/.test(source[position] ?? "")) position += 1;
-    if (position >= source.length || source[position] === "/") break;
+    if (position >= source.length) break;
+    if (source[position] === "/") throw new Error("unexpected slash before end of HTML attributes");
     const nameMatch = /^[a-zA-Z_:][a-zA-Z0-9_:.-]*/.exec(source.slice(position));
     if (!nameMatch) throw new Error(`unsupported HTML attribute syntax near: ${source.slice(position, position + 30)}`);
     const name = nameMatch[0].toLowerCase();
@@ -534,7 +606,9 @@ export function domRoleFindings(canonicalCss: string, html: string): ContractFin
       else byId.set(id, element);
     }
     const classes = (element.attributes.get("class") ?? "").split(/\s+/).filter(Boolean);
-    for (const role of classes.filter(name => name.startsWith("dp-type-"))) {
+    const appliedRoles = classes.filter(name => name.startsWith("dp-type-"));
+    if (new Set(appliedRoles).size > 1) findings.push({ file: "index.html", message: `<${element.tag}> has conflicting typography roles ${appliedRoles.join(", ")}` });
+    for (const role of appliedRoles) {
       if (!roles.has(role)) findings.push({ file: "index.html", message: `element uses undefined canonical typography role ${role}` });
     }
   }
@@ -545,10 +619,12 @@ export function domRoleFindings(canonicalCss: string, html: string): ContractFin
       continue;
     }
     const classes = (element.attributes.get("class") ?? "").split(/\s+/);
-    if (!classes.includes(expectedRole)) findings.push({ file: "index.html", message: `#${id} must carry intended role ${expectedRole}` });
+    if (classes.filter(name => name.startsWith("dp-type-")).join(" ") !== expectedRole) {
+      findings.push({ file: "index.html", message: `#${id} must carry only its intended role ${expectedRole}` });
+    }
   }
   const body = elements.filter(element => element.tag === "body");
-  if (body.length !== 1 || !(body[0]?.attributes.get("class") ?? "").split(/\s+/).includes("dp-type-body-sm")) {
+  if (body.length !== 1 || (body[0]?.attributes.get("class") ?? "").split(/\s+/).filter(name => name.startsWith("dp-type-")).join(" ") !== "dp-type-body-sm") {
     findings.push({ file: "index.html", message: "body must carry the intended dp-type-body-sm base role exactly once" });
   }
   return findings;
@@ -558,6 +634,7 @@ export function assertDesignContract(canonicalCss: string, consumerCss: string, 
   const findings = [
     ...canonicalRoleCompletenessFindings(canonicalCss),
     ...typographyRoleFindings(canonicalCss, consumerCss),
+    ...workbenchLayoutFindings(canonicalCss, consumerCss),
     ...missingTokenFindings(canonicalCss, consumerCss),
     ...domRoleFindings(canonicalCss, html)
   ];

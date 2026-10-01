@@ -143,6 +143,46 @@ describe("canonical Desert Pants design contract", () => {
     expect(() => assertDesignContract(tokenCss, reset, indexHtml)).toThrow(/forbidden CSS reset property all/);
   });
 
+  it("rejects role declarations unless every selector is a direct single-role subject", () => {
+    const bypasses = [
+      `.dp-type-body-sm, #pTitle { font-size: var(--dp-type-body-sm-font-size); }`,
+      `#pTitle:not(.dp-type-body-sm) { font-size: var(--dp-type-body-sm-font-size); }`,
+      `.dp-type-body-sm, #pTitle { font-family: var(--dp-type-body-sm-font-family); font-size: var(--dp-type-body-sm-font-size); font-weight: var(--dp-type-body-sm-font-weight); line-height: var(--dp-type-body-sm-line-height); letter-spacing: var(--dp-type-body-sm-letter-spacing); text-transform: var(--dp-type-body-sm-text-transform); font-variant-numeric: var(--dp-type-body-sm-font-variant-numeric); }`,
+      `@media (max-width: 1180px) { .dp-type-body-sm, #pTitle { font-variant-numeric: var(--dp-type-body-sm-font-variant-numeric); } }`
+    ];
+    for (const selector of bypasses) {
+      expect(() => assertDesignContract(tokenCss, `${consumerCss}\n${selector}`, indexHtml)).toThrow(/direct single-role selector subject/);
+    }
+    expect(() => assertDesignContract(tokenCss, `${consumerCss}\n.dp-type-h2 { font-size: var(--dp-type-h2-font-size); }`, indexHtml)).not.toThrow();
+  });
+
+  it("rejects case-insensitive CSS var functions with missing case-sensitive token names", () => {
+    for (const functionName of ["VAR", "Var", "vAr"]) {
+      expect(missingTokenFindings(tokenCss, `.probe { color: ${functionName}(--dp-color-not-real); }`)).toHaveLength(1);
+      expect(missingTokenFindings(tokenCss, `.probe { color: ${functionName}(--dp-color-bg-canvas); }`)).toHaveLength(0);
+    }
+  });
+
+  it("rejects nonterminal slash attributes and conflicting intended DOM type roles", () => {
+    const slash = `${indexHtml}\n<p / style="font-size:12px" data-dp-art="canvas">Non-art UI</p>`;
+    expect(() => domRoleFindings(tokenCss, slash)).toThrow(/unexpected slash/);
+    const extraRole = indexHtml.replace('class="dp-type-h3" id="moduleNavigatorTitle"', 'class="dp-type-h3 dp-type-body-sm" id="moduleNavigatorTitle"');
+    expect(domRoleFindings(tokenCss, extraRole).some(finding => finding.message.includes("conflicting typography roles"))).toBe(true);
+  });
+
+  it("binds wide and compact workbench tracks to the canonical workbench recipe", () => {
+    expect(() => assertDesignContract(tokenCss, `${consumerCss}\n.workbench { grid-template-columns: 1px 1px 1px; gap: 0; }`, indexHtml)).toThrow(/wide workbench grid/);
+    expect(() => assertDesignContract(tokenCss, `${consumerCss}\n.shell .workbench { grid-template-columns: 1px; }`, indexHtml)).toThrow(/cannot alter the workbench grid/);
+    expect(() => assertDesignContract(tokenCss, `${consumerCss}\n@media (max-width: 1180px) { .workbench { grid-template-columns: 1px 1px; gap: 0; } }`, indexHtml)).toThrow(/compact workbench grid/);
+    const wrongBreakpoint = consumerCss.replace("@media (max-width: 1180px)", "@media (max-width: 1179px)");
+    expect(() => assertDesignContract(tokenCss, wrongBreakpoint, indexHtml)).toThrow(/compact workbench grid/);
+    expect(() => assertDesignContract(tokenCss, consumerCss, indexHtml)).not.toThrow();
+  });
+
+  it("rejects state-color tokens on role subjects while allowing only full role axes", () => {
+    expect(() => assertDesignContract(tokenCss, `${consumerCss}\n.dp-type-h2 { color: var(--dp-color-signal-danger-text); }`, indexHtml)).toThrow(/only declares canonical typography axes/);
+  });
+
   it("fails closed on unsupported CSS at-rules and noncanonical external imports", () => {
     expect(() => assertDesignContract(tokenCss, `${consumerCss}\n@container (min-width: 1px) { .dp-type-h2 { font-size: 12px; } }`, indexHtml)).toThrow(/unsupported consumer CSS at-rule/);
     expect(() => assertDesignContract(tokenCss, `${consumerCss}\n@import "https://example.invalid/override.css";`, indexHtml)).toThrow(/unsupported consumer CSS statement or import/);
@@ -151,7 +191,7 @@ describe("canonical Desert Pants design contract", () => {
   it("binds intended DOM headings to their declared roles and rejects inline or art-mislabeled UI", () => {
     expect(domRoleFindings(tokenCss, indexHtml)).toEqual([]);
     const wrongHeading = indexHtml.replace('class="dp-type-h3" id="moduleNavigatorTitle"', 'class="dp-type-body-sm" id="moduleNavigatorTitle"');
-    expect(domRoleFindings(tokenCss, wrongHeading).some(finding => finding.message.includes("#moduleNavigatorTitle must carry intended role dp-type-h3"))).toBe(true);
+    expect(domRoleFindings(tokenCss, wrongHeading).some(finding => finding.message.includes("#moduleNavigatorTitle must carry only its intended role dp-type-h3"))).toBe(true);
     const injectedUi = `${indexHtml}\n<p data-dp-art="canvas" style="font-size:12px">Non-art UI</p>`;
     const injectedFindings = domRoleFindings(tokenCss, injectedUi);
     expect(injectedFindings.some(finding => finding.message.includes("unchecked inline style"))).toBe(true);

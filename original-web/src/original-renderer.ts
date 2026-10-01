@@ -398,7 +398,7 @@ function advisoryPlane(n: MapNode,cats: string[]): THREE.Mesh<THREE.PlaneGeometr
  const uColors=[cols[0],cols[1]??cols[0],cols[2]??cols[cols.length-1]??cols[0]];
  const mat=new THREE.ShaderMaterial({
   vertexShader:ADVISORY_VERT,fragmentShader:ADVISORY_FRAG,transparent:true,depthWrite:false,
-  uniforms:{uColors:{value:uColors},uCount:{value:Math.min(3,cols.length)},uTime:{value:Math.random()},uMotion:{value:0},uVeil:{value:0},uSeed:{value:seedOf(n.id)}}
+  uniforms:{uColors:{value:uColors},uCount:{value:Math.min(3,cols.length)},uTime:{value:seedOf(n.id)*7.3},uMotion:{value:0},uVeil:{value:0},uSeed:{value:seedOf(n.id)}}
  });
  const h=Math.max(n.h,0.6);
  const plane=new THREE.Mesh(new THREE.PlaneGeometry(n.w,h),mat);
@@ -434,17 +434,35 @@ function refreshMedia(n: MapNode): void {
  const live=n.media.live===true||/\.m3u8(\?|$)/i.test(src);
  const video=document.createElement("video");
  video.muted=true;video.loop=!live;video.playsInline=true;video.crossOrigin="anonymous";
- video.autoplay=!RM;video.preload=live?"auto":"metadata";
+ /* a live feed is content, not decoration: it plays even under reduced-motion.
+    Looping/decorative video holds its first frame for RM users; live does not. */
+ const mayPlay=!RM||live;
+ video.autoplay=mayPlay;video.preload=live?"auto":"metadata";
  video.src=src; /* native HLS plays where supported; an hls.js shim can attach here later */
  const tex=new THREE.VideoTexture(video);tex.colorSpace=THREE.SRGBColorSpace;
  const mat=new THREE.MeshBasicMaterial({map:tex,transparent:true,toneMapped:false});
+ const face=n.media.face??"front";
+ const fit=n.media.fit??"cover";
  const h=Math.max(n.h,0.6);
- const plane=new THREE.Mesh(new THREE.PlaneGeometry(n.w,h),mat);
- plane.position.set(n.x+n.w/2,h/2+0.02,n.y+n.d+0.016); /* proud of the mist so the screen reads on top */
+ let geo: THREE.PlaneGeometry;
+ const px=n.x+n.w/2,py=n.y+n.d/2,proud=0.016;
+ const plane=(()=>{
+  if(face==="roof"){geo=new THREE.PlaneGeometry(n.w,n.d);const m=new THREE.Mesh(geo,mat);m.rotation.x=-Math.PI/2;m.position.set(px,h+proud,py);return m;}
+  if(face==="left"){geo=new THREE.PlaneGeometry(n.d,h);const m=new THREE.Mesh(geo,mat);m.rotation.y=-Math.PI/2;m.position.set(n.x-proud,h/2+0.02,py);return m;}
+  if(face==="right"){geo=new THREE.PlaneGeometry(n.d,h);const m=new THREE.Mesh(geo,mat);m.rotation.y=Math.PI/2;m.position.set(n.x+n.w+proud,h/2+0.02,py);return m;}
+  geo=new THREE.PlaneGeometry(n.w,h);const m=new THREE.Mesh(geo,mat);m.position.set(px,h/2+0.02,n.y+n.d+proud);return m; /* front (default) */
+ })();
+ /* fit:contain letterboxes by shrinking the UVs to the source aspect once known */
+ if(fit==="contain")video.addEventListener("loadedmetadata",()=>{
+  const vw=video.videoWidth,vh=video.videoHeight;if(!vw||!vh)return;
+  const pw=face==="front"?n.w:(face==="roof"?n.w:n.d),ph=face==="roof"?n.d:h;
+  const pa=pw/ph,va=vw/vh;tex.repeat.set(1,1);tex.offset.set(0,0);
+  if(va>pa){tex.repeat.y=pa/va;tex.offset.y=(1-tex.repeat.y)/2;}else{tex.repeat.x=va/pa;tex.offset.x=(1-tex.repeat.x)/2;}
+ });
  plane.renderOrder=2;
  meshById[n.id].add(plane);
  mediaById[n.id]={plane,video,tex,live};
- if(!RM)video.play().catch(()=>{/* autoplay may wait for a gesture; the poster frame still shows */});
+ if(mayPlay)video.play().catch(()=>{/* autoplay may wait for a gesture; the poster frame still shows */});
 }
 function setMediaDim(id: string,on: boolean): void {
  const m=mediaById[id];if(!m)return;
@@ -1367,7 +1385,7 @@ function disposeScene(){
  });
  geometries.forEach(g=>g.dispose());textures.forEach(t=>t.dispose());materials.forEach(m=>m.dispose());
  pickables.length=0;themed.length=0;hatched.length=0;edgeMats.length=0;
- Object.keys(mediaById).forEach(id=>{const m=mediaById[id];m.video.pause();m.video.src="";m.tex.dispose();delete mediaById[id];});
+ Object.keys(mediaById).forEach(id=>{const m=mediaById[id];m.video.pause();m.video.removeAttribute("src");m.video.load();m.tex.dispose();delete mediaById[id];});
  Object.keys(advisoryById).forEach(k=>delete advisoryById[k]);
  [meshById,edgeLinesById,byId].forEach(m=>Object.keys(m).forEach(k=>delete m[k]));
  lblLayer.replaceChildren();legend.replaceChildren();
@@ -1516,8 +1534,8 @@ const brush=(()=>{
  const brushMats: LineMaterial[]=[];
  /* the module a stroke belongs to: the pinned one, else the single energized one */
  function target(): MapNode | null {
-  if(pinned&&byId[pinned])return byId[pinned];
-  if(cordon.size===1)return byId[[...cordon][0]];
+  if(pinned&&byId[pinned]&&meshById[pinned])return byId[pinned];
+  if(cordon.size===1){const n=byId[[...cordon][0]];if(n&&meshById[n.id])return n;}
   return null;
  }
  function setRay(cx: number,cy: number): void {
@@ -1530,9 +1548,10 @@ const brush=(()=>{
     whatever face the pointer crosses (roof or wall), nudged proud of the surface
     so it reads. This is conformal drawing — the ink hugs the box. */
  function onObject(n: MapNode,cx: number,cy: number): THREE.Vector3 | null {
+  const grp=meshById[n.id];if(!grp)return null;
   setRay(cx,cy);
   const meshes: THREE.Object3D[]=[];
-  meshById[n.id].traverse((o: THREE.Object3D)=>{if(o instanceof THREE.Mesh&&o.userData.id===n.id)meshes.push(o);});
+  grp.traverse((o: THREE.Object3D)=>{if(o instanceof THREE.Mesh&&o.userData.id===n.id)meshes.push(o);});
   const hit=ray.intersectObjects(meshes,false);
   if(!hit.length)return null;
   const h=hit[0];

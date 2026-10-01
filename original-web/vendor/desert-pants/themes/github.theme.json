@@ -1,0 +1,779 @@
+{
+  "id": "github",
+  "name": "GitHub",
+  "description": "GitHub's default themes for VS Code, GitHub Light Default and GitHub Dark Default.",
+  "sources": [
+    {
+      "id": "github-vscode-theme",
+      "author": "GitHub (Primer)",
+      "url": "https://primer.style/primitives",
+      "repository": "https://github.com/primer/github-vscode-theme",
+      "revision": "cd78e5e4e7bcf132a6f428ae0f32264bb1b729cf",
+      "licence": "MIT",
+      "files": [
+        "themes/light-default.json",
+        "themes/dark-default.json (built with `node src/index.js`)",
+        "@primer/primitives 7.10.0 dist/js/colors/light.js, dark.js"
+      ],
+      "note": "GitHub Light Default and GitHub Dark Default as built from the repository at this revision."
+    }
+  ],
+  "modes": {
+    "light": {
+      "name": "GitHub Light Default",
+      "origin": "source",
+      "roles": {
+        "bg": {
+          "value": "#ffffff",
+          "source": "github light-default.json: editor.background"
+        },
+        "surface": {
+          "value": "#ffffff",
+          "source": "github light-default.json: input.background (canvas.default)"
+        },
+        "card": {
+          "value": "#f6f8fa",
+          "source": "primer canvas.subtle"
+        },
+        "raised": {
+          "value": "#ffffff",
+          "source": "primer canvas.overlay"
+        },
+        "sunken": {
+          "value": "#f6f8fa",
+          "source": "primer canvas.inset"
+        },
+        "inset": {
+          "value": "#ebebec",
+          "derived": "mix(bg, fg, 0.08)"
+        },
+        "fg": {
+          "value": "#1f2328",
+          "source": "github light-default.json: editor.foreground"
+        },
+        "fg-2": {
+          "value": "#656d76",
+          "source": "github light-default.json: descriptionForeground"
+        },
+        "fg-3": {
+          "value": "#8c959f",
+          "source": "github light-default.json: editorLineNumber.foreground"
+        },
+        "fg-4": {
+          "value": "#adb4bb",
+          "derived": "mix(fg-3, bg, 0.3)"
+        },
+        "accent": {
+          "value": "#0969da",
+          "source": "github light-default.json: focusBorder (accent.emphasis)"
+        },
+        "on-accent": {
+          "value": "#ffffff",
+          "source": "github light-default.json: button.foreground"
+        },
+        "accent-hover": {
+          "value": "#0058bd",
+          "derived": "accent with OKLab lightness moved 0.06 away from on-accent"
+        },
+        "accent-press": {
+          "value": "#00489d",
+          "derived": "accent with OKLab lightness moved 0.12 away from on-accent"
+        },
+        "focus": {
+          "value": "#0969da",
+          "derived": "accent"
+        },
+        "selection": {
+          "value": "#add6ff",
+          "source": "vscode-registry: editor.selectionBackground (light default; the GitHub theme does not set it)"
+        },
+        "scrim": {
+          "value": "#0d1117",
+          "derived": "the darker of light.fg and dark.bg"
+        },
+        "red": {
+          "value": "#cf222e",
+          "source": "primer danger.fg"
+        },
+        "orange": {
+          "value": "#bc4c00",
+          "source": "primer severe.fg"
+        },
+        "yellow": {
+          "value": "#9a6700",
+          "source": "primer attention.fg"
+        },
+        "green": {
+          "value": "#1a7f37",
+          "source": "primer success.fg"
+        },
+        "cyan": {
+          "value": "#1b7c83",
+          "source": "github light-default.json: terminal.ansiCyan"
+        },
+        "blue": {
+          "value": "#0969da",
+          "source": "primer accent.fg"
+        },
+        "purple": {
+          "value": "#8250df",
+          "source": "primer done.fg"
+        },
+        "magenta": {
+          "value": "#bf3989",
+          "source": "primer sponsors.fg"
+        },
+        "success": {
+          "value": "#1a7f37",
+          "derived": "green"
+        },
+        "warning": {
+          "value": "#9a6700",
+          "derived": "yellow"
+        },
+        "danger": {
+          "value": "#cf222e",
+          "derived": "red"
+        },
+        "info": {
+          "value": "#1b7c83",
+          "derived": "cyan"
+        },
+        "success-text": {
+          "value": "#1a7f37",
+          "derived": "success (contrast solving adjusts it on each ground)"
+        },
+        "warning-text": {
+          "value": "#9a6700",
+          "derived": "warning (contrast solving adjusts it on each ground)"
+        },
+        "danger-text": {
+          "value": "#cf222e",
+          "derived": "danger (contrast solving adjusts it on each ground)"
+        },
+        "info-text": {
+          "value": "#1b7c83",
+          "derived": "info (contrast solving adjusts it on each ground)"
+        },
+        "chart-1": {
+          "value": "#0969da",
+          "derived": "blue"
+        },
+        "chart-2": {
+          "value": "#bc4c00",
+          "derived": "orange"
+        },
+        "chart-3": {
+          "value": "#1a7f37",
+          "derived": "green"
+        },
+        "chart-4": {
+          "value": "#bf3989",
+          "derived": "magenta"
+        },
+        "chart-5": {
+          "value": "#9a6700",
+          "derived": "yellow"
+        },
+        "chart-6": {
+          "value": "#1b7c83",
+          "derived": "cyan"
+        },
+        "ansi.black": {
+          "value": "#24292f",
+          "source": "github light-default.json: terminal.ansiBlack"
+        },
+        "ansi.red": {
+          "value": "#cf222e",
+          "source": "github light-default.json: terminal.ansiRed"
+        },
+        "ansi.green": {
+          "value": "#116329",
+          "source": "github light-default.json: terminal.ansiGreen"
+        },
+        "ansi.yellow": {
+          "value": "#4d2d00",
+          "source": "github light-default.json: terminal.ansiYellow"
+        },
+        "ansi.blue": {
+          "value": "#0969da",
+          "source": "github light-default.json: terminal.ansiBlue"
+        },
+        "ansi.magenta": {
+          "value": "#8250df",
+          "source": "github light-default.json: terminal.ansiMagenta"
+        },
+        "ansi.cyan": {
+          "value": "#1b7c83",
+          "source": "github light-default.json: terminal.ansiCyan"
+        },
+        "ansi.white": {
+          "value": "#6e7781",
+          "source": "github light-default.json: terminal.ansiWhite"
+        },
+        "ansi.bright-black": {
+          "value": "#57606a",
+          "source": "github light-default.json: terminal.ansiBrightBlack"
+        },
+        "ansi.bright-red": {
+          "value": "#a40e26",
+          "source": "github light-default.json: terminal.ansiBrightRed"
+        },
+        "ansi.bright-green": {
+          "value": "#1a7f37",
+          "source": "github light-default.json: terminal.ansiBrightGreen"
+        },
+        "ansi.bright-yellow": {
+          "value": "#633c01",
+          "source": "github light-default.json: terminal.ansiBrightYellow"
+        },
+        "ansi.bright-blue": {
+          "value": "#218bff",
+          "source": "github light-default.json: terminal.ansiBrightBlue"
+        },
+        "ansi.bright-magenta": {
+          "value": "#a475f9",
+          "source": "github light-default.json: terminal.ansiBrightMagenta"
+        },
+        "ansi.bright-cyan": {
+          "value": "#3192aa",
+          "source": "github light-default.json: terminal.ansiBrightCyan"
+        },
+        "ansi.bright-white": {
+          "value": "#8c959f",
+          "source": "github light-default.json: terminal.ansiBrightWhite"
+        },
+        "syntax.keyword": {
+          "value": "#cf222e",
+          "source": "github light-default.json: tokenColors 'keyword' (for keyword)"
+        },
+        "syntax.control": {
+          "value": "#cf222e",
+          "source": "github light-default.json: tokenColors 'keyword' (for keyword.control.flow)"
+        },
+        "syntax.function": {
+          "value": "#8250df",
+          "source": "github light-default.json: tokenColors 'entity.name.function' (for entity.name.function)"
+        },
+        "syntax.string": {
+          "value": "#0a3069",
+          "source": "github light-default.json: tokenColors 'string' (for string.quoted.double)"
+        },
+        "syntax.variable": {
+          "value": "#1f2328",
+          "source": "github light-default.json: tokenColors 'variable.other' (for variable.other.readwrite)"
+        },
+        "syntax.type": {
+          "value": "#953800",
+          "source": "github light-default.json: tokenColors 'entity.name' (for entity.name.type)"
+        },
+        "syntax.number": {
+          "value": "#0550ae",
+          "source": "github light-default.json: tokenColors 'constant' (for constant.numeric)"
+        },
+        "syntax.comment": {
+          "value": "#6e7781",
+          "source": "github light-default.json: tokenColors 'comment' (for comment.line.double-slash)"
+        },
+        "fill.sage.bg": {
+          "value": "#9fb8a2",
+          "derived": "desert sage lightness 0.758 and chroma 0.034 x 1.21 (the theme's green against desert's, at most the theme's own), the hue of green"
+        },
+        "fill.sage.ink": {
+          "value": "#1f2328",
+          "derived": "light.fg, the better of light.fg and light.bg on fill.sage.bg"
+        },
+        "fill.teal.bg": {
+          "value": "#c3d2d4",
+          "derived": "desert teal lightness 0.853 and chroma 0.019 x 0.91 (the theme's cyan against desert's, at most the theme's own), the hue of cyan"
+        },
+        "fill.teal.ink": {
+          "value": "#1f2328",
+          "derived": "light.fg, the better of light.fg and light.bg on fill.teal.bg"
+        },
+        "fill.forest.bg": {
+          "value": "#191e1a",
+          "derived": "desert forest lightness 0.229 and chroma 0.009 x 1.21 (the theme's green against desert's, at most the theme's own), the hue of green"
+        },
+        "fill.forest.ink": {
+          "value": "#ffffff",
+          "derived": "light.bg, the better of light.fg and light.bg on fill.forest.bg"
+        },
+        "fill.terracotta.bg": {
+          "value": "#e06d33",
+          "derived": "desert terracotta lightness 0.662 and chroma 0.143 x 1.12 (the theme's orange against desert's, at most the theme's own), the hue of orange"
+        },
+        "fill.terracotta.ink": {
+          "value": "#070b0f",
+          "derived": "light.fg moved in OKLab lightness to 6.0:1 on fill.terracotta.bg (light.fg and light.bg reach 4.82:1)"
+        },
+        "fill.sand.bg": {
+          "value": "#d7cfc6",
+          "derived": "desert sand lightness 0.859 and chroma 0.019 x 0.83 (the theme's yellow against desert's, at most the theme's own), the hue of yellow"
+        },
+        "fill.sand.ink": {
+          "value": "#1f2328",
+          "derived": "light.fg, the better of light.fg and light.bg on fill.sand.bg"
+        },
+        "fill.warm-grey.bg": {
+          "value": "#b1b7bd",
+          "derived": "desert warm-grey lightness 0.776; the theme's neutral hue and chroma (at most 0.03)"
+        },
+        "fill.warm-grey.ink": {
+          "value": "#1f2328",
+          "derived": "light.fg, the better of light.fg and light.bg on fill.warm-grey.bg"
+        },
+        "fill.clay-red.bg": {
+          "value": "#d82d35",
+          "derived": "desert clay-red lightness 0.576 and chroma 0.200 x 1.20 (the theme's red against desert's, at most the theme's own), the hue of red"
+        },
+        "fill.clay-red.ink": {
+          "value": "#ffffff",
+          "derived": "light.bg, the better of light.fg and light.bg on fill.clay-red.bg"
+        },
+        "fill.dark-teal.bg": {
+          "value": "#024697",
+          "derived": "desert dark-teal lightness 0.408 and chroma 0.058 x 2.50 (the theme's blue against desert's, at most the theme's own), the hue of blue"
+        },
+        "fill.dark-teal.ink": {
+          "value": "#ffffff",
+          "derived": "light.bg, the better of light.fg and light.bg on fill.dark-teal.bg"
+        },
+        "fill.dusty-pink.bg": {
+          "value": "#cd86aa",
+          "derived": "desert dusty-pink lightness 0.704 and chroma 0.039 x 2.50 (the theme's magenta against desert's, at most the theme's own), the hue of magenta"
+        },
+        "fill.dusty-pink.ink": {
+          "value": "#0a0d12",
+          "derived": "light.fg moved in OKLab lightness to 7.0:1 on fill.dusty-pink.bg (light.fg and light.bg reach 5.71:1)"
+        },
+        "fill.light-peach.bg": {
+          "value": "#fcd9ca",
+          "derived": "desert light-peach lightness 0.911 and chroma 0.040 x 1.12 (the theme's orange against desert's, at most the theme's own), the hue of orange"
+        },
+        "fill.light-peach.ink": {
+          "value": "#1f2328",
+          "derived": "light.fg, the better of light.fg and light.bg on fill.light-peach.bg"
+        },
+        "fill.faun.bg": {
+          "value": "#cbc5bc",
+          "derived": "desert faun lightness 0.826 and chroma 0.017 x 0.83 (the theme's yellow against desert's, at most the theme's own), the hue of yellow"
+        },
+        "fill.faun.ink": {
+          "value": "#1f2328",
+          "derived": "light.fg, the better of light.fg and light.bg on fill.faun.bg"
+        },
+        "fill.cool-grey.bg": {
+          "value": "#d9dee5",
+          "derived": "desert cool-grey lightness 0.899; the theme's neutral hue and chroma (at most 0.03)"
+        },
+        "fill.cool-grey.ink": {
+          "value": "#1f2328",
+          "derived": "light.fg, the better of light.fg and light.bg on fill.cool-grey.bg"
+        },
+        "fill.stone.bg": {
+          "value": "#aab0b6",
+          "derived": "desert stone lightness 0.753; the theme's neutral hue and chroma (at most 0.03)"
+        },
+        "fill.stone.ink": {
+          "value": "#1f2328",
+          "derived": "light.fg, the better of light.fg and light.bg on fill.stone.bg"
+        },
+        "fill.dark-grey.bg": {
+          "value": "#64696f",
+          "derived": "desert dark-grey lightness 0.518; the theme's neutral hue and chroma (at most 0.03)"
+        },
+        "fill.dark-grey.ink": {
+          "value": "#ffffff",
+          "derived": "light.bg, the better of light.fg and light.bg on fill.dark-grey.bg"
+        },
+        "fill.ink.bg": {
+          "value": "#0d1115",
+          "derived": "desert ink lightness 0.175; the theme's neutral hue and chroma (at most 0.03)"
+        },
+        "fill.ink.ink": {
+          "value": "#ffffff",
+          "derived": "light.bg, the better of light.fg and light.bg on fill.ink.bg"
+        }
+      }
+    },
+    "dark": {
+      "name": "GitHub Dark Default",
+      "origin": "source",
+      "roles": {
+        "bg": {
+          "value": "#0d1117",
+          "source": "github dark-default.json: editor.background"
+        },
+        "surface": {
+          "value": "#0d1117",
+          "source": "github dark-default.json: input.background (canvas.default)"
+        },
+        "card": {
+          "value": "#161b22",
+          "source": "primer canvas.subtle"
+        },
+        "raised": {
+          "value": "#161b22",
+          "source": "primer canvas.overlay"
+        },
+        "sunken": {
+          "value": "#010409",
+          "source": "primer canvas.inset"
+        },
+        "inset": {
+          "value": "#22262d",
+          "derived": "mix(bg, fg, 0.12)"
+        },
+        "fg": {
+          "value": "#e6edf3",
+          "source": "github dark-default.json: editor.foreground"
+        },
+        "fg-2": {
+          "value": "#7d8590",
+          "source": "github dark-default.json: descriptionForeground"
+        },
+        "fg-3": {
+          "value": "#6e7681",
+          "source": "github dark-default.json: editorLineNumber.foreground"
+        },
+        "fg-4": {
+          "value": "#4e555f",
+          "derived": "mix(fg-3, bg, 0.3)"
+        },
+        "accent": {
+          "value": "#1f6feb",
+          "source": "github dark-default.json: focusBorder (accent.emphasis)"
+        },
+        "on-accent": {
+          "value": "#ffffff",
+          "source": "github dark-default.json: button.foreground"
+        },
+        "accent-hover": {
+          "value": "#025cd6",
+          "derived": "accent with OKLab lightness moved 0.06 away from on-accent"
+        },
+        "accent-press": {
+          "value": "#004cb6",
+          "derived": "accent with OKLab lightness moved 0.12 away from on-accent"
+        },
+        "focus": {
+          "value": "#1f6feb",
+          "derived": "accent"
+        },
+        "selection": {
+          "value": "#264f78",
+          "source": "vscode-registry: editor.selectionBackground (dark default; the GitHub theme does not set it)"
+        },
+        "scrim": {
+          "value": "#0d1117",
+          "derived": "the darker of light.fg and dark.bg"
+        },
+        "red": {
+          "value": "#f85149",
+          "source": "primer danger.fg"
+        },
+        "orange": {
+          "value": "#db6d28",
+          "source": "primer severe.fg"
+        },
+        "yellow": {
+          "value": "#d29922",
+          "source": "primer attention.fg"
+        },
+        "green": {
+          "value": "#3fb950",
+          "source": "primer success.fg"
+        },
+        "cyan": {
+          "value": "#39c5cf",
+          "source": "github dark-default.json: terminal.ansiCyan"
+        },
+        "blue": {
+          "value": "#58a6ff",
+          "source": "primer accent.fg"
+        },
+        "purple": {
+          "value": "#a371f7",
+          "source": "primer done.fg"
+        },
+        "magenta": {
+          "value": "#db61a2",
+          "source": "primer sponsors.fg"
+        },
+        "success": {
+          "value": "#3fb950",
+          "derived": "green"
+        },
+        "warning": {
+          "value": "#d29922",
+          "derived": "yellow"
+        },
+        "danger": {
+          "value": "#f85149",
+          "derived": "red"
+        },
+        "info": {
+          "value": "#39c5cf",
+          "derived": "cyan"
+        },
+        "success-text": {
+          "value": "#3fb950",
+          "derived": "success (contrast solving adjusts it on each ground)"
+        },
+        "warning-text": {
+          "value": "#d29922",
+          "derived": "warning (contrast solving adjusts it on each ground)"
+        },
+        "danger-text": {
+          "value": "#f85149",
+          "derived": "danger (contrast solving adjusts it on each ground)"
+        },
+        "info-text": {
+          "value": "#39c5cf",
+          "derived": "info (contrast solving adjusts it on each ground)"
+        },
+        "chart-1": {
+          "value": "#58a6ff",
+          "derived": "blue"
+        },
+        "chart-2": {
+          "value": "#db6d28",
+          "derived": "orange"
+        },
+        "chart-3": {
+          "value": "#3fb950",
+          "derived": "green"
+        },
+        "chart-4": {
+          "value": "#db61a2",
+          "derived": "magenta"
+        },
+        "chart-5": {
+          "value": "#d29922",
+          "derived": "yellow"
+        },
+        "chart-6": {
+          "value": "#39c5cf",
+          "derived": "cyan"
+        },
+        "ansi.black": {
+          "value": "#484f58",
+          "source": "github dark-default.json: terminal.ansiBlack"
+        },
+        "ansi.red": {
+          "value": "#ff7b72",
+          "source": "github dark-default.json: terminal.ansiRed"
+        },
+        "ansi.green": {
+          "value": "#3fb950",
+          "source": "github dark-default.json: terminal.ansiGreen"
+        },
+        "ansi.yellow": {
+          "value": "#d29922",
+          "source": "github dark-default.json: terminal.ansiYellow"
+        },
+        "ansi.blue": {
+          "value": "#58a6ff",
+          "source": "github dark-default.json: terminal.ansiBlue"
+        },
+        "ansi.magenta": {
+          "value": "#bc8cff",
+          "source": "github dark-default.json: terminal.ansiMagenta"
+        },
+        "ansi.cyan": {
+          "value": "#39c5cf",
+          "source": "github dark-default.json: terminal.ansiCyan"
+        },
+        "ansi.white": {
+          "value": "#b1bac4",
+          "source": "github dark-default.json: terminal.ansiWhite"
+        },
+        "ansi.bright-black": {
+          "value": "#6e7681",
+          "source": "github dark-default.json: terminal.ansiBrightBlack"
+        },
+        "ansi.bright-red": {
+          "value": "#ffa198",
+          "source": "github dark-default.json: terminal.ansiBrightRed"
+        },
+        "ansi.bright-green": {
+          "value": "#56d364",
+          "source": "github dark-default.json: terminal.ansiBrightGreen"
+        },
+        "ansi.bright-yellow": {
+          "value": "#e3b341",
+          "source": "github dark-default.json: terminal.ansiBrightYellow"
+        },
+        "ansi.bright-blue": {
+          "value": "#79c0ff",
+          "source": "github dark-default.json: terminal.ansiBrightBlue"
+        },
+        "ansi.bright-magenta": {
+          "value": "#d2a8ff",
+          "source": "github dark-default.json: terminal.ansiBrightMagenta"
+        },
+        "ansi.bright-cyan": {
+          "value": "#56d4dd",
+          "source": "github dark-default.json: terminal.ansiBrightCyan"
+        },
+        "ansi.bright-white": {
+          "value": "#ffffff",
+          "source": "github dark-default.json: terminal.ansiBrightWhite"
+        },
+        "syntax.keyword": {
+          "value": "#ff7b72",
+          "source": "github dark-default.json: tokenColors 'keyword' (for keyword)"
+        },
+        "syntax.control": {
+          "value": "#ff7b72",
+          "source": "github dark-default.json: tokenColors 'keyword' (for keyword.control.flow)"
+        },
+        "syntax.function": {
+          "value": "#d2a8ff",
+          "source": "github dark-default.json: tokenColors 'entity.name.function' (for entity.name.function)"
+        },
+        "syntax.string": {
+          "value": "#a5d6ff",
+          "source": "github dark-default.json: tokenColors 'string' (for string.quoted.double)"
+        },
+        "syntax.variable": {
+          "value": "#e6edf3",
+          "source": "github dark-default.json: tokenColors 'variable.other' (for variable.other.readwrite)"
+        },
+        "syntax.type": {
+          "value": "#ffa657",
+          "source": "github dark-default.json: tokenColors 'entity.name' (for entity.name.type)"
+        },
+        "syntax.number": {
+          "value": "#79c0ff",
+          "source": "github dark-default.json: tokenColors 'constant' (for constant.numeric)"
+        },
+        "syntax.comment": {
+          "value": "#8b949e",
+          "source": "github dark-default.json: tokenColors 'comment' (for comment.line.double-slash)"
+        },
+        "fill.sage.bg": {
+          "value": "#9fb8a2",
+          "derived": "light-mode fill.sage.bg (fills do not change with mode)"
+        },
+        "fill.sage.ink": {
+          "value": "#1f2328",
+          "derived": "light-mode fill.sage.ink (fills do not change with mode)"
+        },
+        "fill.teal.bg": {
+          "value": "#c3d2d4",
+          "derived": "light-mode fill.teal.bg (fills do not change with mode)"
+        },
+        "fill.teal.ink": {
+          "value": "#1f2328",
+          "derived": "light-mode fill.teal.ink (fills do not change with mode)"
+        },
+        "fill.forest.bg": {
+          "value": "#191e1a",
+          "derived": "light-mode fill.forest.bg (fills do not change with mode)"
+        },
+        "fill.forest.ink": {
+          "value": "#ffffff",
+          "derived": "light-mode fill.forest.ink (fills do not change with mode)"
+        },
+        "fill.terracotta.bg": {
+          "value": "#e06d33",
+          "derived": "light-mode fill.terracotta.bg (fills do not change with mode)"
+        },
+        "fill.terracotta.ink": {
+          "value": "#070b0f",
+          "derived": "light-mode fill.terracotta.ink (fills do not change with mode)"
+        },
+        "fill.sand.bg": {
+          "value": "#d7cfc6",
+          "derived": "light-mode fill.sand.bg (fills do not change with mode)"
+        },
+        "fill.sand.ink": {
+          "value": "#1f2328",
+          "derived": "light-mode fill.sand.ink (fills do not change with mode)"
+        },
+        "fill.warm-grey.bg": {
+          "value": "#b1b7bd",
+          "derived": "light-mode fill.warm-grey.bg (fills do not change with mode)"
+        },
+        "fill.warm-grey.ink": {
+          "value": "#1f2328",
+          "derived": "light-mode fill.warm-grey.ink (fills do not change with mode)"
+        },
+        "fill.clay-red.bg": {
+          "value": "#d82d35",
+          "derived": "light-mode fill.clay-red.bg (fills do not change with mode)"
+        },
+        "fill.clay-red.ink": {
+          "value": "#ffffff",
+          "derived": "light-mode fill.clay-red.ink (fills do not change with mode)"
+        },
+        "fill.dark-teal.bg": {
+          "value": "#024697",
+          "derived": "light-mode fill.dark-teal.bg (fills do not change with mode)"
+        },
+        "fill.dark-teal.ink": {
+          "value": "#ffffff",
+          "derived": "light-mode fill.dark-teal.ink (fills do not change with mode)"
+        },
+        "fill.dusty-pink.bg": {
+          "value": "#cd86aa",
+          "derived": "light-mode fill.dusty-pink.bg (fills do not change with mode)"
+        },
+        "fill.dusty-pink.ink": {
+          "value": "#0a0d12",
+          "derived": "light-mode fill.dusty-pink.ink (fills do not change with mode)"
+        },
+        "fill.light-peach.bg": {
+          "value": "#fcd9ca",
+          "derived": "light-mode fill.light-peach.bg (fills do not change with mode)"
+        },
+        "fill.light-peach.ink": {
+          "value": "#1f2328",
+          "derived": "light-mode fill.light-peach.ink (fills do not change with mode)"
+        },
+        "fill.faun.bg": {
+          "value": "#cbc5bc",
+          "derived": "light-mode fill.faun.bg (fills do not change with mode)"
+        },
+        "fill.faun.ink": {
+          "value": "#1f2328",
+          "derived": "light-mode fill.faun.ink (fills do not change with mode)"
+        },
+        "fill.cool-grey.bg": {
+          "value": "#d9dee5",
+          "derived": "light-mode fill.cool-grey.bg (fills do not change with mode)"
+        },
+        "fill.cool-grey.ink": {
+          "value": "#1f2328",
+          "derived": "light-mode fill.cool-grey.ink (fills do not change with mode)"
+        },
+        "fill.stone.bg": {
+          "value": "#aab0b6",
+          "derived": "light-mode fill.stone.bg (fills do not change with mode)"
+        },
+        "fill.stone.ink": {
+          "value": "#1f2328",
+          "derived": "light-mode fill.stone.ink (fills do not change with mode)"
+        },
+        "fill.dark-grey.bg": {
+          "value": "#64696f",
+          "derived": "light-mode fill.dark-grey.bg (fills do not change with mode)"
+        },
+        "fill.dark-grey.ink": {
+          "value": "#ffffff",
+          "derived": "light-mode fill.dark-grey.ink (fills do not change with mode)"
+        },
+        "fill.ink.bg": {
+          "value": "#0d1115",
+          "derived": "light-mode fill.ink.bg (fills do not change with mode)"
+        },
+        "fill.ink.ink": {
+          "value": "#ffffff",
+          "derived": "light-mode fill.ink.ink (fills do not change with mode)"
+        }
+      }
+    }
+  }
+}

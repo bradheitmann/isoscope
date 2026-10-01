@@ -1,0 +1,790 @@
+{
+  "id": "rose-pine",
+  "name": "Rosé Pine",
+  "description": "Rosé Pine Dawn and Rosé Pine.",
+  "sources": [
+    {
+      "id": "rose-pine-palette",
+      "author": "Rosé Pine",
+      "url": "https://rosepinetheme.com/palette/",
+      "repository": "https://github.com/rose-pine/palette",
+      "revision": "92af52b465ab6e47437aca223c9b8d3009a2023b",
+      "licence": "MIT",
+      "files": [
+        "palette.json",
+        "dist/index.js (highlight colours; Dawn text #575279)"
+      ],
+      "note": "palette.json at this revision gives Dawn text as #464261; the published API (dist/index.js) and the VS Code theme use #575279, which is used here."
+    },
+    {
+      "id": "rose-pine-vscode",
+      "author": "Rosé Pine",
+      "url": "https://marketplace.visualstudio.com/items?itemName=mvllow.rose-pine",
+      "repository": "https://github.com/rose-pine/vscode",
+      "revision": "d8f5ebe8e096fa833e997c07eb7685ee1677a4ba",
+      "licence": "MIT",
+      "files": [
+        "themes/rose-pine-dawn-color-theme.json",
+        "themes/rose-pine-color-theme.json"
+      ]
+    }
+  ],
+  "modes": {
+    "light": {
+      "name": "Rosé Pine Dawn",
+      "origin": "source",
+      "roles": {
+        "bg": {
+          "value": "#faf4ed",
+          "source": "dawn base"
+        },
+        "surface": {
+          "value": "#fffaf3",
+          "source": "dawn surface (panels, cards, inputs)"
+        },
+        "card": {
+          "value": "#fffaf3",
+          "source": "dawn surface (panels, cards, inputs)"
+        },
+        "raised": {
+          "value": "#f2e9e1",
+          "source": "dawn overlay"
+        },
+        "sunken": {
+          "value": "#f4ede8",
+          "source": "dawn highlight low"
+        },
+        "inset": {
+          "value": "#ece6e4",
+          "derived": "mix(bg, fg, 0.08)"
+        },
+        "fg": {
+          "value": "#575279",
+          "source": "dawn text"
+        },
+        "fg-2": {
+          "value": "#797593",
+          "source": "dawn subtle"
+        },
+        "fg-3": {
+          "value": "#9893a5",
+          "source": "dawn muted"
+        },
+        "fg-4": {
+          "value": "#b4afba",
+          "derived": "mix(fg-3, bg, 0.3)"
+        },
+        "accent": {
+          "value": "#907aa9",
+          "source": "dawn iris"
+        },
+        "on-accent": {
+          "value": "#faf4ed",
+          "source": "dawn base"
+        },
+        "accent-hover": {
+          "value": "#7e6896",
+          "derived": "accent with OKLab lightness moved 0.06 away from on-accent"
+        },
+        "accent-press": {
+          "value": "#6d5784",
+          "derived": "accent with OKLab lightness moved 0.12 away from on-accent"
+        },
+        "focus": {
+          "value": "#907aa9",
+          "source": "dawn iris"
+        },
+        "selection": {
+          "value": "#dfdad9",
+          "source": "dawn highlight med"
+        },
+        "scrim": {
+          "value": "#191724",
+          "derived": "the darker of light.fg and dark.bg"
+        },
+        "red": {
+          "value": "#b4637a",
+          "source": "dawn love"
+        },
+        "orange": {
+          "value": "#d7827e",
+          "source": "dawn rose"
+        },
+        "yellow": {
+          "value": "#ea9d34",
+          "source": "dawn gold"
+        },
+        "green": {
+          "value": "#286983",
+          "source": "dawn pine (terminal green)"
+        },
+        "cyan": {
+          "value": "#56949f",
+          "source": "dawn foam"
+        },
+        "blue": {
+          "value": "#286983",
+          "source": "dawn pine"
+        },
+        "purple": {
+          "value": "#907aa9",
+          "source": "dawn iris"
+        },
+        "magenta": {
+          "value": "#b4637a",
+          "source": "dawn love"
+        },
+        "success": {
+          "value": "#286983",
+          "derived": "green"
+        },
+        "warning": {
+          "value": "#ea9d34",
+          "derived": "yellow"
+        },
+        "danger": {
+          "value": "#b4637a",
+          "derived": "red"
+        },
+        "info": {
+          "value": "#56949f",
+          "derived": "cyan"
+        },
+        "success-text": {
+          "value": "#286983",
+          "derived": "success (contrast solving adjusts it on each ground)"
+        },
+        "warning-text": {
+          "value": "#ea9d34",
+          "source": "rose-pine-vscode editorWarning.foreground (gold)"
+        },
+        "danger-text": {
+          "value": "#b4637a",
+          "source": "rose-pine-vscode editorError.foreground (love)"
+        },
+        "info-text": {
+          "value": "#56949f",
+          "source": "rose-pine-vscode editorInfo.foreground (foam)"
+        },
+        "chart-1": {
+          "value": "#286983",
+          "derived": "blue"
+        },
+        "chart-2": {
+          "value": "#d7827e",
+          "derived": "orange"
+        },
+        "chart-3": {
+          "value": "#b4637a",
+          "derived": "magenta (green and the hues after it sit within 0.065 OKLab of the text colour or 0.08 of an earlier chart colour)"
+        },
+        "chart-4": {
+          "value": "#ea9d34",
+          "derived": "yellow (magenta and the hues after it sit within 0.065 OKLab of the text colour or 0.08 of an earlier chart colour)"
+        },
+        "chart-5": {
+          "value": "#56949f",
+          "derived": "cyan (yellow and the hues after it sit within 0.065 OKLab of the text colour or 0.08 of an earlier chart colour)"
+        },
+        "chart-6": {
+          "value": "#907aa9",
+          "derived": "purple (cyan and the hues after it sit within 0.065 OKLab of the text colour or 0.08 of an earlier chart colour)"
+        },
+        "ansi.black": {
+          "value": "#f2e9e1",
+          "source": "rose-pine-vscode rose-pine-dawn-color-theme.json: terminal.ansiBlack"
+        },
+        "ansi.red": {
+          "value": "#b4637a",
+          "source": "rose-pine-vscode rose-pine-dawn-color-theme.json: terminal.ansiRed"
+        },
+        "ansi.green": {
+          "value": "#286983",
+          "source": "rose-pine-vscode rose-pine-dawn-color-theme.json: terminal.ansiGreen"
+        },
+        "ansi.yellow": {
+          "value": "#ea9d34",
+          "source": "rose-pine-vscode rose-pine-dawn-color-theme.json: terminal.ansiYellow"
+        },
+        "ansi.blue": {
+          "value": "#56949f",
+          "source": "rose-pine-vscode rose-pine-dawn-color-theme.json: terminal.ansiBlue"
+        },
+        "ansi.magenta": {
+          "value": "#907aa9",
+          "source": "rose-pine-vscode rose-pine-dawn-color-theme.json: terminal.ansiMagenta"
+        },
+        "ansi.cyan": {
+          "value": "#d7827e",
+          "source": "rose-pine-vscode rose-pine-dawn-color-theme.json: terminal.ansiCyan"
+        },
+        "ansi.white": {
+          "value": "#575279",
+          "source": "rose-pine-vscode rose-pine-dawn-color-theme.json: terminal.ansiWhite"
+        },
+        "ansi.bright-black": {
+          "value": "#797593",
+          "source": "rose-pine-vscode rose-pine-dawn-color-theme.json: terminal.ansiBrightBlack"
+        },
+        "ansi.bright-red": {
+          "value": "#b4637a",
+          "source": "rose-pine-vscode rose-pine-dawn-color-theme.json: terminal.ansiBrightRed"
+        },
+        "ansi.bright-green": {
+          "value": "#286983",
+          "source": "rose-pine-vscode rose-pine-dawn-color-theme.json: terminal.ansiBrightGreen"
+        },
+        "ansi.bright-yellow": {
+          "value": "#ea9d34",
+          "source": "rose-pine-vscode rose-pine-dawn-color-theme.json: terminal.ansiBrightYellow"
+        },
+        "ansi.bright-blue": {
+          "value": "#56949f",
+          "source": "rose-pine-vscode rose-pine-dawn-color-theme.json: terminal.ansiBrightBlue"
+        },
+        "ansi.bright-magenta": {
+          "value": "#907aa9",
+          "source": "rose-pine-vscode rose-pine-dawn-color-theme.json: terminal.ansiBrightMagenta"
+        },
+        "ansi.bright-cyan": {
+          "value": "#d7827e",
+          "source": "rose-pine-vscode rose-pine-dawn-color-theme.json: terminal.ansiBrightCyan"
+        },
+        "ansi.bright-white": {
+          "value": "#575279",
+          "source": "rose-pine-vscode rose-pine-dawn-color-theme.json: terminal.ansiBrightWhite"
+        },
+        "syntax.keyword": {
+          "value": "#286983",
+          "source": "rose-pine-vscode rose-pine-dawn-color-theme.json: tokenColors 'keyword' (for keyword)"
+        },
+        "syntax.control": {
+          "value": "#286983",
+          "source": "rose-pine-vscode rose-pine-dawn-color-theme.json: tokenColors 'keyword' (for keyword.control.flow)"
+        },
+        "syntax.function": {
+          "value": "#d7827e",
+          "source": "rose-pine-vscode rose-pine-dawn-color-theme.json: tokenColors 'entity.name' (for entity.name.function)"
+        },
+        "syntax.string": {
+          "value": "#ea9d34",
+          "source": "rose-pine-vscode rose-pine-dawn-color-theme.json: tokenColors 'string' (for string.quoted.double)"
+        },
+        "syntax.variable": {
+          "value": "#575279",
+          "source": "rose-pine-vscode rose-pine-dawn-color-theme.json: tokenColors 'variable.other' (for variable.other.readwrite)"
+        },
+        "syntax.type": {
+          "value": "#56949f",
+          "source": "rose-pine-vscode rose-pine-dawn-color-theme.json: tokenColors 'entity.name.type' (for entity.name.type)"
+        },
+        "syntax.number": {
+          "value": "#d7827e",
+          "source": "rose-pine-vscode rose-pine-dawn-color-theme.json: tokenColors 'constant.numeric' (for constant.numeric)"
+        },
+        "syntax.comment": {
+          "value": "#9893a5",
+          "source": "rose-pine-vscode rose-pine-dawn-color-theme.json: tokenColors 'comment' (for comment.line.double-slash)"
+        },
+        "fill.sage.bg": {
+          "value": "#a2b4bc",
+          "derived": "desert sage lightness 0.758 and chroma 0.034 x 0.67 (the theme's green against desert's, at most the theme's own), the hue of green"
+        },
+        "fill.sage.ink": {
+          "value": "#272144",
+          "derived": "light.fg moved in OKLab lightness to 7.0:1 on fill.sage.bg (light.fg and light.bg reach 3.39:1)"
+        },
+        "fill.teal.bg": {
+          "value": "#c5d1d4",
+          "derived": "desert teal lightness 0.853 and chroma 0.019 x 0.71 (the theme's cyan against desert's, at most the theme's own), the hue of cyan"
+        },
+        "fill.teal.ink": {
+          "value": "#3d375c",
+          "derived": "light.fg moved in OKLab lightness to 7.0:1 on fill.teal.bg (light.fg and light.bg reach 4.66:1)"
+        },
+        "fill.forest.bg": {
+          "value": "#1a1d1f",
+          "derived": "desert forest lightness 0.229 and chroma 0.009 x 0.67 (the theme's green against desert's, at most the theme's own), the hue of green"
+        },
+        "fill.forest.ink": {
+          "value": "#faf4ed",
+          "derived": "light.bg, the better of light.fg and light.bg on fill.forest.bg"
+        },
+        "fill.terracotta.bg": {
+          "value": "#cc7874",
+          "derived": "desert terracotta lightness 0.662 and chroma 0.143 x 0.74 (the theme's orange against desert's, at most the theme's own), the hue of orange"
+        },
+        "fill.terracotta.ink": {
+          "value": "#0c0524",
+          "derived": "light.fg moved in OKLab lightness to 6.1:1 on fill.terracotta.bg (light.fg and light.bg reach 2.96:1)"
+        },
+        "fill.sand.bg": {
+          "value": "#d9cfc3",
+          "derived": "desert sand lightness 0.859 and chroma 0.019 x 1.04 (the theme's yellow against desert's, at most the theme's own), the hue of yellow"
+        },
+        "fill.sand.ink": {
+          "value": "#3e395e",
+          "derived": "light.fg moved in OKLab lightness to 7.0:1 on fill.sand.bg (light.fg and light.bg reach 4.73:1)"
+        },
+        "fill.warm-grey.bg": {
+          "value": "#bbb5af",
+          "derived": "desert warm-grey lightness 0.776; the theme's neutral hue and chroma (at most 0.03)"
+        },
+        "fill.warm-grey.ink": {
+          "value": "#2b2649",
+          "derived": "light.fg moved in OKLab lightness to 7.0:1 on fill.warm-grey.bg (light.fg and light.bg reach 3.58:1)"
+        },
+        "fill.clay-red.bg": {
+          "value": "#b45672",
+          "derived": "desert clay-red lightness 0.576 and chroma 0.200 x 0.63 (the theme's red against desert's, at most the theme's own), the hue of red"
+        },
+        "fill.clay-red.ink": {
+          "value": "#fef8f1",
+          "derived": "light.bg moved in OKLab lightness to 4.4:1 on fill.clay-red.bg (light.fg and light.bg reach 4.26:1)"
+        },
+        "fill.dark-teal.bg": {
+          "value": "#07516a",
+          "derived": "desert dark-teal lightness 0.408 and chroma 0.058 x 1.32 (the theme's blue against desert's, at most the theme's own), the hue of blue"
+        },
+        "fill.dark-teal.ink": {
+          "value": "#faf4ed",
+          "derived": "light.bg, the better of light.fg and light.bg on fill.dark-teal.bg"
+        },
+        "fill.dusty-pink.bg": {
+          "value": "#d3859a",
+          "derived": "desert dusty-pink lightness 0.704 and chroma 0.039 x 2.50 (the theme's magenta against desert's, at most the theme's own), the hue of magenta"
+        },
+        "fill.dusty-pink.ink": {
+          "value": "#0f0727",
+          "derived": "light.fg moved in OKLab lightness to 7.0:1 on fill.dusty-pink.bg (light.fg and light.bg reach 2.63:1)"
+        },
+        "fill.light-peach.bg": {
+          "value": "#f5dbd9",
+          "derived": "desert light-peach lightness 0.911 and chroma 0.040 x 0.74 (the theme's orange against desert's, at most the theme's own), the hue of orange"
+        },
+        "fill.light-peach.ink": {
+          "value": "#484369",
+          "derived": "light.fg moved in OKLab lightness to 7.0:1 on fill.light-peach.bg (light.fg and light.bg reach 5.55:1)"
+        },
+        "fill.faun.bg": {
+          "value": "#cec4ba",
+          "derived": "desert faun lightness 0.826 and chroma 0.017 x 1.04 (the theme's yellow against desert's, at most the theme's own), the hue of yellow"
+        },
+        "fill.faun.ink": {
+          "value": "#373156",
+          "derived": "light.fg moved in OKLab lightness to 7.0:1 on fill.faun.bg (light.fg and light.bg reach 4.23:1)"
+        },
+        "fill.cool-grey.bg": {
+          "value": "#e3ddd6",
+          "derived": "desert cool-grey lightness 0.899; the theme's neutral hue and chroma (at most 0.03)"
+        },
+        "fill.cool-grey.ink": {
+          "value": "#474167",
+          "derived": "light.fg moved in OKLab lightness to 7.0:1 on fill.cool-grey.bg (light.fg and light.bg reach 5.39:1)"
+        },
+        "fill.stone.bg": {
+          "value": "#b4aea7",
+          "derived": "desert stone lightness 0.753; the theme's neutral hue and chroma (at most 0.03)"
+        },
+        "fill.stone.ink": {
+          "value": "#261f42",
+          "derived": "light.fg moved in OKLab lightness to 7.0:1 on fill.stone.bg (light.fg and light.bg reach 3.31:1)"
+        },
+        "fill.dark-grey.bg": {
+          "value": "#6c6761",
+          "derived": "desert dark-grey lightness 0.518; the theme's neutral hue and chroma (at most 0.03)"
+        },
+        "fill.dark-grey.ink": {
+          "value": "#fef8f1",
+          "derived": "light.bg moved in OKLab lightness to 5.3:1 on fill.dark-grey.bg (light.fg and light.bg reach 5.13:1)"
+        },
+        "fill.ink.bg": {
+          "value": "#14100b",
+          "derived": "desert ink lightness 0.175; the theme's neutral hue and chroma (at most 0.03)"
+        },
+        "fill.ink.ink": {
+          "value": "#faf4ed",
+          "derived": "light.bg, the better of light.fg and light.bg on fill.ink.bg"
+        }
+      }
+    },
+    "dark": {
+      "name": "Rosé Pine",
+      "origin": "source",
+      "roles": {
+        "bg": {
+          "value": "#191724",
+          "source": "main base"
+        },
+        "surface": {
+          "value": "#1f1d2e",
+          "source": "main surface (panels, cards, inputs)"
+        },
+        "card": {
+          "value": "#1f1d2e",
+          "source": "main surface (panels, cards, inputs)"
+        },
+        "raised": {
+          "value": "#26233a",
+          "source": "main overlay"
+        },
+        "sunken": {
+          "value": "#21202e",
+          "source": "main highlight low"
+        },
+        "inset": {
+          "value": "#2d2b39",
+          "derived": "mix(bg, fg, 0.12)"
+        },
+        "fg": {
+          "value": "#e0def4",
+          "source": "main text"
+        },
+        "fg-2": {
+          "value": "#908caa",
+          "source": "main subtle"
+        },
+        "fg-3": {
+          "value": "#6e6a86",
+          "source": "main muted"
+        },
+        "fg-4": {
+          "value": "#534f67",
+          "derived": "mix(fg-3, bg, 0.3)"
+        },
+        "accent": {
+          "value": "#c4a7e7",
+          "source": "main iris"
+        },
+        "on-accent": {
+          "value": "#191724",
+          "source": "main base"
+        },
+        "accent-hover": {
+          "value": "#d7bafb",
+          "derived": "accent with OKLab lightness moved 0.06 away from on-accent"
+        },
+        "accent-press": {
+          "value": "#e6d3ff",
+          "derived": "accent with OKLab lightness moved 0.12 away from on-accent"
+        },
+        "focus": {
+          "value": "#c4a7e7",
+          "source": "main iris"
+        },
+        "selection": {
+          "value": "#403d52",
+          "source": "main highlight med"
+        },
+        "scrim": {
+          "value": "#191724",
+          "derived": "the darker of light.fg and dark.bg"
+        },
+        "red": {
+          "value": "#eb6f92",
+          "source": "main love"
+        },
+        "orange": {
+          "value": "#ebbcba",
+          "source": "main rose"
+        },
+        "yellow": {
+          "value": "#f6c177",
+          "source": "main gold"
+        },
+        "green": {
+          "value": "#31748f",
+          "source": "main pine (terminal green)"
+        },
+        "cyan": {
+          "value": "#9ccfd8",
+          "source": "main foam"
+        },
+        "blue": {
+          "value": "#31748f",
+          "source": "main pine"
+        },
+        "purple": {
+          "value": "#c4a7e7",
+          "source": "main iris"
+        },
+        "magenta": {
+          "value": "#eb6f92",
+          "source": "main love"
+        },
+        "success": {
+          "value": "#31748f",
+          "derived": "green"
+        },
+        "warning": {
+          "value": "#f6c177",
+          "derived": "yellow"
+        },
+        "danger": {
+          "value": "#eb6f92",
+          "derived": "red"
+        },
+        "info": {
+          "value": "#9ccfd8",
+          "derived": "cyan"
+        },
+        "success-text": {
+          "value": "#31748f",
+          "derived": "success (contrast solving adjusts it on each ground)"
+        },
+        "warning-text": {
+          "value": "#f6c177",
+          "source": "rose-pine-vscode editorWarning.foreground (gold)"
+        },
+        "danger-text": {
+          "value": "#eb6f92",
+          "source": "rose-pine-vscode editorError.foreground (love)"
+        },
+        "info-text": {
+          "value": "#9ccfd8",
+          "source": "rose-pine-vscode editorInfo.foreground (foam)"
+        },
+        "chart-1": {
+          "value": "#31748f",
+          "derived": "blue"
+        },
+        "chart-2": {
+          "value": "#ebbcba",
+          "derived": "orange"
+        },
+        "chart-3": {
+          "value": "#eb6f92",
+          "derived": "magenta (green and the hues after it sit within 0.065 OKLab of the text colour or 0.08 of an earlier chart colour)"
+        },
+        "chart-4": {
+          "value": "#f6c177",
+          "derived": "yellow (magenta and the hues after it sit within 0.065 OKLab of the text colour or 0.08 of an earlier chart colour)"
+        },
+        "chart-5": {
+          "value": "#9ccfd8",
+          "derived": "cyan (yellow and the hues after it sit within 0.065 OKLab of the text colour or 0.08 of an earlier chart colour)"
+        },
+        "chart-6": {
+          "value": "#c4a7e7",
+          "derived": "purple (cyan and the hues after it sit within 0.065 OKLab of the text colour or 0.08 of an earlier chart colour)"
+        },
+        "ansi.black": {
+          "value": "#26233a",
+          "source": "rose-pine-vscode rose-pine-color-theme.json: terminal.ansiBlack"
+        },
+        "ansi.red": {
+          "value": "#eb6f92",
+          "source": "rose-pine-vscode rose-pine-color-theme.json: terminal.ansiRed"
+        },
+        "ansi.green": {
+          "value": "#31748f",
+          "source": "rose-pine-vscode rose-pine-color-theme.json: terminal.ansiGreen"
+        },
+        "ansi.yellow": {
+          "value": "#f6c177",
+          "source": "rose-pine-vscode rose-pine-color-theme.json: terminal.ansiYellow"
+        },
+        "ansi.blue": {
+          "value": "#9ccfd8",
+          "source": "rose-pine-vscode rose-pine-color-theme.json: terminal.ansiBlue"
+        },
+        "ansi.magenta": {
+          "value": "#c4a7e7",
+          "source": "rose-pine-vscode rose-pine-color-theme.json: terminal.ansiMagenta"
+        },
+        "ansi.cyan": {
+          "value": "#ebbcba",
+          "source": "rose-pine-vscode rose-pine-color-theme.json: terminal.ansiCyan"
+        },
+        "ansi.white": {
+          "value": "#e0def4",
+          "source": "rose-pine-vscode rose-pine-color-theme.json: terminal.ansiWhite"
+        },
+        "ansi.bright-black": {
+          "value": "#908caa",
+          "source": "rose-pine-vscode rose-pine-color-theme.json: terminal.ansiBrightBlack"
+        },
+        "ansi.bright-red": {
+          "value": "#eb6f92",
+          "source": "rose-pine-vscode rose-pine-color-theme.json: terminal.ansiBrightRed"
+        },
+        "ansi.bright-green": {
+          "value": "#31748f",
+          "source": "rose-pine-vscode rose-pine-color-theme.json: terminal.ansiBrightGreen"
+        },
+        "ansi.bright-yellow": {
+          "value": "#f6c177",
+          "source": "rose-pine-vscode rose-pine-color-theme.json: terminal.ansiBrightYellow"
+        },
+        "ansi.bright-blue": {
+          "value": "#9ccfd8",
+          "source": "rose-pine-vscode rose-pine-color-theme.json: terminal.ansiBrightBlue"
+        },
+        "ansi.bright-magenta": {
+          "value": "#c4a7e7",
+          "source": "rose-pine-vscode rose-pine-color-theme.json: terminal.ansiBrightMagenta"
+        },
+        "ansi.bright-cyan": {
+          "value": "#ebbcba",
+          "source": "rose-pine-vscode rose-pine-color-theme.json: terminal.ansiBrightCyan"
+        },
+        "ansi.bright-white": {
+          "value": "#e0def4",
+          "source": "rose-pine-vscode rose-pine-color-theme.json: terminal.ansiBrightWhite"
+        },
+        "syntax.keyword": {
+          "value": "#31748f",
+          "source": "rose-pine-vscode rose-pine-color-theme.json: tokenColors 'keyword' (for keyword)"
+        },
+        "syntax.control": {
+          "value": "#31748f",
+          "source": "rose-pine-vscode rose-pine-color-theme.json: tokenColors 'keyword' (for keyword.control.flow)"
+        },
+        "syntax.function": {
+          "value": "#ebbcba",
+          "source": "rose-pine-vscode rose-pine-color-theme.json: tokenColors 'entity.name' (for entity.name.function)"
+        },
+        "syntax.string": {
+          "value": "#f6c177",
+          "source": "rose-pine-vscode rose-pine-color-theme.json: tokenColors 'string' (for string.quoted.double)"
+        },
+        "syntax.variable": {
+          "value": "#e0def4",
+          "source": "rose-pine-vscode rose-pine-color-theme.json: tokenColors 'variable.other' (for variable.other.readwrite)"
+        },
+        "syntax.type": {
+          "value": "#9ccfd8",
+          "source": "rose-pine-vscode rose-pine-color-theme.json: tokenColors 'entity.name.type' (for entity.name.type)"
+        },
+        "syntax.number": {
+          "value": "#ebbcba",
+          "source": "rose-pine-vscode rose-pine-color-theme.json: tokenColors 'constant.numeric' (for constant.numeric)"
+        },
+        "syntax.comment": {
+          "value": "#6e6a86",
+          "source": "rose-pine-vscode rose-pine-color-theme.json: tokenColors 'comment' (for comment.line.double-slash)"
+        },
+        "fill.sage.bg": {
+          "value": "#a2b4bc",
+          "derived": "light-mode fill.sage.bg (fills do not change with mode)"
+        },
+        "fill.sage.ink": {
+          "value": "#272144",
+          "derived": "light-mode fill.sage.ink (fills do not change with mode)"
+        },
+        "fill.teal.bg": {
+          "value": "#c5d1d4",
+          "derived": "light-mode fill.teal.bg (fills do not change with mode)"
+        },
+        "fill.teal.ink": {
+          "value": "#3d375c",
+          "derived": "light-mode fill.teal.ink (fills do not change with mode)"
+        },
+        "fill.forest.bg": {
+          "value": "#1a1d1f",
+          "derived": "light-mode fill.forest.bg (fills do not change with mode)"
+        },
+        "fill.forest.ink": {
+          "value": "#faf4ed",
+          "derived": "light-mode fill.forest.ink (fills do not change with mode)"
+        },
+        "fill.terracotta.bg": {
+          "value": "#cc7874",
+          "derived": "light-mode fill.terracotta.bg (fills do not change with mode)"
+        },
+        "fill.terracotta.ink": {
+          "value": "#0c0524",
+          "derived": "light-mode fill.terracotta.ink (fills do not change with mode)"
+        },
+        "fill.sand.bg": {
+          "value": "#d9cfc3",
+          "derived": "light-mode fill.sand.bg (fills do not change with mode)"
+        },
+        "fill.sand.ink": {
+          "value": "#3e395e",
+          "derived": "light-mode fill.sand.ink (fills do not change with mode)"
+        },
+        "fill.warm-grey.bg": {
+          "value": "#bbb5af",
+          "derived": "light-mode fill.warm-grey.bg (fills do not change with mode)"
+        },
+        "fill.warm-grey.ink": {
+          "value": "#2b2649",
+          "derived": "light-mode fill.warm-grey.ink (fills do not change with mode)"
+        },
+        "fill.clay-red.bg": {
+          "value": "#b45672",
+          "derived": "light-mode fill.clay-red.bg (fills do not change with mode)"
+        },
+        "fill.clay-red.ink": {
+          "value": "#fef8f1",
+          "derived": "light-mode fill.clay-red.ink (fills do not change with mode)"
+        },
+        "fill.dark-teal.bg": {
+          "value": "#07516a",
+          "derived": "light-mode fill.dark-teal.bg (fills do not change with mode)"
+        },
+        "fill.dark-teal.ink": {
+          "value": "#faf4ed",
+          "derived": "light-mode fill.dark-teal.ink (fills do not change with mode)"
+        },
+        "fill.dusty-pink.bg": {
+          "value": "#d3859a",
+          "derived": "light-mode fill.dusty-pink.bg (fills do not change with mode)"
+        },
+        "fill.dusty-pink.ink": {
+          "value": "#0f0727",
+          "derived": "light-mode fill.dusty-pink.ink (fills do not change with mode)"
+        },
+        "fill.light-peach.bg": {
+          "value": "#f5dbd9",
+          "derived": "light-mode fill.light-peach.bg (fills do not change with mode)"
+        },
+        "fill.light-peach.ink": {
+          "value": "#484369",
+          "derived": "light-mode fill.light-peach.ink (fills do not change with mode)"
+        },
+        "fill.faun.bg": {
+          "value": "#cec4ba",
+          "derived": "light-mode fill.faun.bg (fills do not change with mode)"
+        },
+        "fill.faun.ink": {
+          "value": "#373156",
+          "derived": "light-mode fill.faun.ink (fills do not change with mode)"
+        },
+        "fill.cool-grey.bg": {
+          "value": "#e3ddd6",
+          "derived": "light-mode fill.cool-grey.bg (fills do not change with mode)"
+        },
+        "fill.cool-grey.ink": {
+          "value": "#474167",
+          "derived": "light-mode fill.cool-grey.ink (fills do not change with mode)"
+        },
+        "fill.stone.bg": {
+          "value": "#b4aea7",
+          "derived": "light-mode fill.stone.bg (fills do not change with mode)"
+        },
+        "fill.stone.ink": {
+          "value": "#261f42",
+          "derived": "light-mode fill.stone.ink (fills do not change with mode)"
+        },
+        "fill.dark-grey.bg": {
+          "value": "#6c6761",
+          "derived": "light-mode fill.dark-grey.bg (fills do not change with mode)"
+        },
+        "fill.dark-grey.ink": {
+          "value": "#fef8f1",
+          "derived": "light-mode fill.dark-grey.ink (fills do not change with mode)"
+        },
+        "fill.ink.bg": {
+          "value": "#14100b",
+          "derived": "light-mode fill.ink.bg (fills do not change with mode)"
+        },
+        "fill.ink.ink": {
+          "value": "#faf4ed",
+          "derived": "light-mode fill.ink.ink (fills do not change with mode)"
+        }
+      }
+    }
+  }
+}

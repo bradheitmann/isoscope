@@ -1,0 +1,4283 @@
+{
+  "$description": "Typography roles (web regular and compact; mobile uses compact).",
+  "$extensions": {
+    "com.desertpants": {
+      "system": "desert-pants",
+      "format": "DTCG 2025.10",
+      "source": "Visual language derived from desertant.com (brand/index.css, assets/site.css, captured 2026-09-23/24). Logos, marks, product names, photography and copy are not included.",
+      "modes": [
+        "light",
+        "dark"
+      ]
+    }
+  },
+  "type": {
+    "$description": "Typography roles. Each role has a 'web' composite (regular layout) and a 'compact' composite (at and below its compact breakpoint; iOS and Android use the compact values 1px = 1pt = 1dp/sp). Fluid roles also carry the clamp() definition used on the web.",
+    "display": {
+      "$description": "Hero headline, one per page.",
+      "$extensions": {
+        "com.desertpants": {
+          "compact-breakpoint": "{breakpoint.md}",
+          "ios-text-style": "largeTitle"
+        }
+      },
+      "web": {
+        "$type": "typography",
+        "$value": {
+          "fontFamily": "{font.family.display}",
+          "fontSize": "{font.size.7xl}",
+          "fontWeight": "{font.weight.semibold}",
+          "letterSpacing": {
+            "value": -7.2,
+            "unit": "px"
+          },
+          "lineHeight": "{font.leading.hero}"
+        },
+        "$description": "Hero headline, one per page. Regular layout.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css .display / .hero-h1",
+            "tracking-em": "{font.tracking.display}",
+            "fluid": {
+              "min-px": 52,
+              "vw": 8.6,
+              "offset-px": 0,
+              "max-px": 120
+            },
+            "max-scale": "{font.scale.display-max}"
+          }
+        }
+      },
+      "compact": {
+        "$type": "typography",
+        "$value": {
+          "fontFamily": "{font.family.display}",
+          "fontSize": {
+            "value": 52,
+            "unit": "px"
+          },
+          "fontWeight": "{font.weight.semibold}",
+          "letterSpacing": {
+            "value": -3.12,
+            "unit": "px"
+          },
+          "lineHeight": "{font.leading.hero}"
+        },
+        "$description": "Hero headline, one per page. Compact layout.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css .display / .hero-h1",
+            "tracking-em": "{font.tracking.display}"
+          }
+        }
+      }
+    },
+    "h1": {
+      "$description": "Page title.",
+      "$extensions": {
+        "com.desertpants": {
+          "compact-breakpoint": "{breakpoint.md}",
+          "ios-text-style": "largeTitle"
+        }
+      },
+      "web": {
+        "$type": "typography",
+        "$value": {
+          "fontFamily": "{font.family.display}",
+          "fontSize": "{font.size.7xl}",
+          "fontWeight": "{font.weight.semibold}",
+          "letterSpacing": {
+            "value": -7.2,
+            "unit": "px"
+          },
+          "lineHeight": "{font.leading.display}"
+        },
+        "$description": "Page title. Regular layout.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css h1",
+            "tracking-em": "{font.tracking.display}",
+            "fluid": {
+              "min-px": 52,
+              "vw": 8,
+              "offset-px": 0,
+              "max-px": 120
+            },
+            "max-scale": "{font.scale.display-max}"
+          }
+        }
+      },
+      "compact": {
+        "$type": "typography",
+        "$value": {
+          "fontFamily": "{font.family.display}",
+          "fontSize": {
+            "value": 52,
+            "unit": "px"
+          },
+          "fontWeight": "{font.weight.semibold}",
+          "letterSpacing": {
+            "value": -3.12,
+            "unit": "px"
+          },
+          "lineHeight": "{font.leading.display}"
+        },
+        "$description": "Page title. Compact layout.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css h1",
+            "tracking-em": "{font.tracking.display}"
+          }
+        }
+      }
+    },
+    "h2": {
+      "$description": "Section title.",
+      "$extensions": {
+        "com.desertpants": {
+          "compact-breakpoint": "{breakpoint.md}",
+          "ios-text-style": "title"
+        }
+      },
+      "web": {
+        "$type": "typography",
+        "$value": {
+          "fontFamily": "{font.family.display}",
+          "fontSize": "{font.size.3xl}",
+          "fontWeight": "{font.weight.semibold}",
+          "letterSpacing": {
+            "value": -1.6,
+            "unit": "px"
+          },
+          "lineHeight": "{font.leading.snug}"
+        },
+        "$description": "Section title. Regular layout.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css h2",
+            "tracking-em": "{font.tracking.tighter}",
+            "fluid": {
+              "min-px": 28,
+              "vw": 3.2,
+              "offset-px": 0,
+              "max-px": 40
+            },
+            "max-scale": "{font.scale.display-max}"
+          }
+        }
+      },
+      "compact": {
+        "$type": "typography",
+        "$value": {
+          "fontFamily": "{font.family.display}",
+          "fontSize": {
+            "value": 28,
+            "unit": "px"
+          },
+          "fontWeight": "{font.weight.semibold}",
+          "letterSpacing": {
+            "value": -1.12,
+            "unit": "px"
+          },
+          "lineHeight": "{font.leading.snug}"
+        },
+        "$description": "Section title. Compact layout.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css h2",
+            "tracking-em": "{font.tracking.tighter}"
+          }
+        }
+      }
+    },
+    "h3": {
+      "$description": "Subsection title; dialog title; use-case title.",
+      "$extensions": {
+        "com.desertpants": {
+          "ios-text-style": "title2"
+        }
+      },
+      "web": {
+        "$type": "typography",
+        "$value": {
+          "fontFamily": "{font.family.display}",
+          "fontSize": "{font.size.xl}",
+          "fontWeight": "{font.weight.semibold}",
+          "letterSpacing": {
+            "value": -0.72,
+            "unit": "px"
+          },
+          "lineHeight": "{font.leading.snug}"
+        },
+        "$description": "Subsection title; dialog title; use-case title. Regular layout.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css h3",
+            "tracking-em": "{font.tracking.tight}"
+          }
+        }
+      },
+      "compact": {
+        "$type": "typography",
+        "$value": "{type.h3.web}",
+        "$description": "Subsection title; dialog title; use-case title. Compact layout (same as regular).",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css h3"
+          }
+        }
+      }
+    },
+    "h4": {
+      "$description": "Minor heading (h4-h6); app-bar title.",
+      "$extensions": {
+        "com.desertpants": {
+          "ios-text-style": "body"
+        }
+      },
+      "web": {
+        "$type": "typography",
+        "$value": {
+          "fontFamily": "{font.family.display}",
+          "fontSize": "{font.size.lg}",
+          "fontWeight": "{font.weight.semibold}",
+          "letterSpacing": {
+            "value": -0.72,
+            "unit": "px"
+          },
+          "lineHeight": "{font.leading.snug}"
+        },
+        "$description": "Minor heading (h4-h6); app-bar title. Regular layout.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css h4,h5,h6",
+            "tracking-em": "{font.tracking.tighter}"
+          }
+        }
+      },
+      "compact": {
+        "$type": "typography",
+        "$value": "{type.h4.web}",
+        "$description": "Minor heading (h4-h6); app-bar title. Compact layout (same as regular).",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css h4,h5,h6"
+          }
+        }
+      }
+    },
+    "title-model": {
+      "$description": "Single-word product title beside a hero.",
+      "$extensions": {
+        "com.desertpants": {
+          "compact-breakpoint": "{breakpoint.md}",
+          "ios-text-style": "largeTitle"
+        }
+      },
+      "web": {
+        "$type": "typography",
+        "$value": {
+          "fontFamily": "{font.family.display}",
+          "fontSize": "{font.size.7xl}",
+          "fontWeight": "{font.weight.semibold}",
+          "letterSpacing": {
+            "value": -7.2,
+            "unit": "px"
+          },
+          "lineHeight": "{font.leading.model}"
+        },
+        "$description": "Single-word product title beside a hero. Regular layout.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css .model-title h1",
+            "tracking-em": "{font.tracking.display}",
+            "fluid": {
+              "min-px": 64,
+              "vw": 10,
+              "offset-px": 0,
+              "max-px": 120
+            },
+            "max-scale": "{font.scale.display-max}"
+          }
+        }
+      },
+      "compact": {
+        "$type": "typography",
+        "$value": {
+          "fontFamily": "{font.family.display}",
+          "fontSize": {
+            "value": 64,
+            "unit": "px"
+          },
+          "fontWeight": "{font.weight.semibold}",
+          "letterSpacing": {
+            "value": -3.84,
+            "unit": "px"
+          },
+          "lineHeight": "{font.leading.model}"
+        },
+        "$description": "Single-word product title beside a hero. Compact layout.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css .model-title h1",
+            "tracking-em": "{font.tracking.display}"
+          }
+        }
+      }
+    },
+    "title-fill-hero": {
+      "$description": "Title inside the full-bleed fill hero.",
+      "$extensions": {
+        "com.desertpants": {
+          "compact-breakpoint": "{breakpoint.md}",
+          "ios-text-style": "largeTitle"
+        }
+      },
+      "web": {
+        "$type": "typography",
+        "$value": {
+          "fontFamily": "{font.family.display}",
+          "fontSize": "{font.size.7xl}",
+          "fontWeight": "{font.weight.semibold}",
+          "letterSpacing": {
+            "value": -7.2,
+            "unit": "px"
+          },
+          "lineHeight": "{font.leading.hero-model}"
+        },
+        "$description": "Title inside the full-bleed fill hero. Regular layout.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css .hero-model-title",
+            "tracking-em": "{font.tracking.display}",
+            "fluid": {
+              "min-px": 44,
+              "vw": 8,
+              "offset-px": 0,
+              "max-px": 120
+            },
+            "max-scale": "{font.scale.display-max}"
+          }
+        }
+      },
+      "compact": {
+        "$type": "typography",
+        "$value": {
+          "fontFamily": "{font.family.display}",
+          "fontSize": {
+            "value": 58.5,
+            "unit": "px"
+          },
+          "fontWeight": "{font.weight.semibold}",
+          "letterSpacing": {
+            "value": -3.51,
+            "unit": "px"
+          },
+          "lineHeight": "{font.leading.hero-model}"
+        },
+        "$description": "Title inside the full-bleed fill hero. Compact layout.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css .hero-model-title",
+            "tracking-em": "{font.tracking.display}",
+            "fluid": {
+              "min-px": 44,
+              "vw": 15,
+              "offset-px": 0,
+              "max-px": 64
+            }
+          }
+        }
+      }
+    },
+    "article-h2": {
+      "$description": "Article section heading.",
+      "$extensions": {
+        "com.desertpants": {
+          "compact-breakpoint": "{breakpoint.md}",
+          "ios-text-style": "title"
+        }
+      },
+      "web": {
+        "$type": "typography",
+        "$value": {
+          "fontFamily": "{font.family.display}",
+          "fontSize": "{font.size.3xl}",
+          "fontWeight": "{font.weight.semibold}",
+          "letterSpacing": {
+            "value": -1.6,
+            "unit": "px"
+          },
+          "lineHeight": "{font.leading.snug}"
+        },
+        "$description": "Article section heading. Regular layout.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com assets/site.css .article-body h2",
+            "tracking-em": "{font.tracking.tighter}",
+            "fluid": {
+              "min-px": 32,
+              "vw": 2.8,
+              "offset-px": 20.8,
+              "max-px": 40
+            },
+            "max-scale": "{font.scale.display-max}"
+          }
+        }
+      },
+      "compact": {
+        "$type": "typography",
+        "$value": {
+          "fontFamily": "{font.family.display}",
+          "fontSize": "{font.size.2xl}",
+          "fontWeight": "{font.weight.semibold}",
+          "letterSpacing": {
+            "value": -1.28,
+            "unit": "px"
+          },
+          "lineHeight": "{font.leading.snug}"
+        },
+        "$description": "Article section heading. Compact layout.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com assets/site.css .article-body h2",
+            "tracking-em": "{font.tracking.tighter}"
+          }
+        }
+      }
+    },
+    "article-h3": {
+      "$description": "Article subsection heading.",
+      "$extensions": {
+        "com.desertpants": {
+          "compact-breakpoint": "{breakpoint.md}",
+          "ios-text-style": "title"
+        }
+      },
+      "web": {
+        "$type": "typography",
+        "$value": {
+          "fontFamily": "{font.family.display}",
+          "fontSize": "{font.size.2xl}",
+          "fontWeight": "{font.weight.semibold}",
+          "letterSpacing": {
+            "value": -1.28,
+            "unit": "px"
+          },
+          "lineHeight": "{font.leading.snug}"
+        },
+        "$description": "Article subsection heading. Regular layout.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com assets/site.css .article-body h3",
+            "tracking-em": "{font.tracking.tighter}",
+            "fluid": {
+              "min-px": 28,
+              "vw": 1.4,
+              "offset-px": 22.4,
+              "max-px": 32
+            },
+            "max-scale": "{font.scale.display-max}"
+          }
+        }
+      },
+      "compact": {
+        "$type": "typography",
+        "$value": {
+          "fontFamily": "{font.family.display}",
+          "fontSize": {
+            "value": 28,
+            "unit": "px"
+          },
+          "fontWeight": "{font.weight.semibold}",
+          "letterSpacing": {
+            "value": -1.12,
+            "unit": "px"
+          },
+          "lineHeight": "{font.leading.snug}"
+        },
+        "$description": "Article subsection heading. Compact layout.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com assets/site.css .article-body h3",
+            "tracking-em": "{font.tracking.tighter}"
+          }
+        }
+      }
+    },
+    "article-h4": {
+      "$description": "Article minor heading.",
+      "$extensions": {
+        "com.desertpants": {
+          "ios-text-style": "title2"
+        }
+      },
+      "web": {
+        "$type": "typography",
+        "$value": {
+          "fontFamily": "{font.family.display}",
+          "fontSize": "{font.size.xl}",
+          "fontWeight": "{font.weight.semibold}",
+          "letterSpacing": {
+            "value": -0.96,
+            "unit": "px"
+          },
+          "lineHeight": "{font.leading.snug}"
+        },
+        "$description": "Article minor heading. Regular layout.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com assets/site.css .article-body h4",
+            "tracking-em": "{font.tracking.tighter}"
+          }
+        }
+      },
+      "compact": {
+        "$type": "typography",
+        "$value": "{type.article-h4.web}",
+        "$description": "Article minor heading. Compact layout (same as regular).",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com assets/site.css .article-body h4"
+          }
+        }
+      }
+    },
+    "docs-h2": {
+      "$description": "Documentation section heading.",
+      "$extensions": {
+        "com.desertpants": {
+          "ios-text-style": "title"
+        }
+      },
+      "web": {
+        "$type": "typography",
+        "$value": {
+          "fontFamily": "{font.family.display}",
+          "fontSize": "{font.size.2xl}",
+          "fontWeight": "{font.weight.semibold}",
+          "letterSpacing": {
+            "value": -1.28,
+            "unit": "px"
+          },
+          "lineHeight": "{font.leading.snug}"
+        },
+        "$description": "Documentation section heading. Regular layout.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com assets/site.css .docs-md h2",
+            "tracking-em": "{font.tracking.tighter}",
+            "max-scale": "{font.scale.display-max}"
+          }
+        }
+      },
+      "compact": {
+        "$type": "typography",
+        "$value": "{type.docs-h2.web}",
+        "$description": "Documentation section heading. Compact layout (same as regular).",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com assets/site.css .docs-md h2"
+          }
+        }
+      }
+    },
+    "docs-h3": {
+      "$description": "Documentation subsection heading.",
+      "$extensions": {
+        "com.desertpants": {
+          "ios-text-style": "body"
+        }
+      },
+      "web": {
+        "$type": "typography",
+        "$value": {
+          "fontFamily": "{font.family.display}",
+          "fontSize": "{font.size.lg}",
+          "fontWeight": "{font.weight.semibold}",
+          "letterSpacing": {
+            "value": -0.54,
+            "unit": "px"
+          },
+          "lineHeight": "{font.leading.snug}"
+        },
+        "$description": "Documentation subsection heading. Regular layout.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com assets/site.css .docs-md h3",
+            "tracking-em": "{font.tracking.tight}"
+          }
+        }
+      },
+      "compact": {
+        "$type": "typography",
+        "$value": "{type.docs-h3.web}",
+        "$description": "Documentation subsection heading. Compact layout (same as regular).",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com assets/site.css .docs-md h3"
+          }
+        }
+      }
+    },
+    "card-title": {
+      "$description": "List-card title.",
+      "$extensions": {
+        "com.desertpants": {
+          "ios-text-style": "title2"
+        }
+      },
+      "web": {
+        "$type": "typography",
+        "$value": {
+          "fontFamily": "{font.family.display}",
+          "fontSize": "{font.size.xl}",
+          "fontWeight": "{font.weight.semibold}",
+          "letterSpacing": {
+            "value": -0.72,
+            "unit": "px"
+          },
+          "lineHeight": "{font.leading.snug}"
+        },
+        "$description": "List-card title. Regular layout.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css .card-name",
+            "tracking-em": "{font.tracking.tight}"
+          }
+        }
+      },
+      "compact": {
+        "$type": "typography",
+        "$value": "{type.card-title.web}",
+        "$description": "List-card title. Compact layout (same as regular).",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css .card-name"
+          }
+        }
+      }
+    },
+    "feature-title": {
+      "$description": "Feature-card title (28px at 1180px and below).",
+      "$extensions": {
+        "com.desertpants": {
+          "compact-breakpoint": "{breakpoint.lg}",
+          "ios-text-style": "title"
+        }
+      },
+      "web": {
+        "$type": "typography",
+        "$value": {
+          "fontFamily": "{font.family.display}",
+          "fontSize": {
+            "value": 34,
+            "unit": "px"
+          },
+          "fontWeight": "{font.weight.semibold}",
+          "letterSpacing": {
+            "value": -1.36,
+            "unit": "px"
+          },
+          "lineHeight": "{font.leading.heading}"
+        },
+        "$description": "Feature-card title (28px at 1180px and below). Regular layout.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css .fc-name",
+            "tracking-em": "{font.tracking.tighter}",
+            "max-scale": "{font.scale.display-max}"
+          }
+        }
+      },
+      "compact": {
+        "$type": "typography",
+        "$value": {
+          "fontFamily": "{font.family.display}",
+          "fontSize": {
+            "value": 28,
+            "unit": "px"
+          },
+          "fontWeight": "{font.weight.semibold}",
+          "letterSpacing": {
+            "value": -1.12,
+            "unit": "px"
+          },
+          "lineHeight": "{font.leading.heading}"
+        },
+        "$description": "Feature-card title (28px at 1180px and below). Compact layout.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css .fc-name",
+            "tracking-em": "{font.tracking.tighter}"
+          }
+        }
+      }
+    },
+    "stat-value": {
+      "$description": "Big numeral in a stat block.",
+      "$extensions": {
+        "com.desertpants": {
+          "compact-breakpoint": "{breakpoint.md}",
+          "ios-text-style": "largeTitle"
+        }
+      },
+      "web": {
+        "$type": "typography",
+        "$value": {
+          "fontFamily": "{font.family.display}",
+          "fontSize": "{font.size.4xl}",
+          "fontWeight": "{font.weight.semibold}",
+          "letterSpacing": {
+            "value": -2.24,
+            "unit": "px"
+          },
+          "lineHeight": "{font.leading.none}"
+        },
+        "$description": "Big numeral in a stat block. Regular layout.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css .stat-value",
+            "tracking-em": "{font.tracking.tighter}",
+            "font-variant-numeric": "tabular-nums",
+            "fluid": {
+              "min-px": 40,
+              "vw": 4,
+              "offset-px": 0,
+              "max-px": 56
+            },
+            "max-scale": "{font.scale.display-max}"
+          }
+        }
+      },
+      "compact": {
+        "$type": "typography",
+        "$value": {
+          "fontFamily": "{font.family.display}",
+          "fontSize": "{font.size.3xl}",
+          "fontWeight": "{font.weight.semibold}",
+          "letterSpacing": {
+            "value": -1.6,
+            "unit": "px"
+          },
+          "lineHeight": "{font.leading.none}"
+        },
+        "$description": "Big numeral in a stat block. Compact layout.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css .stat-value",
+            "tracking-em": "{font.tracking.tighter}",
+            "font-variant-numeric": "tabular-nums"
+          }
+        }
+      }
+    },
+    "stat-value-narrow": {
+      "$description": "Numeral in a narrow stat.",
+      "$extensions": {
+        "com.desertpants": {
+          "ios-text-style": "title"
+        }
+      },
+      "web": {
+        "$type": "typography",
+        "$value": {
+          "fontFamily": "{font.family.display}",
+          "fontSize": "{font.size.2xl}",
+          "fontWeight": "{font.weight.semibold}",
+          "letterSpacing": {
+            "value": -1.28,
+            "unit": "px"
+          },
+          "lineHeight": "{font.leading.none}"
+        },
+        "$description": "Numeral in a narrow stat. Regular layout.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css .stat--narrow .stat-value",
+            "tracking-em": "{font.tracking.tighter}",
+            "font-variant-numeric": "tabular-nums",
+            "max-scale": "{font.scale.display-max}"
+          }
+        }
+      },
+      "compact": {
+        "$type": "typography",
+        "$value": "{type.stat-value-narrow.web}",
+        "$description": "Numeral in a narrow stat. Compact layout (same as regular).",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css .stat--narrow .stat-value"
+          }
+        }
+      }
+    },
+    "post-title": {
+      "$description": "Post-card title, three lines maximum.",
+      "$extensions": {
+        "com.desertpants": {
+          "compact-breakpoint": "{breakpoint.md}",
+          "ios-text-style": "title2"
+        }
+      },
+      "web": {
+        "$type": "typography",
+        "$value": {
+          "fontFamily": "{font.family.display}",
+          "fontSize": {
+            "value": 26,
+            "unit": "px"
+          },
+          "fontWeight": "{font.weight.semibold}",
+          "letterSpacing": {
+            "value": -0.78,
+            "unit": "px"
+          },
+          "lineHeight": "{font.leading.snug}"
+        },
+        "$description": "Post-card title, three lines maximum. Regular layout.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css .post-card-title",
+            "tracking-em": "{font.tracking.tight}",
+            "fluid": {
+              "min-px": 22,
+              "vw": 0.9,
+              "offset-px": 18.4,
+              "max-px": 26
+            }
+          }
+        }
+      },
+      "compact": {
+        "$type": "typography",
+        "$value": {
+          "fontFamily": "{font.family.display}",
+          "fontSize": {
+            "value": 22,
+            "unit": "px"
+          },
+          "fontWeight": "{font.weight.semibold}",
+          "letterSpacing": {
+            "value": -0.66,
+            "unit": "px"
+          },
+          "lineHeight": "{font.leading.snug}"
+        },
+        "$description": "Post-card title, three lines maximum. Compact layout.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css .post-card-title",
+            "tracking-em": "{font.tracking.tight}"
+          }
+        }
+      }
+    },
+    "post-title-featured": {
+      "$description": "Featured post title.",
+      "$extensions": {
+        "com.desertpants": {
+          "compact-breakpoint": "{breakpoint.md}",
+          "ios-text-style": "title"
+        }
+      },
+      "web": {
+        "$type": "typography",
+        "$value": {
+          "fontFamily": "{font.family.display}",
+          "fontSize": "{font.size.3xl}",
+          "fontWeight": "{font.weight.semibold}",
+          "letterSpacing": {
+            "value": -1.6,
+            "unit": "px"
+          },
+          "lineHeight": "{font.leading.heading}"
+        },
+        "$description": "Featured post title. Regular layout.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css .post-card--featured .post-card-title",
+            "tracking-em": "{font.tracking.tighter}",
+            "fluid": {
+              "min-px": 28,
+              "vw": 2.2,
+              "offset-px": 17.6,
+              "max-px": 40
+            },
+            "max-scale": "{font.scale.display-max}"
+          }
+        }
+      },
+      "compact": {
+        "$type": "typography",
+        "$value": {
+          "fontFamily": "{font.family.display}",
+          "fontSize": {
+            "value": 28,
+            "unit": "px"
+          },
+          "fontWeight": "{font.weight.semibold}",
+          "letterSpacing": {
+            "value": -1.12,
+            "unit": "px"
+          },
+          "lineHeight": "{font.leading.heading}"
+        },
+        "$description": "Featured post title. Compact layout.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css .post-card--featured .post-card-title",
+            "tracking-em": "{font.tracking.tighter}"
+          }
+        }
+      }
+    },
+    "result": {
+      "$description": "Primary result value in an output panel.",
+      "$extensions": {
+        "com.desertpants": {
+          "compact-breakpoint": "{breakpoint.md}",
+          "ios-text-style": "title2"
+        }
+      },
+      "web": {
+        "$type": "typography",
+        "$value": {
+          "fontFamily": "{font.family.display}",
+          "fontSize": "{font.size.2xl}",
+          "fontWeight": "{font.weight.semibold}",
+          "letterSpacing": {
+            "value": -0.96,
+            "unit": "px"
+          },
+          "lineHeight": "{font.leading.compact}"
+        },
+        "$description": "Primary result value in an output panel. Regular layout.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com assets/site.css .dt-primary",
+            "tracking-em": "{font.tracking.tight}",
+            "fluid": {
+              "min-px": 24,
+              "vw": 3,
+              "offset-px": 0,
+              "max-px": 32
+            },
+            "max-scale": "{font.scale.display-max}"
+          }
+        }
+      },
+      "compact": {
+        "$type": "typography",
+        "$value": {
+          "fontFamily": "{font.family.display}",
+          "fontSize": "{font.size.xl}",
+          "fontWeight": "{font.weight.semibold}",
+          "letterSpacing": {
+            "value": -0.72,
+            "unit": "px"
+          },
+          "lineHeight": "{font.leading.compact}"
+        },
+        "$description": "Primary result value in an output panel. Compact layout.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com assets/site.css .dt-primary",
+            "tracking-em": "{font.tracking.tight}"
+          }
+        }
+      }
+    },
+    "media-stat": {
+      "$description": "Elapsed-time and speed readouts in the media player.",
+      "$extensions": {
+        "com.desertpants": {
+          "ios-text-style": "title2"
+        }
+      },
+      "web": {
+        "$type": "typography",
+        "$value": {
+          "fontFamily": "{font.family.display}",
+          "fontSize": "{font.size.xl}",
+          "fontWeight": "{font.weight.semibold}",
+          "letterSpacing": {
+            "value": -0.72,
+            "unit": "px"
+          },
+          "lineHeight": "{font.leading.none}"
+        },
+        "$description": "Elapsed-time and speed readouts in the media player. Regular layout.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com assets/site.css .replay-secs",
+            "tracking-em": "{font.tracking.tight}",
+            "font-variant-numeric": "tabular-nums"
+          }
+        }
+      },
+      "compact": {
+        "$type": "typography",
+        "$value": "{type.media-stat.web}",
+        "$description": "Elapsed-time and speed readouts in the media player. Compact layout (same as regular).",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com assets/site.css .replay-secs"
+          }
+        }
+      }
+    },
+    "label": {
+      "$description": "Row names, chart values, leaderboard names and scores.",
+      "$extensions": {
+        "com.desertpants": {
+          "ios-text-style": "body"
+        }
+      },
+      "web": {
+        "$type": "typography",
+        "$value": {
+          "fontFamily": "{font.family.display}",
+          "fontSize": "{font.size.lg}",
+          "fontWeight": "{font.weight.semibold}",
+          "letterSpacing": {
+            "value": -0.72,
+            "unit": "px"
+          },
+          "lineHeight": "{font.leading.snug}"
+        },
+        "$description": "Row names, chart values, leaderboard names and scores. Regular layout.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css .label / .board-name",
+            "tracking-em": "{font.tracking.tighter}"
+          }
+        }
+      },
+      "compact": {
+        "$type": "typography",
+        "$value": "{type.label.web}",
+        "$description": "Row names, chart values, leaderboard names and scores. Compact layout (same as regular).",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css .label / .board-name"
+          }
+        }
+      }
+    },
+    "label-sm": {
+      "$description": "Chart values in compact charts.",
+      "$extensions": {
+        "com.desertpants": {
+          "ios-text-style": "footnote"
+        }
+      },
+      "web": {
+        "$type": "typography",
+        "$value": {
+          "fontFamily": "{font.family.display}",
+          "fontSize": "{font.size.sm}",
+          "fontWeight": "{font.weight.semibold}",
+          "letterSpacing": {
+            "value": -0.56,
+            "unit": "px"
+          },
+          "lineHeight": "{font.leading.snug}"
+        },
+        "$description": "Chart values in compact charts. Regular layout.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css .columns--compact .column-value",
+            "tracking-em": "{font.tracking.tighter}"
+          }
+        }
+      },
+      "compact": {
+        "$type": "typography",
+        "$value": "{type.label-sm.web}",
+        "$description": "Chart values in compact charts. Compact layout (same as regular).",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css .columns--compact .column-value"
+          }
+        }
+      }
+    },
+    "pin-text": {
+      "$description": "Pinboard note text.",
+      "$extensions": {
+        "com.desertpants": {
+          "ios-text-style": "body"
+        }
+      },
+      "web": {
+        "$type": "typography",
+        "$value": {
+          "fontFamily": "{font.family.display}",
+          "fontSize": "{font.size.lg}",
+          "fontWeight": "{font.weight.semibold}",
+          "letterSpacing": {
+            "value": -0.54,
+            "unit": "px"
+          },
+          "lineHeight": "{font.leading.cozy}"
+        },
+        "$description": "Pinboard note text. Regular layout.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css .pin-text",
+            "tracking-em": "{font.tracking.tight}"
+          }
+        }
+      },
+      "compact": {
+        "$type": "typography",
+        "$value": "{type.pin-text.web}",
+        "$description": "Pinboard note text. Compact layout (same as regular).",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css .pin-text"
+          }
+        }
+      }
+    },
+    "nav-model-name": {
+      "$description": "Item name in the navigation dropdown.",
+      "$extensions": {
+        "com.desertpants": {
+          "ios-text-style": "body"
+        }
+      },
+      "web": {
+        "$type": "typography",
+        "$value": {
+          "fontFamily": "{font.family.display}",
+          "fontSize": "{font.size.lg}",
+          "fontWeight": "{font.weight.semibold}",
+          "letterSpacing": {
+            "value": -0.54,
+            "unit": "px"
+          },
+          "lineHeight": "{font.leading.snug}"
+        },
+        "$description": "Item name in the navigation dropdown. Regular layout.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css .nav-name",
+            "tracking-em": "{font.tracking.tight}"
+          }
+        }
+      },
+      "compact": {
+        "$type": "typography",
+        "$value": "{type.nav-model-name.web}",
+        "$description": "Item name in the navigation dropdown. Compact layout (same as regular).",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css .nav-name"
+          }
+        }
+      }
+    },
+    "button": {
+      "$description": "Large button label.",
+      "$extensions": {
+        "com.desertpants": {
+          "ios-text-style": "body"
+        }
+      },
+      "web": {
+        "$type": "typography",
+        "$value": {
+          "fontFamily": "{font.family.display}",
+          "fontSize": "{font.size.lg}",
+          "fontWeight": "{font.weight.semibold}",
+          "letterSpacing": {
+            "value": -0.72,
+            "unit": "px"
+          },
+          "lineHeight": "{font.leading.snug}"
+        },
+        "$description": "Large button label. Regular layout.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css .btn",
+            "tracking-em": "{font.tracking.tighter}"
+          }
+        }
+      },
+      "compact": {
+        "$type": "typography",
+        "$value": "{type.button.web}",
+        "$description": "Large button label. Compact layout (same as regular).",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css .btn"
+          }
+        }
+      }
+    },
+    "button-sm": {
+      "$description": "Small button label.",
+      "$extensions": {
+        "com.desertpants": {
+          "ios-text-style": "callout"
+        }
+      },
+      "web": {
+        "$type": "typography",
+        "$value": {
+          "fontFamily": "{font.family.display}",
+          "fontSize": "{font.size.base}",
+          "fontWeight": "{font.weight.semibold}",
+          "letterSpacing": {
+            "value": -0.64,
+            "unit": "px"
+          },
+          "lineHeight": "{font.leading.snug}"
+        },
+        "$description": "Small button label. Regular layout.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css .btn--sm",
+            "tracking-em": "{font.tracking.tighter}"
+          }
+        }
+      },
+      "compact": {
+        "$type": "typography",
+        "$value": "{type.button-sm.web}",
+        "$description": "Small button label. Compact layout (same as regular).",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css .btn--sm"
+          }
+        }
+      }
+    },
+    "nav": {
+      "$description": "Navigation links, side-nav items and tab labels.",
+      "$extensions": {
+        "com.desertpants": {
+          "ios-text-style": "callout"
+        }
+      },
+      "web": {
+        "$type": "typography",
+        "$value": {
+          "fontFamily": "{font.family.display}",
+          "fontSize": "{font.size.base}",
+          "fontWeight": "{font.weight.semibold}",
+          "letterSpacing": {
+            "value": -0.48,
+            "unit": "px"
+          },
+          "lineHeight": "{font.leading.snug}"
+        },
+        "$description": "Navigation links, side-nav items and tab labels. Regular layout.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css .site-nav / .side-nav-item / .tabs label",
+            "tracking-em": "{font.tracking.tight}"
+          }
+        }
+      },
+      "compact": {
+        "$type": "typography",
+        "$value": "{type.nav.web}",
+        "$description": "Navigation links, side-nav items and tab labels. Compact layout (same as regular).",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css .site-nav / .side-nav-item / .tabs label"
+          }
+        }
+      }
+    },
+    "table-row-head": {
+      "$description": "Row header cell in a comparison table (line height 1.25 when wrapping at 640px and below).",
+      "$extensions": {
+        "com.desertpants": {
+          "ios-text-style": "callout"
+        }
+      },
+      "web": {
+        "$type": "typography",
+        "$value": {
+          "fontFamily": "{font.family.display}",
+          "fontSize": "{font.size.base}",
+          "fontWeight": "{font.weight.semibold}",
+          "letterSpacing": {
+            "value": -0.48,
+            "unit": "px"
+          },
+          "lineHeight": "{font.leading.relaxed}"
+        },
+        "$description": "Row header cell in a comparison table (line height 1.25 when wrapping at 640px and below). Regular layout.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css .table th[scope=row]",
+            "tracking-em": "{font.tracking.tight}"
+          }
+        }
+      },
+      "compact": {
+        "$type": "typography",
+        "$value": {
+          "fontFamily": "{font.family.display}",
+          "fontSize": "{font.size.base}",
+          "fontWeight": "{font.weight.semibold}",
+          "letterSpacing": {
+            "value": -0.48,
+            "unit": "px"
+          },
+          "lineHeight": "{font.leading.cozy}"
+        },
+        "$description": "Row header cell in a comparison table (line height 1.25 when wrapping at 640px and below). Compact layout.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css .table th[scope=row]",
+            "tracking-em": "{font.tracking.tight}"
+          }
+        }
+      }
+    },
+    "table-highlight": {
+      "$description": "Numeric cell of the highlighted row.",
+      "$extensions": {
+        "com.desertpants": {
+          "ios-text-style": "body"
+        }
+      },
+      "web": {
+        "$type": "typography",
+        "$value": {
+          "fontFamily": "{font.family.display}",
+          "fontSize": "{font.size.lg}",
+          "fontWeight": "{font.weight.semibold}",
+          "letterSpacing": {
+            "value": 0,
+            "unit": "px"
+          },
+          "lineHeight": "{font.leading.relaxed}"
+        },
+        "$description": "Numeric cell of the highlighted row. Regular layout.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css .table tr.is-us td.num",
+            "tracking-em": "{font.tracking.normal}",
+            "font-variant-numeric": "tabular-nums"
+          }
+        }
+      },
+      "compact": {
+        "$type": "typography",
+        "$value": "{type.table-highlight.web}",
+        "$description": "Numeric cell of the highlighted row. Compact layout (same as regular).",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css .table tr.is-us td.num"
+          }
+        }
+      }
+    },
+    "brand-name": {
+      "$description": "Wordmark in the header.",
+      "$extensions": {
+        "com.desertpants": {
+          "ios-text-style": "body"
+        }
+      },
+      "web": {
+        "$type": "typography",
+        "$value": {
+          "fontFamily": "{font.family.display}",
+          "fontSize": {
+            "value": 18.4,
+            "unit": "px"
+          },
+          "fontWeight": "{font.weight.semibold}",
+          "letterSpacing": {
+            "value": -0.736,
+            "unit": "px"
+          },
+          "lineHeight": "{font.leading.snug}"
+        },
+        "$description": "Wordmark in the header. Regular layout.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css .brandmark-name",
+            "tracking-em": "{font.tracking.tighter}",
+            "max-scale": "{font.scale.display-max}"
+          }
+        }
+      },
+      "compact": {
+        "$type": "typography",
+        "$value": "{type.brand-name.web}",
+        "$description": "Wordmark in the header. Compact layout (same as regular).",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css .brandmark-name"
+          }
+        }
+      }
+    },
+    "brand-name-lg": {
+      "$description": "Wordmark, large (footer, covers).",
+      "$extensions": {
+        "com.desertpants": {
+          "ios-text-style": "title"
+        }
+      },
+      "web": {
+        "$type": "typography",
+        "$value": {
+          "fontFamily": "{font.family.display}",
+          "fontSize": "{font.size.2xl}",
+          "fontWeight": "{font.weight.semibold}",
+          "letterSpacing": {
+            "value": -1.28,
+            "unit": "px"
+          },
+          "lineHeight": "{font.leading.snug}"
+        },
+        "$description": "Wordmark, large (footer, covers). Regular layout.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css .brandmark--lg .brandmark-name",
+            "tracking-em": "{font.tracking.tighter}",
+            "max-scale": "{font.scale.display-max}"
+          }
+        }
+      },
+      "compact": {
+        "$type": "typography",
+        "$value": "{type.brand-name-lg.web}",
+        "$description": "Wordmark, large (footer, covers). Compact layout (same as regular).",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css .brandmark--lg .brandmark-name"
+          }
+        }
+      }
+    },
+    "claim": {
+      "$description": "One-line claim under a title; captions; list-row titles.",
+      "$extensions": {
+        "com.desertpants": {
+          "ios-text-style": "callout"
+        }
+      },
+      "web": {
+        "$type": "typography",
+        "$value": {
+          "fontFamily": "{font.family.display}",
+          "fontSize": "{font.size.base}",
+          "fontWeight": "{font.weight.medium}",
+          "letterSpacing": {
+            "value": -0.16,
+            "unit": "px"
+          },
+          "lineHeight": "{font.leading.normal}"
+        },
+        "$description": "One-line claim under a title; captions; list-row titles. Regular layout.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css .card-claim / .caption",
+            "tracking-em": "{font.tracking.snug}"
+          }
+        }
+      },
+      "compact": {
+        "$type": "typography",
+        "$value": "{type.claim.web}",
+        "$description": "One-line claim under a title; captions; list-row titles. Compact layout (same as regular).",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css .card-claim / .caption"
+          }
+        }
+      }
+    },
+    "feature-claim": {
+      "$description": "Feature-card claim, two lines maximum.",
+      "$extensions": {
+        "com.desertpants": {
+          "compact-breakpoint": "{breakpoint.lg}",
+          "ios-text-style": "callout"
+        }
+      },
+      "web": {
+        "$type": "typography",
+        "$value": {
+          "fontFamily": "{font.family.display}",
+          "fontSize": "{font.size.lg}",
+          "fontWeight": "{font.weight.medium}",
+          "letterSpacing": {
+            "value": -0.18,
+            "unit": "px"
+          },
+          "lineHeight": "{font.leading.normal}"
+        },
+        "$description": "Feature-card claim, two lines maximum. Regular layout.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css .fc-claim",
+            "tracking-em": "{font.tracking.snug}"
+          }
+        }
+      },
+      "compact": {
+        "$type": "typography",
+        "$value": {
+          "fontFamily": "{font.family.display}",
+          "fontSize": "{font.size.base}",
+          "fontWeight": "{font.weight.medium}",
+          "letterSpacing": {
+            "value": -0.16,
+            "unit": "px"
+          },
+          "lineHeight": "{font.leading.normal}"
+        },
+        "$description": "Feature-card claim, two lines maximum. Compact layout.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css .fc-claim",
+            "tracking-em": "{font.tracking.snug}"
+          }
+        }
+      }
+    },
+    "footer-link": {
+      "$description": "Footer navigation links.",
+      "$extensions": {
+        "com.desertpants": {
+          "ios-text-style": "callout"
+        }
+      },
+      "web": {
+        "$type": "typography",
+        "$value": {
+          "fontFamily": "{font.family.display}",
+          "fontSize": "{font.size.base}",
+          "fontWeight": "{font.weight.medium}",
+          "letterSpacing": {
+            "value": -0.16,
+            "unit": "px"
+          },
+          "lineHeight": "{font.leading.relaxed}"
+        },
+        "$description": "Footer navigation links. Regular layout.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com assets/site.css .footer-list a",
+            "tracking-em": "{font.tracking.snug}"
+          }
+        }
+      },
+      "compact": {
+        "$type": "typography",
+        "$value": "{type.footer-link.web}",
+        "$description": "Footer navigation links. Compact layout (same as regular).",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com assets/site.css .footer-list a"
+          }
+        }
+      }
+    },
+    "nav-model-kind": {
+      "$description": "Descriptor under a navigation item (hidden at 860px and below).",
+      "$extensions": {
+        "com.desertpants": {
+          "ios-text-style": "caption"
+        }
+      },
+      "web": {
+        "$type": "typography",
+        "$value": {
+          "fontFamily": "{font.family.display}",
+          "fontSize": "{font.size.xs}",
+          "fontWeight": "{font.weight.medium}",
+          "letterSpacing": {
+            "value": -0.12,
+            "unit": "px"
+          },
+          "lineHeight": "{font.leading.snug}"
+        },
+        "$description": "Descriptor under a navigation item (hidden at 860px and below). Regular layout.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css .nav-kind",
+            "tracking-em": "{font.tracking.snug}"
+          }
+        }
+      },
+      "compact": {
+        "$type": "typography",
+        "$value": "{type.nav-model-kind.web}",
+        "$description": "Descriptor under a navigation item (hidden at 860px and below). Compact layout (same as regular).",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css .nav-kind"
+          }
+        }
+      }
+    },
+    "lang-name": {
+      "$description": "Menu item primary text (language endonym).",
+      "$extensions": {
+        "com.desertpants": {
+          "ios-text-style": "footnote"
+        }
+      },
+      "web": {
+        "$type": "typography",
+        "$value": {
+          "fontFamily": "{font.family.display}",
+          "fontSize": "{font.size.sm}",
+          "fontWeight": "{font.weight.medium}",
+          "letterSpacing": {
+            "value": 0,
+            "unit": "px"
+          },
+          "lineHeight": "{font.leading.cozy}"
+        },
+        "$description": "Menu item primary text (language endonym). Regular layout.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com assets/site.css .lang-endonym",
+            "tracking-em": "{font.tracking.normal}"
+          }
+        }
+      },
+      "compact": {
+        "$type": "typography",
+        "$value": "{type.lang-name.web}",
+        "$description": "Menu item primary text (language endonym). Compact layout (same as regular).",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com assets/site.css .lang-endonym"
+          }
+        }
+      }
+    },
+    "input": {
+      "$description": "Text entered in inputs, selects and text areas.",
+      "$extensions": {
+        "com.desertpants": {
+          "ios-text-style": "body"
+        }
+      },
+      "web": {
+        "$type": "typography",
+        "$value": {
+          "fontFamily": "{font.family.display}",
+          "fontSize": "{font.size.lg}",
+          "fontWeight": "{font.weight.regular}",
+          "letterSpacing": {
+            "value": 0,
+            "unit": "px"
+          },
+          "lineHeight": "{font.leading.normal}"
+        },
+        "$description": "Text entered in inputs, selects and text areas. Regular layout.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com assets/site.css .field input",
+            "tracking-em": "{font.tracking.normal}"
+          }
+        }
+      },
+      "compact": {
+        "$type": "typography",
+        "$value": "{type.input.web}",
+        "$description": "Text entered in inputs, selects and text areas. Compact layout (same as regular).",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com assets/site.css .field input"
+          }
+        }
+      }
+    },
+    "check-label": {
+      "$description": "Checkbox and radio labels.",
+      "$extensions": {
+        "com.desertpants": {
+          "ios-text-style": "callout"
+        }
+      },
+      "web": {
+        "$type": "typography",
+        "$value": {
+          "fontFamily": "{font.family.display}",
+          "fontSize": "{font.size.base}",
+          "fontWeight": "{font.weight.regular}",
+          "letterSpacing": {
+            "value": 0,
+            "unit": "px"
+          },
+          "lineHeight": "{font.leading.relaxed}"
+        },
+        "$description": "Checkbox and radio labels. Regular layout.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com assets/site.css .check",
+            "tracking-em": "{font.tracking.normal}"
+          }
+        }
+      },
+      "compact": {
+        "$type": "typography",
+        "$value": "{type.check-label.web}",
+        "$description": "Checkbox and radio labels. Compact layout (same as regular).",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com assets/site.css .check"
+          }
+        }
+      }
+    },
+    "glyph": {
+      "$description": "Emoji or single glyphs shown as chips.",
+      "$extensions": {
+        "com.desertpants": {
+          "ios-text-style": "title"
+        }
+      },
+      "web": {
+        "$type": "typography",
+        "$value": {
+          "fontFamily": "{font.family.display}",
+          "fontSize": {
+            "value": 30.4,
+            "unit": "px"
+          },
+          "fontWeight": "{font.weight.regular}",
+          "letterSpacing": {
+            "value": 0.0,
+            "unit": "px"
+          },
+          "lineHeight": "{font.leading.none}"
+        },
+        "$description": "Emoji or single glyphs shown as chips. Regular layout.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com assets/site.css .demo-chip",
+            "tracking-em": "{font.tracking.normal}"
+          }
+        }
+      },
+      "compact": {
+        "$type": "typography",
+        "$value": "{type.glyph.web}",
+        "$description": "Emoji or single glyphs shown as chips. Compact layout (same as regular).",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com assets/site.css .demo-chip"
+          }
+        }
+      }
+    },
+    "lede": {
+      "$description": "Intro paragraph under a page title.",
+      "$extensions": {
+        "com.desertpants": {
+          "ios-text-style": "body"
+        }
+      },
+      "web": {
+        "$type": "typography",
+        "$value": {
+          "fontFamily": "{font.family.mono}",
+          "fontSize": "{font.size.lg}",
+          "fontWeight": "{font.weight.regular}",
+          "letterSpacing": {
+            "value": 0,
+            "unit": "px"
+          },
+          "lineHeight": "{font.leading.relaxed}"
+        },
+        "$description": "Intro paragraph under a page title. Regular layout.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css .lede",
+            "tracking-em": "{font.tracking.normal}"
+          }
+        }
+      },
+      "compact": {
+        "$type": "typography",
+        "$value": "{type.lede.web}",
+        "$description": "Intro paragraph under a page title. Compact layout (same as regular).",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css .lede"
+          }
+        }
+      }
+    },
+    "hero-sub": {
+      "$description": "Sub-line under the hero headline.",
+      "$extensions": {
+        "com.desertpants": {
+          "ios-text-style": "body"
+        }
+      },
+      "web": {
+        "$type": "typography",
+        "$value": {
+          "fontFamily": "{font.family.mono}",
+          "fontSize": "{font.size.lg}",
+          "fontWeight": "{font.weight.regular}",
+          "letterSpacing": {
+            "value": 0,
+            "unit": "px"
+          },
+          "lineHeight": "{font.leading.normal}"
+        },
+        "$description": "Sub-line under the hero headline. Regular layout.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css .hero-sub",
+            "tracking-em": "{font.tracking.normal}"
+          }
+        }
+      },
+      "compact": {
+        "$type": "typography",
+        "$value": "{type.hero-sub.web}",
+        "$description": "Sub-line under the hero headline. Compact layout (same as regular).",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css .hero-sub"
+          }
+        }
+      }
+    },
+    "body": {
+      "$description": "Body copy, list items, prose.",
+      "$extensions": {
+        "com.desertpants": {
+          "ios-text-style": "callout"
+        }
+      },
+      "web": {
+        "$type": "typography",
+        "$value": {
+          "fontFamily": "{font.family.mono}",
+          "fontSize": "{font.size.base}",
+          "fontWeight": "{font.weight.regular}",
+          "letterSpacing": {
+            "value": 0,
+            "unit": "px"
+          },
+          "lineHeight": "{font.leading.relaxed}"
+        },
+        "$description": "Body copy, list items, prose. Regular layout.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css body / .prose p",
+            "tracking-em": "{font.tracking.normal}"
+          }
+        }
+      },
+      "compact": {
+        "$type": "typography",
+        "$value": "{type.body.web}",
+        "$description": "Body copy, list items, prose. Compact layout (same as regular).",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css body / .prose p"
+          }
+        }
+      }
+    },
+    "body-sm": {
+      "$description": "Secondary body, spec values, data-table cells, toasts.",
+      "$extensions": {
+        "com.desertpants": {
+          "ios-text-style": "footnote"
+        }
+      },
+      "web": {
+        "$type": "typography",
+        "$value": {
+          "fontFamily": "{font.family.mono}",
+          "fontSize": "{font.size.sm}",
+          "fontWeight": "{font.weight.regular}",
+          "letterSpacing": {
+            "value": 0,
+            "unit": "px"
+          },
+          "lineHeight": "{font.leading.data}"
+        },
+        "$description": "Secondary body, spec values, data-table cells, toasts. Regular layout.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css .specs dd / .data-table td",
+            "tracking-em": "{font.tracking.normal}"
+          }
+        }
+      },
+      "compact": {
+        "$type": "typography",
+        "$value": "{type.body-sm.web}",
+        "$description": "Secondary body, spec values, data-table cells, toasts. Compact layout (same as regular).",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css .specs dd / .data-table td"
+          }
+        }
+      }
+    },
+    "code": {
+      "$description": "Code blocks and tab text.",
+      "$extensions": {
+        "com.desertpants": {
+          "ios-text-style": "footnote"
+        }
+      },
+      "web": {
+        "$type": "typography",
+        "$value": {
+          "fontFamily": "{font.family.mono}",
+          "fontSize": "{font.size.sm}",
+          "fontWeight": "{font.weight.regular}",
+          "letterSpacing": {
+            "value": 0,
+            "unit": "px"
+          },
+          "lineHeight": "{font.leading.relaxed}"
+        },
+        "$description": "Code blocks and tab text. Regular layout.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com assets/site.css .code-field pre",
+            "tracking-em": "{font.tracking.normal}"
+          }
+        }
+      },
+      "compact": {
+        "$type": "typography",
+        "$value": "{type.code.web}",
+        "$description": "Code blocks and tab text. Compact layout (same as regular).",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com assets/site.css .code-field pre"
+          }
+        }
+      }
+    },
+    "body-xs": {
+      "$description": "Chart and board notes, field-table cells, list-row secondary text.",
+      "$extensions": {
+        "com.desertpants": {
+          "ios-text-style": "caption"
+        }
+      },
+      "web": {
+        "$type": "typography",
+        "$value": {
+          "fontFamily": "{font.family.mono}",
+          "fontSize": "{font.size.xs}",
+          "fontWeight": "{font.weight.regular}",
+          "letterSpacing": {
+            "value": 0,
+            "unit": "px"
+          },
+          "lineHeight": "{font.leading.data}"
+        },
+        "$description": "Chart and board notes, field-table cells, list-row secondary text. Regular layout.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css .board-note / .chart-note",
+            "tracking-em": "{font.tracking.normal}"
+          }
+        }
+      },
+      "compact": {
+        "$type": "typography",
+        "$value": "{type.body-xs.web}",
+        "$description": "Chart and board notes, field-table cells, list-row secondary text. Compact layout (same as regular).",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css .board-note / .chart-note"
+          }
+        }
+      }
+    },
+    "result-text": {
+      "$description": "Result text carrying inline highlight marks.",
+      "$extensions": {
+        "com.desertpants": {
+          "ios-text-style": "footnote"
+        }
+      },
+      "web": {
+        "$type": "typography",
+        "$value": {
+          "fontFamily": "{font.family.mono}",
+          "fontSize": "{font.size.sm}",
+          "fontWeight": "{font.weight.regular}",
+          "letterSpacing": {
+            "value": 0,
+            "unit": "px"
+          },
+          "lineHeight": "{font.leading.loose}"
+        },
+        "$description": "Result text carrying inline highlight marks. Regular layout.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com assets/site.css .demo-result",
+            "tracking-em": "{font.tracking.normal}"
+          }
+        }
+      },
+      "compact": {
+        "$type": "typography",
+        "$value": "{type.result-text.web}",
+        "$description": "Result text carrying inline highlight marks. Compact layout (same as regular).",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com assets/site.css .demo-result"
+          }
+        }
+      }
+    },
+    "table-cell": {
+      "$description": "Comparison-table cells.",
+      "$extensions": {
+        "com.desertpants": {
+          "ios-text-style": "footnote"
+        }
+      },
+      "web": {
+        "$type": "typography",
+        "$value": {
+          "fontFamily": "{font.family.mono}",
+          "fontSize": "{font.size.sm}",
+          "fontWeight": "{font.weight.regular}",
+          "letterSpacing": {
+            "value": 0,
+            "unit": "px"
+          },
+          "lineHeight": "{font.leading.relaxed}"
+        },
+        "$description": "Comparison-table cells. Regular layout.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css .table",
+            "tracking-em": "{font.tracking.normal}",
+            "font-variant-numeric": "tabular-nums"
+          }
+        }
+      },
+      "compact": {
+        "$type": "typography",
+        "$value": "{type.table-cell.web}",
+        "$description": "Comparison-table cells. Compact layout (same as regular).",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css .table"
+          }
+        }
+      }
+    },
+    "meter-value": {
+      "$description": "Percentages beside result bars and meters (tabular).",
+      "$extensions": {
+        "com.desertpants": {
+          "ios-text-style": "caption"
+        }
+      },
+      "web": {
+        "$type": "typography",
+        "$value": {
+          "fontFamily": "{font.family.mono}",
+          "fontSize": "{font.size.xs}",
+          "fontWeight": "{font.weight.regular}",
+          "letterSpacing": {
+            "value": 0,
+            "unit": "px"
+          },
+          "lineHeight": "{font.leading.data}"
+        },
+        "$description": "Percentages beside result bars and meters (tabular). Regular layout.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com assets/site.css .dt-pct",
+            "tracking-em": "{font.tracking.normal}",
+            "font-variant-numeric": "tabular-nums"
+          }
+        }
+      },
+      "compact": {
+        "$type": "typography",
+        "$value": "{type.meter-value.web}",
+        "$description": "Percentages beside result bars and meters (tabular). Compact layout (same as regular).",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com assets/site.css .dt-pct"
+          }
+        }
+      }
+    },
+    "meter-name": {
+      "$description": "Row names beside result bars.",
+      "$extensions": {
+        "com.desertpants": {
+          "ios-text-style": "footnote"
+        }
+      },
+      "web": {
+        "$type": "typography",
+        "$value": {
+          "fontFamily": "{font.family.mono}",
+          "fontSize": "{font.size.sm}",
+          "fontWeight": "{font.weight.regular}",
+          "letterSpacing": {
+            "value": 0,
+            "unit": "px"
+          },
+          "lineHeight": "{font.leading.data}"
+        },
+        "$description": "Row names beside result bars. Regular layout.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com assets/site.css .dt-row",
+            "tracking-em": "{font.tracking.normal}"
+          }
+        }
+      },
+      "compact": {
+        "$type": "typography",
+        "$value": "{type.meter-name.web}",
+        "$description": "Row names beside result bars. Compact layout (same as regular).",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com assets/site.css .dt-row"
+          }
+        }
+      }
+    },
+    "eyebrow": {
+      "$description": "Eyebrows, field labels, stat labels, footer column heads.",
+      "$extensions": {
+        "com.desertpants": {
+          "ios-text-style": "caption"
+        }
+      },
+      "web": {
+        "$type": "typography",
+        "$value": {
+          "fontFamily": "{font.family.mono}",
+          "fontSize": "{font.size.xs}",
+          "fontWeight": "{font.weight.medium}",
+          "letterSpacing": {
+            "value": 0.72,
+            "unit": "px"
+          },
+          "lineHeight": "{font.leading.relaxed}"
+        },
+        "$description": "Eyebrows, field labels, stat labels, footer column heads. Regular layout.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css .eyebrow / .stat-label / .field-label",
+            "tracking-em": "{font.tracking.wider}",
+            "text-transform": "uppercase"
+          }
+        }
+      },
+      "compact": {
+        "$type": "typography",
+        "$value": "{type.eyebrow.web}",
+        "$description": "Eyebrows, field labels, stat labels, footer column heads. Compact layout (same as regular).",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css .eyebrow / .stat-label / .field-label"
+          }
+        }
+      }
+    },
+    "tag": {
+      "$description": "Tags and category pills.",
+      "$extensions": {
+        "com.desertpants": {
+          "ios-text-style": "caption"
+        }
+      },
+      "web": {
+        "$type": "typography",
+        "$value": {
+          "fontFamily": "{font.family.mono}",
+          "fontSize": "{font.size.xs}",
+          "fontWeight": "{font.weight.medium}",
+          "letterSpacing": {
+            "value": 0.72,
+            "unit": "px"
+          },
+          "lineHeight": "{font.leading.label}"
+        },
+        "$description": "Tags and category pills. Regular layout.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css .tag",
+            "tracking-em": "{font.tracking.wider}",
+            "text-transform": "uppercase"
+          }
+        }
+      },
+      "compact": {
+        "$type": "typography",
+        "$value": "{type.tag.web}",
+        "$description": "Tags and category pills. Compact layout (same as regular).",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css .tag"
+          }
+        }
+      }
+    },
+    "tag-sm": {
+      "$description": "Small tags, card kind chips, feature-card tags.",
+      "$extensions": {
+        "com.desertpants": {
+          "ios-text-style": "caption"
+        }
+      },
+      "web": {
+        "$type": "typography",
+        "$value": {
+          "fontFamily": "{font.family.mono}",
+          "fontSize": "{font.size.xs}",
+          "fontWeight": "{font.weight.regular}",
+          "letterSpacing": {
+            "value": 0.72,
+            "unit": "px"
+          },
+          "lineHeight": "{font.leading.label}"
+        },
+        "$description": "Small tags, card kind chips, feature-card tags. Regular layout.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css .tag--sm / .card-kind / .fc-tag",
+            "tracking-em": "{font.tracking.wider}",
+            "text-transform": "uppercase"
+          }
+        }
+      },
+      "compact": {
+        "$type": "typography",
+        "$value": "{type.tag-sm.web}",
+        "$description": "Small tags, card kind chips, feature-card tags. Compact layout (same as regular).",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css .tag--sm / .card-kind / .fc-tag"
+          }
+        }
+      }
+    },
+    "data-head": {
+      "$description": "Data-table heads and spec terms.",
+      "$extensions": {
+        "com.desertpants": {
+          "ios-text-style": "caption"
+        }
+      },
+      "web": {
+        "$type": "typography",
+        "$value": {
+          "fontFamily": "{font.family.mono}",
+          "fontSize": "{font.size.xs}",
+          "fontWeight": "{font.weight.regular}",
+          "letterSpacing": {
+            "value": 0.72,
+            "unit": "px"
+          },
+          "lineHeight": "{font.leading.normal}"
+        },
+        "$description": "Data-table heads and spec terms. Regular layout.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css .data-table thead th / .specs dt",
+            "tracking-em": "{font.tracking.wider}",
+            "text-transform": "uppercase"
+          }
+        }
+      },
+      "compact": {
+        "$type": "typography",
+        "$value": "{type.data-head.web}",
+        "$description": "Data-table heads and spec terms. Compact layout (same as regular).",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css .data-table thead th / .specs dt"
+          }
+        }
+      }
+    },
+    "table-head": {
+      "$description": "Comparison-table heads.",
+      "$extensions": {
+        "com.desertpants": {
+          "ios-text-style": "caption2"
+        }
+      },
+      "web": {
+        "$type": "typography",
+        "$value": {
+          "fontFamily": "{font.family.mono}",
+          "fontSize": "{font.size.2xs}",
+          "fontWeight": "{font.weight.medium}",
+          "letterSpacing": {
+            "value": 0.66,
+            "unit": "px"
+          },
+          "lineHeight": "{font.leading.relaxed}"
+        },
+        "$description": "Comparison-table heads. Regular layout.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css .table thead th",
+            "tracking-em": "{font.tracking.wider}",
+            "text-transform": "uppercase"
+          }
+        }
+      },
+      "compact": {
+        "$type": "typography",
+        "$value": "{type.table-head.web}",
+        "$description": "Comparison-table heads. Compact layout (same as regular).",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css .table thead th"
+          }
+        }
+      }
+    },
+    "breadcrumb": {
+      "$description": "Breadcrumb trail.",
+      "$extensions": {
+        "com.desertpants": {
+          "ios-text-style": "caption"
+        }
+      },
+      "web": {
+        "$type": "typography",
+        "$value": {
+          "fontFamily": "{font.family.mono}",
+          "fontSize": "{font.size.xs}",
+          "fontWeight": "{font.weight.regular}",
+          "letterSpacing": {
+            "value": 0.48,
+            "unit": "px"
+          },
+          "lineHeight": "{font.leading.relaxed}"
+        },
+        "$description": "Breadcrumb trail. Regular layout.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css .breadcrumb",
+            "tracking-em": "{font.tracking.wide}",
+            "text-transform": "uppercase"
+          }
+        }
+      },
+      "compact": {
+        "$type": "typography",
+        "$value": "{type.breadcrumb.web}",
+        "$description": "Breadcrumb trail. Compact layout (same as regular).",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css .breadcrumb"
+          }
+        }
+      }
+    },
+    "side-nav-title": {
+      "$description": "Side-navigation heading.",
+      "$extensions": {
+        "com.desertpants": {
+          "ios-text-style": "caption"
+        }
+      },
+      "web": {
+        "$type": "typography",
+        "$value": {
+          "fontFamily": "{font.family.mono}",
+          "fontSize": "{font.size.xs}",
+          "fontWeight": "{font.weight.regular}",
+          "letterSpacing": {
+            "value": 0.72,
+            "unit": "px"
+          },
+          "lineHeight": "{font.leading.snug}"
+        },
+        "$description": "Side-navigation heading. Regular layout.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css .side-nav-title",
+            "tracking-em": "{font.tracking.wider}",
+            "text-transform": "uppercase"
+          }
+        }
+      },
+      "compact": {
+        "$type": "typography",
+        "$value": "{type.side-nav-title.web}",
+        "$description": "Side-navigation heading. Compact layout (same as regular).",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css .side-nav-title"
+          }
+        }
+      }
+    },
+    "meta": {
+      "$description": "Post meta lines and chart captions at 11px.",
+      "$extensions": {
+        "com.desertpants": {
+          "ios-text-style": "caption2"
+        }
+      },
+      "web": {
+        "$type": "typography",
+        "$value": {
+          "fontFamily": "{font.family.mono}",
+          "fontSize": "{font.size.2xs}",
+          "fontWeight": "{font.weight.regular}",
+          "letterSpacing": {
+            "value": 0.66,
+            "unit": "px"
+          },
+          "lineHeight": "{font.leading.normal}"
+        },
+        "$description": "Post meta lines and chart captions at 11px. Regular layout.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css .post-card-meta",
+            "tracking-em": "{font.tracking.wider}",
+            "text-transform": "uppercase"
+          }
+        }
+      },
+      "compact": {
+        "$type": "typography",
+        "$value": "{type.meta.web}",
+        "$description": "Post meta lines and chart captions at 11px. Compact layout (same as regular).",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css .post-card-meta"
+          }
+        }
+      }
+    },
+    "meta-wide": {
+      "$description": "Pin model labels, pin tools, beta labels, see-all links.",
+      "$extensions": {
+        "com.desertpants": {
+          "ios-text-style": "caption2"
+        }
+      },
+      "web": {
+        "$type": "typography",
+        "$value": {
+          "fontFamily": "{font.family.mono}",
+          "fontSize": "{font.size.2xs}",
+          "fontWeight": "{font.weight.regular}",
+          "letterSpacing": {
+            "value": 0.44,
+            "unit": "px"
+          },
+          "lineHeight": "{font.leading.data}"
+        },
+        "$description": "Pin model labels, pin tools, beta labels, see-all links. Regular layout.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css .pin-model / .pin-tool / .footer-beta",
+            "tracking-em": "{font.tracking.wide}",
+            "text-transform": "uppercase"
+          }
+        }
+      },
+      "compact": {
+        "$type": "typography",
+        "$value": "{type.meta-wide.web}",
+        "$description": "Pin model labels, pin tools, beta labels, see-all links. Compact layout (same as regular).",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css .pin-model / .pin-tool / .footer-beta"
+          }
+        }
+      }
+    },
+    "status": {
+      "$description": "Status badges (Beta, Coming soon).",
+      "$extensions": {
+        "com.desertpants": {
+          "ios-text-style": "caption2"
+        }
+      },
+      "web": {
+        "$type": "typography",
+        "$value": {
+          "fontFamily": "{font.family.mono}",
+          "fontSize": "{font.size.2xs}",
+          "fontWeight": "{font.weight.medium}",
+          "letterSpacing": {
+            "value": 0,
+            "unit": "px"
+          },
+          "lineHeight": "{font.leading.relaxed}"
+        },
+        "$description": "Status badges (Beta, Coming soon). Regular layout.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css .card-status",
+            "tracking-em": "{font.tracking.normal}"
+          }
+        }
+      },
+      "compact": {
+        "$type": "typography",
+        "$value": "{type.status.web}",
+        "$description": "Status badges (Beta, Coming soon). Compact layout (same as regular).",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css .card-status"
+          }
+        }
+      }
+    },
+    "micro": {
+      "$description": "Spec micro copy and footnotes.",
+      "$extensions": {
+        "com.desertpants": {
+          "ios-text-style": "caption2"
+        }
+      },
+      "web": {
+        "$type": "typography",
+        "$value": {
+          "fontFamily": "{font.family.mono}",
+          "fontSize": "{font.size.2xs}",
+          "fontWeight": "{font.weight.regular}",
+          "letterSpacing": {
+            "value": 0,
+            "unit": "px"
+          },
+          "lineHeight": "{font.leading.caption}"
+        },
+        "$description": "Spec micro copy and footnotes. Regular layout.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css .spec",
+            "tracking-em": "{font.tracking.normal}"
+          }
+        }
+      },
+      "compact": {
+        "$type": "typography",
+        "$value": "{type.micro.web}",
+        "$description": "Spec micro copy and footnotes. Compact layout (same as regular).",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css .spec"
+          }
+        }
+      }
+    },
+    "stat-detail": {
+      "$description": "Detail line under a stat label.",
+      "$extensions": {
+        "com.desertpants": {
+          "ios-text-style": "caption2"
+        }
+      },
+      "web": {
+        "$type": "typography",
+        "$value": {
+          "fontFamily": "{font.family.mono}",
+          "fontSize": "{font.size.2xs}",
+          "fontWeight": "{font.weight.regular}",
+          "letterSpacing": {
+            "value": 0,
+            "unit": "px"
+          },
+          "lineHeight": "{font.leading.normal}"
+        },
+        "$description": "Detail line under a stat label. Regular layout.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css .stat-detail",
+            "tracking-em": "{font.tracking.normal}"
+          }
+        }
+      },
+      "compact": {
+        "$type": "typography",
+        "$value": "{type.stat-detail.web}",
+        "$description": "Detail line under a stat label. Compact layout (same as regular).",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css .stat-detail"
+          }
+        }
+      }
+    },
+    "segment": {
+      "$description": "Segmented control options and chips.",
+      "$extensions": {
+        "com.desertpants": {
+          "ios-text-style": "caption"
+        }
+      },
+      "web": {
+        "$type": "typography",
+        "$value": {
+          "fontFamily": "{font.family.mono}",
+          "fontSize": "{font.size.xs}",
+          "fontWeight": "{font.weight.regular}",
+          "letterSpacing": {
+            "value": 0.48,
+            "unit": "px"
+          },
+          "lineHeight": "{font.leading.relaxed}"
+        },
+        "$description": "Segmented control options and chips. Regular layout.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com assets/site.css .demo-toggle-btn / .demo-example",
+            "tracking-em": "{font.tracking.wide}"
+          }
+        }
+      },
+      "compact": {
+        "$type": "typography",
+        "$value": "{type.segment.web}",
+        "$description": "Segmented control options and chips. Compact layout (same as regular).",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com assets/site.css .demo-toggle-btn / .demo-example"
+          }
+        }
+      }
+    },
+    "segment-caps": {
+      "$description": "Segmented control on a fill (media player run switch).",
+      "$extensions": {
+        "com.desertpants": {
+          "ios-text-style": "caption"
+        }
+      },
+      "web": {
+        "$type": "typography",
+        "$value": {
+          "fontFamily": "{font.family.mono}",
+          "fontSize": "{font.size.xs}",
+          "fontWeight": "{font.weight.regular}",
+          "letterSpacing": {
+            "value": 0.48,
+            "unit": "px"
+          },
+          "lineHeight": "{font.leading.normal}"
+        },
+        "$description": "Segmented control on a fill (media player run switch). Regular layout.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com assets/site.css .replay-run",
+            "tracking-em": "{font.tracking.wide}",
+            "text-transform": "uppercase"
+          }
+        }
+      },
+      "compact": {
+        "$type": "typography",
+        "$value": "{type.segment-caps.web}",
+        "$description": "Segmented control on a fill (media player run switch). Compact layout (same as regular).",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com assets/site.css .replay-run"
+          }
+        }
+      }
+    },
+    "btn-note": {
+      "$description": "Note set beside a button.",
+      "$extensions": {
+        "com.desertpants": {
+          "ios-text-style": "footnote"
+        }
+      },
+      "web": {
+        "$type": "typography",
+        "$value": {
+          "fontFamily": "{font.family.mono}",
+          "fontSize": "{font.size.note}",
+          "fontWeight": "{font.weight.regular}",
+          "letterSpacing": {
+            "value": 0,
+            "unit": "px"
+          },
+          "lineHeight": "{font.leading.relaxed}"
+        },
+        "$description": "Note set beside a button. Regular layout.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css .btn-note",
+            "tracking-em": "{font.tracking.normal}"
+          }
+        }
+      },
+      "compact": {
+        "$type": "typography",
+        "$value": "{type.btn-note.web}",
+        "$description": "Note set beside a button. Compact layout (same as regular).",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css .btn-note"
+          }
+        }
+      }
+    },
+    "chart-label": {
+      "$description": "Column chart labels (9px, 0.04em in compact charts).",
+      "$extensions": {
+        "com.desertpants": {
+          "ios-text-style": "caption2"
+        }
+      },
+      "web": {
+        "$type": "typography",
+        "$value": {
+          "fontFamily": "{font.family.mono}",
+          "fontSize": "{font.size.2xs}",
+          "fontWeight": "{font.weight.regular}",
+          "letterSpacing": {
+            "value": 0.66,
+            "unit": "px"
+          },
+          "lineHeight": "{font.leading.label}"
+        },
+        "$description": "Column chart labels (9px, 0.04em in compact charts). Regular layout.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css .column-label",
+            "tracking-em": "{font.tracking.wider}",
+            "text-transform": "uppercase"
+          }
+        }
+      },
+      "compact": {
+        "$type": "typography",
+        "$value": {
+          "fontFamily": "{font.family.mono}",
+          "fontSize": "{font.size.3xs}",
+          "fontWeight": "{font.weight.regular}",
+          "letterSpacing": {
+            "value": 0.36,
+            "unit": "px"
+          },
+          "lineHeight": "{font.leading.label}"
+        },
+        "$description": "Column chart labels (9px, 0.04em in compact charts). Compact layout.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css .column-label",
+            "tracking-em": "{font.tracking.wide}",
+            "text-transform": "uppercase"
+          }
+        }
+      }
+    },
+    "lang-gloss": {
+      "$description": "Menu item secondary text.",
+      "$extensions": {
+        "com.desertpants": {
+          "ios-text-style": "caption2"
+        }
+      },
+      "web": {
+        "$type": "typography",
+        "$value": {
+          "fontFamily": "{font.family.mono}",
+          "fontSize": "{font.size.2xs}",
+          "fontWeight": "{font.weight.regular}",
+          "letterSpacing": {
+            "value": 0,
+            "unit": "px"
+          },
+          "lineHeight": "{font.leading.snug}"
+        },
+        "$description": "Menu item secondary text. Regular layout.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com assets/site.css .lang-gloss",
+            "tracking-em": "{font.tracking.normal}"
+          }
+        }
+      },
+      "compact": {
+        "$type": "typography",
+        "$value": "{type.lang-gloss.web}",
+        "$description": "Menu item secondary text. Compact layout (same as regular).",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com assets/site.css .lang-gloss"
+          }
+        }
+      }
+    },
+    "footer-note": {
+      "$description": "Footer bar text and legal notes.",
+      "$extensions": {
+        "com.desertpants": {
+          "ios-text-style": "caption"
+        }
+      },
+      "web": {
+        "$type": "typography",
+        "$value": {
+          "fontFamily": "{font.family.mono}",
+          "fontSize": "{font.size.xs}",
+          "fontWeight": "{font.weight.regular}",
+          "letterSpacing": {
+            "value": 0,
+            "unit": "px"
+          },
+          "lineHeight": "{font.leading.relaxed}"
+        },
+        "$description": "Footer bar text and legal notes. Regular layout.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css .footer-bar / desertant.com assets/site.css .footer-note",
+            "tracking-em": "{font.tracking.normal}"
+          }
+        }
+      },
+      "compact": {
+        "$type": "typography",
+        "$value": "{type.footer-note.web}",
+        "$description": "Footer bar text and legal notes. Compact layout (same as regular).",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css .footer-bar / desertant.com assets/site.css .footer-note"
+          }
+        }
+      }
+    },
+    "footer-nav": {
+      "$description": "Footer bar links.",
+      "$extensions": {
+        "com.desertpants": {
+          "ios-text-style": "caption"
+        }
+      },
+      "web": {
+        "$type": "typography",
+        "$value": {
+          "fontFamily": "{font.family.mono}",
+          "fontSize": "{font.size.xs}",
+          "fontWeight": "{font.weight.medium}",
+          "letterSpacing": {
+            "value": 0.72,
+            "unit": "px"
+          },
+          "lineHeight": "{font.leading.data}"
+        },
+        "$description": "Footer bar links. Regular layout.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com assets/site.css .footer-links a",
+            "tracking-em": "{font.tracking.wider}",
+            "text-transform": "uppercase"
+          }
+        }
+      },
+      "compact": {
+        "$type": "typography",
+        "$value": "{type.footer-nav.web}",
+        "$description": "Footer bar links. Compact layout (same as regular).",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com assets/site.css .footer-links a"
+          }
+        }
+      }
+    },
+    "tab-bar-label": {
+      "$description": "Bottom tab bar labels (mobile).",
+      "$extensions": {
+        "com.desertpants": {
+          "ios-text-style": "caption2"
+        }
+      },
+      "web": {
+        "$type": "typography",
+        "$value": {
+          "fontFamily": "{font.family.mono}",
+          "fontSize": "{font.size.2xs}",
+          "fontWeight": "{font.weight.medium}",
+          "letterSpacing": {
+            "value": 0.44,
+            "unit": "px"
+          },
+          "lineHeight": "{font.leading.snug}"
+        },
+        "$description": "Bottom tab bar labels (mobile). Regular layout.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "addition",
+            "tracking-em": "{font.tracking.wide}",
+            "text-transform": "uppercase"
+          }
+        }
+      },
+      "compact": {
+        "$type": "typography",
+        "$value": "{type.tab-bar-label.web}",
+        "$description": "Bottom tab bar labels (mobile). Compact layout (same as regular).",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "addition"
+          }
+        }
+      }
+    },
+    "badge": {
+      "$description": "Counts in badges on icons and tab items (one line, tabular).",
+      "$extensions": {
+        "com.desertpants": {
+          "ios-text-style": "caption2"
+        }
+      },
+      "web": {
+        "$type": "typography",
+        "$value": {
+          "fontFamily": "{font.family.mono}",
+          "fontSize": "{font.size.2xs}",
+          "fontWeight": "{font.weight.medium}",
+          "letterSpacing": {
+            "value": 0,
+            "unit": "px"
+          },
+          "lineHeight": "{font.leading.none}"
+        },
+        "$description": "Counts in badges on icons and tab items (one line, tabular). Regular layout.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "addition",
+            "tracking-em": "{font.tracking.normal}",
+            "font-variant-numeric": "tabular-nums"
+          }
+        }
+      },
+      "compact": {
+        "$type": "typography",
+        "$value": "{type.badge.web}",
+        "$description": "Counts in badges on icons and tab items (one line, tabular). Compact layout (same as regular).",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "addition"
+          }
+        }
+      }
+    },
+    "article-title": {
+      "$description": "Article and blog post titles.",
+      "$extensions": {
+        "com.desertpants": {
+          "compact-breakpoint": "{breakpoint.md}",
+          "ios-text-style": "largeTitle"
+        }
+      },
+      "web": {
+        "$type": "typography",
+        "$value": {
+          "fontFamily": "{font.family.display}",
+          "fontSize": "{font.size.5xl}",
+          "fontWeight": "{font.weight.semibold}",
+          "letterSpacing": {
+            "value": -4.32,
+            "unit": "px"
+          },
+          "lineHeight": "{font.leading.compact}"
+        },
+        "$description": "Article and blog post titles. Regular layout.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com assets/site.css .article-title / .blog-title",
+            "tracking-em": "{font.tracking.display}",
+            "fluid": {
+              "min-px": 40,
+              "vw": 2.88,
+              "offset-px": 28.48,
+              "max-px": 72
+            },
+            "max-scale": "{font.scale.display-max}"
+          }
+        }
+      },
+      "compact": {
+        "$type": "typography",
+        "$value": {
+          "fontFamily": "{font.family.display}",
+          "fontSize": "{font.size.3xl}",
+          "fontWeight": "{font.weight.semibold}",
+          "letterSpacing": {
+            "value": -2.4,
+            "unit": "px"
+          },
+          "lineHeight": "{font.leading.compact}"
+        },
+        "$description": "Article and blog post titles. Compact layout.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com assets/site.css .article-title / .blog-title",
+            "tracking-em": "{font.tracking.display}"
+          }
+        }
+      }
+    },
+    "headline": {
+      "$description": "Hub page headline.",
+      "$extensions": {
+        "com.desertpants": {
+          "compact-breakpoint": "{breakpoint.md}",
+          "ios-text-style": "largeTitle"
+        }
+      },
+      "web": {
+        "$type": "typography",
+        "$value": {
+          "fontFamily": "{font.family.display}",
+          "fontSize": "{font.size.5xl}",
+          "fontWeight": "{font.weight.semibold}",
+          "letterSpacing": {
+            "value": -2.88,
+            "unit": "px"
+          },
+          "lineHeight": 0.95
+        },
+        "$description": "Hub page headline. Regular layout.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com assets/site.css .hub .headline",
+            "tracking-em": "{font.tracking.tighter}",
+            "fluid": {
+              "min-px": 40,
+              "vw": 6,
+              "offset-px": 0,
+              "max-px": 72
+            },
+            "max-scale": "{font.scale.display-max}"
+          }
+        }
+      },
+      "compact": {
+        "$type": "typography",
+        "$value": {
+          "fontFamily": "{font.family.display}",
+          "fontSize": "{font.size.3xl}",
+          "fontWeight": "{font.weight.semibold}",
+          "letterSpacing": {
+            "value": -1.6,
+            "unit": "px"
+          },
+          "lineHeight": 0.95
+        },
+        "$description": "Hub page headline. Compact layout.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com assets/site.css .hub .headline",
+            "tracking-em": "{font.tracking.tighter}"
+          }
+        }
+      }
+    },
+    "docs-headline": {
+      "$description": "Docs page headline.",
+      "$extensions": {
+        "com.desertpants": {
+          "compact-breakpoint": "{breakpoint.md}",
+          "ios-text-style": "largeTitle"
+        }
+      },
+      "web": {
+        "$type": "typography",
+        "$value": {
+          "fontFamily": "{font.family.display}",
+          "fontSize": "{font.size.4xl}",
+          "fontWeight": "{font.weight.semibold}",
+          "letterSpacing": {
+            "value": -2.24,
+            "unit": "px"
+          },
+          "lineHeight": "{font.leading.snug}"
+        },
+        "$description": "Docs page headline. Regular layout.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com assets/site.css .docs-body .headline",
+            "tracking-em": "{font.tracking.tighter}",
+            "fluid": {
+              "min-px": 40,
+              "vw": 7,
+              "offset-px": 0,
+              "max-px": 56
+            },
+            "max-scale": "{font.scale.display-max}"
+          }
+        }
+      },
+      "compact": {
+        "$type": "typography",
+        "$value": {
+          "fontFamily": "{font.family.display}",
+          "fontSize": "{font.size.3xl}",
+          "fontWeight": "{font.weight.semibold}",
+          "letterSpacing": {
+            "value": -1.6,
+            "unit": "px"
+          },
+          "lineHeight": "{font.leading.snug}"
+        },
+        "$description": "Docs page headline. Compact layout.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com assets/site.css .docs-body .headline",
+            "tracking-em": "{font.tracking.tighter}"
+          }
+        }
+      }
+    },
+    "title-lg": {
+      "$description": "Example-app names and docs extra-section titles.",
+      "$extensions": {
+        "com.desertpants": {
+          "ios-text-style": "title"
+        }
+      },
+      "web": {
+        "$type": "typography",
+        "$value": {
+          "fontFamily": "{font.family.display}",
+          "fontSize": "{font.size.2xl}",
+          "fontWeight": "{font.weight.semibold}",
+          "letterSpacing": {
+            "value": -0.96,
+            "unit": "px"
+          },
+          "lineHeight": "{font.leading.snug}"
+        },
+        "$description": "Example-app names and docs extra-section titles. Regular layout.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com assets/site.css .example-app-name / .docs-extra>h2",
+            "tracking-em": "{font.tracking.tight}",
+            "max-scale": "{font.scale.display-max}"
+          }
+        }
+      },
+      "compact": {
+        "$type": "typography",
+        "$value": "{type.title-lg.web}",
+        "$description": "Example-app names and docs extra-section titles. Compact layout (same as regular).",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com assets/site.css .example-app-name / .docs-extra>h2"
+          }
+        }
+      }
+    },
+    "figure-title": {
+      "$description": "Title set on a photo figure.",
+      "$extensions": {
+        "com.desertpants": {
+          "compact-breakpoint": "{breakpoint.md}",
+          "ios-text-style": "title"
+        }
+      },
+      "web": {
+        "$type": "typography",
+        "$value": {
+          "fontFamily": "{font.family.display}",
+          "fontSize": "{font.size.3xl}",
+          "fontWeight": "{font.weight.semibold}",
+          "letterSpacing": {
+            "value": -1.6,
+            "unit": "px"
+          },
+          "lineHeight": "{font.leading.compact}"
+        },
+        "$description": "Title set on a photo figure. Regular layout.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com assets/site.css .uc-figure h3",
+            "tracking-em": "{font.tracking.tighter}",
+            "fluid": {
+              "min-px": 28,
+              "vw": 3.2,
+              "offset-px": 0,
+              "max-px": 40
+            },
+            "max-scale": "{font.scale.display-max}"
+          }
+        }
+      },
+      "compact": {
+        "$type": "typography",
+        "$value": {
+          "fontFamily": "{font.family.display}",
+          "fontSize": {
+            "value": 28,
+            "unit": "px"
+          },
+          "fontWeight": "{font.weight.semibold}",
+          "letterSpacing": {
+            "value": -1.12,
+            "unit": "px"
+          },
+          "lineHeight": "{font.leading.compact}"
+        },
+        "$description": "Title set on a photo figure. Compact layout.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com assets/site.css .uc-figure h3",
+            "tracking-em": "{font.tracking.tighter}"
+          }
+        }
+      }
+    },
+    "rule-title": {
+      "$description": "Rule-card title.",
+      "$extensions": {
+        "com.desertpants": {
+          "ios-text-style": "largeTitle"
+        }
+      },
+      "web": {
+        "$type": "typography",
+        "$value": {
+          "fontFamily": "{font.family.display}",
+          "fontSize": "{font.size.3xl}",
+          "fontWeight": "{font.weight.semibold}",
+          "letterSpacing": {
+            "value": -1.6,
+            "unit": "px"
+          },
+          "lineHeight": "{font.leading.none}"
+        },
+        "$description": "Rule-card title. Regular layout.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com assets/site.css .about-rule h3",
+            "tracking-em": "{font.tracking.tighter}",
+            "max-scale": "{font.scale.display-max}"
+          }
+        }
+      },
+      "compact": {
+        "$type": "typography",
+        "$value": "{type.rule-title.web}",
+        "$description": "Rule-card title. Compact layout (same as regular).",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com assets/site.css .about-rule h3"
+          }
+        }
+      }
+    },
+    "rule-num": {
+      "$description": "Rule-card number.",
+      "$extensions": {
+        "com.desertpants": {
+          "ios-text-style": "title"
+        }
+      },
+      "web": {
+        "$type": "typography",
+        "$value": {
+          "fontFamily": "{font.family.mono}",
+          "fontSize": "{font.size.2xl}",
+          "fontWeight": "{font.weight.medium}",
+          "letterSpacing": {
+            "value": 0,
+            "unit": "px"
+          },
+          "lineHeight": "{font.leading.none}"
+        },
+        "$description": "Rule-card number. Regular layout.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com assets/site.css .about-rule-num",
+            "tracking-em": "{font.tracking.normal}",
+            "max-scale": "{font.scale.display-max}"
+          }
+        }
+      },
+      "compact": {
+        "$type": "typography",
+        "$value": "{type.rule-num.web}",
+        "$description": "Rule-card number. Compact layout (same as regular).",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com assets/site.css .about-rule-num"
+          }
+        }
+      }
+    },
+    "quote": {
+      "$description": "Article side quote.",
+      "$extensions": {
+        "com.desertpants": {
+          "ios-text-style": "title2"
+        }
+      },
+      "web": {
+        "$type": "typography",
+        "$value": {
+          "fontFamily": "{font.family.display}",
+          "fontSize": "{font.size.xl}",
+          "fontWeight": "{font.weight.medium}",
+          "letterSpacing": {
+            "value": -0.96,
+            "unit": "px"
+          },
+          "lineHeight": 1.35
+        },
+        "$description": "Article side quote. Regular layout.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com assets/site.css .article-quote",
+            "tracking-em": "{font.tracking.tighter}"
+          }
+        }
+      },
+      "compact": {
+        "$type": "typography",
+        "$value": "{type.quote.web}",
+        "$description": "Article side quote. Compact layout (same as regular).",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com assets/site.css .article-quote"
+          }
+        }
+      }
+    },
+    "quote-blog": {
+      "$description": "Blog quote with an accent rule.",
+      "$extensions": {
+        "com.desertpants": {
+          "ios-text-style": "title2"
+        }
+      },
+      "web": {
+        "$type": "typography",
+        "$value": {
+          "fontFamily": "{font.family.display}",
+          "fontSize": "{font.size.xl}",
+          "fontWeight": "{font.weight.medium}",
+          "letterSpacing": {
+            "value": -0.72,
+            "unit": "px"
+          },
+          "lineHeight": "{font.leading.normal}"
+        },
+        "$description": "Blog quote with an accent rule. Regular layout.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com assets/site.css .article-body .blog-quote p",
+            "tracking-em": "{font.tracking.tight}"
+          }
+        }
+      },
+      "compact": {
+        "$type": "typography",
+        "$value": "{type.quote-blog.web}",
+        "$description": "Blog quote with an accent rule. Compact layout (same as regular).",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com assets/site.css .article-body .blog-quote p"
+          }
+        }
+      }
+    },
+    "quote-pull": {
+      "$description": "Pull quote with a short ink rule above.",
+      "$extensions": {
+        "com.desertpants": {
+          "compact-breakpoint": "{breakpoint.md}",
+          "ios-text-style": "title2"
+        }
+      },
+      "web": {
+        "$type": "typography",
+        "$value": {
+          "fontFamily": "{font.family.display}",
+          "fontSize": "{font.size.2xl}",
+          "fontWeight": "{font.weight.regular}",
+          "letterSpacing": {
+            "value": -0.96,
+            "unit": "px"
+          },
+          "lineHeight": "{font.leading.label}"
+        },
+        "$description": "Pull quote with a short ink rule above. Regular layout.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com assets/site.css .blog-quote--pull p",
+            "tracking-em": "{font.tracking.tight}",
+            "fluid": {
+              "min-px": 24,
+              "vw": 2.6,
+              "offset-px": 0,
+              "max-px": 32
+            },
+            "max-scale": "{font.scale.display-max}"
+          }
+        }
+      },
+      "compact": {
+        "$type": "typography",
+        "$value": {
+          "fontFamily": "{font.family.display}",
+          "fontSize": "{font.size.xl}",
+          "fontWeight": "{font.weight.regular}",
+          "letterSpacing": {
+            "value": -0.72,
+            "unit": "px"
+          },
+          "lineHeight": "{font.leading.label}"
+        },
+        "$description": "Pull quote with a short ink rule above. Compact layout.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com assets/site.css .blog-quote--pull p",
+            "tracking-em": "{font.tracking.tight}"
+          }
+        }
+      }
+    },
+    "quote-wide": {
+      "$description": "Full-width quote.",
+      "$extensions": {
+        "com.desertpants": {
+          "compact-breakpoint": "{breakpoint.md}",
+          "ios-text-style": "title"
+        }
+      },
+      "web": {
+        "$type": "typography",
+        "$value": {
+          "fontFamily": "{font.family.display}",
+          "fontSize": "{font.size.3xl}",
+          "fontWeight": "{font.weight.regular}",
+          "letterSpacing": {
+            "value": -1.2,
+            "unit": "px"
+          },
+          "lineHeight": "{font.leading.heading}"
+        },
+        "$description": "Full-width quote. Regular layout.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com assets/site.css .blog-quote--wide p",
+            "tracking-em": "{font.tracking.tight}",
+            "fluid": {
+              "min-px": 32,
+              "vw": 4,
+              "offset-px": 0,
+              "max-px": 40
+            },
+            "max-scale": "{font.scale.display-max}"
+          }
+        }
+      },
+      "compact": {
+        "$type": "typography",
+        "$value": {
+          "fontFamily": "{font.family.display}",
+          "fontSize": "{font.size.2xl}",
+          "fontWeight": "{font.weight.regular}",
+          "letterSpacing": {
+            "value": -0.96,
+            "unit": "px"
+          },
+          "lineHeight": "{font.leading.heading}"
+        },
+        "$description": "Full-width quote. Compact layout.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com assets/site.css .blog-quote--wide p",
+            "tracking-em": "{font.tracking.tight}"
+          }
+        }
+      }
+    },
+    "byline-name": {
+      "$description": "Author name in a byline.",
+      "$extensions": {
+        "com.desertpants": {
+          "ios-text-style": "body"
+        }
+      },
+      "web": {
+        "$type": "typography",
+        "$value": {
+          "fontFamily": "{font.family.display}",
+          "fontSize": "{font.size.lg}",
+          "fontWeight": "{font.weight.semibold}",
+          "letterSpacing": {
+            "value": 0,
+            "unit": "px"
+          },
+          "lineHeight": "{font.leading.snug}"
+        },
+        "$description": "Author name in a byline. Regular layout.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com assets/site.css .byline-name",
+            "tracking-em": "{font.tracking.normal}"
+          }
+        }
+      },
+      "compact": {
+        "$type": "typography",
+        "$value": "{type.byline-name.web}",
+        "$description": "Author name in a byline. Compact layout (same as regular).",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com assets/site.css .byline-name"
+          }
+        }
+      }
+    },
+    "label-tight": {
+      "$description": "Completion message in the media player.",
+      "$extensions": {
+        "com.desertpants": {
+          "ios-text-style": "body"
+        }
+      },
+      "web": {
+        "$type": "typography",
+        "$value": {
+          "fontFamily": "{font.family.display}",
+          "fontSize": "{font.size.lg}",
+          "fontWeight": "{font.weight.semibold}",
+          "letterSpacing": {
+            "value": -0.54,
+            "unit": "px"
+          },
+          "lineHeight": "{font.leading.snug}"
+        },
+        "$description": "Completion message in the media player. Regular layout.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com assets/site.css .replay-done",
+            "tracking-em": "{font.tracking.tight}"
+          }
+        }
+      },
+      "compact": {
+        "$type": "typography",
+        "$value": "{type.label-tight.web}",
+        "$description": "Completion message in the media player. Compact layout (same as regular).",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com assets/site.css .replay-done"
+          }
+        }
+      }
+    },
+    "feature-title-sm": {
+      "$description": "Feature-card title in the compact model grid.",
+      "$extensions": {
+        "com.desertpants": {
+          "ios-text-style": "title2"
+        }
+      },
+      "web": {
+        "$type": "typography",
+        "$value": {
+          "fontFamily": "{font.family.display}",
+          "fontSize": {
+            "value": 22,
+            "unit": "px"
+          },
+          "fontWeight": "{font.weight.semibold}",
+          "letterSpacing": {
+            "value": -0.88,
+            "unit": "px"
+          },
+          "lineHeight": "{font.leading.heading}"
+        },
+        "$description": "Feature-card title in the compact model grid. Regular layout.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css .models-grid .fc-name",
+            "tracking-em": "{font.tracking.tighter}"
+          }
+        }
+      },
+      "compact": {
+        "$type": "typography",
+        "$value": "{type.feature-title-sm.web}",
+        "$description": "Feature-card title in the compact model grid. Compact layout (same as regular).",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css .models-grid .fc-name"
+          }
+        }
+      }
+    },
+    "feature-claim-sm": {
+      "$description": "Feature-card claim in the compact model grid.",
+      "$extensions": {
+        "com.desertpants": {
+          "ios-text-style": "footnote"
+        }
+      },
+      "web": {
+        "$type": "typography",
+        "$value": {
+          "fontFamily": "{font.family.display}",
+          "fontSize": "{font.size.sm}",
+          "fontWeight": "{font.weight.medium}",
+          "letterSpacing": {
+            "value": -0.14,
+            "unit": "px"
+          },
+          "lineHeight": 1.35
+        },
+        "$description": "Feature-card claim in the compact model grid. Regular layout.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css .models-grid .fc-claim",
+            "tracking-em": "{font.tracking.snug}"
+          }
+        }
+      },
+      "compact": {
+        "$type": "typography",
+        "$value": "{type.feature-claim-sm.web}",
+        "$description": "Feature-card claim in the compact model grid. Compact layout (same as regular).",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css .models-grid .fc-claim"
+          }
+        }
+      }
+    },
+    "copy-sm": {
+      "$description": "Small paragraphs: FAQ answers, rule-card text, ruled lists.",
+      "$extensions": {
+        "com.desertpants": {
+          "ios-text-style": "footnote"
+        }
+      },
+      "web": {
+        "$type": "typography",
+        "$value": {
+          "fontFamily": "{font.family.mono}",
+          "fontSize": "{font.size.sm}",
+          "fontWeight": "{font.weight.regular}",
+          "letterSpacing": {
+            "value": 0,
+            "unit": "px"
+          },
+          "lineHeight": "{font.leading.relaxed}"
+        },
+        "$description": "Small paragraphs: FAQ answers, rule-card text, ruled lists. Regular layout.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com assets/site.css .faq-a / .about-rule p / .telemetry-never",
+            "tracking-em": "{font.tracking.normal}"
+          }
+        }
+      },
+      "compact": {
+        "$type": "typography",
+        "$value": "{type.copy-sm.web}",
+        "$description": "Small paragraphs: FAQ answers, rule-card text, ruled lists. Compact layout (same as regular).",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com assets/site.css .faq-a / .about-rule p / .telemetry-never"
+          }
+        }
+      }
+    },
+    "body-snug": {
+      "$description": "Example-app blurb.",
+      "$extensions": {
+        "com.desertpants": {
+          "ios-text-style": "callout"
+        }
+      },
+      "web": {
+        "$type": "typography",
+        "$value": {
+          "fontFamily": "{font.family.mono}",
+          "fontSize": "{font.size.base}",
+          "fontWeight": "{font.weight.regular}",
+          "letterSpacing": {
+            "value": 0,
+            "unit": "px"
+          },
+          "lineHeight": "{font.leading.caption}"
+        },
+        "$description": "Example-app blurb. Regular layout.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com assets/site.css .example-app-blurb",
+            "tracking-em": "{font.tracking.normal}"
+          }
+        }
+      },
+      "compact": {
+        "$type": "typography",
+        "$value": "{type.body-snug.web}",
+        "$description": "Example-app blurb. Compact layout (same as regular).",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com assets/site.css .example-app-blurb"
+          }
+        }
+      }
+    },
+    "transcript": {
+      "$description": "Timestamped transcript lines in the media player.",
+      "$extensions": {
+        "com.desertpants": {
+          "ios-text-style": "caption"
+        }
+      },
+      "web": {
+        "$type": "typography",
+        "$value": {
+          "fontFamily": "{font.family.mono}",
+          "fontSize": "{font.size.xs}",
+          "fontWeight": "{font.weight.regular}",
+          "letterSpacing": {
+            "value": 0,
+            "unit": "px"
+          },
+          "lineHeight": 1.55
+        },
+        "$description": "Timestamped transcript lines in the media player. Regular layout.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com assets/site.css .replay-lines",
+            "tracking-em": "{font.tracking.normal}"
+          }
+        }
+      },
+      "compact": {
+        "$type": "typography",
+        "$value": "{type.transcript.web}",
+        "$description": "Timestamped transcript lines in the media player. Compact layout (same as regular).",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com assets/site.css .replay-lines"
+          }
+        }
+      }
+    },
+    "clock": {
+      "$description": "Media player clock.",
+      "$extensions": {
+        "com.desertpants": {
+          "ios-text-style": "caption"
+        }
+      },
+      "web": {
+        "$type": "typography",
+        "$value": {
+          "fontFamily": "{font.family.mono}",
+          "fontSize": "{font.size.xs}",
+          "fontWeight": "{font.weight.regular}",
+          "letterSpacing": {
+            "value": 0.72,
+            "unit": "px"
+          },
+          "lineHeight": "{font.leading.normal}"
+        },
+        "$description": "Media player clock. Regular layout.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com assets/site.css .replay-clock",
+            "tracking-em": "{font.tracking.wider}",
+            "font-variant-numeric": "tabular-nums"
+          }
+        }
+      },
+      "compact": {
+        "$type": "typography",
+        "$value": "{type.clock.web}",
+        "$description": "Media player clock. Compact layout (same as regular).",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com assets/site.css .replay-clock"
+          }
+        }
+      }
+    },
+    "data-xs": {
+      "$description": "Structured result output (JSON-like data).",
+      "$extensions": {
+        "com.desertpants": {
+          "ios-text-style": "caption"
+        }
+      },
+      "web": {
+        "$type": "typography",
+        "$value": {
+          "fontFamily": "{font.family.mono}",
+          "fontSize": "{font.size.xs}",
+          "fontWeight": "{font.weight.regular}",
+          "letterSpacing": {
+            "value": 0,
+            "unit": "px"
+          },
+          "lineHeight": "{font.leading.relaxed}"
+        },
+        "$description": "Structured result output (JSON-like data). Regular layout.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com assets/site.css .schema-demo-result",
+            "tracking-em": "{font.tracking.normal}"
+          }
+        }
+      },
+      "compact": {
+        "$type": "typography",
+        "$value": "{type.data-xs.web}",
+        "$description": "Structured result output (JSON-like data). Compact layout (same as regular).",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com assets/site.css .schema-demo-result"
+          }
+        }
+      }
+    },
+    "chart-title": {
+      "$description": "Benchmark chart title.",
+      "$extensions": {
+        "com.desertpants": {
+          "ios-text-style": "caption2"
+        }
+      },
+      "web": {
+        "$type": "typography",
+        "$value": {
+          "fontFamily": "{font.family.mono}",
+          "fontSize": "{font.size.2xs}",
+          "fontWeight": "{font.weight.regular}",
+          "letterSpacing": {
+            "value": 0.88,
+            "unit": "px"
+          },
+          "lineHeight": "{font.leading.normal}"
+        },
+        "$description": "Benchmark chart title. Regular layout.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com assets/site.css .bench-title",
+            "tracking-em": "{font.tracking.loose}",
+            "text-transform": "uppercase"
+          }
+        }
+      },
+      "compact": {
+        "$type": "typography",
+        "$value": "{type.chart-title.web}",
+        "$description": "Benchmark chart title. Compact layout (same as regular).",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com assets/site.css .bench-title"
+          }
+        }
+      }
+    },
+    "link-caps": {
+      "$description": "Bold uppercase text link (example apps).",
+      "$extensions": {
+        "com.desertpants": {
+          "ios-text-style": "caption2"
+        }
+      },
+      "web": {
+        "$type": "typography",
+        "$value": {
+          "fontFamily": "{font.family.mono}",
+          "fontSize": "{font.size.2xs}",
+          "fontWeight": "{font.weight.bold}",
+          "letterSpacing": {
+            "value": 0.44,
+            "unit": "px"
+          },
+          "lineHeight": "{font.leading.normal}"
+        },
+        "$description": "Bold uppercase text link (example apps). Regular layout.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com assets/site.css .example-app-link",
+            "tracking-em": "{font.tracking.wide}",
+            "text-transform": "uppercase"
+          }
+        }
+      },
+      "compact": {
+        "$type": "typography",
+        "$value": "{type.link-caps.web}",
+        "$description": "Bold uppercase text link (example apps). Compact layout (same as regular).",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com assets/site.css .example-app-link"
+          }
+        }
+      }
+    },
+    "entity-label": {
+      "$description": "Entity category label inside result text.",
+      "$extensions": {
+        "com.desertpants": {
+          "ios-text-style": "caption2"
+        }
+      },
+      "web": {
+        "$type": "typography",
+        "$value": {
+          "fontFamily": "{font.family.mono}",
+          "fontSize": "{font.size.3xs}",
+          "fontWeight": "{font.weight.regular}",
+          "letterSpacing": {
+            "value": 0.36,
+            "unit": "px"
+          },
+          "lineHeight": "{font.leading.label}"
+        },
+        "$description": "Entity category label inside result text. Regular layout.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com assets/site.css .lg",
+            "tracking-em": "{font.tracking.wide}"
+          }
+        }
+      },
+      "compact": {
+        "$type": "typography",
+        "$value": "{type.entity-label.web}",
+        "$description": "Entity category label inside result text. Compact layout (same as regular).",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com assets/site.css .lg"
+          }
+        }
+      }
+    },
+    "tag-xs": {
+      "$description": "Feature-card tag in the compact model grid.",
+      "$extensions": {
+        "com.desertpants": {
+          "ios-text-style": "caption2"
+        }
+      },
+      "web": {
+        "$type": "typography",
+        "$value": {
+          "fontFamily": "{font.family.mono}",
+          "fontSize": "{font.size.2xs}",
+          "fontWeight": "{font.weight.regular}",
+          "letterSpacing": {
+            "value": 0.66,
+            "unit": "px"
+          },
+          "lineHeight": "{font.leading.label}"
+        },
+        "$description": "Feature-card tag in the compact model grid. Regular layout.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css .models-grid .fc-tag",
+            "tracking-em": "{font.tracking.wider}",
+            "text-transform": "uppercase"
+          }
+        }
+      },
+      "compact": {
+        "$type": "typography",
+        "$value": "{type.tag-xs.web}",
+        "$description": "Feature-card tag in the compact model grid. Compact layout (same as regular).",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "source",
+            "source": "desertant.com brand/index.css .models-grid .fc-tag"
+          }
+        }
+      }
+    },
+    "stepper-value": {
+      "$description": "Value between a stepper's buttons (tabular, so the digits do not shift as it steps).",
+      "$extensions": {
+        "com.desertpants": {
+          "ios-text-style": "body"
+        }
+      },
+      "web": {
+        "$type": "typography",
+        "$value": {
+          "fontFamily": "{font.family.display}",
+          "fontSize": "{font.size.lg}",
+          "fontWeight": "{font.weight.semibold}",
+          "letterSpacing": {
+            "value": -0.54,
+            "unit": "px"
+          },
+          "lineHeight": "{font.leading.snug}"
+        },
+        "$description": "Value between a stepper's buttons (tabular, so the digits do not shift as it steps). Regular layout.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "addition",
+            "tracking-em": "{font.tracking.tight}",
+            "font-variant-numeric": "tabular-nums"
+          }
+        }
+      },
+      "compact": {
+        "$type": "typography",
+        "$value": "{type.stepper-value.web}",
+        "$description": "Value between a stepper's buttons (tabular, so the digits do not shift as it steps). Compact layout (same as regular).",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "addition"
+          }
+        }
+      }
+    },
+    "code-digit": {
+      "$description": "One-time code digits, one per cell (tabular, so every cell centres the same).",
+      "$extensions": {
+        "com.desertpants": {
+          "ios-text-style": "title2"
+        }
+      },
+      "web": {
+        "$type": "typography",
+        "$value": {
+          "fontFamily": "{font.family.display}",
+          "fontSize": "{font.size.xl}",
+          "fontWeight": "{font.weight.semibold}",
+          "letterSpacing": {
+            "value": -0.72,
+            "unit": "px"
+          },
+          "lineHeight": "{font.leading.snug}"
+        },
+        "$description": "One-time code digits, one per cell (tabular, so every cell centres the same). Regular layout.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "addition",
+            "tracking-em": "{font.tracking.tight}",
+            "font-variant-numeric": "tabular-nums"
+          }
+        }
+      },
+      "compact": {
+        "$type": "typography",
+        "$value": "{type.code-digit.web}",
+        "$description": "One-time code digits, one per cell (tabular, so every cell centres the same). Compact layout (same as regular).",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "addition"
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,1235 @@
+{
+  "$description": "Terminal UI: colour roles, text attributes, box drawing, cells and component recipes for the character grid.",
+  "$extensions": {
+    "com.desertpants": {
+      "system": "desert-pants",
+      "format": "DTCG 2025.10",
+      "source": "Visual language derived from desertant.com (brand/index.css, assets/site.css, captured 2026-09-23/24). Logos, marks, product names, photography and copy are not included.",
+      "modes": [
+        "light",
+        "dark"
+      ]
+    }
+  },
+  "tui": {
+    "$description": "Terminal UI: the design system in a character grid. Colour roles per theme and mode (24-bit, with xterm-256 and ANSI-16 forms solved for contrast), text roles as SGR attributes, box drawing from the radius and border-width scales, spacing in cells and component recipes. Generated into build/tui (a dependency-free Rust module, a ratatui adapter, JSON) and build/terminal (colour schemes for terminal emulators).",
+    "$extensions": {
+      "com.desertpants": {
+        "origin": "addition",
+        "platforms": [
+          "terminal"
+        ]
+      }
+    },
+    "cell": {
+      "width": {
+        "$type": "number",
+        "$value": 8,
+        "$description": "Pixels per terminal column: widths on the pixel scales (breakpoints, containers) divide by it.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "addition"
+          }
+        }
+      },
+      "height": {
+        "$type": "number",
+        "$value": 16,
+        "$description": "Pixels per terminal row.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "addition"
+          }
+        }
+      }
+    },
+    "size": {
+      "min-columns": {
+        "$type": "number",
+        "$value": 80,
+        "$description": "Narrowest terminal every layout is designed for (columns).",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "addition"
+          }
+        }
+      },
+      "min-rows": {
+        "$type": "number",
+        "$value": 24,
+        "$description": "Shortest terminal every layout is designed for (rows).",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "addition"
+          }
+        }
+      },
+      "measure": {
+        "$type": "number",
+        "$value": 72,
+        "$description": "Longest line of running text (columns), like the prose container on screen.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "addition"
+          }
+        }
+      }
+    },
+    "color": {
+      "bg": {
+        "$type": "color",
+        "$value": "{color.bg.canvas}",
+        "$description": "Terminal ground (the default background).",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "addition"
+          }
+        }
+      },
+      "surface": {
+        "$type": "color",
+        "$value": "{color.bg.surface}",
+        "$description": "Fields and code blocks.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "addition"
+          }
+        }
+      },
+      "raised": {
+        "$type": "color",
+        "$value": "{color.bg.raised}",
+        "$description": "Popups, menus and command palettes.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "addition"
+          }
+        }
+      },
+      "sunken": {
+        "$type": "color",
+        "$value": "{color.bg.sunken}",
+        "$description": "Wells and inactive panes.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "addition"
+          }
+        }
+      },
+      "inverse": {
+        "$type": "color",
+        "$value": "{color.bg.inverse}",
+        "$description": "Status bar ground.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "addition"
+          }
+        }
+      },
+      "selection": {
+        "$type": "color",
+        "$value": "{color.selection.bg}",
+        "$description": "Selected rows and text.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "addition"
+          }
+        }
+      },
+      "accent": {
+        "$type": "color",
+        "$value": "{color.accent.default}",
+        "$description": "The one filled primary action on a screen.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "addition"
+          }
+        }
+      },
+      "fg": {
+        "$type": "color",
+        "$value": "{color.text.primary}",
+        "$description": "Default text.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "addition"
+          }
+        }
+      },
+      "fg-secondary": {
+        "$type": "color",
+        "$value": "{color.text.secondary}",
+        "$description": "Secondary text.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "addition"
+          }
+        }
+      },
+      "fg-muted": {
+        "$type": "color",
+        "$value": "{color.text.muted}",
+        "$description": "Labels, meta, hints and placeholders.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "addition"
+          }
+        }
+      },
+      "fg-faint": {
+        "$type": "color",
+        "$value": "{color.text.faint}",
+        "$description": "Disabled text (decoration only; below 4.5:1 by design, as on screen).",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "addition"
+          }
+        }
+      },
+      "fg-inverse": {
+        "$type": "color",
+        "$value": "{color.text.inverse}",
+        "$description": "Text on the status bar.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "addition"
+          }
+        }
+      },
+      "selection-text": {
+        "$type": "color",
+        "$value": "{color.selection.fg}",
+        "$description": "Text on a selected row.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "addition"
+          }
+        }
+      },
+      "on-accent": {
+        "$type": "color",
+        "$value": "{color.text.on-accent}",
+        "$description": "Text on the primary action.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "addition"
+          }
+        }
+      },
+      "accent-text": {
+        "$type": "color",
+        "$value": "{color.text.accent}",
+        "$description": "The selection caret and accent words.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "addition"
+          }
+        }
+      },
+      "link": {
+        "$type": "color",
+        "$value": "{color.text.link}",
+        "$description": "Links (underlined as well).",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "addition"
+          }
+        }
+      },
+      "border": {
+        "$type": "color",
+        "$value": "{color.border.default}",
+        "$description": "Panel borders (translucent borders are composited over the ground).",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "addition"
+          }
+        }
+      },
+      "border-subtle": {
+        "$type": "color",
+        "$value": "{color.border.subtle}",
+        "$description": "Dividers and table rules.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "addition"
+          }
+        }
+      },
+      "border-control": {
+        "$type": "color",
+        "$value": "{color.border.control}",
+        "$description": "Input fields (3:1).",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "addition"
+          }
+        }
+      },
+      "border-strong": {
+        "$type": "color",
+        "$value": "{color.border.strong}",
+        "$description": "Emphasised borders.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "addition"
+          }
+        }
+      },
+      "focus": {
+        "$type": "color",
+        "$value": "{color.focus.ring}",
+        "$description": "The focused panel or field.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "addition"
+          }
+        }
+      },
+      "success": {
+        "$type": "color",
+        "$value": "{color.signal.success.text}",
+        "$description": "Success status.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "addition"
+          }
+        }
+      },
+      "warning": {
+        "$type": "color",
+        "$value": "{color.signal.warning.text}",
+        "$description": "Warning status.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "addition"
+          }
+        }
+      },
+      "danger": {
+        "$type": "color",
+        "$value": "{color.signal.danger.text}",
+        "$description": "Danger status and errors.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "addition"
+          }
+        }
+      },
+      "info": {
+        "$type": "color",
+        "$value": "{color.signal.info.text}",
+        "$description": "Informational status.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "addition"
+          }
+        }
+      },
+      "chart-1": {
+        "$type": "color",
+        "$value": "{color.chart.series-1}",
+        "$description": "Chart series 1.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "addition"
+          }
+        }
+      },
+      "chart-2": {
+        "$type": "color",
+        "$value": "{color.chart.series-2}",
+        "$description": "Chart series 2.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "addition"
+          }
+        }
+      },
+      "chart-3": {
+        "$type": "color",
+        "$value": "{color.chart.series-3}",
+        "$description": "Chart series 3.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "addition"
+          }
+        }
+      },
+      "chart-4": {
+        "$type": "color",
+        "$value": "{color.chart.series-4}",
+        "$description": "Chart series 4.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "addition"
+          }
+        }
+      },
+      "chart-5": {
+        "$type": "color",
+        "$value": "{color.chart.series-5}",
+        "$description": "Chart series 5.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "addition"
+          }
+        }
+      },
+      "chart-6": {
+        "$type": "color",
+        "$value": "{color.chart.series-6}",
+        "$description": "Chart series 6.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "addition"
+          }
+        }
+      },
+      "chart-focus": {
+        "$type": "color",
+        "$value": "{color.chart.focus}",
+        "$description": "The one emphasis in a chart (the focus bar, the last spark value).",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "addition"
+          }
+        }
+      },
+      "chart-context": {
+        "$type": "color",
+        "$value": "{color.chart.context}",
+        "$description": "Chart marks outside the focus.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "addition"
+          }
+        }
+      },
+      "chart-grid": {
+        "$type": "color",
+        "$value": "{color.chart.grid}",
+        "$description": "Chart gridlines and bar tracks.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "addition"
+          }
+        }
+      },
+      "syntax-plain": {
+        "$type": "color",
+        "$value": "{color.syntax.plain}",
+        "$description": "Code: plain text.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "addition"
+          }
+        }
+      },
+      "syntax-keyword": {
+        "$type": "color",
+        "$value": "{color.syntax.keyword}",
+        "$description": "Code: keywords.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "addition"
+          }
+        }
+      },
+      "syntax-control": {
+        "$type": "color",
+        "$value": "{color.syntax.control}",
+        "$description": "Code: control flow.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "addition"
+          }
+        }
+      },
+      "syntax-function": {
+        "$type": "color",
+        "$value": "{color.syntax.function}",
+        "$description": "Code: functions.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "addition"
+          }
+        }
+      },
+      "syntax-string": {
+        "$type": "color",
+        "$value": "{color.syntax.string}",
+        "$description": "Code: strings.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "addition"
+          }
+        }
+      },
+      "syntax-variable": {
+        "$type": "color",
+        "$value": "{color.syntax.variable}",
+        "$description": "Code: variables.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "addition"
+          }
+        }
+      },
+      "syntax-type": {
+        "$type": "color",
+        "$value": "{color.syntax.type}",
+        "$description": "Code: types.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "addition"
+          }
+        }
+      },
+      "syntax-number": {
+        "$type": "color",
+        "$value": "{color.syntax.number}",
+        "$description": "Code: numbers.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "addition"
+          }
+        }
+      },
+      "syntax-comment": {
+        "$type": "color",
+        "$value": "{color.syntax.comment}",
+        "$description": "Code: comments.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "addition"
+          }
+        }
+      },
+      "cursor": {
+        "$type": "color",
+        "$value": "{color.terminal.cursor}",
+        "$description": "Text cursor.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "addition"
+          }
+        }
+      }
+    },
+    "type": {
+      "title": {
+        "$type": "typography",
+        "$value": "{type.card-title.web}",
+        "$description": "Panel titles (bold: weight 600 and above sets bold). The terminal keeps the role's weight (bold from 600) and case; size and face are the terminal's.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "addition"
+          }
+        }
+      },
+      "heading": {
+        "$type": "typography",
+        "$value": "{type.h4.web}",
+        "$description": "Section headings. The terminal keeps the role's weight (bold from 600) and case; size and face are the terminal's.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "addition"
+          }
+        }
+      },
+      "body": {
+        "$type": "typography",
+        "$value": "{type.body.web}",
+        "$description": "Running text. The terminal keeps the role's weight (bold from 600) and case; size and face are the terminal's.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "addition"
+          }
+        }
+      },
+      "strong": {
+        "$type": "typography",
+        "$value": "{type.label.web}",
+        "$description": "Emphasis and row names. The terminal keeps the role's weight (bold from 600) and case; size and face are the terminal's.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "addition"
+          }
+        }
+      },
+      "eyebrow": {
+        "$type": "typography",
+        "$value": "{type.eyebrow.web}",
+        "$description": "Eyebrows above headings (uppercase sets capitals). The terminal keeps the role's weight (bold from 600) and case; size and face are the terminal's.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "addition"
+          }
+        }
+      },
+      "meta": {
+        "$type": "typography",
+        "$value": "{type.meta.web}",
+        "$description": "Meta lines: counts, dates, paths. The terminal keeps the role's weight (bold from 600) and case; size and face are the terminal's.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "addition"
+          }
+        }
+      },
+      "table-head": {
+        "$type": "typography",
+        "$value": "{type.table-head.web}",
+        "$description": "Table heads. The terminal keeps the role's weight (bold from 600) and case; size and face are the terminal's.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "addition"
+          }
+        }
+      },
+      "button": {
+        "$type": "typography",
+        "$value": "{type.button.web}",
+        "$description": "Button labels. The terminal keeps the role's weight (bold from 600) and case; size and face are the terminal's.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "addition"
+          }
+        }
+      },
+      "tag": {
+        "$type": "typography",
+        "$value": "{type.tag.web}",
+        "$description": "Status words and tags. The terminal keeps the role's weight (bold from 600) and case; size and face are the terminal's.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "addition"
+          }
+        }
+      },
+      "code": {
+        "$type": "typography",
+        "$value": "{type.code.web}",
+        "$description": "Code. The terminal keeps the role's weight (bold from 600) and case; size and face are the terminal's.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "addition"
+          }
+        }
+      },
+      "micro": {
+        "$type": "typography",
+        "$value": "{type.micro.web}",
+        "$description": "Fine print. The terminal keeps the role's weight (bold from 600) and case; size and face are the terminal's.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "addition"
+          }
+        }
+      }
+    },
+    "border": {
+      "round-from": {
+        "$type": "dimension",
+        "$value": "{radius.md}",
+        "$description": "Corner radius at and above which a box takes rounded corners (╭ ╮ ╰ ╯); below it, square (┌ ┐ └ ┘).",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "addition"
+          }
+        }
+      },
+      "heavy-from": {
+        "$type": "dimension",
+        "$value": "{border-width.thick}",
+        "$description": "Border width at and above which a box takes heavy lines (━ ┃); below it, light (─ │).",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "addition"
+          }
+        }
+      },
+      "double-from": {
+        "$type": "dimension",
+        "$value": "{border-width.quote}",
+        "$description": "Border width at and above which a box takes double lines (═ ║).",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "addition"
+          }
+        }
+      }
+    },
+    "space": {
+      "indent": {
+        "$type": "number",
+        "$value": 2,
+        "$description": "Indent of nested rows and continuation lines (cells).",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "addition"
+          }
+        }
+      },
+      "column-gap": {
+        "$type": "number",
+        "$value": 2,
+        "$description": "Gap between table columns and side-by-side panes (cells).",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "addition"
+          }
+        }
+      },
+      "hint-gap": {
+        "$type": "number",
+        "$value": 3,
+        "$description": "Gap between key hints (cells).",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "addition"
+          }
+        }
+      },
+      "block-gap": {
+        "$type": "number",
+        "$value": 1,
+        "$description": "Blank rows between blocks.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "addition"
+          }
+        }
+      }
+    },
+    "motion": {
+      "spinner-frame": {
+        "$type": "duration",
+        "$value": "{duration.instant}",
+        "$description": "Interval between spinner frames.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "addition"
+          }
+        }
+      },
+      "spinner-delay": {
+        "$type": "duration",
+        "$value": "{duration.reveal}",
+        "$description": "Wait before a spinner appears (work that finishes sooner shows none).",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "addition"
+          }
+        }
+      },
+      "flash": {
+        "$type": "duration",
+        "$value": "{duration.base}",
+        "$description": "Reverse-video flash that confirms a key press.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "addition"
+          }
+        }
+      }
+    },
+    "panel": {
+      "border": {
+        "$type": "color",
+        "$value": "{tui.color.border}",
+        "$description": "Panel border.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "addition"
+          }
+        }
+      },
+      "border-focus": {
+        "$type": "color",
+        "$value": "{tui.color.focus}",
+        "$description": "Border of the focused panel.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "addition"
+          }
+        }
+      },
+      "title": {
+        "$type": "color",
+        "$value": "{tui.color.fg}",
+        "$description": "Panel title (set into the top border).",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "addition"
+          }
+        }
+      },
+      "title-type": {
+        "$type": "typography",
+        "$value": "{tui.type.title}",
+        "$description": "Panel title.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "addition"
+          }
+        }
+      },
+      "radius": {
+        "$type": "dimension",
+        "$value": "{radius.2xl}",
+        "$description": "Panel corners: the card radius, so panels take rounded corners.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "addition"
+          }
+        }
+      },
+      "border-width": {
+        "$type": "dimension",
+        "$value": "{border-width.hair}",
+        "$description": "Panel border (light lines).",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "addition"
+          }
+        }
+      },
+      "border-width-focus": {
+        "$type": "dimension",
+        "$value": "{border-width.focus}",
+        "$description": "Focused panel border (heavy lines).",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "addition"
+          }
+        }
+      },
+      "padding-inline": {
+        "$type": "number",
+        "$value": 1,
+        "$description": "Cells between a panel border and its content.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "addition"
+          }
+        }
+      },
+      "padding-block": {
+        "$type": "number",
+        "$value": 0,
+        "$description": "Rows between a panel border and its content.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "addition"
+          }
+        }
+      }
+    },
+    "divider": {
+      "rule": {
+        "$type": "color",
+        "$value": "{tui.color.border-subtle}",
+        "$description": "Divider inside a panel (inset by the padding; it never meets the border).",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "addition"
+          }
+        }
+      }
+    },
+    "list": {
+      "text": {
+        "$type": "color",
+        "$value": "{tui.color.fg}",
+        "$description": "List item.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "addition"
+          }
+        }
+      },
+      "meta": {
+        "$type": "color",
+        "$value": "{tui.color.fg-muted}",
+        "$description": "Continuation and meta line under an item.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "addition"
+          }
+        }
+      },
+      "caret": {
+        "$type": "color",
+        "$value": "{tui.color.accent-text}",
+        "$description": "Caret before the selected item (▸).",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "addition"
+          }
+        }
+      },
+      "selected-bg": {
+        "$type": "color",
+        "$value": "{tui.color.selection}",
+        "$description": "Selected item ground.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "addition"
+          }
+        }
+      },
+      "selected-text": {
+        "$type": "color",
+        "$value": "{tui.color.selection-text}",
+        "$description": "Selected item text.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "addition"
+          }
+        }
+      }
+    },
+    "table": {
+      "head": {
+        "$type": "color",
+        "$value": "{tui.color.fg-muted}",
+        "$description": "Table head text.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "addition"
+          }
+        }
+      },
+      "head-type": {
+        "$type": "typography",
+        "$value": "{tui.type.table-head}",
+        "$description": "Table head (capitals).",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "addition"
+          }
+        }
+      },
+      "cell": {
+        "$type": "color",
+        "$value": "{tui.color.fg}",
+        "$description": "Table cells.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "addition"
+          }
+        }
+      },
+      "rule": {
+        "$type": "color",
+        "$value": "{tui.color.border-subtle}",
+        "$description": "Rule under the head.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "addition"
+          }
+        }
+      }
+    },
+    "key-hint": {
+      "key": {
+        "$type": "color",
+        "$value": "{tui.color.fg}",
+        "$description": "Key names in a hint row.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "addition"
+          }
+        }
+      },
+      "key-type": {
+        "$type": "typography",
+        "$value": "{tui.type.strong}",
+        "$description": "Key names (bold).",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "addition"
+          }
+        }
+      },
+      "label": {
+        "$type": "color",
+        "$value": "{tui.color.fg-muted}",
+        "$description": "What a key does.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "addition"
+          }
+        }
+      }
+    },
+    "button": {
+      "primary-bg": {
+        "$type": "color",
+        "$value": "{tui.color.accent}",
+        "$description": "Primary action ground (one per screen).",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "addition"
+          }
+        }
+      },
+      "primary-text": {
+        "$type": "color",
+        "$value": "{tui.color.on-accent}",
+        "$description": "Primary action label.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "addition"
+          }
+        }
+      },
+      "secondary-text": {
+        "$type": "color",
+        "$value": "{tui.color.fg}",
+        "$description": "Secondary action label.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "addition"
+          }
+        }
+      },
+      "bracket": {
+        "$type": "color",
+        "$value": "{tui.color.fg-muted}",
+        "$description": "Brackets around a secondary action.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "addition"
+          }
+        }
+      },
+      "type": {
+        "$type": "typography",
+        "$value": "{tui.type.button}",
+        "$description": "Action labels (bold).",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "addition"
+          }
+        }
+      },
+      "padding-inline": {
+        "$type": "number",
+        "$value": 1,
+        "$description": "Cells either side of an action label.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "addition"
+          }
+        }
+      }
+    },
+    "field": {
+      "label": {
+        "$type": "color",
+        "$value": "{tui.color.fg-muted}",
+        "$description": "Field label.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "addition"
+          }
+        }
+      },
+      "bg": {
+        "$type": "color",
+        "$value": "{tui.color.surface}",
+        "$description": "Field ground.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "addition"
+          }
+        }
+      },
+      "text": {
+        "$type": "color",
+        "$value": "{tui.color.fg}",
+        "$description": "Field value.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "addition"
+          }
+        }
+      },
+      "placeholder": {
+        "$type": "color",
+        "$value": "{tui.color.fg-muted}",
+        "$description": "Placeholder text.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "addition"
+          }
+        }
+      },
+      "focus": {
+        "$type": "color",
+        "$value": "{tui.color.focus}",
+        "$description": "Marker of the focused field (▌ before it; reverse video without colour).",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "addition"
+          }
+        }
+      }
+    },
+    "tabs": {
+      "active": {
+        "$type": "color",
+        "$value": "{tui.color.fg}",
+        "$description": "Current tab (bold and underlined).",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "addition"
+          }
+        }
+      },
+      "inactive": {
+        "$type": "color",
+        "$value": "{tui.color.fg-muted}",
+        "$description": "Other tabs.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "addition"
+          }
+        }
+      },
+      "gap": {
+        "$type": "number",
+        "$value": 3,
+        "$description": "Cells between tabs.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "addition"
+          }
+        }
+      }
+    },
+    "status-bar": {
+      "bg": {
+        "$type": "color",
+        "$value": "{tui.color.inverse}",
+        "$description": "Status bar ground (reverse video without colour).",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "addition"
+          }
+        }
+      },
+      "text": {
+        "$type": "color",
+        "$value": "{tui.color.fg-inverse}",
+        "$description": "Status bar text.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "addition"
+          }
+        }
+      }
+    },
+    "progress": {
+      "fill": {
+        "$type": "color",
+        "$value": "{tui.color.chart-focus}",
+        "$description": "Progress fill (█ with eighth blocks at its end).",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "addition"
+          }
+        }
+      },
+      "track": {
+        "$type": "color",
+        "$value": "{tui.color.chart-grid}",
+        "$description": "Progress track (░).",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "addition"
+          }
+        }
+      },
+      "value": {
+        "$type": "color",
+        "$value": "{tui.color.fg}",
+        "$description": "Percentage after the bar.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "addition"
+          }
+        }
+      }
+    },
+    "chart": {
+      "focus": {
+        "$type": "color",
+        "$value": "{tui.color.chart-focus}",
+        "$description": "The focus bar, the last spark value.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "addition"
+          }
+        }
+      },
+      "context": {
+        "$type": "color",
+        "$value": "{tui.color.chart-context}",
+        "$description": "Bars and spark values outside the focus.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "addition"
+          }
+        }
+      },
+      "label": {
+        "$type": "color",
+        "$value": "{tui.color.fg-muted}",
+        "$description": "Bar labels and values outside the focus.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "addition"
+          }
+        }
+      },
+      "value": {
+        "$type": "color",
+        "$value": "{tui.color.fg}",
+        "$description": "The focus value.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "addition"
+          }
+        }
+      }
+    },
+    "status": {
+      "type": {
+        "$type": "typography",
+        "$value": "{tui.type.tag}",
+        "$description": "Status word (capitals) after its dot (●).",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "addition"
+          }
+        }
+      }
+    },
+    "spinner": {
+      "glyph": {
+        "$type": "color",
+        "$value": "{tui.color.fg-muted}",
+        "$description": "Spinner glyph.",
+        "$extensions": {
+          "com.desertpants": {
+            "origin": "addition"
+          }
+        }
+      }
+    }
+  }
+}

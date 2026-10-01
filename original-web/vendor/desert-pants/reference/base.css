@@ -1,0 +1,192 @@
+/* desert-pants reference base styles. Token-only: every value is a var(--dp-*) reference.
+   Load order: build/web/fonts.css, build/web/tokens.css, reference/base.css, reference/components.css. */
+
+*, *::before, *::after { box-sizing: border-box; }
+* { margin: 0; }
+
+html {
+  -webkit-text-size-adjust: 100%;
+  -webkit-tap-highlight-color: var(--dp-color-alpha-transparent);
+  background: var(--dp-color-bg-canvas);
+  color: var(--dp-color-text-primary);
+}
+/* Text-scale check: layouts must hold at font.scale.support x the reader's text size (the specimen toggles this). */
+html.dp-text-scale-support { font-size: calc(var(--dp-font-scale-support) * 100%); }
+
+body {
+  background: var(--dp-color-bg-canvas);
+  color: var(--dp-color-text-primary);
+  font-family: var(--dp-type-body-font-family);
+  font-size: var(--dp-type-body-font-size);
+  font-weight: var(--dp-type-body-font-weight);
+  line-height: var(--dp-type-body-line-height);
+  letter-spacing: var(--dp-type-body-letter-spacing);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  /* long words, URLs and token paths break instead of widening the page (enlarged text, narrow screens) */
+  overflow-wrap: break-word;
+}
+
+::selection { background: var(--dp-color-selection-bg); color: var(--dp-color-selection-fg); }
+
+/* Reading direction. Layout uses logical properties (inline start and end), so dir="rtl" mirrors it. Movement along the
+   inline axis (screen transitions, switch thumbs) multiplies by --dp-runtime-inline-direction: 1 left to right, -1 right
+   to left. Icons that point along the reading direction carry dp-icon--mirror (icons/manifest.json "mirror": true). */
+/* the part of the viewport an on-screen keyboard covers (keyboard() in mobile.js keeps it current) */
+:root { --dp-runtime-keyboard-inset: 0px; }
+:dir(ltr) { --dp-runtime-inline-direction: 1; }
+:dir(rtl) { --dp-runtime-inline-direction: -1; }
+.dp-icon--mirror:dir(rtl) { scale: -1 1; }
+/* Cursive scripts join their letters, and tracking would pull the joins apart: letter spacing is zero for them. */
+:is(:lang(ar), :lang(fa), :lang(ur), :lang(ps), :lang(sd), :lang(ug), :lang(syr), :lang(nqo)),
+:is(:lang(ar), :lang(fa), :lang(ur), :lang(ps), :lang(sd), :lang(ug), :lang(syr), :lang(nqo)) * { letter-spacing: 0 !important; }
+
+h1, h2, h3, h4, h5, h6 { color: var(--dp-color-text-primary); text-wrap: balance; }
+h1 { font-family: var(--dp-type-h1-font-family); font-size: var(--dp-type-h1-font-size); font-weight: var(--dp-type-h1-font-weight); line-height: var(--dp-type-h1-line-height); letter-spacing: var(--dp-type-h1-letter-spacing); }
+h2 { font-family: var(--dp-type-h2-font-family); font-size: var(--dp-type-h2-font-size); font-weight: var(--dp-type-h2-font-weight); line-height: var(--dp-type-h2-line-height); letter-spacing: var(--dp-type-h2-letter-spacing); }
+h3 { font-family: var(--dp-type-h3-font-family); font-size: var(--dp-type-h3-font-size); font-weight: var(--dp-type-h3-font-weight); line-height: var(--dp-type-h3-line-height); letter-spacing: var(--dp-type-h3-letter-spacing); }
+h4, h5, h6 { font-family: var(--dp-type-h4-font-family); font-size: var(--dp-type-h4-font-size); font-weight: var(--dp-type-h4-font-weight); line-height: var(--dp-type-h4-line-height); letter-spacing: var(--dp-type-h4-letter-spacing); }
+p { text-wrap: pretty; }
+fieldset { min-width: 0; padding: 0; border: 0; }
+legend { padding: 0; }
+
+a {
+  color: var(--dp-color-text-link);
+  text-decoration: underline;
+  text-decoration-thickness: var(--dp-component-prose-underline-thickness);
+  text-underline-offset: var(--dp-component-prose-underline-offset);
+  transition: color var(--dp-motion-transition-color);
+}
+
+code, kbd, samp, pre { font-family: var(--dp-font-family-mono); font-size: var(--dp-font-ratio-code-block); }
+:not(pre) > code {
+  overflow-wrap: anywhere;
+  font-size: var(--dp-component-code-inline-size);
+  background: var(--dp-component-code-inline-bg);
+  color: var(--dp-component-code-inline-fg);
+  border-radius: var(--dp-component-code-inline-radius);
+  padding: var(--dp-component-code-inline-padding-block) var(--dp-component-code-inline-padding-inline);
+}
+
+img, svg, video, canvas { display: block; max-width: 100%; }
+button, input, select, textarea { font: inherit; color: inherit; }
+hr { border: 0; border-top: var(--dp-border-width-hair) solid var(--dp-color-border-subtle); }
+
+:focus-visible {
+  outline: var(--dp-interaction-focus-width) solid var(--dp-color-focus-ring);
+  outline-offset: var(--dp-interaction-focus-offset);
+}
+
+.dp-sr-only { position: absolute; width: var(--dp-space-px); height: var(--dp-space-px); overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+
+/* Page scaffolding */
+.dp-stage {
+  min-height: 100svh;
+  /* dp-lint-disable-next-line physical-direction: safe-area insets are physical sides of the screen */
+  padding-left: max(var(--dp-layout-gutter-fluid), env(safe-area-inset-left)); padding-right: max(var(--dp-layout-gutter-fluid), env(safe-area-inset-right));
+  padding-bottom: var(--dp-layout-page-stage-pad-bottom);
+}
+/* Mobile web app shell (with viewport-fit=cover): content clears the home indicator by the safe-area inset plus
+   layout.grid.mobile.content-bottom-extra. */
+.dp-app-shell { min-height: 100dvh; padding-bottom: calc(env(safe-area-inset-bottom) + var(--dp-layout-grid-mobile-content-bottom-extra)); }
+.dp-column { display: flex; flex-direction: column; width: 100%; max-width: var(--dp-layout-grid-web-max-width); margin-inline: auto; padding-top: var(--dp-layout-page-col-pad-top); }
+.dp-column--flush { padding-top: 0; }
+.dp-home { display: flex; flex-direction: column; gap: var(--dp-layout-page-home-gap); }
+
+/* Containers and measures */
+.dp-container { width: 100%; margin-inline: auto; }
+.dp-container--sm { max-width: var(--dp-layout-container-sm); }
+.dp-container--md { max-width: var(--dp-layout-container-md); }
+.dp-container--lg { max-width: var(--dp-layout-container-lg); }
+.dp-container--xl { max-width: var(--dp-layout-container-xl); }
+.dp-container--2xl { max-width: var(--dp-layout-container-2xl); }
+.dp-measure { max-width: var(--dp-font-measure); }
+.dp-measure--copy { max-width: var(--dp-layout-max-width-copy); }
+.dp-article-wide { width: min(100%, var(--dp-layout-max-width-article-wide)); margin-inline: auto; }
+
+/* Page grid: 12 columns above 860px, 8 from 641px, 4 at 640px and below. Place items with grid-column lines. */
+.dp-grid { display: grid; grid-template-columns: repeat(var(--dp-layout-grid-web-regular-columns), minmax(0, 1fr)); gap: var(--dp-layout-grid-web-regular-gap);
+  width: 100%; max-width: var(--dp-layout-grid-web-max-width); margin-inline: auto; }
+@media (max-width: 860px) { .dp-grid { grid-template-columns: repeat(var(--dp-layout-grid-web-medium-columns), minmax(0, 1fr)); gap: var(--dp-layout-grid-web-medium-gap); } }
+@media (max-width: 640px) { .dp-grid { grid-template-columns: repeat(var(--dp-layout-grid-web-compact-columns), minmax(0, 1fr)); gap: var(--dp-layout-grid-web-compact-gap); } }
+.dp-grid > .dp-grid__full { grid-column: 1 / -1; }
+.dp-auto-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(var(--dp-layout-grid-component-pinboard-fill-min), 1fr)); gap: var(--dp-layout-grid-component-pinboard-gap); }
+.dp-facts { display: grid; grid-template-columns: repeat(auto-fit, minmax(var(--dp-layout-grid-component-facts-min), 1fr)); gap: var(--dp-layout-grid-web-regular-gap); }
+
+/* Icons: Lucide-style line icons on the 24-unit grid (viewBox="0 0 24 24"), stroked in currentColor. */
+.dp-icon { flex: none; width: var(--dp-icon-size-24); height: var(--dp-icon-size-24); fill: none; stroke: currentColor;
+  stroke-width: var(--dp-icon-stroke-regular); stroke-linecap: round; stroke-linejoin: round; }
+.dp-icon--10 { width: var(--dp-icon-size-10); height: var(--dp-icon-size-10); }
+.dp-icon--12 { width: var(--dp-icon-size-12); height: var(--dp-icon-size-12); }
+.dp-icon--14 { width: var(--dp-icon-size-14); height: var(--dp-icon-size-14); }
+.dp-icon--15 { width: var(--dp-icon-size-15); height: var(--dp-icon-size-15); }
+.dp-icon--16 { width: var(--dp-icon-size-16); height: var(--dp-icon-size-16); }
+.dp-icon--18 { width: var(--dp-icon-size-18); height: var(--dp-icon-size-18); }
+.dp-icon--28 { width: var(--dp-icon-size-28); height: var(--dp-icon-size-28); }
+.dp-icon--fine { stroke-width: var(--dp-icon-stroke-fine); }
+.dp-icon--caret { stroke-width: var(--dp-icon-stroke-caret); }
+.dp-icon--arrow { stroke-width: var(--dp-icon-stroke-arrow); }
+.dp-icon--bold { stroke-width: var(--dp-icon-stroke-bold); }
+.dp-icon--filled { fill: currentColor; stroke: none; }
+
+/* Surfaces */
+.dp-surface { background: var(--dp-color-bg-surface); }
+.dp-surface--raised { background: var(--dp-color-bg-raised); box-shadow: var(--dp-shadow-xs); }
+.dp-surface--sunken { background: var(--dp-color-bg-sunken); }
+.dp-surface--inset { background: var(--dp-color-bg-inset); }
+.dp-surface--accent-soft { background: var(--dp-color-bg-accent-soft); }
+.dp-surface--inverse { background: var(--dp-color-bg-inverse); color: var(--dp-color-text-inverse); border-color: var(--dp-color-border-inverse); }
+.dp-surface--accent { background: var(--dp-color-accent-default); color: var(--dp-color-accent-contrast); }
+.dp-rule--accent { border: 0; border-top: var(--dp-border-width-thick) solid var(--dp-color-border-accent); }
+.dp-ring { box-shadow: var(--dp-shadow-ring-default); }
+.dp-ring--strong { box-shadow: var(--dp-shadow-ring-strong); }
+.dp-backdrop--sm { backdrop-filter: blur(var(--dp-blur-sm)); }
+.dp-backdrop--md { backdrop-filter: blur(var(--dp-blur-md)); }
+.dp-backdrop--lg { backdrop-filter: blur(var(--dp-blur-lg)); }
+
+/* Media ratios */
+.dp-ratio--square { aspect-ratio: var(--dp-aspect-square); }
+.dp-ratio--landscape { aspect-ratio: var(--dp-aspect-landscape); }
+.dp-ratio--video { aspect-ratio: var(--dp-aspect-video); }
+.dp-ratio--post { aspect-ratio: var(--dp-aspect-post); }
+.dp-ratio--portrait-card { aspect-ratio: var(--dp-aspect-portrait-card); }
+.dp-ratio--portrait-photo { aspect-ratio: var(--dp-aspect-portrait-photo); }
+.dp-ratio--editorial { aspect-ratio: var(--dp-aspect-editorial); }
+.dp-ratio--wide-photo { aspect-ratio: var(--dp-aspect-wide-photo); }
+.dp-ratio > img, .dp-ratio > video { width: 100%; height: 100%; object-fit: cover; }
+
+/* Native control text (date pickers, native selects) where the platform draws the control. */
+input[type="date"], input[type="time"], input[type="datetime-local"] { font-family: var(--dp-font-family-ui); }
+.dp-section { display: flex; flex-direction: column; gap: var(--dp-layout-page-section-gap); scroll-margin-top: var(--dp-layout-page-scroll-margin); }
+/* Variants: stack (sections inside a stacked section sit layout.page.section-stack apart), narrow (prose measure). */
+.dp-section--stack { gap: var(--dp-layout-page-section-stack); }
+.dp-section--narrow { max-width: var(--dp-layout-max-width-prose); }
+.dp-eyebrow {
+  font-family: var(--dp-type-eyebrow-font-family); font-size: var(--dp-type-eyebrow-font-size); font-weight: var(--dp-type-eyebrow-font-weight);
+  line-height: var(--dp-type-eyebrow-line-height); letter-spacing: var(--dp-type-eyebrow-letter-spacing); text-transform: var(--dp-type-eyebrow-text-transform);
+  color: var(--dp-color-text-muted);
+}
+.dp-lede {
+  font-family: var(--dp-type-lede-font-family); font-size: var(--dp-type-lede-font-size); line-height: var(--dp-type-lede-line-height);
+  max-width: var(--dp-layout-max-width-prose);
+}
+.dp-display {
+  font-family: var(--dp-type-display-font-family); font-size: var(--dp-type-display-font-size); font-weight: var(--dp-type-display-font-weight);
+  line-height: var(--dp-type-display-line-height); letter-spacing: var(--dp-type-display-letter-spacing);
+}
+.dp-micro { font-family: var(--dp-type-micro-font-family); font-size: var(--dp-type-micro-font-size); line-height: var(--dp-type-micro-line-height); color: var(--dp-color-text-muted); }
+
+/* Rise-in reveal: only with JavaScript (components.js adds .dp-js and marks elements .is-in as they come into view). */
+@media (prefers-reduced-motion: no-preference) {
+  .dp-js .dp-rise { transition: opacity var(--dp-motion-transition-reveal), transform var(--dp-motion-transition-reveal); }
+  .dp-js .dp-rise:not(.is-in) { opacity: var(--dp-opacity-0); transform: translateY(var(--dp-interaction-lift-reveal)); }
+  .dp-rise.dp-delay-0 { transition-delay: var(--dp-duration-stagger-0); }
+  .dp-rise.dp-delay-1 { transition-delay: var(--dp-duration-stagger-1); }
+  .dp-rise.dp-delay-2 { transition-delay: var(--dp-duration-stagger-2); }
+  .dp-rise.dp-delay-3 { transition-delay: var(--dp-duration-stagger-3); }
+  .dp-rise.dp-delay-4 { transition-delay: var(--dp-duration-stagger-4); }
+  .dp-rise.dp-delay-5 { transition-delay: var(--dp-duration-stagger-5); }
+  .dp-rise.dp-delay-6 { transition-delay: var(--dp-duration-stagger-6); }
+  .dp-rise.dp-delay-7 { transition-delay: var(--dp-duration-stagger-7); }
+}

@@ -1,6 +1,6 @@
 # Isoscope planning playbook
 
-This is a manual coordination protocol. It does not add or claim executable planning gates. Existing product build, routing, telemetry, and design contracts remain in `docs/` and the root specification.
+This manual adaptation draws on Leitting `planning/PLAYBOOK.md` Parts 0 and 20 at source commit `48f2923`; it omits Leitting-specific Rust-only, Kani, and kernel requirements. It does not add or claim executable planning gates. Existing product build, routing, telemetry, and design contracts remain in `docs/` and the root specification.
 
 ## 1. Authority and task flow
 
@@ -19,7 +19,7 @@ Use a dedicated branch from the issue's base SHA. Keep changes within scope. Do 
 
 ## 3. Work-state record
 
-For each claimed seat, record UTC timestamps for `claim`, `ack`, `start`, `wait`, `resume`, `handoff`, and `done` when those events occur, with issue, nonce, branch, and exact head SHA. A wait entry names its cause and next observable event. While blocked on an external operation, poll at increasing intervals (about 30 seconds, then 60 seconds); after two unchanged reads, wait for a status change or event rather than polling repeatedly. Handoff records the outgoing/incoming owner and acknowledgment; read back the forge comment before treating a receipt as authoritative. Do not start a duplicate active seat. These records are manual status evidence, not scheduler enforcement.
+For each claimed seat, record UTC timestamps for `claim`, `ack`, `start`, `wait`, `resume`, `handoff`, and `done` when those events occur, with issue, nonce, branch, and exact head SHA. A wait entry names its cause and next observable event. While blocked on an external operation, poll at increasing intervals (about 30 seconds, then 60 seconds). After two unchanged reads, back off to idle checks every 1–5 minutes unless a real push channel can reach the seat; do not wait forever for an event that cannot be delivered. Handoff records the outgoing/incoming owner and acknowledgment; read back the forge comment before treating a receipt as authoritative. Do not start a duplicate active seat. These records are manual status evidence, not scheduler enforcement.
 
 ## 4. Evidence and acceptance
 

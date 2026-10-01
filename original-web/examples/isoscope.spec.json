@@ -53,7 +53,44 @@
    "h": 1,
    "does": "One JSON object that describes an entire system: modules, connections, status, levels, and the guided story. Hand-editable, diffable, and the interchange format between every other part.",
    "built": "Schema documented in SPEC.md — 16 keys, all optional except nodes and edges. Two examples ship: this map, and ODIN Sentinel (the first consumer).",
-   "refs": "SPEC.md · examples/"
+   "refs": "SPEC.md · examples/",
+   "media": [
+    {
+     "src": "/media/van-halen-jump.mp4",
+     "face": "north",
+     "fit": "cover",
+     "group": "theater",
+     "audio": true
+    },
+    {
+     "src": "/media/van-halen-jump.mp4",
+     "face": "south",
+     "fit": "cover",
+     "group": "theater",
+     "audio": true
+    },
+    {
+     "src": "/media/van-halen-jump.mp4",
+     "face": "east",
+     "fit": "cover",
+     "group": "theater",
+     "audio": true
+    },
+    {
+     "src": "/media/van-halen-jump.mp4",
+     "face": "west",
+     "fit": "cover",
+     "group": "theater",
+     "audio": true
+    },
+    {
+     "src": "/media/van-halen-jump.mp4",
+     "face": "roof",
+     "fit": "cover",
+     "group": "theater",
+     "audio": true
+    }
+   ]
   },
   {
    "id": "DB",
@@ -67,7 +104,44 @@
    "h": 1,
    "does": "Plain SQLite shaped as a graph: one row per node, one row per edge — edge attributes live on the edge. The living source of truth agents write to while they work.",
    "built": "bun:sqlite, zero dependencies. Six tables mirror the spec one-to-one; import/export round-trips losslessly.",
-   "refs": "db/schema.sql · lib.ts"
+   "refs": "db/schema.sql · lib.ts",
+   "media": [
+    {
+     "src": "/media/van-halen-when-its-love.mp4",
+     "face": "north",
+     "fit": "cover",
+     "group": "theater",
+     "audio": true
+    },
+    {
+     "src": "/media/van-halen-when-its-love.mp4",
+     "face": "south",
+     "fit": "cover",
+     "group": "theater",
+     "audio": true
+    },
+    {
+     "src": "/media/van-halen-when-its-love.mp4",
+     "face": "east",
+     "fit": "cover",
+     "group": "theater",
+     "audio": true
+    },
+    {
+     "src": "/media/van-halen-when-its-love.mp4",
+     "face": "west",
+     "fit": "cover",
+     "group": "theater",
+     "audio": true
+    },
+    {
+     "src": "/media/van-halen-when-its-love.mp4",
+     "face": "roof",
+     "fit": "cover",
+     "group": "theater",
+     "audio": true
+    }
+   ]
   },
   {
    "id": "CL",
@@ -81,7 +155,44 @@
    "h": 1,
    "does": "Ten verbs: init, import, export, build, serve, ingest, mark, ci, sensor, install-hook. Everything a human, a pipeline, or a non-MCP agent needs to maintain the map from a shell.",
    "built": "TypeScript on Bun, no build step, thin face over lib.ts.",
-   "refs": "cli.ts"
+   "refs": "cli.ts",
+   "media": [
+    {
+     "src": "/media/van-halen-right-now.mp4",
+     "face": "north",
+     "fit": "cover",
+     "group": "theater",
+     "audio": true
+    },
+    {
+     "src": "/media/van-halen-right-now.mp4",
+     "face": "south",
+     "fit": "cover",
+     "group": "theater",
+     "audio": true
+    },
+    {
+     "src": "/media/van-halen-right-now.mp4",
+     "face": "east",
+     "fit": "cover",
+     "group": "theater",
+     "audio": true
+    },
+    {
+     "src": "/media/van-halen-right-now.mp4",
+     "face": "west",
+     "fit": "cover",
+     "group": "theater",
+     "audio": true
+    },
+    {
+     "src": "/media/van-halen-right-now.mp4",
+     "face": "roof",
+     "fit": "cover",
+     "group": "theater",
+     "audio": true
+    }
+   ]
   },
   {
    "id": "MC",
@@ -95,7 +206,44 @@
    "h": 1,
    "does": "Nine tools that let any MCP-capable agent maintain the living map as it builds: upsert modules and links, set status, read the spec, build the artifact, and offer a sensor where a seam has stabilised.",
    "built": "Hand-rolled stdio JSON-RPC — the zero-dependency promise holds even here. Proven end-to-end from the DeepSeek Harness: dsh called iso_overview through its MCP client and got live store data back. Runs under bun only (bun:sqlite), so registrations spawn bun directly rather than npx.",
-   "refs": "mcp.ts · adapters/mcp.json"
+   "refs": "mcp.ts · adapters/mcp.json",
+   "media": [
+    {
+     "src": "/media/ratt-round-and-round.mp4",
+     "face": "north",
+     "fit": "cover",
+     "group": "theater",
+     "audio": true
+    },
+    {
+     "src": "/media/ratt-round-and-round.mp4",
+     "face": "south",
+     "fit": "cover",
+     "group": "theater",
+     "audio": true
+    },
+    {
+     "src": "/media/ratt-round-and-round.mp4",
+     "face": "east",
+     "fit": "cover",
+     "group": "theater",
+     "audio": true
+    },
+    {
+     "src": "/media/ratt-round-and-round.mp4",
+     "face": "west",
+     "fit": "cover",
+     "group": "theater",
+     "audio": true
+    },
+    {
+     "src": "/media/ratt-round-and-round.mp4",
+     "face": "roof",
+     "fit": "cover",
+     "group": "theater",
+     "audio": true
+    }
+   ]
   },
   {
    "id": "AD",
@@ -109,7 +257,44 @@
    "h": 1,
    "does": "How each harness is taught to keep the map honest. MCP-capable harnesses (Claude Code, Codex, the DeepSeek Harness) register the server and get the nine tools; harnesses with no MCP client get the same operations as a paste-in CLI contract. Every adapter carries the same working agreement: mirror the codebase in the same session, record what flows, never leave a broken thing unmarked.",
    "built": "DSH.md + dsh.cordis.patch.yml ship the DeepSeek Harness route (cordis insert layer, verified end-to-end against dsh 0.1.1-rc.2). mcp.json is the generic registration. DEEPSEEK.md remains the no-MCP fallback. LUMBR.md is the telemetry bridge: signals in through POST /ci?provider=signal, the remediation scope out through GET /blast-radius.",
-   "refs": "adapters/"
+   "refs": "adapters/",
+   "media": [
+    {
+     "src": "/media/def-leppard-heartbreak.mp4",
+     "face": "north",
+     "fit": "cover",
+     "group": "theater",
+     "audio": true
+    },
+    {
+     "src": "/media/def-leppard-heartbreak.mp4",
+     "face": "south",
+     "fit": "cover",
+     "group": "theater",
+     "audio": true
+    },
+    {
+     "src": "/media/def-leppard-heartbreak.mp4",
+     "face": "east",
+     "fit": "cover",
+     "group": "theater",
+     "audio": true
+    },
+    {
+     "src": "/media/def-leppard-heartbreak.mp4",
+     "face": "west",
+     "fit": "cover",
+     "group": "theater",
+     "audio": true
+    },
+    {
+     "src": "/media/def-leppard-heartbreak.mp4",
+     "face": "roof",
+     "fit": "cover",
+     "group": "theater",
+     "audio": true
+    }
+   ]
   },
   {
    "id": "TP",
@@ -124,7 +309,44 @@
    "does": "The rendered experience: orthographic Three.js city, etched buildings, PCB-routed pipes with escape pins at hubs and schematic junction grammar (dot = joined, arc = crossing), circuit-breaker interaction, three-level stacking, guided trace, single inspector, 18 themes with a runtime contrast floor, live-reload client.",
    "built": "One self-contained template.html. Routing obeys the laws in docs/DESIGN-RULES.md: no transit under strangers, no avoidable same-plane crossings, level-honest risers, R13 escape pins, R16 joint shove, R31 junction grammar.",
    "refs": "template.html · docs/DESIGN-RULES.md",
-   "stack": 5
+   "stack": 5,
+   "media": [
+    {
+     "src": "/media/van-halen-jump.mp4",
+     "face": "north",
+     "fit": "cover",
+     "group": "theater",
+     "audio": true
+    },
+    {
+     "src": "/media/van-halen-jump.mp4",
+     "face": "south",
+     "fit": "cover",
+     "group": "theater",
+     "audio": true
+    },
+    {
+     "src": "/media/van-halen-jump.mp4",
+     "face": "east",
+     "fit": "cover",
+     "group": "theater",
+     "audio": true
+    },
+    {
+     "src": "/media/van-halen-jump.mp4",
+     "face": "west",
+     "fit": "cover",
+     "group": "theater",
+     "audio": true
+    },
+    {
+     "src": "/media/van-halen-jump.mp4",
+     "face": "roof",
+     "fit": "cover",
+     "group": "theater",
+     "audio": true
+    }
+   ]
   },
   {
    "id": "BU",
@@ -138,7 +360,44 @@
    "h": 1,
    "does": "Injects a spec into the engine template and emits one self-contained HTML file that works from disk — no server, no CORS, nothing to install.",
    "built": "build.mjs: importable function + runnable command, ~40 lines.",
-   "refs": "build.mjs"
+   "refs": "build.mjs",
+   "media": [
+    {
+     "src": "/media/billy-idol-eyes.mp4",
+     "face": "north",
+     "fit": "cover",
+     "group": "theater",
+     "audio": true
+    },
+    {
+     "src": "/media/billy-idol-eyes.mp4",
+     "face": "south",
+     "fit": "cover",
+     "group": "theater",
+     "audio": true
+    },
+    {
+     "src": "/media/billy-idol-eyes.mp4",
+     "face": "east",
+     "fit": "cover",
+     "group": "theater",
+     "audio": true
+    },
+    {
+     "src": "/media/billy-idol-eyes.mp4",
+     "face": "west",
+     "fit": "cover",
+     "group": "theater",
+     "audio": true
+    },
+    {
+     "src": "/media/billy-idol-eyes.mp4",
+     "face": "roof",
+     "fit": "cover",
+     "group": "theater",
+     "audio": true
+    }
+   ]
   },
   {
    "id": "SV",
@@ -153,11 +412,43 @@
    "does": "Runs the map in a browser from day one of a project: watches the graph store and repaints on every change — every commit, every agent edit, live.",
    "built": "Bun.serve + SSE + a three-line client in the template. The view survives every repaint (R30 phase 2: the scene rebuilds in place on every store change; camera, stack, theme, inspector, circuit preserved; a new red module still takes the camera). POST /mark and POST /ci accept CI/CD webhooks directly.",
    "refs": "cli.ts (serve) · template.html (live client)",
-   "media": {
-    "src": "/media/van-halen-jump.mp4",
-    "face": "front",
-    "fit": "cover"
-   }
+   "media": [
+    {
+     "src": "/media/van-halen-jump.mp4",
+     "face": "north",
+     "fit": "cover",
+     "group": "theater",
+     "audio": true
+    },
+    {
+     "src": "/media/van-halen-jump.mp4",
+     "face": "south",
+     "fit": "cover",
+     "group": "theater",
+     "audio": true
+    },
+    {
+     "src": "/media/van-halen-jump.mp4",
+     "face": "east",
+     "fit": "cover",
+     "group": "theater",
+     "audio": true
+    },
+    {
+     "src": "/media/van-halen-jump.mp4",
+     "face": "west",
+     "fit": "cover",
+     "group": "theater",
+     "audio": true
+    },
+    {
+     "src": "/media/van-halen-jump.mp4",
+     "face": "roof",
+     "fit": "cover",
+     "group": "theater",
+     "audio": true
+    }
+   ]
   },
   {
    "id": "AR",
@@ -171,7 +462,44 @@
    "h": 0.8,
    "does": "The shippable output: one HTML file anyone can open, orbit, and interrogate — email it, commit it, host it.",
    "built": "Banner-marked GENERATED; rebuilt from the store in one command.",
-   "refs": "out/ (gitignored)"
+   "refs": "out/ (gitignored)",
+   "media": [
+    {
+     "src": "/media/van-halen-when-its-love.mp4",
+     "face": "north",
+     "fit": "cover",
+     "group": "theater",
+     "audio": true
+    },
+    {
+     "src": "/media/van-halen-when-its-love.mp4",
+     "face": "south",
+     "fit": "cover",
+     "group": "theater",
+     "audio": true
+    },
+    {
+     "src": "/media/van-halen-when-its-love.mp4",
+     "face": "east",
+     "fit": "cover",
+     "group": "theater",
+     "audio": true
+    },
+    {
+     "src": "/media/van-halen-when-its-love.mp4",
+     "face": "west",
+     "fit": "cover",
+     "group": "theater",
+     "audio": true
+    },
+    {
+     "src": "/media/van-halen-when-its-love.mp4",
+     "face": "roof",
+     "fit": "cover",
+     "group": "theater",
+     "audio": true
+    }
+   ]
   },
   {
    "id": "EX",
@@ -185,7 +513,44 @@
    "h": 0.8,
    "does": "Reference specs proving the schema: this self-portrait, ODIN Sentinel's 16-module governance map, and lumbr's 10-module remediation loop.",
    "built": "This map IS examples/isoscope.spec.json — the tool eats its own cooking.",
-   "refs": "examples/isoscope.spec.json · examples/odin.spec.json · examples/lumbr.spec.json"
+   "refs": "examples/isoscope.spec.json · examples/odin.spec.json · examples/lumbr.spec.json",
+   "media": [
+    {
+     "src": "/media/van-halen-right-now.mp4",
+     "face": "north",
+     "fit": "cover",
+     "group": "theater",
+     "audio": true
+    },
+    {
+     "src": "/media/van-halen-right-now.mp4",
+     "face": "south",
+     "fit": "cover",
+     "group": "theater",
+     "audio": true
+    },
+    {
+     "src": "/media/van-halen-right-now.mp4",
+     "face": "east",
+     "fit": "cover",
+     "group": "theater",
+     "audio": true
+    },
+    {
+     "src": "/media/van-halen-right-now.mp4",
+     "face": "west",
+     "fit": "cover",
+     "group": "theater",
+     "audio": true
+    },
+    {
+     "src": "/media/van-halen-right-now.mp4",
+     "face": "roof",
+     "fit": "cover",
+     "group": "theater",
+     "audio": true
+    }
+   ]
   },
   {
    "id": "CO",
@@ -199,7 +564,44 @@
    "h": 0.8,
    "does": "Any project that adopts the loop: a store in the repo, agents mirroring reality into it, a live map in a browser tab, and an artifact in every release.",
    "built": "ODIN Sentinel is consumer #1 (its architecture map is generated by this engine); lumbr is consumer #2 (examples/lumbr.spec.json, authored from its package graph).",
-   "refs": "../odin/product-research/architecture-map/"
+   "refs": "../odin/product-research/architecture-map/",
+   "media": [
+    {
+     "src": "/media/ratt-round-and-round.mp4",
+     "face": "north",
+     "fit": "cover",
+     "group": "theater",
+     "audio": true
+    },
+    {
+     "src": "/media/ratt-round-and-round.mp4",
+     "face": "south",
+     "fit": "cover",
+     "group": "theater",
+     "audio": true
+    },
+    {
+     "src": "/media/ratt-round-and-round.mp4",
+     "face": "east",
+     "fit": "cover",
+     "group": "theater",
+     "audio": true
+    },
+    {
+     "src": "/media/ratt-round-and-round.mp4",
+     "face": "west",
+     "fit": "cover",
+     "group": "theater",
+     "audio": true
+    },
+    {
+     "src": "/media/ratt-round-and-round.mp4",
+     "face": "roof",
+     "fit": "cover",
+     "group": "theater",
+     "audio": true
+    }
+   ]
   },
   {
    "id": "DR",
@@ -213,7 +615,44 @@
    "h": 1,
    "does": "Keeps the wiring lawful and the render honest. The collision lint scores weighted crossings against the spec's acknowledged budget and fails the build over it; the render proof drives headless Chrome across six viewports; the contrast proof clicks every theme and measures real text/background pairs against WCAG AA, and fails on any JS error.",
    "built": "drc.ts imports the same router.mjs the template is built from — one router, never two. scripts/render-proof.ts, overflow-diagnose.ts and contrast-proof.ts speak CDP over a Bun WebSocket, zero deps.",
-   "refs": "drc.ts · scripts/"
+   "refs": "drc.ts · scripts/",
+   "media": [
+    {
+     "src": "/media/def-leppard-heartbreak.mp4",
+     "face": "north",
+     "fit": "cover",
+     "group": "theater",
+     "audio": true
+    },
+    {
+     "src": "/media/def-leppard-heartbreak.mp4",
+     "face": "south",
+     "fit": "cover",
+     "group": "theater",
+     "audio": true
+    },
+    {
+     "src": "/media/def-leppard-heartbreak.mp4",
+     "face": "east",
+     "fit": "cover",
+     "group": "theater",
+     "audio": true
+    },
+    {
+     "src": "/media/def-leppard-heartbreak.mp4",
+     "face": "west",
+     "fit": "cover",
+     "group": "theater",
+     "audio": true
+    },
+    {
+     "src": "/media/def-leppard-heartbreak.mp4",
+     "face": "roof",
+     "fit": "cover",
+     "group": "theater",
+     "audio": true
+    }
+   ]
   }
  ],
  "short": {
@@ -558,5 +997,49 @@
    "token_velocity_*": "MC"
   },
   "default": "CL"
- }
+ },
+ "mediaLibrary": [
+  {
+   "id": "jump",
+   "title": "Van Halen — Jump (1984)",
+   "src": "/media/van-halen-jump.mp4",
+   "kind": "video"
+  },
+  {
+   "id": "when-its-love",
+   "title": "Van Halen — When It's Love (1988)",
+   "src": "/media/van-halen-when-its-love.mp4",
+   "kind": "video"
+  },
+  {
+   "id": "right-now",
+   "title": "Van Halen — Right Now",
+   "src": "/media/van-halen-right-now.mp4",
+   "kind": "video"
+  },
+  {
+   "id": "ratt",
+   "title": "Ratt — Round And Round (1984)",
+   "src": "/media/ratt-round-and-round.mp4",
+   "kind": "video"
+  },
+  {
+   "id": "def-leppard",
+   "title": "Def Leppard — Bringing On The Heartbreak (1984)",
+   "src": "/media/def-leppard-heartbreak.mp4",
+   "kind": "video"
+  },
+  {
+   "id": "night-ranger",
+   "title": "Night Ranger — Sister Christian (1984)",
+   "src": "/media/night-ranger-sister-christian.mp4",
+   "kind": "video"
+  },
+  {
+   "id": "billy-idol",
+   "title": "Billy Idol — Eyes Without A Face (1984)",
+   "src": "/media/billy-idol-eyes.mp4",
+   "kind": "video"
+  }
+ ]
 }

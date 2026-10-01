@@ -26,13 +26,16 @@ import iconMinus from "../vendor/desert-pants/icons/svg/minus.svg?raw";
 import iconChevron from "../vendor/desert-pants/icons/svg/chevron-down.svg?raw";
 import { isoRouteAll } from "../../router.mjs";
 import { isEditableTarget } from "./editable-target";
+import { getModule, type FaceKey, type SurfaceKind, type SurfaceRef } from "./annotations";
 
 type Item = { c: "red" | "amber" | "you" | "info" | string; l: string };
 type Group = { id: string; label: string };
+type MediaFace = "front" | "roof" | "left" | "right" | "north" | "south" | "east" | "west";
+type MediaSpec = { src: string; face?: MediaFace; fit?: "cover" | "contain"; live?: boolean; group?: string; audio?: boolean };
 type MapNode = {
   id: string; tag?: string; g: string; name: string; x: number; y: number; w: number; d: number; h: number;
   does?: string; built?: string; refs?: string; good?: string; cond?: string; items: Item[]; st: string;
-  media?: { src: string; face?: "front" | "roof" | "left" | "right"; fit?: "cover" | "contain"; live?: boolean };
+  media?: MediaSpec | MediaSpec[];   /* one surface, or several (one per face) */
   stack?: number; _lvl: number; _ly: number; _lyT: number; _anchor: THREE.Vector3;
 };
 type EdgeTuple = [string, string, string?];
@@ -418,23 +421,49 @@ function refreshAdvisory(n: MapNode): void {
  if(plane){meshById[n.id].add(plane);advisoryById[n.id]=[plane];}
 }
 
-/* ————— media surfaces: a module face can be a live screen —————
-   Declare `media:{src}` on a node and that face plays a muted, looping video
-   mapped to the same face plane the advisory mist uses. The screen dims with the
-   circuit like any other face, and honors reduced-motion by holding the first
-   frame. Playback is user/media-driven, independent of the Flow toggle — a screen
-   is a screen. */
-const mediaById: Record<string, { plane: THREE.Mesh<THREE.PlaneGeometry, THREE.MeshBasicMaterial>; video: HTMLVideoElement; tex: THREE.VideoTexture; live: boolean }> = {};
-function refreshMedia(n: MapNode): void {
- const old=mediaById[n.id];
- if(old){const par=old.plane.parent;if(par)par.remove(old.plane);old.plane.geometry.dispose();old.plane.material.dispose();old.tex.dispose();old.video.pause();old.video.removeAttribute("src");old.video.load();delete mediaById[n.id];}
- if(!n.media||!n.media.src)return;
- const src=n.media.src;
- /* a source can be a file, an animated loop, or a live stream (context windows,
-    music videos, telemetry). .m3u8 = HLS live; anything can carry a stream. Live
-    sources don't loop and are allowed to play even under reduced-motion IF the
-    module is energized — a live feed is content, not decoration. */
- const live=n.media.live===true||/\.m3u8(\?|$)/i.test(src);
+/* ————— per-face surfaces: any module face can carry a live surface —————
+   A module's five faces (roof + four walls) each accept a SurfaceRef: the spec's
+   `media` field declares one, and the annotation store can put a surface on any
+   face (annotations override spec per face). Video and image render fully here;
+   mist reuses the advisory shader on the assigned face; doc/slides/ink get a
+   placeholder plane this slice. Surfaces dim with the circuit, honor reduced-
+   motion (video holds its first frame unless live), and dispose with the scene. */
+type SurfaceEntry={ plane: THREE.Mesh; dispose: () => void; video?: HTMLVideoElement; kind: SurfaceKind; moduleId: string; group?: string; audio?: boolean };
+const surfacesById: Record<string, Partial<Record<FaceKey, SurfaceEntry>>> = {};
+/* face → world placement: a plane floated just proud of that face */
+function facePlane(n: MapNode,face: FaceKey,mat: THREE.Material): THREE.Mesh<THREE.PlaneGeometry, THREE.Material> {
+ const h=Math.max(n.h,0.6),proud=0.016;
+ const px=n.x+n.w/2,pz=n.y+n.d/2;
+ let m: THREE.Mesh<THREE.PlaneGeometry, THREE.Material>;
+ if(face==="roof"){m=new THREE.Mesh(new THREE.PlaneGeometry(n.w,n.d),mat);m.rotation.x=-Math.PI/2;m.position.set(px,h+proud,pz);}
+ else if(face==="south"){m=new THREE.Mesh(new THREE.PlaneGeometry(n.w,h),mat);m.rotation.y=Math.PI;m.position.set(px,h/2+0.02,n.y-proud);}
+ else if(face==="east"){m=new THREE.Mesh(new THREE.PlaneGeometry(n.d,h),mat);m.rotation.y=Math.PI/2;m.position.set(n.x+n.w+proud,h/2+0.02,pz);}
+ else if(face==="west"){m=new THREE.Mesh(new THREE.PlaneGeometry(n.d,h),mat);m.rotation.y=-Math.PI/2;m.position.set(n.x-proud,h/2+0.02,pz);}
+ else{m=new THREE.Mesh(new THREE.PlaneGeometry(n.w,h),mat);m.position.set(px,h/2+0.02,n.y+n.d+proud);} /* north */
+ m.renderOrder=2;
+ return m;
+}
+/* letterbox a texture to its face once the source aspect is known */
+function containFit(tex: THREE.Texture,vw: number,vh: number,pw: number,ph: number): void {
+ if(!vw||!vh)return;
+ const pa=pw/ph,va=vw/vh;tex.repeat.set(1,1);tex.offset.set(0,0);
+ if(va>pa){tex.repeat.y=pa/va;tex.offset.y=(1-tex.repeat.y)/2;}else{tex.repeat.x=va/pa;tex.offset.x=(1-tex.repeat.x)/2;}
+}
+function faceDims(n: MapNode,face: FaceKey): { pw: number; ph: number } {
+ const h=Math.max(n.h,0.6);
+ return face==="roof"?{pw:n.w,ph:n.d}:{pw:face==="east"||face==="west"?n.d:n.w,ph:h};
+}
+/* ————— shared video pool —————
+   One <video> decode per distinct source, no matter how many faces show it. 60
+   surfaces sampling 6 sources costs 6 decoders, not 60 — that is the difference
+   between a slideshow and a smooth city. Each face gets its own VideoTexture over
+   the shared element so UVs/letterboxing stay per-face. */
+type PooledVideo={ video: HTMLVideoElement; live: boolean; refs: number; group?: string; src: string };
+const videoPool: Record<string, PooledVideo>={};
+function acquireVideo(src: string,ref: SurfaceRef): PooledVideo {
+ const existing=videoPool[src];
+ if(existing){existing.refs++;return existing;}
+ const live=ref.live===true||/\.m3u8(\?|$)/i.test(src);
  const video=document.createElement("video");
  video.muted=true;video.loop=!live;video.playsInline=true;video.crossOrigin="anonymous";
  /* a live feed is content, not decoration: it plays even under reduced-motion.
@@ -442,61 +471,207 @@ function refreshMedia(n: MapNode): void {
  const mayPlay=!RM||live;
  video.autoplay=mayPlay;video.preload=live?"auto":"metadata";
  video.src=src; /* native HLS plays where supported; an hls.js shim can attach here later */
- const tex=new THREE.VideoTexture(video);tex.colorSpace=THREE.SRGBColorSpace;
+ if(mayPlay)video.play().catch(()=>{/* autoplay may wait for a gesture */});
+ const pv: PooledVideo={video,live,refs:1,group:ref.group,src};
+ videoPool[src]=pv;
+ if(ref.group)joinSyncGroup(ref.group,video);
+ return pv;
+}
+function releaseVideo(src: string): void {
+ const pv=videoPool[src];if(!pv)return;
+ pv.refs--;
+ if(pv.refs>0)return;
+ pv.video.pause();pv.video.removeAttribute("src");pv.video.load();
+ if(pv.group)leaveSyncGroup(pv.group,pv.video);
+ delete videoPool[src];
+}
+/* one VideoTexture per distinct source, shared across every face showing it.
+   The GPU upload happens once per source per frame, not once per face — this is
+   the difference between 60 uploads and 6. Only `cover` shares (no per-face UV);
+   `contain` letterboxes per face so it gets a private texture. */
+const videoTexPool: Record<string, { tex: THREE.VideoTexture; refs: number }>={};
+function acquireVideoTex(pv: PooledVideo,fit: string): { tex: THREE.VideoTexture; shared: boolean } {
+ if(fit==="cover"){
+  const k=pv.src;
+  const ex=videoTexPool[k];if(ex){ex.refs++;return{tex:ex.tex,shared:true};}
+  const tex=new THREE.VideoTexture(pv.video);tex.colorSpace=THREE.SRGBColorSpace;
+  videoTexPool[k]={tex,refs:1};return{tex,shared:true};
+ }
+ const tex=new THREE.VideoTexture(pv.video);tex.colorSpace=THREE.SRGBColorSpace;
+ return{tex,shared:false};
+}
+function releaseVideoTex(src: string,tex: THREE.VideoTexture,shared: boolean): void {
+ if(!shared){tex.dispose();return;}
+ const e=videoTexPool[src];if(!e)return;
+ e.refs--;if(e.refs<=0){e.tex.dispose();delete videoTexPool[src];}
+}
+function buildVideo(n: MapNode,face: FaceKey,ref: SurfaceRef): SurfaceEntry | null {
+ const src=ref.src;if(!src)return null;
+ const pv=acquireVideo(src,ref);
+ const video=pv.video;
+ const fit=ref.fit??"cover";
+ const {tex,shared}=acquireVideoTex(pv,fit);
  const mat=new THREE.MeshBasicMaterial({map:tex,transparent:true,toneMapped:false});
- const face=n.media.face??"front";
- const fit=n.media.fit??"cover";
- const h=Math.max(n.h,0.6);
- let geo: THREE.PlaneGeometry;
- const px=n.x+n.w/2,py=n.y+n.d/2,proud=0.016;
- const plane=(()=>{
-  if(face==="roof"){geo=new THREE.PlaneGeometry(n.w,n.d);const m=new THREE.Mesh(geo,mat);m.rotation.x=-Math.PI/2;m.position.set(px,h+proud,py);return m;}
-  if(face==="left"){geo=new THREE.PlaneGeometry(n.d,h);const m=new THREE.Mesh(geo,mat);m.rotation.y=-Math.PI/2;m.position.set(n.x-proud,h/2+0.02,py);return m;}
-  if(face==="right"){geo=new THREE.PlaneGeometry(n.d,h);const m=new THREE.Mesh(geo,mat);m.rotation.y=Math.PI/2;m.position.set(n.x+n.w+proud,h/2+0.02,py);return m;}
-  geo=new THREE.PlaneGeometry(n.w,h);const m=new THREE.Mesh(geo,mat);m.position.set(px,h/2+0.02,n.y+n.d+proud);return m; /* front (default) */
- })();
+ const plane=facePlane(n,face,mat);
  /* fit:contain letterboxes by shrinking the UVs to the source aspect once known */
  if(fit==="contain")video.addEventListener("loadedmetadata",()=>{
-  const vw=video.videoWidth,vh=video.videoHeight;if(!vw||!vh)return;
-  const pw=face==="front"?n.w:(face==="roof"?n.w:n.d),ph=face==="roof"?n.d:h;
-  const pa=pw/ph,va=vw/vh;tex.repeat.set(1,1);tex.offset.set(0,0);
-  if(va>pa){tex.repeat.y=pa/va;tex.offset.y=(1-tex.repeat.y)/2;}else{tex.repeat.x=va/pa;tex.offset.x=(1-tex.repeat.x)/2;}
+  const {pw,ph}=faceDims(n,face);containFit(tex,video.videoWidth,video.videoHeight,pw,ph);
  });
- plane.renderOrder=2;
  meshById[n.id].add(plane);
- mediaById[n.id]={plane,video,tex,live};
- if(mayPlay)video.play().catch(()=>{/* autoplay may wait for a gesture; the poster frame still shows */});
+ return {plane,kind:"video",video,moduleId:n.id,group:ref.group,audio:ref.audio,dispose(){const par=plane.parent;if(par)par.remove(plane);plane.geometry.dispose();mat.dispose();releaseVideoTex(src,tex,shared);releaseVideo(src);}};
+}
+/* ————— synchronized theater: surfaces that share a group play frame-locked —————
+   One clock per group. The first ready video is the master; every other member's
+   currentTime is steered toward the master's each tick (gentle playbackRate nudge
+   for sub-frame drift, hard seek for gross drift) so a wall of screens reads as
+   one image, like a stadium. */
+const syncGroups: Record<string, HTMLVideoElement[]>={};
+function joinSyncGroup(g: string,v: HTMLVideoElement): void { (syncGroups[g]=syncGroups[g]||[]).push(v); }
+function leaveSyncGroup(g: string,v: HTMLVideoElement): void { const a=syncGroups[g];if(!a)return;const i=a.indexOf(v);if(i>=0)a.splice(i,1);if(!a.length)delete syncGroups[g]; }
+function syncTick(): void {
+ Object.values(syncGroups).forEach(members=>{
+  const ready=members.filter(v=>v.readyState>=2&&!v.paused);
+  if(ready.length<2)return;
+  const master=ready[0],mt=master.currentTime;
+  ready.slice(1).forEach(v=>{
+   const d=v.currentTime-mt;
+   if(Math.abs(d)>0.35){v.currentTime=mt;v.playbackRate=1;} /* gross drift: snap */
+   else if(Math.abs(d)>0.03)v.playbackRate=1-d*0.5;          /* fine drift: steer */
+   else v.playbackRate=1;
+  });
+ });
+}
+function buildImage(n: MapNode,face: FaceKey,ref: SurfaceRef): SurfaceEntry | null {
+ const src=ref.src;if(!src)return null;
+ const loader=new THREE.TextureLoader();loader.crossOrigin="anonymous";
+ const mat=new THREE.MeshBasicMaterial({transparent:true,toneMapped:false});
+ const plane=facePlane(n,face,mat);
+ const tex=loader.load(src,t=>{
+  tex.colorSpace=THREE.SRGBColorSpace;
+  if((ref.fit??"cover")==="contain"){const {pw,ph}=faceDims(n,face);containFit(tex,t.image.width,t.image.height,pw,ph);}
+ });
+ mat.map=tex;mat.needsUpdate=true;
+ meshById[n.id].add(plane);
+ return {plane,kind:"image",moduleId:n.id,dispose(){const par=plane.parent;if(par)par.remove(plane);plane.geometry.dispose();mat.dispose();tex.dispose();}};
+}
+/* mist: the advisory wash, placed on the assigned face. Registered into
+   advisoryById so the tick loop's uTime accumulation and theme repaint reach it. */
+function buildMist(n: MapNode,face: FaceKey): SurfaceEntry | null {
+ const cats=Array.from(new Set((n.items||[]).map(i=>i.c).filter(c=>ADVISORY_FILL[c])));
+ const base=advisoryPlane(n,cats);if(!base)return null;
+ base.geometry.dispose(); /* the advisory helper builds a front-face plane; re-place on the requested face */
+ const placed=facePlane(n,face,base.material) as THREE.Mesh<THREE.PlaneGeometry, THREE.ShaderMaterial>;
+ placed.userData.advisoryCats=base.userData.advisoryCats;
+ meshById[n.id].add(placed);
+ (advisoryById[n.id]=advisoryById[n.id]||[]).push(placed);
+ return {plane:placed,kind:"mist",moduleId:n.id,dispose(){const par=placed.parent;if(par)par.remove(placed);placed.geometry.dispose();placed.material.dispose();
+  const arr=advisoryById[n.id];if(arr){const i=arr.indexOf(placed);if(i>=0)arr.splice(i,1);}}};
+}
+function buildPlaceholder(n: MapNode,face: FaceKey,kind: SurfaceKind): SurfaceEntry {
+ /* TODO(slice6): real doc/slides/ink renderer */
+ const mat=new THREE.MeshBasicMaterial({color:COL.alt,transparent:true,opacity:0.35});
+ const plane=facePlane(n,face,mat);
+ meshById[n.id].add(plane);
+ return {plane,kind,moduleId:n.id,dispose(){const par=plane.parent;if(par)par.remove(plane);plane.geometry.dispose();mat.dispose();}};
+}
+/* spec's `media` field → effective per-face map, with legacy face aliases */
+const LEGACY_FACE: Record<string, FaceKey> = { front: "north", left: "west", right: "east" };
+function refreshSurfaces(n: MapNode): void {
+ const old=surfacesById[n.id];
+ if(old){Object.values(old).forEach(e=>e&&e.dispose());delete surfacesById[n.id];}
+ const effective: Partial<Record<FaceKey, SurfaceRef | null>> = {};
+ /* media is one surface or a list (one per face); normalize to the list */
+ const mediaList: MediaSpec[] = !n.media ? [] : Array.isArray(n.media) ? n.media : [n.media];
+ mediaList.forEach(ms=>{
+  if(!ms.src)return;
+  const raw=ms.face??"front";
+  const f=(LEGACY_FACE[raw]??raw) as FaceKey;
+  effective[f]={kind:"video",src:ms.src,fit:ms.fit,live:ms.live,group:ms.group,audio:ms.audio};
+ });
+ const ann=getModule(n.id).faces;
+ if(ann)for(const k of Object.keys(ann) as FaceKey[])effective[k]=ann[k];
+ const next: Partial<Record<FaceKey, SurfaceEntry>> = {};
+ for(const face of Object.keys(effective) as FaceKey[]){
+  const ref=effective[face];if(!ref)continue;
+  const entry=ref.kind==="video"?buildVideo(n,face,ref)
+   :ref.kind==="image"?buildImage(n,face,ref)
+   :ref.kind==="mist"?buildMist(n,face)
+   :buildPlaceholder(n,face,ref.kind);
+  if(entry)next[face]=entry;
+ }
+ if(Object.keys(next).length)surfacesById[n.id]=next;
  syncSoundButton();
 }
 function setMediaDim(id: string,on: boolean): void {
- const m=mediaById[id];if(!m)return;
- m.plane.material.opacity=on?1:0.28;
- m.plane.material.transparent=true;
+ const faces=surfacesById[id];if(!faces)return;
+ Object.values(faces).forEach(e=>{
+  if(!e)return;
+  const m=e.plane.material as THREE.MeshBasicMaterial;
+  if("opacity" in m){m.opacity=on?1:0.28;m.transparent=true;}
+ });
 }
-/* Media surfaces carry audio, but browsers gate audible autoplay behind a user
-   gesture. So every media video starts muted (autoplay works, pixels flow), and
-   a Sound button appears whenever any media exists. The first click IS the gesture:
-   it unmutes every live media video and plays them with sound. A second click mutes.
-   aria-pressed mirrors the audible state. */
+/* modules that carry at least one audible surface */
+function audibleModules(): string[] {
+ return Object.keys(surfacesById).filter(id=>Object.values(surfacesById[id]||{}).some(e=>e&&e.audio&&e.video));
+}
+
+/* ————— audio model —————
+   Master toggle (the dock Sound button) ships OFF and gates everything. Only ONE
+   module's track is ever audible at a time — a wall of screens, one voice. Which
+   module is the "audio focus": shift+click a module to solo its sound without
+   selecting it (no camera, no inspector); selecting a module also moves the focus
+   to it. With master on and no explicit focus, the hero (first audible module)
+   holds the voice so the theater is never silent-by-accident. Master off = silent. */
+let masterAudio=false;              /* ships silent */
+let audioFocus: string | null=null; /* module id whose track is live */
 const btnSound=$<HTMLButtonElement>("btnSound");
+function audibleEntry(id: string): SurfaceEntry | null {
+ const faces=surfacesById[id];if(!faces)return null;
+ for(const e of Object.values(faces))if(e&&e.audio&&e.video)return e;
+ return null;
+}
+/* enforce the invariant across every surface: only audioFocus may be audible,
+   and only when masterAudio is on. */
+function applyAudio(): void {
+ const mods=audibleModules();
+ if(masterAudio&&(!audioFocus||!mods.includes(audioFocus)))audioFocus=mods[0]??null; /* default voice: first audible module */
+ Object.values(surfacesById).forEach(faces=>Object.values(faces).forEach(e=>{
+  if(!e||!e.video)return;
+  const audible=masterAudio&&e.moduleId===audioFocus&&!!e.audio;
+  e.video.muted=!audible;
+  if(audible){e.video.volume=1;if(e.video.paused)e.video.play().catch(()=>{});}
+ }));
+ syncSoundButton();
+}
+function setAudioFocus(id: string | null): void { audioFocus=id;applyAudio(); }
 function syncSoundButton(): void {
- const any=Object.keys(mediaById).length>0;
+ const any=audibleModules().length>0;
  btnSound.hidden=!any;
- if(!any){btnSound.setAttribute("aria-pressed","false");return;}
- const audible=Object.values(mediaById).some(m=>!m.video.muted);
+ const audible=masterAudio&&any;
  btnSound.setAttribute("aria-pressed",String(audible));
- btnSound.setAttribute("aria-label",audible?"Sound: mute the media surfaces":"Sound: unmute the media surfaces");
+ btnSound.setAttribute("aria-label",audible?"Sound: mute all media":"Sound: unmute media (one track at a time)");
  setCanonicalIcon(btnSound,audible?iconSoundOn:iconSoundOff);
 }
 btnSound.addEventListener("click",()=>{
- const audible=Object.values(mediaById).some(m=>!m.video.muted);
- const next=!audible;
- Object.values(mediaById).forEach(m=>{
-  m.video.muted=!next;
-  if(next){m.video.volume=1;if(m.video.paused)m.video.play().catch(()=>{});}
- });
- syncSoundButton();
+ masterAudio=!masterAudio;         /* the click is the gesture that unlocks audio */
+ applyAudio();
 });
+/* sensible per-module media controls, driven from the inspector and QA hooks.
+   play/pause the module's surface; solo = take the one audio voice. */
+const mediaControls={
+ state(id: string): { hasMedia: boolean; audible: boolean; playing: boolean; t: number } {
+  const e=audibleEntry(id);
+  const faces=surfacesById[id];
+  const anyVideo=faces?Object.values(faces).find(x=>x&&x.video):null;
+  const v=e?.video??anyVideo?.video;
+  return {hasMedia:!!faces&&Object.keys(faces).length>0,audible:!!(e&&e.video&&!e.video.muted),playing:!!(v&&!v.paused),t:v?v.currentTime:0};
+ },
+ togglePlay(id: string): void {
+  const faces=surfacesById[id];if(!faces)return;
+  Object.values(faces).forEach(e=>{if(e&&e.video){if(e.video.paused)e.video.play().catch(()=>{});else e.video.pause();}});
+ },
+ solo(id: string): void { if(!masterAudio)masterAudio=true;setAudioFocus(id); },
+};
 /* graph edges on the ground */
 /* connection health: a link can be broken/degraded independent of its modules.
    broken = risk red, gapped, and flow refuses to cross. degraded = amber, slow flow. */
@@ -670,7 +845,8 @@ window.odinView={set(az,pol,r,zoom){placeCamera(az??HOME.az,pol??HOME.pol,r??HOM
  look(tx,tz,zoom,az,pol){flyGoal=null;placeCamera(az??HOME.az,pol??HOME.pol,HOME.r,tx,0,tz,zoom??camera.zoom);},
  restore(){flyGoal=null;exitCordon();paintCircuit();renderPanel(null);},
  inspect(id){pinned=id;NODES.forEach(n=>mark(n.id,n.id===id));renderPanel(id);},
- state:()=>({zoom:camera.zoom,cordon:[...cordon]})};
+ media:mediaControls, /* per-module media: state/togglePlay/solo (inspector + QA) */
+ state:()=>({zoom:camera.zoom,cordon:[...cordon],audioFocus,masterAudio})};
 function flyTo(n: MapNode): void {flyGoal={tx:n.x+n.w/2,ty:(n._lyT||0)+0.5,tz:n.y+n.d/2,
  zoom:Math.max(camera.zoom,2.1)};}
 /* click-vs-drag disambiguation (no pointer capture — OrbitControls owns the gestures) */
@@ -728,13 +904,17 @@ function selectEdge(key: string): void {
  NODES.forEach(n=>mark(n.id,e.indexOf(n.id)>=0));
  renderEdgePanel(key);
 }
-function pickAt(cx: number,cy: number,_shift: boolean,_meta: boolean): void {
+function pickAt(cx: number,cy: number,shift: boolean,_meta: boolean): void {
  incidentActive=false;
  const hit=castAt(cx,cy);
+ /* shift+click = solo this module's audio WITHOUT selecting it (no camera, no
+    inspector). One voice at a time; this just chooses which. */
+ if(shift&&hit&&hit.kind==="node"&&audibleModules().includes(hit.id)){setAudioFocus(hit.id);return;}
  if(hit&&hit.kind==="node"){
   clearEdgeSel();
   if(cordon.has(hit.id))cordon.delete(hit.id);   /* cut the breaker */
   else{cordon.add(hit.id);flyTo(byId[hit.id]);}  /* energize */
+  if(cordon.size===1)setAudioFocus([...cordon][0]); /* a single selection takes the voice */
   applyCircuit();return;
  }
  if(hit&&hit.kind==="edge"){selectEdge(hit.key);return;}
@@ -1187,8 +1367,7 @@ function refreshTheme(): void {
   });
  });
  paintCircuit();
- /* the redline repaints to the theme's risk ink; your sketches take the new pencil */
- try{redline.rebuild();}catch(e){if(e instanceof ReferenceError){/* not yet initialised on first build */}else throw e;}
+ /* your sketches take the new pencil on a theme change */
  try{brush.repaint();}catch(e){if(e instanceof ReferenceError){/* not yet initialised on first build */}else throw e;}
  /* browser chrome follows the canvas (token color.chrome.theme = bg-canvas) */
  const chromeMeta=document.querySelector('meta[name="theme-color"]');
@@ -1349,7 +1528,7 @@ NODES.forEach(n=>{
  else box(0,n.h);
  scene.add(grp);meshById[n.id]=grp;
  refreshAdvisory(n);
- refreshMedia(n);
+ refreshSurfaces(n);
  /* placard */
  const lb=document.createElement("div");lb.className="lbl";lb.id="lb-"+n.id;
  const idsp=document.createElement("span");idsp.className="id";idsp.textContent=n.id;
@@ -1413,7 +1592,7 @@ function disposeScene(){
  });
  geometries.forEach(g=>g.dispose());textures.forEach(t=>t.dispose());materials.forEach(m=>m.dispose());
  pickables.length=0;themed.length=0;hatched.length=0;edgeMats.length=0;
- Object.keys(mediaById).forEach(id=>{const m=mediaById[id];m.video.pause();m.video.removeAttribute("src");m.video.load();m.tex.dispose();delete mediaById[id];});
+ Object.keys(surfacesById).forEach(id=>{const faces=surfacesById[id];Object.values(faces).forEach(e=>e&&e.dispose());delete surfacesById[id];});
  syncSoundButton();
  Object.keys(advisoryById).forEach(k=>delete advisoryById[k]);
  [meshById,edgeLinesById,byId].forEach(m=>Object.keys(m).forEach(k=>delete m[k]));
@@ -1467,7 +1646,7 @@ function applySpec(next: Spec): void{
  if(ti>=TRACE.length||ti<0||!EDGES.some(e=>e[0]+"-"+e[1]===TRACE[ti]))ti=-1;
  hoverId=null;flyGoal=null;
  buildScene(SPEC);refreshTheme();resize();
- redline.rebuild();brush.clear(); /* a new map is a new page; old sketches don't carry over */
+ brush.clear(); /* a new map is a new page; old sketches don't carry over */
  const reds=NODES.filter(n=>n.items.some(i=>i.c==="red"));
  if(reds.some(n=>!oldReds.has(n.id))){blastIncident();return;}
  if(incidentActive&&!reds.length){cordon.clear();incidentActive=false;}
@@ -1483,62 +1662,6 @@ function applySpec(next: Spec): void{
 buildScene(SPEC);
 renderPanel(null);
 blastIncident();
-
-/* ————— the redline (the one broken rule) —————
-   A hand-drawn ink circle scribbled around the module that most needs a human,
-   stroke by stroke, the way you'd circle a line on a printed plan. It breathes
-   until you pin something, then politely lifts. Brand rule bent on purpose:
-   no decoration, everything semantic — this is deliberately, playfully human. */
-const redline=(()=>{
- const group=new THREE.Group();group.renderOrder=3;
- const mats: THREE.LineBasicMaterial[]=[];
- let targetId: string | null=null;let drawn=0;let wobbleSeed=Math.random()*1000;
- function worst(): MapNode | null {
-  const withRed=NODES.filter(n=>(n.items||[]).some(i=>i.c==="red"));
-  const pool=withRed.length?withRed:NODES.filter(n=>(n.items||[]).some(i=>i.c==="you"));
-  if(!pool.length)return null;
-  return pool.reduce((a,b)=>((b.items||[]).length>=(a.items||[]).length?b:a));
- }
- function rebuild(): void {
-  while(group.children.length){const c=group.children[0];group.remove(c);const g=(c as THREE.Line).geometry;if(g)g.dispose();}
-  mats.length=0;
-  const n=targetId?byId[targetId]:worst();if(!n)return;
-  targetId=n.id;
-  const cx=n.x+n.w/2,cz=n.y+n.d/2,y=(n._ly||0)+0.06;
-  const r=Math.max(n.w,n.d)*0.9+0.5;
-  /* three slightly-offset wobbly loops = a pen going round twice-and-a-bit */
-  const loops=[{rr:1,off:0},{rr:1.06,off:2.1},{rr:0.94,off:4.3}];
-  loops.forEach(L=>{
-   const pts: THREE.Vector3[]=[];const SEG=64;
-   for(let k=0;k<=SEG;k++){
-    const a=(k/SEG)*Math.PI*2+L.off;
-    const wob=1+Math.sin(a*3+wobbleSeed+L.off)*0.05+Math.sin(a*7+wobbleSeed*1.7)*0.03;
-    pts.push(new THREE.Vector3(cx+Math.cos(a)*r*L.rr*wob,y,cz+Math.sin(a)*r*L.rr*wob));
-   }
-   const geo=new THREE.BufferGeometry().setFromPoints(pts);
-   const m=new THREE.LineBasicMaterial({color:COL.risk,transparent:true,opacity:0});
-   mats.push(m);
-   const line=new THREE.Line(geo,m);line.userData.seg=SEG;group.add(line);
-  });
-  scene.add(group);drawn=0;
- }
- function tick(): void {
-  if(!group.children.length)return;
-  const n=byId[targetId||""];if(!n){return;}
-  group.position.y=(n._ly||0)+0.06-((n._ly||0)+0.06); /* rides the module's level */
-  /* draw-on over ~1s, then a soft breathing opacity until the user engages */
-  const wantsAttention=!pinned&&!incidentActive;
-  if(drawn<1)drawn=Math.min(1,drawn+0.02);
-  const breathe=wantsAttention?0.55+0.2*Math.sin(performance.now()*0.0016):0.0;
-  mats.forEach(m=>{
-   const target=(wantsAttention?breathe:0)*drawn;
-   m.opacity+=(target-m.opacity)*0.08;
-  });
-  group.visible=wantsAttention||mats.some(m=>m.opacity>0.02);
- }
- return {rebuild,tick,setTarget(id: string | null){targetId=id;rebuild();},rewobble(){wobbleSeed=Math.random()*1000;}};
-})();
-redline.rebuild();
 
 /* ————— the brush (static ink you own, drawn in the object's space) —————
    Toggle Draw (or press W) and orbit/pick are suspended. With a module selected
@@ -1791,7 +1914,7 @@ function tick(){
    if(!hit)placed.push(r);
  });
  renderer.render(scene,camera);
- redline.tick();
+ syncTick(); /* keep grouped surfaces frame-locked (the theater reads as one image) */
 }
 document.fonts.ready.then(()=>{window.__lblMeasured=false;});
 /* ————— R30 phase 1: restore the view after a live reload; remember theme + weights across sessions ————— */

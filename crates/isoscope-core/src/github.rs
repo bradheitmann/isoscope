@@ -8,7 +8,10 @@ use std::{collections::BTreeSet, process::Command};
 
 pub type Result<T> = std::result::Result<T, String>;
 pub fn hash(bytes: &[u8]) -> String {
-    format!("{:x}", Sha256::digest(bytes))
+    Sha256::digest(bytes)
+        .iter()
+        .map(|byte| format!("{byte:02x}"))
+        .collect()
 }
 pub fn canonical(value: &Value) -> Result<Vec<u8>> {
     serde_json::to_vec(value).map_err(|e| e.to_string())

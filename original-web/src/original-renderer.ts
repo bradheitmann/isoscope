@@ -19,7 +19,9 @@ import iconClose from "../vendor/desert-pants/icons/svg/x.svg?raw";
 import iconSearch from "../vendor/desert-pants/icons/svg/search.svg?raw";
 import iconPlus from "../vendor/desert-pants/icons/svg/plus.svg?raw";
 import iconMinus from "../vendor/desert-pants/icons/svg/minus.svg?raw";
+import iconChevron from "../vendor/desert-pants/icons/svg/chevron-down.svg?raw";
 import { isoRouteAll } from "../../router.mjs";
+import { isEditableTarget } from "./editable-target";
 
 type Item = { c: "red" | "amber" | "you" | "info" | string; l: string };
 type Group = { id: string; label: string };
@@ -72,7 +74,7 @@ const $ = <T extends HTMLElement = HTMLElement>(id: string): T => {
   if (!element) throw new Error(`Required Isoscope element #${id} is missing`);
   return element as T;
 };
-function setCanonicalIcon(button: HTMLElement, source: string): void {
+function setCanonicalIcon(button: HTMLElement, source: string, withClass=true): void {
  const parsed=new DOMParser().parseFromString(source,"image/svg+xml");
  const svg=parsed.documentElement;
  if(svg.localName!=="svg"||svg.namespaceURI!=="http://www.w3.org/2000/svg"||parsed.querySelector("parsererror"))
@@ -84,7 +86,7 @@ function setCanonicalIcon(button: HTMLElement, source: string): void {
   for(const attribute of Array.from(element.attributes))if(!attributes.has(attribute.name))throw new Error(`Unsupported icon attribute ${attribute.name}`);
  }
  const icon=document.importNode(svg,true) as unknown as SVGSVGElement;
- icon.classList.add("dp-icon");icon.setAttribute("aria-hidden","true");icon.setAttribute("focusable","false");
+ if(withClass)icon.classList.add("dp-icon");icon.setAttribute("aria-hidden","true");icon.setAttribute("focusable","false");
  button.replaceChildren(icon);
 }
 setCanonicalIcon($<HTMLButtonElement>("btnFlow"),iconPlay);
@@ -94,7 +96,9 @@ setCanonicalIcon($<HTMLButtonElement>("btnReset"),iconReset);
 setCanonicalIcon($<HTMLButtonElement>("btnSettings"),iconSettings);
 setCanonicalIcon($<HTMLButtonElement>("btnReadMap"),iconOverview);
 setCanonicalIcon($<HTMLButtonElement>("drawerClose"),iconClose);
+setCanonicalIcon($<HTMLButtonElement>("closeReadingPanel"),iconClose);
 setCanonicalIcon($<HTMLElement>("moduleSearchIcon"),iconSearch);
+setCanonicalIcon($<HTMLElement>("modeChevron"),iconChevron,false);
 setCanonicalIcon($<HTMLButtonElement>("zin"),iconPlus);
 setCanonicalIcon($<HTMLButtonElement>("zout"),iconMinus);
 
@@ -423,11 +427,26 @@ let flyGoal: { tx: number; ty: number; tz: number; zoom: number; az?: number; po
 controls.addEventListener("start",()=>{flyGoal=null;}); /* user input cancels autopilot */
 function resetView(){clearEdgeSel();flowing=false;btnFlow.setAttribute("aria-pressed","false");setCanonicalIcon(btnFlow,iconPlay);exitCordon();flyGoal={tx:HOME.tx,ty:HOME.ty,tz:HOME.tz,zoom:HOME.zoom,az:HOME.az,pol:HOME.pol};clearTrace();renderModuleNavigator();}
 $("btnReset").addEventListener("click",resetView);
-document.addEventListener("keydown",ev=>{if(ev.key==="r"||ev.key==="R")resetView();});
+document.addEventListener("keydown",ev=>{
+ if(ev.key!=="r"&&ev.key!=="R")return;
+ if(isEditableTarget(ev.target))return; /* typing "r" in the search field is not a camera command */
+ if(readerModalOpen||drawer.classList.contains("open"))return; /* a modal owns the screen */
+ resetView();
+});
+/* zoom bounds are communicated, not silent: buttons report aria-disabled at the limits */
+const ZOOM_MIN=0.35,ZOOM_MAX=6;
+function syncZoomButtons(): void {
+ $("zin").setAttribute("aria-disabled",String(camera.zoom>=ZOOM_MAX-1e-4));
+ $("zout").setAttribute("aria-disabled",String(camera.zoom<=ZOOM_MIN+1e-4));
+}
 $("zin").addEventListener("click",()=>{
- camera.zoom=Math.min(6,camera.zoom*1.25);camera.updateProjectionMatrix();});
+ if(camera.zoom>=ZOOM_MAX-1e-4)return;
+ camera.zoom=Math.min(ZOOM_MAX,camera.zoom*1.25);camera.updateProjectionMatrix();syncZoomButtons();});
 $("zout").addEventListener("click",()=>{
- camera.zoom=Math.max(0.35,camera.zoom/1.25);camera.updateProjectionMatrix();});
+ if(camera.zoom<=ZOOM_MIN+1e-4)return;
+ camera.zoom=Math.max(ZOOM_MIN,camera.zoom/1.25);camera.updateProjectionMatrix();syncZoomButtons();});
+controls.addEventListener("change",syncZoomButtons);
+syncZoomButtons();
 window.__isoEdgeMid=key=>{const o=edgeLinesById[key];if(!o||!o.pts.length)return null;const p=o.pts[Math.floor(o.pts.length/2)-0]||o.pts[0];const q=o.pts.length>1?o.pts[Math.floor(o.pts.length/2)]:p;const m=p.clone().add(q).multiplyScalar(0.5);const v=m.project(camera);const r=canvas.getBoundingClientRect();return {x:r.left+(v.x*0.5+0.5)*r.width,y:r.top+(-v.y*0.5+0.5)*r.height};};
 window.odinView={set(az,pol,r,zoom){placeCamera(az??HOME.az,pol??HOME.pol,r??HOME.r,controls.target.x,controls.target.y,controls.target.z,zoom);},
  /* test hooks (module scope is closed): look = cancel autopilot + aim; restore = leave any circuit/blast scope */
@@ -515,9 +534,12 @@ function mark(id: string,on: boolean): void {
 }
 function openReadingPanel(focusSearch=false): void {
  if(!compactReader.matches)return;
- readingReturnFocus=document.activeElement instanceof HTMLElement?document.activeElement:btnReadMap;
- readingScrim.hidden=false;sideRail.inert=true;canvasWrap.inert=true;
- readingPanel.inert=false;readerModalOpen=true;
+ if(drawer.classList.contains("open"))closeSettings(); /* layers are exclusive: one surface at a time */
+ const ae=document.activeElement;
+ readingReturnFocus=ae instanceof HTMLElement&&ae!==document.body?ae:btnReadMap;
+ readingScrim.hidden=false;sideRail.inert=true;canvasWrap.inert=true; /* rail and art go inert while the sheet owns the screen */
+ readingPanel.hidden=false;readingPanel.inert=false;readerModalOpen=true;
+ setSheetDetent("medium");
  readingPanel.setAttribute("role","dialog");readingPanel.setAttribute("aria-modal","true");
  btnReadMap.setAttribute("aria-expanded","true");
  requestAnimationFrame(()=>{
@@ -536,18 +558,18 @@ let readerModalOpen=false;
 function closeReadingPanel(): void {
  readerModalOpen=false;sideRail.inert=false;canvasWrap.inert=false;
  btnReadMap.setAttribute("aria-expanded","false");
- if(compactReader.matches){readingScrim.hidden=true;readingPanel.inert=true;}
+ if(compactReader.matches){readingScrim.hidden=true;readingPanel.hidden=true;readingPanel.inert=true;}
  (readingReturnFocus?.isConnected?readingReturnFocus:btnReadMap).focus();readingReturnFocus=null;
 }
 function syncReaderLayout(): void {
  if(compactReader.matches){
-  readerModalOpen=false;readingScrim.hidden=true;readingPanel.inert=true;
+  readerModalOpen=false;readingScrim.hidden=true;readingPanel.hidden=true;readingPanel.inert=true;
   readingPanel.classList.add("dp-sheet");
   readingPanel.setAttribute("role","dialog");readingPanel.setAttribute("aria-modal","true");
   sideRail.inert=false;canvasWrap.inert=false;btnReadMap.setAttribute("aria-expanded","false");
  }else{
-  readingScrim.hidden=false;readingPanel.inert=false;
-  readingPanel.classList.remove("dp-sheet");
+  readingScrim.hidden=true;readingPanel.hidden=false;readingPanel.inert=false;
+  readingPanel.classList.remove("dp-sheet","is-medium","is-large");
   readingPanel.setAttribute("role","complementary");readingPanel.removeAttribute("aria-modal");
   sideRail.inert=false;canvasWrap.inert=false;btnReadMap.setAttribute("aria-expanded","false");
  }
@@ -563,19 +585,69 @@ compactReader.addEventListener("change",()=>{
 syncReaderLayout();
 btnReadMap.addEventListener("click",()=>{
  renderPanel(null);
- if(compactReader.matches)openReadingPanel(true);
- else moduleSearch.focus();
+ readingPanel.scrollTop=0; /* the headline leads; search never hijacks the scroll position */
+ if(compactReader.matches)openReadingPanel(false);
+ else readingPanel.focus({preventScroll:true});
 });
 $("closeReadingPanel").addEventListener("click",closeReadingPanel);
 readingScrim.addEventListener("click",ev=>{if(ev.target===readingScrim)closeReadingPanel();});
-readingScrim.addEventListener("keydown",ev=>{
- if(ev.key==="Escape"){ev.preventDefault();closeReadingPanel();return;}
- if(ev.key!=="Tab")return;
- const controls=Array.from(readingPanel.querySelectorAll<HTMLElement>('button:not([disabled]), a[href], [tabindex]:not([tabindex="-1"])'));
+/* focus trap lives on the panel (focus is inside it); the scrim never receives keys */
+const FOCUSABLE='button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), a[href], summary, [tabindex]:not([tabindex="-1"])';
+readingPanel.addEventListener("keydown",ev=>{
+ if(ev.key!=="Tab"||!readerModalOpen)return;
+ const controls=Array.from(readingPanel.querySelectorAll<HTMLElement>(FOCUSABLE)).filter(el=>!el.closest("[inert]")&&el.offsetParent!==null);
  const first=controls[0],last=controls[controls.length-1];
- if(ev.shiftKey&&document.activeElement===first){ev.preventDefault();last?.focus();}
- else if(!ev.shiftKey&&document.activeElement===last){ev.preventDefault();first?.focus();}
+ if(!first||!last)return;
+ if(ev.shiftKey&&document.activeElement===first){ev.preventDefault();last.focus();}
+ else if(!ev.shiftKey&&document.activeElement===last){ev.preventDefault();first.focus();}
 });
+/* canonical bottom-sheet behaviour: grabber click toggles detents, drag dismisses past the token ratio/velocity */
+const sheetGrabber=$<HTMLButtonElement>("sheetGrabber");
+let sheetDetent: "medium"|"large"="medium";
+function setSheetDetent(detent: "medium"|"large"): void {
+ sheetDetent=detent;
+ readingPanel.classList.toggle("is-medium",detent==="medium");
+ readingPanel.classList.toggle("is-large",detent==="large");
+ sheetGrabber.setAttribute("aria-label",detent==="medium"?"Expand reading panel":"Collapse reading panel");
+}
+let suppressGrabberClick=false;
+sheetGrabber.addEventListener("click",()=>{
+ if(suppressGrabberClick){suppressGrabberClick=false;return;} /* a real drag ended on the grabber */
+ if(!compactReader.matches||!readerModalOpen)return;
+ setSheetDetent(sheetDetent==="medium"?"large":"medium");
+});
+(function sheetDrag(){
+ const css=getComputedStyle(readingPanel);
+ const num=(name: string,fallback: number): number=>{const v=parseFloat(css.getPropertyValue(name));return Number.isFinite(v)?v:fallback;};
+ const dismissRatio=num("--dp-component-bottom-sheet-dismiss-ratio",0.25);
+ const dismissVelocity=num("--dp-component-bottom-sheet-dismiss-velocity",0.5);
+ const slop=num("--dp-component-bottom-sheet-drag-slop",4);
+ let drag: { y: number; h: number; t: number; vy: number; moved: boolean } | null=null;
+ sheetGrabber.addEventListener("pointerdown",ev=>{
+  if(!compactReader.matches||!readerModalOpen)return;
+  drag={y:ev.clientY,h:readingPanel.getBoundingClientRect().height,t:performance.now(),vy:0,moved:false};
+  sheetGrabber.setPointerCapture(ev.pointerId);
+ });
+ sheetGrabber.addEventListener("pointermove",ev=>{
+  if(!drag)return;
+  const dy=Math.max(0,ev.clientY-drag.y);
+  if(dy>slop)drag.moved=true;
+  drag.vy=(ev.clientY-drag.y)/Math.max(1,performance.now()-drag.t);
+  if(drag.moved){readingPanel.classList.add("is-dragging");readingPanel.style.transform=`translateY(${dy}px)`;}
+ });
+ const settle=(ev: PointerEvent)=>{
+  if(!drag)return;
+  const dy=Math.max(0,ev.clientY-drag.y),vy=drag.vy,moved=drag.moved;
+  drag=null;readingPanel.classList.remove("is-dragging");readingPanel.style.transform="";
+  if(!moved)return; /* below slop: let the click toggle the detent */
+  suppressGrabberClick=true;
+  ev.preventDefault();
+  if(vy>dismissVelocity||dy>dismissRatio*readingPanel.getBoundingClientRect().height)closeReadingPanel();
+  else if(dy>readingPanel.getBoundingClientRect().height*0.2&&sheetDetent==="large")setSheetDetent("medium");
+ };
+ sheetGrabber.addEventListener("pointerup",settle);
+ sheetGrabber.addEventListener("pointercancel",()=>{if(drag){drag=null;readingPanel.classList.remove("is-dragging");readingPanel.style.transform="";}});
+})();
 function pin(id: string): void {
  if(pinned===id){pinned=null;NODES.forEach(n=>mark(n.id,false));renderPanel(null);updateNavigatorSelection();return;}
  pinned=id;NODES.forEach(n=>mark(n.id,n.id===id));
@@ -720,7 +792,7 @@ function renderEdgePanel(key: string): void {
 function renderPanel(id: string | null): void {
  if(!id){
   /* overview: what this is + the whole board's state, one scroll — no hidden mode */
-  pE.textContent=DEF.e;pT.textContent="Overview";pS.textContent=DEF.s;
+  pE.textContent=DEF.e;pT.textContent=DEF.t||"Overview";pS.textContent=DEF.s;
   const c=DEF.node.cloneNode(true);
   while(pP.firstChild)pP.removeChild(pP.firstChild);
   while(c.firstChild)pP.appendChild(c.firstChild);
@@ -811,6 +883,9 @@ function refreshTheme(): void {
  themed.forEach(t=>{if(t.m.color){t.m.color.copy(t.get());t.m.needsUpdate=true;}});
  hatched.forEach(h=>{const old=h.m.map;h.m.map=makeHatch(h.st);h.m.needsUpdate=true;if(old)old.dispose();});
  paintCircuit();
+ /* browser chrome follows the canvas (token color.chrome.theme = bg-canvas) */
+ const chromeMeta=document.querySelector('meta[name="theme-color"]');
+ if(chromeMeta)chromeMeta.setAttribute("content","#"+COL.paper.getHexString());
 }
 function setTheme(id: ThemeId,mode: Mode=activeMode): void {
  activeTheme=id;activeMode=mode;setDPTheme(id);setDPMode(mode);
@@ -828,18 +903,27 @@ function closeSettings(): void {
 }
 settingsButton.addEventListener("click",()=>{
  const open=!drawer.classList.contains("open");
- if(open){settingsBackdrop.hidden=false;drawer.hidden=false;drawer.inert=false;workbench.inert=true;drawer.classList.add("open");settingsButton.setAttribute("aria-expanded","true");$("drawerClose").focus();}
+ if(open){
+  if(readerModalOpen)closeReadingPanel(); /* layers are exclusive: one surface at a time */
+  settingsBackdrop.hidden=false;drawer.hidden=false;drawer.inert=false;workbench.inert=true;drawer.classList.add("open");settingsButton.setAttribute("aria-expanded","true");$("drawerClose").focus();
+ }
  else closeSettings();
 });
 $("drawerClose").addEventListener("click",closeSettings);
 settingsBackdrop.addEventListener("click",closeSettings);
 drawer.addEventListener("keydown",ev=>{
- if(ev.key==="Escape"){ev.preventDefault();closeSettings();return;}
  if(ev.key!=="Tab")return;
- const focusable=Array.from(drawer.querySelectorAll<HTMLElement>('button:not([disabled]), select:not([disabled]), [href], [tabindex]:not([tabindex="-1"])'));
+ const focusable=Array.from(drawer.querySelectorAll<HTMLElement>(FOCUSABLE)).filter(el=>el.offsetParent!==null);
  const first=focusable[0],last=focusable[focusable.length-1];
- if(ev.shiftKey&&document.activeElement===first){ev.preventDefault();last?.focus();}
- else if(!ev.shiftKey&&document.activeElement===last){ev.preventDefault();first?.focus();}
+ if(!first||!last)return;
+ if(ev.shiftKey&&document.activeElement===first){ev.preventDefault();last.focus();}
+ else if(!ev.shiftKey&&document.activeElement===last){ev.preventDefault();first.focus();}
+});
+/* one Escape contract for the whole app: close the topmost open layer, from anywhere */
+document.addEventListener("keydown",ev=>{
+ if(ev.key!=="Escape")return;
+ if(drawer.classList.contains("open")){ev.preventDefault();closeSettings();}
+ else if(readerModalOpen){ev.preventDefault();closeReadingPanel();}
 });
 const themeList=$<HTMLElement>("themeList");
 const modeSelect=$<HTMLSelectElement>("modeSelect");
@@ -855,6 +939,7 @@ THEMES.forEach(theme=>{
  const button=document.createElement("button");button.type="button";button.className="trow";
  button.dataset.id=theme.id;button.setAttribute("aria-label",`${theme.name} theme`);
  const swatch=document.createElement("span");swatch.className="swatch theme-swatch";swatch.setAttribute("aria-hidden","true");
+ swatch.setAttribute("data-dp-theme",theme.id); /* themes nest: the swatch previews its own palette in the current mode */
  const label=document.createElement("span");label.className="nm";label.textContent=theme.name;
  button.append(swatch,label);button.addEventListener("click",()=>setTheme(theme.id));themeList.append(button);
 });
@@ -865,24 +950,24 @@ paintThemeRows();
 const dashSeg=$<HTMLElement>("dashSeg");
 DOTSETS.forEach((p,i)=>{
  const b=document.createElement("button");b.type="button";b.textContent=p.label;
- if(i===dotSet)b.classList.add("on");
+ b.setAttribute("aria-pressed",String(i===dotSet)); /* canonical segmented state: styling and AT agree */
  b.addEventListener("click",()=>{
   dotSet=i;
   Object.values(edgeLinesById).forEach(o=>buildDots(o));
-  dashSeg.querySelectorAll("button").forEach((x,xi)=>x.classList.toggle("on",xi===i));
+  dashSeg.querySelectorAll("button").forEach((x,xi)=>x.setAttribute("aria-pressed",String(xi===i)));
  });
  dashSeg.appendChild(b);
 });
 const weightSeg=$<HTMLElement>("weightSeg");
 LINEW.forEach((p,i)=>{
  const b=document.createElement("button");b.type="button";b.textContent=p.label;
- if(i===lineSet)b.classList.add("on");
+ b.setAttribute("aria-pressed",String(i===lineSet));
  b.addEventListener("click",()=>{
   lineSet=i;
   edgeMats.forEach(m=>{m.linewidth=p.w;});
   const sc=junctionScale();
   Object.values(edgeLinesById).forEach(o=>{buildDots(o);o.jn.forEach(j=>j.scale.set(sc,1,sc));});
-  weightSeg.querySelectorAll("button").forEach((x,xi)=>x.classList.toggle("on",xi===i));
+  weightSeg.querySelectorAll("button").forEach((x,xi)=>x.setAttribute("aria-pressed",String(xi===i)));
  });
  weightSeg.appendChild(b);
 });
@@ -904,8 +989,9 @@ function buildScene(spec: Spec): void{
   n._lvl=LEVELS[n.id]||0;n._lyT=stacked?n._lvl*LVL_H:0;n._ly=n._lyT;
   byId[n.id]=n;
  });
-/* chrome from spec */
-$("brandV").textContent="Isoscope";
+/* chrome from spec: keep the identity lockup's mark, only the name is authored */
+const brandName=$("brandV").querySelector(".brand-name");
+if(brandName)brandName.textContent="Isoscope";
 (spec.metrics||[]).forEach((mt)=>{
  const c=document.createElement("div");c.className="cell";
  const k=document.createElement("span");k.className="k dp-type-label-sm";k.textContent=mt.k;
@@ -917,6 +1003,8 @@ const dec=(t: string | undefined): string=>new DOMParser().parseFromString("<x>"
 $("pEyebrow").textContent=dec((spec.intro||{}).eyebrow);
 $("pTitle").textContent=dec((spec.intro||{}).title);
 $("pSub").textContent=dec((spec.intro||{}).sub);
+const brandTag=document.getElementById("brandTag");
+if(brandTag)brandTag.textContent=dec((spec.intro||{}).sub)||"See the shape of your codebase";
 
 NODES.forEach(n=>{
  const grp=new THREE.Group();grp.userData.id=n.id;

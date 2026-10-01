@@ -103,7 +103,6 @@ setCanonicalIcon($<HTMLButtonElement>("btnTrace"),iconTrace);
 setCanonicalIcon($<HTMLButtonElement>("btnDraw"),iconDraw);
 setCanonicalIcon($<HTMLButtonElement>("btnStack"),iconLayers);
 setCanonicalIcon($<HTMLButtonElement>("btnGrid"),iconGrid);
-setCanonicalIcon($<HTMLButtonElement>("btnSound"),iconSoundOff);
 setCanonicalIcon($<HTMLButtonElement>("btnSettings"),iconSettings);
 setCanonicalIcon($<HTMLButtonElement>("btnReadMap"),iconOverview);
 setCanonicalIcon($<HTMLButtonElement>("drawerClose"),iconClose);
@@ -625,7 +624,7 @@ function audibleModules(): string[] {
    holds the voice so the theater is never silent-by-accident. Master off = silent. */
 let masterAudio=false;              /* ships silent */
 let audioFocus: string | null=null; /* module id whose track is live */
-const btnSound=$<HTMLButtonElement>("btnSound");
+const npPlay=$<HTMLButtonElement>("npPlay"); /* the one audio+transport button, bottom-left */
 function audibleEntry(id: string): SurfaceEntry | null {
  const faces=surfacesById[id];if(!faces)return null;
  for(const e of Object.values(faces))if(e&&e.audio&&e.video)return e;
@@ -649,21 +648,12 @@ function applyAudio(): void {
   if(audible){pv.video.volume=1;if(pv.video.paused)pv.video.play().catch(()=>{});}
  });
  syncSoundButton();
- refreshNowPlaying();
+ refreshTransport();
 }
 function setAudioFocus(id: string | null): void { audioFocus=id;applyAudio(); }
-function syncSoundButton(): void {
- const any=audibleModules().length>0;
- btnSound.hidden=!any;
- const audible=masterAudio&&any;
- btnSound.setAttribute("aria-pressed",String(audible));
- btnSound.setAttribute("aria-label",audible?"Sound: mute all media":"Sound: unmute media (one track at a time)");
- setCanonicalIcon(btnSound,audible?iconSoundOn:iconSoundOff);
-}
-btnSound.addEventListener("click",()=>{
- masterAudio=!masterAudio;         /* the click is the gesture that unlocks audio */
- applyAudio();
-});
+/* the single bottom-left speaker button syncs from audio state (refreshTransport
+   below owns its icon: speaker with waves when audible, muted speaker when not). */
+function syncSoundButton(): void { refreshTransport(); }
 /* sensible per-module media controls, driven from the inspector and QA hooks.
    play/pause the module's surface; solo = take the one audio voice. */
 const mediaControls={
@@ -686,35 +676,68 @@ const mediaControls={
  },
 };
 
-/* ————— media transport: one button, bottom-left above the avatar —————
-   Only appears when a module actually holds the voice (no media, no button — the
-   map isn't always a theater). Click toggles play/pause; Shift+click starts over. */
-const npPlay=$<HTMLButtonElement>("npPlay");
+/* ————— the one audio button: a speaker, bottom-left above the avatar —————
+   Plain click toggles SOUND on/off for the current track (the track keeps playing
+   silently while muted — this is the master-voice switch, merged here). It shows a
+   speaker with waves while audible, a muted speaker otherwise, and only appears
+   when there is any audible media at all. Start-over and mute-all live in a small
+   popover above the button so the button itself stays a single clear action. */
+const npIco=$<HTMLSpanElement>("npIco"),npMute=$<HTMLSpanElement>("npMute");
 function npModule(): string | null { return audioFocus??(cordon.size===1?[...cordon][0]:null); }
-function npVideo(): HTMLVideoElement | null {
- const id=npModule();if(!id)return null;
- const faces=surfacesById[id];if(!faces)return null;
- const e=audibleEntry(id)??Object.values(faces).find(x=>x&&x.video)??null;
- return e&&e.video?e.video:null;
-}
-function refreshNowPlaying(): void {
- const id=npModule(),v=npVideo();
- if(!id||!v){npPlay.hidden=true;return;}
+function refreshTransport(): void {
+ const any=audibleModules().length>0;
+ if(!any){npPlay.hidden=true;npPopoverHide();return;}
  npPlay.hidden=false;
- const playing=!v.paused;
- npPlay.classList.toggle("is-playing",playing);
- npPlay.setAttribute("aria-label",(playing?"Pause":"Play")+" — "+(byId[id]&&(byId[id].name||id)||id));
+ const audible=masterAudio&&!!npModule();
+ npPlay.classList.toggle("is-playing",audible);
+ npPlay.classList.toggle("is-muted",!audible);
+ npPlay.setAttribute("aria-pressed",String(audible));
+ npPlay.setAttribute("aria-label",audible?"Sound on — click to mute":"Sound off — click to unmute");
 }
-npPlay.addEventListener("click",ev=>{
- const id=npModule();if(!id)return;
- if(ev.shiftKey)mediaControls.restart(id);else mediaControls.togglePlay(id);
- refreshNowPlaying();
+/* speaker glyphs come from the bundled Desert Pants volume icons (no emoji) */
+function setSpanIcon(span: HTMLElement, source: string): void {
+ const parsed=new DOMParser().parseFromString(source,"image/svg+xml");
+ const svg=parsed.documentElement;
+ if(svg.localName!=="svg")return;
+ const icon=document.importNode(svg,true) as unknown as SVGSVGElement;
+ icon.setAttribute("width","20");icon.setAttribute("height","20");icon.setAttribute("aria-hidden","true");
+ span.replaceChildren(icon);
+}
+setSpanIcon(npIco,iconSoundOn);
+setSpanIcon(npMute,iconSoundOff);
+/* plain click toggles sound (the click is the gesture that unlocks audio) */
+npPlay.addEventListener("click",()=>{
+ if(!masterAudio&&audioFocus==null)audioFocus=audibleModules()[0]??null; /* ensure a voice exists */
+ masterAudio=!masterAudio;
+ applyAudio();
+});
+/* ————— popover above the button: start over + mute all ————— */
+const npPop=$<HTMLDivElement>("npPopover");
+let npPopOpen=false;
+function npPopoverHide(): void { npPopOpen=false;if(npPop)npPop.hidden=true; }
+function npPopoverToggle(): void {
+ npPopOpen=!npPopOpen;
+ npPop.hidden=!npPopOpen;
+ if(npPopOpen){const id=npModule();$("npPopRestart").toggleAttribute("disabled",!id);}
+}
+npPlay.addEventListener("contextmenu",ev=>{ev.preventDefault();npPopoverToggle();});
+npPlay.addEventListener("pointerdown",ev=>{ /* long-press opens the popover too */
+ if(ev.button!==0)return;
+ const t=setTimeout(()=>{if(!npPopOpen)npPopoverToggle();},550);
+ const clear=()=>{clearTimeout(t);npPlay.removeEventListener("pointerup",clear);npPlay.removeEventListener("pointerleave",clear);};
+ npPlay.addEventListener("pointerup",clear);npPlay.addEventListener("pointerleave",clear);
+});
+$("npPopRestart").addEventListener("click",()=>{const id=npModule();if(id)mediaControls.restart(id);npPopoverHide();});
+$("npPopMute").addEventListener("click",()=>{masterAudio=false;applyAudio();npPopoverHide();});
+document.addEventListener("pointerdown",ev=>{ /* click-away closes the popover */
+ if(!npPopOpen)return;
+ if(ev.target instanceof Node&&(npPop.contains(ev.target)||npPlay.contains(ev.target)))return;
+ npPopoverHide();
 });
 function nowPlayingTick(): void {
  if(npPlay.hidden)return;
- const v=npVideo();
- const playing=!!(v&&!v.paused);
- if(playing!==npPlay.classList.contains("is-playing"))refreshNowPlaying();
+ const audible=masterAudio&&!!npModule();
+ if(audible!==npPlay.classList.contains("is-playing"))refreshTransport();
 }
 /* graph edges on the ground */
 /* connection health: a link can be broken/degraded independent of its modules.
@@ -872,7 +895,7 @@ document.addEventListener("keydown",ev=>{
  if(!id)return;
  ev.preventDefault();
  if(ev.key===" ")mediaControls.togglePlay(id);else mediaControls.restart(id);
- refreshNowPlaying();
+ refreshTransport();
 });
 document.addEventListener("keydown",ev=>{
  if(ev.key!=="w"&&ev.key!=="W")return;
@@ -1211,7 +1234,7 @@ function applyCircuit(){
  if(ti>=0){ti=-1;}
  paintCircuit();
  updateNavigatorSelection();
- refreshNowPlaying();
+ refreshTransport();
  if(cordon.size===0){renderPanel(null);return;}
  if(cordon.size===1){renderPanel([...cordon][0]);return;}
  renderCircuitPanel();

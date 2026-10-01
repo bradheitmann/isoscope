@@ -261,10 +261,27 @@ details > summary { cursor: pointer; }
 .np-fab:hover{background:var(--dp-color-bg-surface,#fff);transform:translateY(-1px)}
 .np-fab:active{transform:translateY(0)}
 .np-ico{font-size:17px;line-height:1}
+.np-mute{display:none;font-size:16px;line-height:1;font-weight:700}
 .np-fab.is-playing{background:var(--dp-color-accent-default,#3a63f3);color:var(--dp-color-accent-contrast,#fff);border-color:transparent}
 .np-eq{display:none;align-items:flex-end;gap:2px;block-size:14px}
 .np-eq i{inline-size:3px;background:currentColor;border-radius:1px;animation:npEq 0.9s ease-in-out infinite}
 .np-eq i:nth-child(2){animation-delay:.22s}.np-eq i:nth-child(3){animation-delay:.44s}
 .np-fab.is-playing .np-eq{display:flex}.np-fab.is-playing .np-ico{display:none}
+.np-fab.is-muted{color:var(--dp-color-text-secondary,#666);opacity:.8}
+.np-fab.is-muted .np-mute{display:block}.np-fab.is-muted .np-ico,.np-fab.is-muted .np-eq{display:none}
 @keyframes npEq{0%,100%{block-size:5px}50%{block-size:14px}}
 @media (prefers-reduced-motion:reduce){.np-eq i{animation:none;block-size:9px}}
+/* speaker button states: audible = accent + equalizer; muted = plain + muted speaker */
+.np-fab .np-ico svg,.np-fab .np-mute svg{display:block}
+.np-fab.is-muted .np-eq{display:none}
+/* popover above the sound button: start over + mute everything */
+.np-popover{position:absolute;inset-block-end:calc(100% + var(--dp-space-2));inset-inline-start:0;z-index:35;
+  display:flex;flex-direction:column;gap:2px;padding:6px;min-inline-size:150px;
+  background:var(--dp-color-bg-raised,#f4f4f2);border:1px solid var(--dp-color-border-default,rgb(0 0 0/0.14));
+  border-radius:12px;box-shadow:0 12px 32px rgb(0 0 0/0.28)}
+.np-pop-btn{display:block;inline-size:100%;text-align:start;padding:8px 10px;border:0;border-radius:8px;
+  background:transparent;color:inherit;font-size:13px;font-weight:600;cursor:pointer;white-space:nowrap}
+.np-pop-btn:hover{background:var(--dp-color-accent-default,#3a63f3);color:var(--dp-color-accent-contrast,#fff)}
+.np-pop-btn[disabled]{opacity:.4;cursor:default}
+.np-pop-btn[disabled]:hover{background:transparent;color:inherit}
+.me-cluster{position:fixed} /* anchor for the absolutely-positioned popover */

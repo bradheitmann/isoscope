@@ -30,7 +30,6 @@
       <button class="dp-button dp-button--sm dp-button--outline" id="btnDraw" type="button" aria-label="Draw: sketch ink on the canvas (W)" aria-pressed="false" aria-keyshortcuts="w" title="Draw (W)"></button>
       <button class="dp-button dp-button--sm dp-button--outline" id="btnStack" type="button" aria-label="Stack: lift the architecture into three levels" aria-pressed="false" title="Stack"></button>
       <button class="dp-button dp-button--sm dp-button--outline" id="btnGrid" type="button" aria-label="Grid: show or hide the ground grid" aria-pressed="true" title="Grid"></button>
-      <button class="dp-button dp-button--sm dp-button--outline" id="btnSound" type="button" aria-label="Sound: unmute the media surfaces" aria-pressed="false" title="Sound (media audio)" hidden></button>
       <button class="dp-button dp-button--sm dp-button--outline" id="btnSettings" type="button" aria-label="Settings" aria-haspopup="dialog" aria-controls="drawer" aria-expanded="false" title="Settings"></button>
       <button class="dp-button dp-button--sm dp-button--outline" id="btnReadMap" type="button" aria-label="Open map overview" aria-expanded="false" aria-controls="readingPanel" title="Map overview"></button>
       <button class="dp-button dp-button--sm dp-button--outline" id="zin" type="button" aria-label="Zoom in" title="Zoom in"></button>
@@ -127,11 +126,16 @@
       </div>
     </div>
   </aside>
-  <!-- bottom-left cluster: media transport button above the user avatar -->
+  <!-- bottom-left cluster: the one sound button (speaker) above the user avatar -->
   <div class="me-cluster" id="meCluster">
-    <button class="np-fab" id="npPlay" type="button" hidden title="Play / pause the current track (Shift+click to start over)" aria-label="Play or pause the current track">
+    <div class="np-popover" id="npPopover" hidden role="menu" aria-label="Track controls">
+      <button class="np-pop-btn" id="npPopRestart" type="button" role="menuitem">Start over</button>
+      <button class="np-pop-btn" id="npPopMute" type="button" role="menuitem">Mute everything</button>
+    </div>
+    <button class="np-fab" id="npPlay" type="button" hidden title="Sound on/off · right-click or hold for track controls" aria-label="Sound on or off" aria-pressed="false">
       <span class="np-eq" id="npEq" aria-hidden="true"><i></i><i></i><i></i></span>
-      <span class="np-ico" id="npIco" aria-hidden="true">▶</span>
+      <span class="np-ico" id="npIco" aria-hidden="true"></span>
+      <span class="np-mute" id="npMute" aria-hidden="true"></span>
     </button>
     <span class="me-avatar" id="meAvatar" title="Bradley Heitmann">BH</span>
   </div>

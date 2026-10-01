@@ -952,6 +952,135 @@
       },
       "component": {
         "$description": "Component grids.",
+        "visualization-workbench": {
+          "$description": "Responsive workflow visualization: controls stay in a touch-sized rail, art takes the flexible track, and reading detail moves to a bottom sheet when a readable side column will not fit.",
+          "$extensions": {
+            "com.desertpants": {
+              "origin": "addition",
+              "platforms": [
+                "web"
+              ],
+              "anatomy": [
+                "control rail",
+                "art viewport",
+                "reading panel"
+              ]
+            }
+          },
+          "rail-inline-padding": {
+            "$type": "dimension",
+            "$value": "{space.1}",
+            "$description": "Inline inset on the control rail, one space.1 at each edge.",
+            "$extensions": {
+              "com.desertpants": {
+                "origin": "addition",
+                "platforms": [
+                  "web"
+                ]
+              }
+            }
+          },
+          "rail-touch-min": {
+            "$type": "dimension",
+            "$value": "{layout.size.touch.min}",
+            "$description": "Minimum width and height for each rail control's interactive target.",
+            "$extensions": {
+              "com.desertpants": {
+                "origin": "addition",
+                "platforms": [
+                  "web"
+                ]
+              }
+            }
+          },
+          "rail-width": {
+            "$type": "dimension",
+            "$value": {
+              "value": 52,
+              "unit": "px"
+            },
+            "$description": "Control rail width: 44px touch minimum plus the 4px inline inset on both sides (rail-touch-min + 2 × rail-inline-padding).",
+            "$extensions": {
+              "com.desertpants": {
+                "origin": "addition",
+                "platforms": [
+                  "web"
+                ]
+              }
+            }
+          },
+          "gap": {
+            "$type": "dimension",
+            "$value": "{layout.grid.web.regular-gap}",
+            "$description": "Gap between the control rail, art viewport and reading panel on wide workbenches.",
+            "$extensions": {
+              "com.desertpants": {
+                "origin": "addition",
+                "platforms": [
+                  "web"
+                ]
+              }
+            }
+          },
+          "compact-gap": {
+            "$type": "dimension",
+            "$value": "{layout.grid.web.compact-gap}",
+            "$description": "Gap between the control rail and flexible art viewport at phone widths.",
+            "$extensions": {
+              "com.desertpants": {
+                "origin": "addition",
+                "platforms": [
+                  "web"
+                ]
+              }
+            }
+          },
+          "reading-min-width": {
+            "$type": "dimension",
+            "$value": {
+              "value": 384,
+              "unit": "px"
+            },
+            "$description": "Minimum reading-panel track: leaves a 320px text measure after the existing 32px panel padding on both sides.",
+            "$extensions": {
+              "com.desertpants": {
+                "origin": "addition",
+                "platforms": [
+                  "web"
+                ]
+              }
+            }
+          },
+          "reading-preferred-width": {
+            "$type": "dimension",
+            "$value": {
+              "value": 448,
+              "unit": "px"
+            },
+            "$description": "Preferred reading-panel track: leaves a 384px text measure after the existing 32px panel padding on both sides.",
+            "$extensions": {
+              "com.desertpants": {
+                "origin": "addition",
+                "platforms": [
+                  "web"
+                ]
+              }
+            }
+          },
+          "reading-breakpoint": {
+            "$type": "dimension",
+            "$value": "{breakpoint.lg}",
+            "$description": "At and below breakpoint.lg, remove reading text from the squeezed column layout and present it in component.bottom-sheet.",
+            "$extensions": {
+              "com.desertpants": {
+                "origin": "addition",
+                "platforms": [
+                  "web"
+                ]
+              }
+            }
+          }
+        },
         "card-columns-regular": {
           "$type": "number",
           "$value": 3,

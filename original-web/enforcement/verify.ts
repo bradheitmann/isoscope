@@ -7,6 +7,7 @@ const vendor = resolve(root, "vendor/desert-pants");
 verifyCanonicalVendor(vendor);
 assertDesignContract(
   readFileSync(resolve(vendor, "build/web/tokens.css"), "utf8"),
-  readFileSync(resolve(root, "src/styles.css"), "utf8")
+  readFileSync(resolve(root, "src/styles.css"), "utf8"),
+  readFileSync(resolve(root, "index.html"), "utf8")
 );
-console.log(`Desert Pants source ${CANONICAL_SOURCE_COMMIT}, vendored byte inventory, and static stylesheet typography recipes verified.`);
+console.log(`Desert Pants source ${CANONICAL_SOURCE_COMMIT}, vendored byte inventory, static CSS recipes, and bounded authored DOM roles verified.`);

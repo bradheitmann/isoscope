@@ -1,0 +1,9 @@
+# Original web design enforcement
+
+Run `npm run enforce` from `original-web`. It verifies the vendor manifest against a checked-in SHA-256 trust anchor, requires the provenance record to name Desert Pants commit `ba99de27974f623c20679962e8e3dc4d74c2a273`, checks every manifest entry and the complete vendor inventory, and independently binds the vendored layout source that the previous manifest omitted. The layout JSON must match the immutable source hash `2225319649c5f32d8800c9b610652d5eab7d237f12f14bc903ded3f7667991ee`.
+
+Typography checks bind each generated `.dp-type-*` class to all seven canonical variables: family, size, weight, line height, letter spacing, transform, and numeric variant. Authored component selectors with direct type declarations use fixed semantic component recipes. The sole inherited typography rule is `.module-results .dp-list-row { font: inherit; }`, which inherits the supplied list-row component style. The checker rejects role-variable redefinitions, reset property `all`, unknown font axes, and type declarations without an explicit canonical recipe.
+
+The CSS reader supports the five pinned stylesheet imports, ordinary declaration rules, and nested `@media` blocks. It rejects CSS escape syntax and unsupported at-rules/statements instead of skipping them. The HTML reader checks the statically authored role-bearing elements, forbids inline styles/event handlers and `data-dp-art`, disallows extra stylesheet or script entry points, and requires the intended heading roles by element ID.
+
+This is a bounded static source check. It does not inspect styles created dynamically by the application, calculate browser cascade/computed styles, prove layout at viewport sizes, or test accessibility and interaction behavior. Those require separate rendered and runtime QA.

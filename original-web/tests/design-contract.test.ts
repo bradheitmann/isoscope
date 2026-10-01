@@ -10,15 +10,17 @@ import {
   CANONICAL_SOURCE_COMMIT,
   assertDesignContract,
   canonicalRoleCompletenessFindings,
+  domRoleFindings,
   missingTokenFindings,
   typographyRoleFindings,
   verifyCanonicalVendor
 } from "../enforcement/design-contract";
 
 const root = resolve(import.meta.dirname, "..");
+const indexHtml = readFileSync(resolve(root, "index.html"), "utf8");
 const tokenCss = readFileSync(resolve(root, "vendor/desert-pants/build/web/tokens.css"), "utf8");
 const authored = [
-  readFileSync(resolve(root, "index.html"), "utf8"),
+  indexHtml,
   readFileSync(resolve(root, "src/original-renderer.ts"), "utf8"),
   readFileSync(resolve(root, "src/main.ts"), "utf8")
 ].join("\n");
@@ -62,8 +64,10 @@ describe("canonical Desert Pants design contract", () => {
 
   it("pins the vendored source manifest to the approved upstream commit", () => {
     expect(CANONICAL_SOURCE_COMMIT).toBe("ba99de27974f623c20679962e8e3dc4d74c2a273");
-    expect(CANONICAL_MANIFEST_SHA256).toBe("3017ea2f8796b54007f4e8a8d3b6516f63241b3e082e6fdcf95568a7ef208bc5");
+    expect(CANONICAL_MANIFEST_SHA256).toBe("1d92f2e00d8934bd240f6918f16d4e9c49b6172f0b42925443fc1d5887e4d3db");
     expect(() => verifyCanonicalVendor(resolve(root, "vendor/desert-pants"))).not.toThrow();
+    const layoutTokens = readFileSync(resolve(root, "vendor/desert-pants/tokens/04-layout.tokens.json"));
+    expect(createHash("sha256").update(layoutTokens).digest("hex")).toBe("2225319649c5f32d8800c9b610652d5eab7d237f12f14bc903ded3f7667991ee");
   });
 
   it("rejects altered upstream bytes even if the changed asset hash is re-written into the manifest", () => {
@@ -105,7 +109,7 @@ describe("canonical Desert Pants design contract", () => {
     const findings = typographyRoleFindings(tokenCss, wrongButValidRole);
     expect(findings).toHaveLength(1);
     expect(findings[0]?.message).toContain("canonical whole-role recipe requires var(--dp-type-h2-font-size)");
-    expect(() => assertDesignContract(tokenCss, wrongButValidRole)).toThrow(/sets font-size/);
+    expect(() => assertDesignContract(tokenCss, wrongButValidRole, indexHtml)).toThrow(/sets font-size/);
   });
 
   it("requires authored component typography to bind every axis to its exact component recipe", () => {
@@ -125,5 +129,32 @@ describe("canonical Desert Pants design contract", () => {
     expect(canonicalRoleCompletenessFindings(wrongCanonicalRecipe)).toContainEqual(expect.objectContaining({
       message: expect.stringContaining(".dp-type-h2 does not resolve font-size")
     }));
+  });
+
+  it("rejects escaped CSS property spellings instead of silently ignoring the typography declaration", () => {
+    const escaped = `${consumerCss}\n.dp-type-h2 { f\\6f nt-size: var(--dp-type-body-sm-font-size); }`;
+    expect(() => assertDesignContract(tokenCss, escaped, indexHtml)).toThrow(/CSS escape sequences are unsupported/);
+  });
+
+  it("rejects role-token substitution and reset properties in media and global rules", () => {
+    const roleVariableOverride = `${consumerCss}\n@media (max-width: 1180px) { #pTitle { --dp-type-h2-letter-spacing: var(--dp-type-body-sm-letter-spacing); } }`;
+    expect(() => assertDesignContract(tokenCss, roleVariableOverride, indexHtml)).toThrow(/redefines reserved canonical token/);
+    const reset = `${consumerCss}\n/* dp-art: canvas */ * { all: initial; }`;
+    expect(() => assertDesignContract(tokenCss, reset, indexHtml)).toThrow(/forbidden CSS reset property all/);
+  });
+
+  it("fails closed on unsupported CSS at-rules and noncanonical external imports", () => {
+    expect(() => assertDesignContract(tokenCss, `${consumerCss}\n@container (min-width: 1px) { .dp-type-h2 { font-size: 12px; } }`, indexHtml)).toThrow(/unsupported consumer CSS at-rule/);
+    expect(() => assertDesignContract(tokenCss, `${consumerCss}\n@import "https://example.invalid/override.css";`, indexHtml)).toThrow(/unsupported consumer CSS statement or import/);
+  });
+
+  it("binds intended DOM headings to their declared roles and rejects inline or art-mislabeled UI", () => {
+    expect(domRoleFindings(tokenCss, indexHtml)).toEqual([]);
+    const wrongHeading = indexHtml.replace('class="dp-type-h3" id="moduleNavigatorTitle"', 'class="dp-type-body-sm" id="moduleNavigatorTitle"');
+    expect(domRoleFindings(tokenCss, wrongHeading).some(finding => finding.message.includes("#moduleNavigatorTitle must carry intended role dp-type-h3"))).toBe(true);
+    const injectedUi = `${indexHtml}\n<p data-dp-art="canvas" style="font-size:12px">Non-art UI</p>`;
+    const injectedFindings = domRoleFindings(tokenCss, injectedUi);
+    expect(injectedFindings.some(finding => finding.message.includes("unchecked inline style"))).toBe(true);
+    expect(injectedFindings.some(finding => finding.message.includes("mislabels authored DOM as canvas art"))).toBe(true);
   });
 });

@@ -9,15 +9,15 @@ import { join, relative, resolve, sep } from "node:path";
  * approve the changed bytes.
  */
 export const CANONICAL_SOURCE_COMMIT = "ba99de27974f623c20679962e8e3dc4d74c2a273";
-export const CANONICAL_MANIFEST_SHA256 = "3017ea2f8796b54007f4e8a8d3b6516f63241b3e082e6fdcf95568a7ef208bc5";
-// The original vendor snapshot also carries source token JSON and the Lucide
-// notice, which the upstream-generated asset manifest omitted. Bind those
-// files independently instead of treating arbitrary extra files as trusted.
+export const CANONICAL_MANIFEST_SHA256 = "1d92f2e00d8934bd240f6918f16d4e9c49b6172f0b42925443fc1d5887e4d3db";
+// The vendor snapshot also carries the remaining source token JSON files,
+// which the upstream-generated asset manifest omits. Bind them independently
+// instead of treating arbitrary extra files as trusted. The corrected layout
+// source is now an explicit manifest entry.
 const CANONICAL_UNMANIFESTED_ASSETS: Readonly<Record<string, string>> = {
   "tokens/01-primitives.tokens.json": "b5299147c69fbb1b663f334341a525c7cd7952d3fd8afe424b885c14e3f45a4c",
   "tokens/02-semantic.tokens.json": "97c70c09b27cadaa63b6eb57910a27914d829b22651218607ff67bb7c7562b10",
   "tokens/03-typography.tokens.json": "cc9af3681c290f890fb5d665f487fdf4c58c516aac25d33cdf8aee4d5dbc7f0c",
-  "tokens/04-layout.tokens.json": "97f2ccfdab39310cad27cda5fd24e9dd9011be3544cac86b16899b82161bc004",
   "tokens/05-motion.tokens.json": "dd59b17246825a02234ec4c3e8c1e2bb51add5c152f8189c26dd825e5df5ccd6",
   "tokens/06-effects.tokens.json": "55977b9d86a1b54dabc781f979127e8b03a1053d0e43f7c4d4cfc63ceb31cca9",
   "tokens/07-print.tokens.json": "1b7094be5b3135b0c90cfef26f393f9e229e60faa2760c7bf854bddbdc906e80",
@@ -40,6 +40,24 @@ const COMPONENT_TYPE_RECIPES: Readonly<Record<string, string>> = {
   ".lbl": "--dp-component-scene-label-type",
   ".lbl .id": "--dp-component-scene-node-meta-type"
 };
+const REQUIRED_DOM_ROLES: Readonly<Record<string, string>> = {
+  brandV: "dp-type-brand-name",
+  pEyebrow: "dp-type-label-sm",
+  pTitle: "dp-type-h2",
+  pSub: "dp-type-body-sm",
+  moduleNavigatorTitle: "dp-type-h3",
+  moduleResults: "dp-type-meta",
+  pProse: "dp-type-body-sm",
+  sideKey: "dp-type-body-sm",
+  asOf: "dp-type-body-sm"
+};
+const CANONICAL_CSS_IMPORTS = [
+  "../vendor/desert-pants/build/web/fonts.css",
+  "../vendor/desert-pants/build/web/tokens.css",
+  "../vendor/desert-pants/build/web/themes.css",
+  "../vendor/desert-pants/reference/base.css",
+  "../vendor/desert-pants/reference/components.css"
+] as const;
 
 type Declarations = Map<string, string>;
 
@@ -136,23 +154,164 @@ function parseDeclarations(body: string): Declarations {
   return declarations;
 }
 
+function stripCssComments(css: string): string {
+  let output = "";
+  let quote: "'" | '"' | null = null;
+  for (let index = 0; index < css.length; index += 1) {
+    const char = css[index] ?? "";
+    if (char === "\\") throw new Error("consumer CSS escape sequences are unsupported; use literal canonical identifiers");
+    if (quote) {
+      output += char;
+      if (char === quote) quote = null;
+      continue;
+    }
+    if (char === "'" || char === '"') {
+      quote = char;
+      output += char;
+      continue;
+    }
+    if (char === "/" && css[index + 1] === "*") {
+      const close = css.indexOf("*/", index + 2);
+      if (close < 0) throw new Error("consumer CSS contains an unterminated comment");
+      output += " ";
+      index = close + 1;
+      continue;
+    }
+    output += char;
+  }
+  if (quote) throw new Error("consumer CSS contains an unterminated string");
+  return output;
+}
+
+function findCssDelimiter(source: string, start: number, delimiters: ReadonlySet<string>): number {
+  let quote: "'" | '"' | null = null;
+  let parentheses = 0;
+  for (let index = start; index < source.length; index += 1) {
+    const char = source[index] ?? "";
+    if (quote) {
+      if (char === quote) quote = null;
+      continue;
+    }
+    if (char === "'" || char === '"') quote = char;
+    else if (char === "(") parentheses += 1;
+    else if (char === ")") {
+      parentheses -= 1;
+      if (parentheses < 0) throw new Error("consumer CSS has an unmatched closing parenthesis");
+    } else if (parentheses === 0 && delimiters.has(char)) return index;
+  }
+  if (quote || parentheses !== 0) throw new Error("consumer CSS has an unterminated string or function");
+  return source.length;
+}
+
+function findCssBlockEnd(source: string, opening: number): number {
+  let depth = 1;
+  let quote: "'" | '"' | null = null;
+  for (let index = opening + 1; index < source.length; index += 1) {
+    const char = source[index] ?? "";
+    if (quote) {
+      if (char === quote) quote = null;
+      continue;
+    }
+    if (char === "'" || char === '"') quote = char;
+    else if (char === "{") depth += 1;
+    else if (char === "}") {
+      depth -= 1;
+      if (depth === 0) return index;
+    }
+  }
+  throw new Error("consumer CSS has an unclosed rule block");
+}
+
+function splitCssDeclarations(body: string): string[] {
+  const parts: string[] = [];
+  let start = 0;
+  while (start < body.length) {
+    const end = findCssDelimiter(body, start, new Set([";", "{", "}"]));
+    const part = body.slice(start, end).trim();
+    if (end < body.length && (body[end] === "{" || body[end] === "}")) {
+      throw new Error("nested blocks in a consumer style rule are unsupported");
+    }
+    if (part) parts.push(part);
+    start = end + 1;
+  }
+  return parts;
+}
+
+function parseConsumerDeclarations(body: string): Declarations {
+  const declarations: Declarations = new Map();
+  for (const part of splitCssDeclarations(body)) {
+    const colon = findCssDelimiter(part, 0, new Set([":"]));
+    if (colon >= part.length) throw new Error(`consumer CSS declaration lacks a colon: ${part}`);
+    const property = part.slice(0, colon).trim().toLowerCase();
+    const value = part.slice(colon + 1).trim();
+    if (!/^(?:--[a-z0-9-]+|[a-z][a-z0-9-]*)$/.test(property) || !value) {
+      throw new Error(`unsupported consumer CSS declaration syntax: ${part}`);
+    }
+    declarations.set(property, value);
+  }
+  return declarations;
+}
+
 function cssRules(css: string): Array<{ selector: string; declarations: Declarations }> {
-  const withoutComments = css.replace(/\/\*[\s\S]*?\*\//g, "");
+  const source = stripCssComments(css);
   const rules: Array<{ selector: string; declarations: Declarations }> = [];
-  const rulePattern = /([^{}]+)\{([^{}]*)\}/g;
-  for (const match of withoutComments.matchAll(rulePattern)) {
-    const selector = match[1].trim();
-    if (selector.startsWith("@")) continue;
-    rules.push({ selector, declarations: parseDeclarations(match[2]) });
+  const imports: string[] = [];
+
+  function parseRuleList(startAt: number, allowAtRules: boolean, allowClosingBrace: boolean): number {
+    let position = startAt;
+    while (position < source.length) {
+      while (/\s/.test(source[position] ?? "")) position += 1;
+      if (position >= source.length) return position;
+      if (source[position] === "}") {
+        if (allowClosingBrace) return position;
+        throw new Error("consumer CSS contains an unmatched closing brace");
+      }
+      const delimiter = findCssDelimiter(source, position, new Set(["{", ";", "}"]));
+      const head = source.slice(position, delimiter).trim();
+      if (!head) throw new Error("consumer CSS contains an empty selector or statement");
+      const stop = source[delimiter];
+      if (stop === ";") {
+        const importMatch = /^@import\s+["']([^"']+)["']$/.exec(head);
+        if (!importMatch || !CANONICAL_CSS_IMPORTS.includes(importMatch[1] as (typeof CANONICAL_CSS_IMPORTS)[number])) {
+          throw new Error(`unsupported consumer CSS statement or import: ${head}`);
+        }
+        imports.push(importMatch[1]);
+        position = delimiter + 1;
+        continue;
+      }
+      if (stop === "}") return delimiter;
+      if (stop !== "{") throw new Error(`consumer CSS rule is missing a block: ${head}`);
+      const end = findCssBlockEnd(source, delimiter);
+      const body = source.slice(delimiter + 1, end);
+      if (head.startsWith("@")) {
+        if (!allowAtRules || !/^@media\b/.test(head)) throw new Error(`unsupported consumer CSS at-rule: ${head}`);
+        const nestedEnd = parseRuleList(delimiter + 1, true, true);
+        if (source[nestedEnd] !== "}") throw new Error(`unclosed consumer CSS at-rule: ${head}`);
+      } else {
+        rules.push({ selector: head, declarations: parseConsumerDeclarations(body) });
+      }
+      position = end + 1;
+    }
+    return position;
+  }
+
+  const finalPosition = parseRuleList(0, true, false);
+  if (finalPosition !== source.length) throw new Error("consumer CSS has trailing unsupported syntax");
+  if (JSON.stringify(imports) !== JSON.stringify(CANONICAL_CSS_IMPORTS)) {
+    throw new Error("consumer CSS must import exactly the five pinned Desert Pants stylesheets in canonical order");
   }
   return rules;
 }
 
 function typographyRecipes(css: string): Map<string, Declarations> {
   const recipes = new Map<string, Declarations>();
-  for (const rule of cssRules(css)) {
-    const match = /^\.dp-type-([a-z0-9-]+)$/.exec(rule.selector);
-    if (match) recipes.set(`dp-type-${match[1]}`, rule.declarations);
+  // This input is the byte-pinned generated upstream stylesheet. Its source
+  // grammar is trusted after the vendor SHA check, so extract only the exact
+  // emitted single-class role selectors; authored consumer CSS uses the strict
+  // parser above.
+  for (const match of css.matchAll(/(?:^|\n)\s*\.dp-type-([a-z0-9-]+)\s*\{([^{}]*)\}/g)) {
+    const roleClass = `dp-type-${match[1]}`;
+    recipes.set(roleClass, parseDeclarations(match[2]));
   }
   return recipes;
 }
@@ -170,6 +329,13 @@ export function typographyRoleFindings(canonicalCss: string, consumerCss: string
   const recipes = typographyRecipes(canonicalCss);
   const findings: ContractFinding[] = [];
   for (const rule of cssRules(consumerCss)) {
+    for (const property of rule.declarations.keys()) {
+      if (property === "all") findings.push({ file, message: `${rule.selector} uses forbidden CSS reset property all` });
+      if (property.startsWith("--dp-")) findings.push({ file, message: `${rule.selector} redefines reserved canonical token ${property}` });
+      if (property.startsWith("font-") && !TYPOGRAPHY_PROPERTIES.includes(property as (typeof TYPOGRAPHY_PROPERTIES)[number])) {
+        findings.push({ file, message: `${rule.selector} uses unmodeled typography property ${property}` });
+      }
+    }
     const roleClasses = classNames(rule.selector).filter(name => name.startsWith("dp-type-"));
     const componentPrefix = COMPONENT_TYPE_RECIPES[rule.selector];
     const hasTypography = TYPOGRAPHY_PROPERTIES.some(property => rule.declarations.has(property)) || rule.declarations.has("font");
@@ -255,11 +421,145 @@ export function missingTokenFindings(canonicalCss: string, consumerCss: string, 
   return findings;
 }
 
-export function assertDesignContract(canonicalCss: string, consumerCss: string): void {
+interface StaticElement {
+  readonly tag: string;
+  readonly attributes: ReadonlyMap<string, string | null>;
+}
+
+function findHtmlTagEnd(html: string, start: number): number {
+  let quote: "'" | '"' | null = null;
+  for (let index = start; index < html.length; index += 1) {
+    const char = html[index] ?? "";
+    if (quote) {
+      if (char === quote) quote = null;
+    } else if (char === "'" || char === '"') quote = char;
+    else if (char === ">") return index;
+  }
+  throw new Error("authored HTML contains an unterminated tag");
+}
+
+function parseHtmlAttributes(source: string): Map<string, string | null> {
+  const attributes = new Map<string, string | null>();
+  let position = 0;
+  while (position < source.length) {
+    while (/\s/.test(source[position] ?? "")) position += 1;
+    if (position >= source.length || source[position] === "/") break;
+    const nameMatch = /^[a-zA-Z_:][a-zA-Z0-9_:.-]*/.exec(source.slice(position));
+    if (!nameMatch) throw new Error(`unsupported HTML attribute syntax near: ${source.slice(position, position + 30)}`);
+    const name = nameMatch[0].toLowerCase();
+    position += nameMatch[0].length;
+    while (/\s/.test(source[position] ?? "")) position += 1;
+    let value: string | null = null;
+    if (source[position] === "=") {
+      position += 1;
+      while (/\s/.test(source[position] ?? "")) position += 1;
+      const quote = source[position];
+      if (quote === "'" || quote === '"') {
+        position += 1;
+        const close = source.indexOf(quote, position);
+        if (close < 0) throw new Error(`unterminated quoted HTML attribute ${name}`);
+        value = source.slice(position, close);
+        position = close + 1;
+      } else {
+        const unquoted = /^[^\s>]+/.exec(source.slice(position));
+        if (!unquoted) throw new Error(`empty unquoted HTML attribute ${name}`);
+        value = unquoted[0];
+        position += unquoted[0].length;
+      }
+    }
+    if (attributes.has(name)) throw new Error(`duplicate HTML attribute ${name}`);
+    attributes.set(name, value);
+  }
+  return attributes;
+}
+
+function parseStaticHtml(html: string): StaticElement[] {
+  const elements: StaticElement[] = [];
+  let position = 0;
+  while (position < html.length) {
+    const opening = html.indexOf("<", position);
+    if (opening < 0) break;
+    if (html.startsWith("<!--", opening)) {
+      const close = html.indexOf("-->", opening + 4);
+      if (close < 0) throw new Error("authored HTML has an unterminated comment");
+      position = close + 3;
+      continue;
+    }
+    const close = findHtmlTagEnd(html, opening + 1);
+    const text = html.slice(opening, close + 1);
+    if (/^<!doctype\s+html\s*>$/i.test(text)) {
+      position = close + 1;
+      continue;
+    }
+    if (text.startsWith("</")) {
+      if (!/^<\/[a-zA-Z][a-zA-Z0-9:-]*\s*>$/.test(text)) throw new Error(`unsupported closing HTML tag: ${text}`);
+      position = close + 1;
+      continue;
+    }
+    if (text.startsWith("<!") || text.startsWith("<?")) throw new Error(`unsupported HTML declaration: ${text}`);
+    const tagMatch = /^<([a-zA-Z][a-zA-Z0-9:-]*)([\s\S]*?)>$/.exec(text);
+    if (!tagMatch) throw new Error(`unsupported HTML tag syntax: ${text}`);
+    const tag = tagMatch[1].toLowerCase();
+    const attributes = parseHtmlAttributes(tagMatch[2].replace(/\/\s*$/, ""));
+    elements.push({ tag, attributes });
+    position = close + 1;
+    if (tag === "style") throw new Error("inline style elements are unsupported; use the checked consumer stylesheet");
+    if (["iframe", "object", "embed"].includes(tag) || attributes.has("srcdoc")) {
+      throw new Error(`embedded document content is unsupported in authored HTML: <${tag}>`);
+    }
+    if (tag === "script" && !attributes.has("src")) throw new Error("inline scripts are unsupported by the static DOM contract");
+  }
+  return elements;
+}
+
+export function domRoleFindings(canonicalCss: string, html: string): ContractFinding[] {
+  const elements = parseStaticHtml(html);
+  const roles = new Set(typographyRecipes(canonicalCss).keys());
+  const findings: ContractFinding[] = [];
+  const scripts = elements.filter(element => element.tag === "script");
+  if (scripts.length !== 1 || scripts[0]?.attributes.get("src") !== "/src/main.ts" || scripts[0]?.attributes.get("type") !== "module") {
+    findings.push({ file: "index.html", message: "authored HTML must load only the approved Isoscope module entry point" });
+  }
+  if (elements.some(element => element.tag === "link")) {
+    findings.push({ file: "index.html", message: "external link elements are unsupported; use the pinned stylesheet imports" });
+  }
+  const byId = new Map<string, StaticElement>();
+  for (const element of elements) {
+    if (element.attributes.has("style")) findings.push({ file: "index.html", message: `<${element.tag}> uses an unchecked inline style attribute` });
+    if ([...element.attributes.keys()].some(name => /^on[a-z]+$/.test(name))) findings.push({ file: "index.html", message: `<${element.tag}> uses an unchecked inline event handler` });
+    if (element.attributes.has("data-dp-art")) findings.push({ file: "index.html", message: `<${element.tag}> mislabels authored DOM as canvas art` });
+    const id = element.attributes.get("id");
+    if (id) {
+      if (byId.has(id)) findings.push({ file: "index.html", message: `duplicate authored element id ${id}` });
+      else byId.set(id, element);
+    }
+    const classes = (element.attributes.get("class") ?? "").split(/\s+/).filter(Boolean);
+    for (const role of classes.filter(name => name.startsWith("dp-type-"))) {
+      if (!roles.has(role)) findings.push({ file: "index.html", message: `element uses undefined canonical typography role ${role}` });
+    }
+  }
+  for (const [id, expectedRole] of Object.entries(REQUIRED_DOM_ROLES)) {
+    const element = byId.get(id);
+    if (!element) {
+      findings.push({ file: "index.html", message: `required typography element #${id} is missing` });
+      continue;
+    }
+    const classes = (element.attributes.get("class") ?? "").split(/\s+/);
+    if (!classes.includes(expectedRole)) findings.push({ file: "index.html", message: `#${id} must carry intended role ${expectedRole}` });
+  }
+  const body = elements.filter(element => element.tag === "body");
+  if (body.length !== 1 || !(body[0]?.attributes.get("class") ?? "").split(/\s+/).includes("dp-type-body-sm")) {
+    findings.push({ file: "index.html", message: "body must carry the intended dp-type-body-sm base role exactly once" });
+  }
+  return findings;
+}
+
+export function assertDesignContract(canonicalCss: string, consumerCss: string, html: string): void {
   const findings = [
     ...canonicalRoleCompletenessFindings(canonicalCss),
     ...typographyRoleFindings(canonicalCss, consumerCss),
-    ...missingTokenFindings(canonicalCss, consumerCss)
+    ...missingTokenFindings(canonicalCss, consumerCss),
+    ...domRoleFindings(canonicalCss, html)
   ];
   if (findings.length > 0) throw new Error(findings.map(finding => `${finding.file}: ${finding.message}`).join("\n"));
 }

@@ -1,5 +1,5 @@
 use crate::{github::Result, store::read_snapshot};
-use std::{fs, path::Path};
+use std::{fs, io::Write, path::Path};
 use tiny_http::{Header, Method, Response, Server};
 pub fn serve(state: &Path, assets: &Path, port: u16) -> Result<()> {
     let server = Server::http(format!("127.0.0.1:{port}")).map_err(|e| e.to_string())?;
@@ -21,6 +21,16 @@ pub fn serve(state: &Path, assets: &Path, port: u16) -> Result<()> {
                     br#"{"status":"unknown","error":"No complete forge snapshot available"}"#
                         .to_vec(),
                 ),
+            }
+        } else if path == "/api/events" {
+            match read_snapshot(state) {
+                Ok(snapshot) => (
+                    200,
+                    "application/json",
+                    serde_json::to_vec(&crate::events::from_snapshot(&snapshot))
+                        .map_err(|e| e.to_string())?,
+                ),
+                Err(_) => (503, "application/json", b"[]".to_vec()),
             }
         } else if path == "/api/graph" {
             (
@@ -62,7 +72,39 @@ pub fn serve(state: &Path, assets: &Path, port: u16) -> Result<()> {
                 _ => (404, "text/plain", b"not found".to_vec()),
             }
         };
-        let mut response = Response::from_data(body).with_status_code(status);
+        let etag = format!("\"{}\"", crate::github::hash(&body));
+        let not_modified = status == 200
+            && req
+                .headers()
+                .iter()
+                .any(|h| h.field.equiv("If-None-Match") && h.value.as_str() == etag);
+        let gzip = !not_modified
+            && body.len() > 1024
+            && req.headers().iter().any(|h| {
+                h.field.equiv("Accept-Encoding")
+                    && h.value.as_str().split(',').any(|e| e.trim() == "gzip")
+            });
+        let body = if not_modified {
+            Vec::new()
+        } else if gzip {
+            let mut encoder =
+                flate2::write::GzEncoder::new(Vec::new(), flate2::Compression::fast());
+            encoder.write_all(&body).map_err(|e| e.to_string())?;
+            encoder.finish().map_err(|e| e.to_string())?
+        } else {
+            body
+        };
+        let mut response =
+            Response::from_data(body).with_status_code(if not_modified { 304 } else { status });
+        if let Ok(header) = Header::from_bytes("ETag", &etag) {
+            response.add_header(header);
+        }
+        if gzip && let Ok(header) = Header::from_bytes("Content-Encoding", "gzip") {
+            response.add_header(header);
+        }
+        if let Ok(header) = Header::from_bytes("Vary", "Accept-Encoding") {
+            response.add_header(header);
+        }
         for (name, value) in [
             ("Content-Type", mime),
             ("Cache-Control", "no-store"),

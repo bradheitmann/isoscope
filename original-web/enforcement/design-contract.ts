@@ -287,13 +287,17 @@ function cssRules(css: string): ConsumerRule[] {
   const root = postcss.parse(css, { from: undefined });
   const rules: ConsumerRule[] = [];
   const imports: string[] = [];
+  let importPhaseOpen = true;
 
   function parseNodes(nodes: readonly ChildNode[], parent: "root" | "media", media: readonly string[]): void {
     for (const node of nodes) {
       if (node.type === "comment") continue;
       if (node.type === "atrule") {
         const name = node.name.toLowerCase();
-        if (name === "import" && parent === "root" && node.nodes === undefined) {
+        if (name === "import") {
+          if (parent !== "root" || !importPhaseOpen || node.nodes !== undefined) {
+            throw new Error("@import is only allowed in the initial root import phase before stylesheet rules or media");
+          }
           const importMatch = /^(["'])([^"']+)\1$/.exec(node.params.trim());
           const importPath = importMatch?.[2];
           if (!importPath || !CANONICAL_CSS_IMPORTS.includes(importPath as (typeof CANONICAL_CSS_IMPORTS)[number])) {
@@ -303,12 +307,14 @@ function cssRules(css: string): ConsumerRule[] {
           continue;
         }
         if (name !== "media" || node.nodes === undefined) throw new Error(`unsupported consumer CSS at-rule: @${node.name} ${node.params}`.trim());
+        if (parent === "root") importPhaseOpen = false;
         const context = `@media ${node.params}`.toLowerCase().replace(/\s+/g, " ").trim();
         parseNodes(node.nodes, "media", [...media, context]);
         continue;
       }
       if (node.type === "rule") {
         if (parent === "root" || parent === "media") {
+          if (parent === "root") importPhaseOpen = false;
           const rule = node as CssRule;
           rules.push({ selector: rule.selector.trim(), declarations: parseConsumerDeclarations(rule), media });
           continue;

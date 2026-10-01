@@ -1,4 +1,5 @@
-import { cpSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { cpSync, mkdirSync, mkdtempSync, readFileSync, rmSync, symlinkSync, writeFileSync } from "node:fs";
+import { spawnSync } from "node:child_process";
 import { createHash } from "node:crypto";
 import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
@@ -37,6 +38,25 @@ function canonicalTypographyRoles(css: string): Set<string> {
 function unknownTypographyRoles(source: string, css: string): string[] {
   const valid = canonicalTypographyRoles(css);
   return [...referencedTypographyRoles(source)].filter(role => !valid.has(`.${role}`)).sort();
+}
+
+function createEnforcementScratch(): string {
+  const scratchRoot = mkdtempSync(join(tmpdir(), "isoscope-import-phase-"));
+  mkdirSync(join(scratchRoot, "vendor"), { recursive: true });
+  cpSync(resolve(root, "vendor/desert-pants"), join(scratchRoot, "vendor/desert-pants"), { recursive: true });
+  cpSync(resolve(root, "enforcement"), join(scratchRoot, "enforcement"), { recursive: true });
+  mkdirSync(join(scratchRoot, "src"), { recursive: true });
+  symlinkSync(resolve(root, "node_modules"), join(scratchRoot, "node_modules"), "dir");
+  writeFileSync(join(scratchRoot, "package.json"), readFileSync(resolve(root, "package.json")));
+  writeFileSync(join(scratchRoot, "index.html"), indexHtml);
+  return scratchRoot;
+}
+
+function runScratchEnforcement(scratchRoot: string, css: string): number | null {
+  writeFileSync(join(scratchRoot, "src/styles.css"), css);
+  const result = spawnSync("npm", ["run", "enforce"], { cwd: scratchRoot, encoding: "utf8" });
+  if (result.error) throw result.error;
+  return result.status;
 }
 
 describe("canonical Desert Pants design contract", () => {
@@ -247,6 +267,57 @@ describe("canonical Desert Pants design contract", () => {
     expect(() => assertDesignContract(tokenCss, ordinaryCascadePositive, indexHtml)).not.toThrow();
   });
 
+  it("accepts only the complete canonical root import phase before stylesheet rules and media", () => {
+    const importLines = consumerCss.match(/^@import [^\n]+;$/gm) ?? [];
+    expect(importLines).toHaveLength(5);
+    const importBlock = `${importLines.join("\n")}\n`;
+    const body = consumerCss.replace(importBlock, "");
+    expect(body).not.toBe(consumerCss);
+    const reordered = [importLines[1], importLines[0], ...importLines.slice(2)].join("\n") + `\n${body}`;
+    const duplicate = `${importBlock}${importLines[0]}\n${body}`;
+    const late = `${body}\n${importBlock}`;
+    const ruleBeforeImports = `.probe { color: red; }\n${importBlock}${body}`;
+    const ruleBetweenImports = `${importLines[0]}\n.probe { color: red; }\n${importLines.slice(1).join("\n")}\n${body}`;
+    const mediaBeforeImports = `@media (min-width: 1px) { .probe { color: red; } }\n${importBlock}${body}`;
+    const mediaAfterFirstImport = `${importLines[0]}\n@media (min-width: 1px) { .probe { color: red; } }\n${importLines.slice(1).join("\n")}\n${body}`;
+    const nestedImport = `@media (min-width: 1px) { ${importLines[0]} }\n${importLines.slice(1).join("\n")}\n${body}`;
+    const extraImport = `${importBlock}@import "../vendor/desert-pants/extra.css";\n${body}`;
+    const zeroImports = body;
+    const unsupportedContext = `@layer theme { ${importBlock} }\n${body}`;
+    const invalidCases = [
+      ["zero imports", zeroImports],
+      ["extra import", extraImport],
+      ["duplicate import", duplicate],
+      ["reordered imports", reordered],
+      ["all imports late", late],
+      ["rule before imports", ruleBeforeImports],
+      ["rule between imports", ruleBetweenImports],
+      ["media before imports", mediaBeforeImports],
+      ["media between imports", mediaAfterFirstImport],
+      ["nested import", nestedImport],
+      ["unsupported import context", unsupportedContext]
+    ] as const;
+
+    for (const [label, css] of invalidCases) {
+      expect(() => assertDesignContract(tokenCss, css, indexHtml), label).toThrow();
+    }
+    const commentedPhase = `/* before imports */\n${importLines[0]}\n/* between imports */\n${importLines.slice(1).join("\n")}\n/* after imports */\n${body}`;
+    const normalCascade = `${consumerCss}\n.dp-type-h2 { font-size: var(--dp-type-body-sm-font-size); font-size: var(--dp-type-h2-font-size); }`;
+    expect(() => assertDesignContract(tokenCss, commentedPhase, indexHtml)).not.toThrow();
+    expect(() => assertDesignContract(tokenCss, normalCascade, indexHtml)).not.toThrow();
+
+    const scratchRoot = createEnforcementScratch();
+    try {
+      for (const [label, css] of invalidCases) {
+        expect(runScratchEnforcement(scratchRoot, css), `npm run enforce: ${label}`).toBe(1);
+      }
+      expect(runScratchEnforcement(scratchRoot, commentedPhase), "npm run enforce: comments within canonical phase").toBe(0);
+      expect(runScratchEnforcement(scratchRoot, normalCascade), "npm run enforce: normal last-wins").toBe(0);
+    } finally {
+      rmSync(scratchRoot, { recursive: true, force: true });
+    }
+  });
+
   it("rejects each modeled grid and alignment declaration on an unrelated selector", () => {
     const declarations = [
       "display: none", "grid: none", "grid-template: none", "grid-template-columns: none", "grid-template-rows: none",
@@ -267,7 +338,7 @@ describe("canonical Desert Pants design contract", () => {
 
   it("fails closed on unsupported CSS at-rules and noncanonical external imports", () => {
     expect(() => assertDesignContract(tokenCss, `${consumerCss}\n@container (min-width: 1px) { .dp-type-h2 { font-size: 12px; } }`, indexHtml)).toThrow(/unsupported consumer CSS at-rule/);
-    expect(() => assertDesignContract(tokenCss, `${consumerCss}\n@import "https://example.invalid/override.css";`, indexHtml)).toThrow(/unsupported consumer CSS statement or import/);
+    expect(() => assertDesignContract(tokenCss, `${consumerCss}\n@import "https://example.invalid/override.css";`, indexHtml)).toThrow(/initial root import phase/);
   });
 
   it("binds intended DOM headings to their declared roles and rejects inline or art-mislabeled UI", () => {

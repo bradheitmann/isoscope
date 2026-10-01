@@ -14,7 +14,9 @@ pub fn hash(bytes: &[u8]) -> String {
         .collect()
 }
 pub fn canonical(value: &Value) -> Result<Vec<u8>> {
-    serde_json::to_vec(value).map_err(|e| e.to_string())
+    let mut ordered = value.clone();
+    ordered.sort_all_objects();
+    serde_json::to_vec(&ordered).map_err(|e| e.to_string())
 }
 fn gh(args: &[&str]) -> Result<Value> {
     let out = Command::new("gh")

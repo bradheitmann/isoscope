@@ -1,6 +1,6 @@
 //! Replacement architecture graph operations; never writes the source repository.
 use crate::{
-    github::{Result, hash},
+    github::{Result, canonical, hash},
     store::{RefreshLock, atomic_json},
 };
 use chrono::Utc;
@@ -129,8 +129,9 @@ fn save(state: &Path, v: &Value, before: &Value, kind: &str) -> Result<()> {
     validate(v)?;
     if v != before {
         let at = Utc::now().to_rfc3339();
-        let record = json!({"at":at,"kind":kind,"before_sha256":hash(&serde_json::to_vec(before).map_err(|e|e.to_string())?),"after":v});
-        let digest = hash(&serde_json::to_vec(&record).map_err(|e| e.to_string())?);
+        let record =
+            json!({"at":at,"kind":kind,"before_sha256":hash(&canonical(before)?),"after":v});
+        let digest = hash(&canonical(&record)?);
         atomic_json(
             &state.join("graph-history").join(format!("{digest}.json")),
             &record,

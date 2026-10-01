@@ -16,6 +16,19 @@ fn digest_upgrade_preserves_sha256_vectors_and_zero_padding() {
         "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad"
     );
 }
+#[test]
+fn canonical_hash_ignores_nested_json_key_insertion_order() {
+    let a: Value = serde_json::from_str(r#"{"z":{"b":2,"a":1},"a":[{"y":2,"x":1}]}"#).unwrap();
+    let b: Value = serde_json::from_str(r#"{"a":[{"x":1,"y":2}],"z":{"a":1,"b":2}}"#).unwrap();
+    assert_eq!(
+        isoscope_core::github::canonical(&a).unwrap(),
+        isoscope_core::github::canonical(&b).unwrap()
+    );
+    assert_eq!(
+        isoscope_core::github::canonical(&a).unwrap(),
+        br#"{"a":[{"x":1,"y":2}],"z":{"a":1,"b":2}}"#
+    );
+}
 fn raw(items: Vec<Value>) -> Raw {
     Raw {
         repository: "fixture/test".into(),

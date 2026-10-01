@@ -42,16 +42,29 @@ const COMPONENT_TYPE_RECIPES: Readonly<Record<string, string>> = {
   ".lbl": "--dp-component-scene-label-type",
   ".lbl .id": "--dp-component-scene-node-meta-type"
 };
-const REQUIRED_DOM_ROLES: Readonly<Record<string, string>> = {
-  brandV: "dp-type-brand-name",
-  pEyebrow: "dp-type-label-sm",
-  pTitle: "dp-type-h2",
-  pSub: "dp-type-body-sm",
-  moduleNavigatorTitle: "dp-type-h3",
-  moduleResults: "dp-type-meta",
-  pProse: "dp-type-body-sm",
-  sideKey: "dp-type-body-sm",
-  asOf: "dp-type-body-sm"
+interface RequiredDomRole {
+  readonly role: string;
+  readonly tag: string;
+  readonly parentTag?: string;
+  readonly parentId?: string;
+  readonly parentClass?: string;
+  readonly parentAriaLabelledby?: string;
+  readonly ancestorId?: string;
+  readonly ancestorAriaLabel?: string;
+}
+const REQUIRED_DOM_ROLES: Readonly<Record<string, RequiredDomRole>> = {
+  brandV: { tag: "span", role: "dp-type-brand-name", parentTag: "header", parentClass: "topbar" },
+  pEyebrow: { tag: "p", role: "dp-type-label-sm", parentId: "paneBody", ancestorId: "readingPanel" },
+  pTitle: { tag: "h1", role: "dp-type-h2", parentId: "paneBody", ancestorId: "readingPanel" },
+  pSub: { tag: "p", role: "dp-type-body-sm", parentId: "paneBody", ancestorId: "readingPanel" },
+  moduleNavigatorTitle: {
+    tag: "h2", role: "dp-type-h3", parentTag: "section", parentClass: "module-navigator",
+    parentAriaLabelledby: "moduleNavigatorTitle", ancestorId: "readingPanel"
+  },
+  moduleResults: { tag: "p", role: "dp-type-meta", parentTag: "section", parentClass: "module-navigator", ancestorId: "readingPanel" },
+  pProse: { tag: "div", role: "dp-type-body-sm", parentId: "paneBody", ancestorId: "readingPanel" },
+  sideKey: { tag: "div", role: "dp-type-body-sm", parentTag: "details", ancestorAriaLabel: "Map key", ancestorId: "readingPanel" },
+  asOf: { tag: "div", role: "dp-type-body-sm", parentId: "sideKey", ancestorId: "readingPanel" }
 };
 const ALLOWED_AUTHORED_HTML_TAGS = new Set([
   "aside", "body", "button", "canvas", "details", "div", "h1", "h2", "h3", "head", "header", "hr",
@@ -66,16 +79,30 @@ const CANONICAL_CSS_IMPORTS = [
   "../vendor/desert-pants/reference/components.css"
 ] as const;
 
-type Declarations = Map<string, string>;
+type CanonicalDeclarations = Map<string, string>;
+interface ConsumerDeclaration {
+  readonly property: string;
+  readonly value: string;
+  readonly important: boolean;
+}
 interface ConsumerRule {
   readonly selector: string;
-  readonly declarations: Declarations;
+  readonly declarations: readonly ConsumerDeclaration[];
   readonly media: readonly string[];
 }
 interface LayoutRuleContract {
   readonly selector: string;
   readonly media: readonly string[];
   readonly declarations: Readonly<Record<string, string>>;
+}
+interface LayoutDeclarationValue {
+  readonly value: string;
+  readonly important: boolean;
+}
+interface LayoutInventoryRecord {
+  readonly selector: string;
+  readonly media: readonly string[];
+  readonly declarations: Readonly<Record<string, readonly LayoutDeclarationValue[]>>;
 }
 const MODELED_LAYOUT_PROPERTIES = new Set([
   "display", "grid", "grid-template", "grid-template-columns", "grid-template-rows", "grid-template-areas",
@@ -225,8 +252,8 @@ export function verifyCanonicalVendor(vendorRoot: string): void {
   }
 }
 
-function parseDeclarations(body: string): Declarations {
-  const declarations: Declarations = new Map();
+function parseDeclarations(body: string): CanonicalDeclarations {
+  const declarations: CanonicalDeclarations = new Map();
   for (const declaration of body.split(";")) {
     const colon = declaration.indexOf(":");
     if (colon < 0) continue;
@@ -320,17 +347,19 @@ function splitCssDeclarations(body: string): string[] {
   return parts;
 }
 
-function parseConsumerDeclarations(body: string): Declarations {
-  const declarations: Declarations = new Map();
+function parseConsumerDeclarations(body: string): ConsumerDeclaration[] {
+  const declarations: ConsumerDeclaration[] = [];
   for (const part of splitCssDeclarations(body)) {
     const colon = findCssDelimiter(part, 0, new Set([":"]));
     if (colon >= part.length) throw new Error(`consumer CSS declaration lacks a colon: ${part}`);
     const property = part.slice(0, colon).trim().toLowerCase();
-    const value = part.slice(colon + 1).trim();
+    const rawValue = part.slice(colon + 1).trim();
+    const important = /\s*!important\s*$/i.test(rawValue);
+    const value = rawValue.replace(/\s*!important\s*$/i, "").trim();
     if (!/^(?:--[a-z0-9-]+|[a-z][a-z0-9-]*)$/.test(property) || !value) {
       throw new Error(`unsupported consumer CSS declaration syntax: ${part}`);
     }
-    declarations.set(property, value);
+    declarations.push({ property, value, important });
   }
   return declarations;
 }
@@ -386,8 +415,8 @@ function cssRules(css: string): ConsumerRule[] {
   return rules;
 }
 
-function typographyRecipes(css: string): Map<string, Declarations> {
-  const recipes = new Map<string, Declarations>();
+function typographyRecipes(css: string): Map<string, CanonicalDeclarations> {
+  const recipes = new Map<string, CanonicalDeclarations>();
   // This input is the byte-pinned generated upstream stylesheet. Its source
   // grammar is trusted after the vendor SHA check, so extract only the exact
   // emitted single-class role selectors; authored consumer CSS uses the strict
@@ -403,6 +432,11 @@ function classNames(selector: string): string[] {
   return [...selector.matchAll(/\.([a-z_][a-z0-9_-]*)/gi)].map(match => match[1]);
 }
 
+function effectiveDeclaration(declarations: readonly ConsumerDeclaration[], property: string): ConsumerDeclaration | undefined {
+  const matches = declarations.filter(declaration => declaration.property === property);
+  return [...matches].reverse().find(declaration => declaration.important) ?? matches.at(-1);
+}
+
 /**
  * Check consumer CSS role use against the exact generated compound recipe.
  * UI rules may add layout/color, but cannot override one axis of a canonical
@@ -412,22 +446,26 @@ export function typographyRoleFindings(canonicalCss: string, consumerCss: string
   const recipes = typographyRecipes(canonicalCss);
   const findings: ContractFinding[] = [];
   for (const rule of cssRules(consumerCss)) {
-    for (const property of rule.declarations.keys()) {
+    for (const { property } of rule.declarations) {
       if (property === "all") findings.push({ file, message: `${rule.selector} uses forbidden CSS reset property all` });
       if (property.startsWith("--dp-")) findings.push({ file, message: `${rule.selector} redefines reserved canonical token ${property}` });
+      if (rule.declarations.some(declaration => declaration.property === property && declaration.important)
+        && (TYPOGRAPHY_PROPERTIES.includes(property as (typeof TYPOGRAPHY_PROPERTIES)[number]) || property === "font")) {
+        findings.push({ file, message: `${rule.selector} uses unsupported !important typography priority for ${property}` });
+      }
       if (property.startsWith("font-") && !TYPOGRAPHY_PROPERTIES.includes(property as (typeof TYPOGRAPHY_PROPERTIES)[number])) {
         findings.push({ file, message: `${rule.selector} uses unmodeled typography property ${property}` });
       }
     }
     const roleClasses = classNames(rule.selector).filter(name => name.startsWith("dp-type-"));
     const componentPrefix = COMPONENT_TYPE_RECIPES[rule.selector];
-    const hasTypography = TYPOGRAPHY_PROPERTIES.some(property => rule.declarations.has(property)) || rule.declarations.has("font");
+    const hasTypography = TYPOGRAPHY_PROPERTIES.some(property => rule.declarations.some(declaration => declaration.property === property)) || rule.declarations.some(declaration => declaration.property === "font");
     if (roleClasses.length === 0 && componentPrefix === undefined && !hasTypography) continue;
 
     if (roleClasses.length === 0 && componentPrefix === undefined) {
       // The one inherited recipe is a supplied canonical list-row component;
       // no local font axis is allowed to replace its generated component role.
-      if (rule.selector === ".module-results .dp-list-row" && rule.declarations.get("font") === "inherit" && TYPOGRAPHY_PROPERTIES.every(property => !rule.declarations.has(property))) continue;
+      if (rule.selector === ".module-results .dp-list-row" && effectiveDeclaration(rule.declarations, "font")?.value === "inherit" && TYPOGRAPHY_PROPERTIES.every(property => !rule.declarations.some(declaration => declaration.property === property))) continue;
       findings.push({ file, message: `${rule.selector} declares typography without a canonical whole-role recipe` });
       continue;
     }
@@ -441,7 +479,7 @@ export function typographyRoleFindings(canonicalCss: string, consumerCss: string
       findings.push({ file, message: `${rule.selector} must use a direct single-role selector subject; selector branches and polarity are unsupported` });
       continue;
     }
-    if (roleClass && [...rule.declarations.keys()].some(property => !TYPOGRAPHY_PROPERTIES.includes(property as (typeof TYPOGRAPHY_PROPERTIES)[number]))) {
+    if (roleClass && rule.declarations.some(({ property }) => !TYPOGRAPHY_PROPERTIES.includes(property as (typeof TYPOGRAPHY_PROPERTIES)[number]))) {
       findings.push({ file, message: `${rule.selector} only declares canonical typography axes; component color/state styling belongs on semantic component selectors` });
       continue;
     }
@@ -452,7 +490,7 @@ export function typographyRoleFindings(canonicalCss: string, consumerCss: string
     }
     const prefix = recipe ? undefined : componentPrefix;
     for (const property of TYPOGRAPHY_PROPERTIES) {
-      const actual = rule.declarations.get(property);
+      const actual = effectiveDeclaration(rule.declarations, property)?.value;
       if (recipe && actual === undefined) continue;
       const suffix = property === "font-family" ? "font-family"
         : property === "font-size" ? "font-size"
@@ -469,7 +507,7 @@ export function typographyRoleFindings(canonicalCss: string, consumerCss: string
         });
       }
     }
-    if (rule.declarations.has("font")) findings.push({ file, message: `${rule.selector} uses font shorthand instead of explicit whole-role typography axes` });
+    if (rule.declarations.some(declaration => declaration.property === "font")) findings.push({ file, message: `${rule.selector} uses font shorthand instead of explicit whole-role typography axes` });
   }
   return findings;
 }
@@ -478,16 +516,24 @@ export function typographyRoleFindings(canonicalCss: string, consumerCss: string
 export function workbenchLayoutFindings(canonicalCss: string, consumerCss: string, file = "styles.css"): ContractFinding[] {
   const findings: ContractFinding[] = [];
   const allRules = cssRules(consumerCss);
-  const actualLayoutDeclarations: LayoutRuleContract[] = allRules.flatMap(rule => {
-    const declarations = Object.fromEntries([...rule.declarations]
-      .filter(([property]) => MODELED_LAYOUT_PROPERTIES.has(property))
-      .sort(([left], [right]) => left.localeCompare(right)));
+  for (const rule of allRules) {
+    for (const declaration of rule.declarations) {
+      if (MODELED_LAYOUT_PROPERTIES.has(declaration.property) && declaration.important) {
+        findings.push({ file, message: `${rule.selector} uses unsupported !important layout priority for ${declaration.property}` });
+      }
+    }
+  }
+  const actualLayoutDeclarations: LayoutInventoryRecord[] = allRules.flatMap(rule => {
+    const modeled = rule.declarations.filter(({ property }) => MODELED_LAYOUT_PROPERTIES.has(property));
+    const declarations = Object.fromEntries([...new Set(modeled.map(declaration => declaration.property))].sort()
+      .map(property => [property, [{ value: modeled.filter(declaration => declaration.property === property).at(-1)?.value ?? "", important: false }]]));
     return Object.keys(declarations).length > 0 ? [{ selector: rule.selector, media: rule.media, declarations }] : [];
   });
-  const expectedLayoutDeclarations = EXPECTED_LAYOUT_DECLARATIONS.map(rule => ({
+  const expectedLayoutDeclarations: LayoutInventoryRecord[] = EXPECTED_LAYOUT_DECLARATIONS.map(rule => ({
     selector: rule.selector,
     media: rule.media,
-    declarations: Object.fromEntries(Object.entries(rule.declarations).sort(([left], [right]) => left.localeCompare(right)))
+    declarations: Object.fromEntries(Object.entries(rule.declarations).sort(([left], [right]) => left.localeCompare(right))
+      .map(([property, value]) => [property, [{ value, important: false }]]))
   }));
   if (JSON.stringify(actualLayoutDeclarations) !== JSON.stringify(expectedLayoutDeclarations)) {
     findings.push({ file, message: "modeled grid/gap declaration inventory differs from the canonical static layout contract" });
@@ -526,7 +572,7 @@ export function workbenchLayoutFindings(canonicalCss: string, consumerCss: strin
   const check = (rule: ConsumerRule | undefined, expected: Readonly<Record<string, string>>, label: string): void => {
     if (!rule) return;
     for (const [property, value] of Object.entries(expected)) {
-      if (rule.declarations.get(property) !== value) {
+      if (effectiveDeclaration(rule.declarations, property)?.value !== value) {
         findings.push({ file, message: `${label} workbench grid requires ${property}: ${value}` });
       }
     }
@@ -577,6 +623,11 @@ export function missingTokenFindings(canonicalCss: string, consumerCss: string, 
 interface StaticElement {
   readonly tag: string;
   readonly attributes: ReadonlyMap<string, string | null>;
+  readonly ancestors: readonly StaticAncestor[];
+}
+interface StaticAncestor {
+  readonly tag: string;
+  readonly attributes: ReadonlyMap<string, string | null>;
 }
 
 function isElement(node: DefaultTreeAdapterTypes.ChildNode): node is DefaultTreeAdapterTypes.Element | DefaultTreeAdapterTypes.Template {
@@ -593,12 +644,13 @@ function parseStaticHtml(html: string): StaticElement[] {
   if (parseErrors.length > 0) throw new Error(`authored HTML has parse errors: ${[...new Set(parseErrors)].join(", ")}`);
 
   const elements: StaticElement[] = [];
-  const visit = (nodes: readonly DefaultTreeAdapterTypes.ChildNode[]): void => {
+  const visit = (nodes: readonly DefaultTreeAdapterTypes.ChildNode[], ancestors: readonly StaticAncestor[] = []): void => {
     for (const node of nodes) {
       if (!isElement(node)) continue;
       const tag = node.tagName.toLowerCase();
       const attributes = elementAttributes(node);
-      elements.push({ tag, attributes });
+      const element = { tag, attributes, ancestors };
+      elements.push(element);
       if (!ALLOWED_AUTHORED_HTML_TAGS.has(tag)) throw new Error(`unsupported authored HTML element <${tag}>`);
       if (node.namespaceURI !== "http://www.w3.org/1999/xhtml") {
         throw new Error(`non-HTML namespace content is unsupported in authored DOM: <${tag}>`);
@@ -613,7 +665,7 @@ function parseStaticHtml(html: string): StaticElement[] {
           throw new Error("external script body must be empty in the static DOM contract");
         }
       }
-      visit(node.childNodes);
+      visit(node.childNodes, [...ancestors, { tag, attributes }]);
     }
   };
   visit(document.childNodes);
@@ -648,15 +700,28 @@ export function domRoleFindings(canonicalCss: string, html: string): ContractFin
       if (!roles.has(role)) findings.push({ file: "index.html", message: `element uses undefined canonical typography role ${role}` });
     }
   }
-  for (const [id, expectedRole] of Object.entries(REQUIRED_DOM_ROLES)) {
+  for (const [id, expected] of Object.entries(REQUIRED_DOM_ROLES)) {
     const element = byId.get(id);
     if (!element) {
       findings.push({ file: "index.html", message: `required typography element #${id} is missing` });
       continue;
     }
     const classes = (element.attributes.get("class") ?? "").split(/\s+/);
-    if (classes.filter(name => name.startsWith("dp-type-")).join(" ") !== expectedRole) {
-      findings.push({ file: "index.html", message: `#${id} must carry only its intended role ${expectedRole}` });
+    if (classes.filter(name => name.startsWith("dp-type-")).join(" ") !== expected.role) {
+      findings.push({ file: "index.html", message: `#${id} must carry only its intended role ${expected.role}` });
+    }
+    const parent = element.ancestors.at(-1);
+    const ancestorMatches = (!expected.ancestorId || element.ancestors.some(ancestor => ancestor.attributes.get("id") === expected.ancestorId))
+      && (!expected.ancestorAriaLabel || element.ancestors.some(ancestor => ancestor.attributes.get("aria-label") === expected.ancestorAriaLabel));
+    const parentMatches = (!expected.parentTag || parent?.tag === expected.parentTag)
+      && (!expected.parentId || parent?.attributes.get("id") === expected.parentId)
+      && (!expected.parentClass || (parent?.attributes.get("class") ?? "").split(/\s+/).includes(expected.parentClass))
+      && (!expected.parentAriaLabelledby || parent?.attributes.get("aria-labelledby") === expected.parentAriaLabelledby);
+    if (element.tag !== expected.tag || !parentMatches || !ancestorMatches) {
+      const parentDescription = expected.parentId ? `child of #${expected.parentId}`
+        : expected.parentTag ? `child of <${expected.parentTag}>${expected.parentClass ? `.${expected.parentClass}` : ""}`
+        : "approved parent";
+      findings.push({ file: "index.html", message: `#${id} must be <${expected.tag}> in the intended ${parentDescription} context` });
     }
   }
   const body = elements.filter(element => element.tag === "body");

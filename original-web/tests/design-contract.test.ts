@@ -112,6 +112,14 @@ describe("canonical Desert Pants design contract", () => {
     expect(() => assertDesignContract(tokenCss, wrongButValidRole, indexHtml)).toThrow(/sets font-size/);
   });
 
+  it("honors declaration order for normal typography but rejects unsupported priority overrides", () => {
+    const wrongThenCanonical = `${consumerCss}\n.dp-type-h2 { font-size: var(--dp-type-body-sm-font-size); font-size: var(--dp-type-h2-font-size); }`;
+    expect(() => assertDesignContract(tokenCss, wrongThenCanonical, indexHtml)).not.toThrow();
+
+    const importantWrongThenCanonical = `${consumerCss}\n.dp-type-h2 { font-size: var(--dp-type-body-sm-font-size) !important; font-size: var(--dp-type-h2-font-size); }`;
+    expect(() => assertDesignContract(tokenCss, importantWrongThenCanonical, indexHtml)).toThrow(/unsupported !important typography priority/);
+  });
+
   it("requires authored component typography to bind every axis to its exact component recipe", () => {
     const mixedComponentRecipe = `${consumerCss}\n.keyrow { font-size: var(--dp-type-body-sm-font-size); }`;
     expect(typographyRoleFindings(tokenCss, mixedComponentRecipe).some(finding =>
@@ -196,6 +204,19 @@ describe("canonical Desert Pants design contract", () => {
     expect(() => assertDesignContract(tokenCss, consumerCss, indexHtml)).not.toThrow();
   });
 
+  it("preserves normal declaration order for layout and rejects important layout resets", () => {
+    const workbenchPrefix = ".workbench { display: grid; grid-template-columns: var(--dp-layout-grid-component-visualization-workbench-rail-width) minmax(0, 1fr) minmax(var(--dp-layout-grid-component-visualization-workbench-reading-min-width), var(--dp-layout-grid-component-visualization-workbench-reading-preferred-width)); gap: var(--dp-layout-grid-component-visualization-workbench-gap);";
+    const canonicalColumns = "grid-template-columns: var(--dp-layout-grid-component-visualization-workbench-rail-width) minmax(0, 1fr) minmax(var(--dp-layout-grid-component-visualization-workbench-reading-min-width), var(--dp-layout-grid-component-visualization-workbench-reading-preferred-width));";
+    const normalWrongThenCanonical = consumerCss.replace(workbenchPrefix, `${workbenchPrefix} grid-template-columns: 1px 1px 1px; ${canonicalColumns}`);
+    expect(normalWrongThenCanonical).not.toBe(consumerCss);
+    expect(() => assertDesignContract(tokenCss, normalWrongThenCanonical, indexHtml)).not.toThrow();
+
+    const importantColumns = consumerCss.replace(workbenchPrefix, `${workbenchPrefix} grid-template-columns: 1px 1px 1px !important; ${canonicalColumns}`);
+    const importantGap = consumerCss.replace(workbenchPrefix, `${workbenchPrefix} gap: 0 !important; gap: var(--dp-layout-grid-component-visualization-workbench-gap);`);
+    expect(() => assertDesignContract(tokenCss, importantColumns, indexHtml)).toThrow(/unsupported !important layout priority/);
+    expect(() => assertDesignContract(tokenCss, importantGap, indexHtml)).toThrow(/unsupported !important layout priority/);
+  });
+
   it("rejects each modeled grid and alignment declaration on an unrelated selector", () => {
     const declarations = [
       "display: none", "grid: none", "grid-template: none", "grid-template-columns: none", "grid-template-rows: none",
@@ -237,6 +258,10 @@ describe("canonical Desert Pants design contract", () => {
 
     const forgedTitle = indexHtml.replace(actualHeading, "").replace("</head>", `<title><h2 class="dp-type-h3" id="moduleNavigatorTitle">Fake</h2></title>\n</head>`);
     expect(domRoleFindings(tokenCss, forgedTitle).some(finding => finding.message.includes("required typography element #moduleNavigatorTitle is missing"))).toBe(true);
+    const titleSubject = indexHtml.replace(actualHeading, "").replace("</head>", `<title class="dp-type-h3" id="moduleNavigatorTitle">Navigate modules</title>\n</head>`);
+    expect(domRoleFindings(tokenCss, titleSubject).some(finding => finding.message.includes("#moduleNavigatorTitle must be <h2> in the intended child of <section>.module-navigator context"))).toBe(true);
+    const scriptSubject = indexHtml.replace(actualHeading, "").replace('<script type="module" src="/src/main.ts"></script>', '<script id="moduleNavigatorTitle" class="dp-type-h3" type="module" src="/src/main.ts"></script>');
+    expect(domRoleFindings(tokenCss, scriptSubject).some(finding => finding.message.includes("#moduleNavigatorTitle must be <h2> in the intended child of <section>.module-navigator context"))).toBe(true);
     const forgedTemplate = indexHtml.replace(actualHeading, "").replace("</body>", `<template><h2 class="dp-type-h3" id="moduleNavigatorTitle">Fake</h2></template>\n</body>`);
     expect(() => domRoleFindings(tokenCss, forgedTemplate)).toThrow(/unsupported authored HTML element <template>/);
     expect(domRoleFindings(tokenCss, indexHtml)).toEqual([]);

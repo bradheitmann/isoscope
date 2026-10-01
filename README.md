@@ -1,5 +1,33 @@
 # Isoscope
 
+The replacement product follows team work between agents: dependency eligibility,
+claims, candidate delivery, QA, GUARD and merge, with source evidence and visible
+freshness. Its deterministic Rust collector reconciles GitHub and a plan pinned
+to a resolved commit. Native GPUI and strict TypeScript/Three.js clients are being
+integrated around the same data contract and canonical Desert Pants themes.
+
+```bash
+cargo build --release -p isoscope-core
+target/release/isoscope-core refresh --config replacement/leitting.json
+target/release/isoscope-core serve --assets replacement/web/dist --port 4185
+```
+
+The initial read-only repository configuration is `bradheitmann/leitting`.
+Refresh uses existing `gh` authentication; it never comments, merges or changes
+forge records. A configured five-minute Codex cron has completed real refreshes;
+the Rust collector makes no model calls. Missing native runtime and usage data
+remain UNKNOWN. A reported CLAIM does not prove execution, and a ready label
+does not prove dependency eligibility.
+
+See [replacement architecture](replacement/ARCHITECTURE.md),
+[operations and scheduled execution evidence](replacement/OPERATIONS.md), and
+[independent backend delta review](replacement/validation/backend-independent-delta.md).
+The legacy implementation below remains available for existing consumers. Its
+roadmap statements are not guarantees of the replacement; the architecture note
+records migrated behavior and remaining gaps.
+
+## Legacy implementation
+
 **So you always know what your codebase does, how it is architected, and if
 something is broken and what you need to work on next.**
 

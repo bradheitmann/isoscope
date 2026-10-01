@@ -1,0 +1,14 @@
+{
+  "repository": "bradheitmann/leitting",
+  "plan_path": "plan-views/build-dag.json",
+  "stale_after_seconds": 600,
+  "owner_observations": [
+    {
+      "dimension": "active_cloud_agents",
+      "value": "0 reported by owner while delivery queue waiting",
+      "provenance": "owner_observed",
+      "observed_at": "",
+      "source_url": null
+    }
+  ]
+}

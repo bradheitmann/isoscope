@@ -5,3 +5,4 @@ node_modules/
 advisory/*/screens/
 *.log
 .odin/
+original-web/public/media/_originals/

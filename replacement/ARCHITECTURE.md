@@ -54,6 +54,13 @@ exact `Head reviewed:` binding; a later FAIL on that head takes precedence.
 The snapshot reports the verdict and does not independently certify reviewer
 qualification. Old-head or unbound PASS never advances a new head to GUARD.
 
+Check-runs and legacy commit statuses are fully captured in immutable source
+receipts and their coverage records. Their conclusions are not yet projected
+into per-item history or stage blockers. The workflow stage therefore does not
+certify CI readiness or merge eligibility. Typed timeline projection and CI
+evidence presentation remain client/backend follow-on work; receipt availability
+is not a claim that every captured field is already presented in the dashboard.
+
 Candidate age begins at the first captured non-draft state for that exact head.
 It is explicitly an observed lower bound, not `updatedAt`, old PR creation time,
 or a reconstructed historical readiness date. Stage service/wait metrics are

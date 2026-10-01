@@ -3,6 +3,7 @@ import { readdirSync, readFileSync, lstatSync } from "node:fs";
 import { join, relative, resolve, sep } from "node:path";
 import { parse } from "parse5";
 import type { DefaultTreeAdapterTypes } from "parse5";
+import postcss, { type ChildNode, type Declaration, type Rule as CssRule } from "postcss";
 
 /**
  * Trust anchors checked against the Desert Pants checkout when this lane was
@@ -252,163 +253,72 @@ export function verifyCanonicalVendor(vendorRoot: string): void {
   }
 }
 
-function parseDeclarations(body: string): CanonicalDeclarations {
+function declarationMap(nodes: readonly Declaration[]): CanonicalDeclarations {
   const declarations: CanonicalDeclarations = new Map();
-  for (const declaration of body.split(";")) {
-    const colon = declaration.indexOf(":");
-    if (colon < 0) continue;
-    const property = declaration.slice(0, colon).trim().toLowerCase();
-    const value = declaration.slice(colon + 1).trim().replace(/\s*!important\s*$/i, "").trim();
-    if (property) declarations.set(property, value);
+  for (const declaration of nodes) {
+    const property = declaration.prop.toLowerCase();
+    if (declaration.important) throw new Error(`canonical declaration ${property} unexpectedly uses !important`);
+    if (property) declarations.set(property, declaration.value.trim());
   }
   return declarations;
 }
 
-function stripCssComments(css: string): string {
-  let output = "";
-  let quote: "'" | '"' | null = null;
-  for (let index = 0; index < css.length; index += 1) {
-    const char = css[index] ?? "";
-    if (char === "\\") throw new Error("consumer CSS escape sequences are unsupported; use literal canonical identifiers");
-    if (quote) {
-      output += char;
-      if (char === quote) quote = null;
-      continue;
-    }
-    if (char === "'" || char === '"') {
-      quote = char;
-      output += char;
-      continue;
-    }
-    if (char === "/" && css[index + 1] === "*") {
-      const close = css.indexOf("*/", index + 2);
-      if (close < 0) throw new Error("consumer CSS contains an unterminated comment");
-      output += " ";
-      index = close + 1;
-      continue;
-    }
-    output += char;
-  }
-  if (quote) throw new Error("consumer CSS contains an unterminated string");
-  return output;
-}
-
-function findCssDelimiter(source: string, start: number, delimiters: ReadonlySet<string>): number {
-  let quote: "'" | '"' | null = null;
-  let parentheses = 0;
-  for (let index = start; index < source.length; index += 1) {
-    const char = source[index] ?? "";
-    if (quote) {
-      if (char === quote) quote = null;
-      continue;
-    }
-    if (char === "'" || char === '"') quote = char;
-    else if (char === "(") parentheses += 1;
-    else if (char === ")") {
-      parentheses -= 1;
-      if (parentheses < 0) throw new Error("consumer CSS has an unmatched closing parenthesis");
-    } else if (parentheses === 0 && delimiters.has(char)) return index;
-  }
-  if (quote || parentheses !== 0) throw new Error("consumer CSS has an unterminated string or function");
-  return source.length;
-}
-
-function findCssBlockEnd(source: string, opening: number): number {
-  let depth = 1;
-  let quote: "'" | '"' | null = null;
-  for (let index = opening + 1; index < source.length; index += 1) {
-    const char = source[index] ?? "";
-    if (quote) {
-      if (char === quote) quote = null;
-      continue;
-    }
-    if (char === "'" || char === '"') quote = char;
-    else if (char === "{") depth += 1;
-    else if (char === "}") {
-      depth -= 1;
-      if (depth === 0) return index;
-    }
-  }
-  throw new Error("consumer CSS has an unclosed rule block");
-}
-
-function splitCssDeclarations(body: string): string[] {
-  const parts: string[] = [];
-  let start = 0;
-  while (start < body.length) {
-    const end = findCssDelimiter(body, start, new Set([";", "{", "}"]));
-    const part = body.slice(start, end).trim();
-    if (end < body.length && (body[end] === "{" || body[end] === "}")) {
-      throw new Error("nested blocks in a consumer style rule are unsupported");
-    }
-    if (part) parts.push(part);
-    start = end + 1;
-  }
-  return parts;
-}
-
-function parseConsumerDeclarations(body: string): ConsumerDeclaration[] {
+function parseConsumerDeclarations(rule: CssRule): ConsumerDeclaration[] {
   const declarations: ConsumerDeclaration[] = [];
-  for (const part of splitCssDeclarations(body)) {
-    const colon = findCssDelimiter(part, 0, new Set([":"]));
-    if (colon >= part.length) throw new Error(`consumer CSS declaration lacks a colon: ${part}`);
-    const property = part.slice(0, colon).trim().toLowerCase();
-    const rawValue = part.slice(colon + 1).trim();
-    const important = /\s*!important\s*$/i.test(rawValue);
-    const value = rawValue.replace(/\s*!important\s*$/i, "").trim();
+  for (const node of rule.nodes ?? []) {
+    if (node.type === "comment") continue;
+    if (node.type !== "decl") throw new Error(`unsupported nested CSS node in ${rule.selector}: ${node.type}`);
+    const declaration = node as Declaration;
+    const property = declaration.prop.trim().toLowerCase();
+    const value = declaration.value.trim();
     if (!/^(?:--[a-z0-9-]+|[a-z][a-z0-9-]*)$/.test(property) || !value) {
-      throw new Error(`unsupported consumer CSS declaration syntax: ${part}`);
+      throw new Error(`unsupported consumer CSS declaration syntax: ${declaration.toString()}`);
     }
-    declarations.push({ property, value, important });
+    if (declaration.raws.before?.includes("*") || declaration.raws.before?.includes("_")) {
+      throw new Error(`unsupported CSS declaration hack in ${rule.selector}: ${property}`);
+    }
+    declarations.push({ property, value, important: declaration.important });
   }
   return declarations;
 }
 
 function cssRules(css: string): ConsumerRule[] {
-  const source = stripCssComments(css);
+  if (css.includes("\\")) throw new Error("consumer CSS escape sequences are unsupported; use literal canonical identifiers");
+  const root = postcss.parse(css, { from: undefined });
   const rules: ConsumerRule[] = [];
   const imports: string[] = [];
 
-  function parseRuleList(startAt: number, allowAtRules: boolean, allowClosingBrace: boolean, media: readonly string[]): number {
-    let position = startAt;
-    while (position < source.length) {
-      while (/\s/.test(source[position] ?? "")) position += 1;
-      if (position >= source.length) return position;
-      if (source[position] === "}") {
-        if (allowClosingBrace) return position;
-        throw new Error("consumer CSS contains an unmatched closing brace");
-      }
-      const delimiter = findCssDelimiter(source, position, new Set(["{", ";", "}"]));
-      const head = source.slice(position, delimiter).trim();
-      if (!head) throw new Error("consumer CSS contains an empty selector or statement");
-      const stop = source[delimiter];
-      if (stop === ";") {
-        const importMatch = /^@import\s+["']([^"']+)["']$/.exec(head);
-        if (!importMatch || !CANONICAL_CSS_IMPORTS.includes(importMatch[1] as (typeof CANONICAL_CSS_IMPORTS)[number])) {
-          throw new Error(`unsupported consumer CSS statement or import: ${head}`);
+  function parseNodes(nodes: readonly ChildNode[], parent: "root" | "media", media: readonly string[]): void {
+    for (const node of nodes) {
+      if (node.type === "comment") continue;
+      if (node.type === "atrule") {
+        const name = node.name.toLowerCase();
+        if (name === "import" && parent === "root" && node.nodes === undefined) {
+          const importMatch = /^(["'])([^"']+)\1$/.exec(node.params.trim());
+          const importPath = importMatch?.[2];
+          if (!importPath || !CANONICAL_CSS_IMPORTS.includes(importPath as (typeof CANONICAL_CSS_IMPORTS)[number])) {
+            throw new Error(`unsupported consumer CSS statement or import: @import ${node.params}`);
+          }
+          imports.push(importPath);
+          continue;
         }
-        imports.push(importMatch[1]);
-        position = delimiter + 1;
+        if (name !== "media" || node.nodes === undefined) throw new Error(`unsupported consumer CSS at-rule: @${node.name} ${node.params}`.trim());
+        const context = `@media ${node.params}`.toLowerCase().replace(/\s+/g, " ").trim();
+        parseNodes(node.nodes, "media", [...media, context]);
         continue;
       }
-      if (stop === "}") return delimiter;
-      if (stop !== "{") throw new Error(`consumer CSS rule is missing a block: ${head}`);
-      const end = findCssBlockEnd(source, delimiter);
-      const body = source.slice(delimiter + 1, end);
-      if (head.startsWith("@")) {
-        if (!allowAtRules || !/^@media\b/.test(head)) throw new Error(`unsupported consumer CSS at-rule: ${head}`);
-        const nestedEnd = parseRuleList(delimiter + 1, true, true, [...media, head.toLowerCase().replace(/\s+/g, " ")]);
-        if (source[nestedEnd] !== "}") throw new Error(`unclosed consumer CSS at-rule: ${head}`);
-      } else {
-        rules.push({ selector: head, declarations: parseConsumerDeclarations(body), media });
+      if (node.type === "rule") {
+        if (parent === "root" || parent === "media") {
+          const rule = node as CssRule;
+          rules.push({ selector: rule.selector.trim(), declarations: parseConsumerDeclarations(rule), media });
+          continue;
+        }
       }
-      position = end + 1;
+      throw new Error(`unsupported CSS syntax node: ${node.type}`);
     }
-    return position;
   }
 
-  const finalPosition = parseRuleList(0, true, false, []);
-  if (finalPosition !== source.length) throw new Error("consumer CSS has trailing unsupported syntax");
+  parseNodes(root.nodes, "root", []);
   if (JSON.stringify(imports) !== JSON.stringify(CANONICAL_CSS_IMPORTS)) {
     throw new Error("consumer CSS must import exactly the five pinned Desert Pants stylesheets in canonical order");
   }
@@ -421,10 +331,11 @@ function typographyRecipes(css: string): Map<string, CanonicalDeclarations> {
   // grammar is trusted after the vendor SHA check, so extract only the exact
   // emitted single-class role selectors; authored consumer CSS uses the strict
   // parser above.
-  for (const match of css.matchAll(/(?:^|\n)\s*\.dp-type-([a-z0-9-]+)\s*\{([^{}]*)\}/g)) {
-    const roleClass = `dp-type-${match[1]}`;
-    recipes.set(roleClass, parseDeclarations(match[2]));
-  }
+  const root = postcss.parse(css, { from: undefined });
+  root.walkRules(rule => {
+    const match = /^\.dp-type-([a-z0-9-]+)$/.exec(rule.selector.trim());
+    if (match) recipes.set(`dp-type-${match[1]}`, declarationMap((rule.nodes ?? []).filter((node): node is Declaration => node.type === "decl")));
+  });
   return recipes;
 }
 

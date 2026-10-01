@@ -217,6 +217,36 @@ describe("canonical Desert Pants design contract", () => {
     expect(() => assertDesignContract(tokenCss, importantGap, indexHtml)).toThrow(/unsupported !important layout priority/);
   });
 
+  it("recognizes priority from the parsed CSS token structure across declaration forms and nesting", () => {
+    const prioritySpellings = [
+      "! important",
+      "!\tIMPORTANT",
+      "!\nimportant",
+      "!/**/ important",
+      "!/**/important",
+      "!/**/\nIMPORTANT"
+    ];
+    const widePrefix = ".workbench { display: grid; grid-template-columns: var(--dp-layout-grid-component-visualization-workbench-rail-width) minmax(0, 1fr) minmax(var(--dp-layout-grid-component-visualization-workbench-reading-min-width), var(--dp-layout-grid-component-visualization-workbench-reading-preferred-width)); gap: var(--dp-layout-grid-component-visualization-workbench-gap);";
+    const compactPrefix = ".workbench { grid-template-columns: var(--dp-layout-grid-component-visualization-workbench-rail-width) minmax(0, 1fr); gap: var(--dp-layout-grid-component-visualization-workbench-compact-gap);";
+    const canonicalWideColumns = "grid-template-columns: var(--dp-layout-grid-component-visualization-workbench-rail-width) minmax(0, 1fr) minmax(var(--dp-layout-grid-component-visualization-workbench-reading-min-width), var(--dp-layout-grid-component-visualization-workbench-reading-preferred-width));";
+    const canonicalCompactColumns = "grid-template-columns: var(--dp-layout-grid-component-visualization-workbench-rail-width) minmax(0, 1fr);";
+
+    for (const priority of prioritySpellings) {
+      const typeAttack = `${consumerCss}\n.dp-type-h2 { font-size: var(--dp-type-body-sm-font-size) ${priority}; font-size: var(--dp-type-h2-font-size); }`;
+      const wideAttack = consumerCss.replace(widePrefix, `${widePrefix} grid-template-columns: 1px 1px 1px ${priority}; ${canonicalWideColumns}`);
+      const compactAttack = consumerCss.replace(compactPrefix, `${compactPrefix} grid-template-columns: 1px 1px ${priority}; ${canonicalCompactColumns}`);
+      const nestedAttack = `${consumerCss}\n@media (max-width: 1180px) { @media (min-width: 600px) { .dp-type-h2 { font-size: var(--dp-type-body-sm-font-size) ${priority}; font-size: var(--dp-type-h2-font-size); } } }`;
+
+      expect(() => assertDesignContract(tokenCss, typeAttack, indexHtml)).toThrow(/unsupported !important typography priority/);
+      expect(() => assertDesignContract(tokenCss, wideAttack, indexHtml)).toThrow(/unsupported !important layout priority/);
+      expect(() => assertDesignContract(tokenCss, compactAttack, indexHtml)).toThrow(/unsupported !important layout priority/);
+      expect(() => assertDesignContract(tokenCss, nestedAttack, indexHtml)).toThrow(/unsupported !important typography priority/);
+    }
+
+    const ordinaryCascadePositive = `${consumerCss}\n.dp-type-h2 { font-size: var(--dp-type-body-sm-font-size); font-size: var(--dp-type-h2-font-size); }`;
+    expect(() => assertDesignContract(tokenCss, ordinaryCascadePositive, indexHtml)).not.toThrow();
+  });
+
   it("rejects each modeled grid and alignment declaration on an unrelated selector", () => {
     const declarations = [
       "display: none", "grid: none", "grid-template: none", "grid-template-columns: none", "grid-template-rows: none",

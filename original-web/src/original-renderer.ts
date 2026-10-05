@@ -681,13 +681,13 @@ const mediaControls={
  },
 };
 
-/* ————— the one audio button: a speaker, bottom-left above the avatar —————
-   Plain click toggles SOUND on/off for the current track (the track keeps playing
-   silently while muted — this is the master-voice switch, merged here). It shows a
-   speaker with waves while audible, a muted speaker otherwise, and only appears
-   when there is any audible media at all. Start-over and mute-all live in a small
-   popover above the button so the button itself stays a single clear action. */
-const npIco=$<HTMLSpanElement>("npIco"),npMute=$<HTMLSpanElement>("npMute");
+/* ————— the one audio button: a round EQ, bottom-left above the avatar —————
+   It ALWAYS shows the moving equalizer bars — never a speaker or mute glyph. The
+   motion beckons a click, which toggles the transport popover (play/pause, start
+   over, mute, playlist) open and closed; the popover starts hidden so the screen
+   is clean on load and the map is muted until you reach for it.
+   Color is the state: muted = light button with dark bars; playing = dark
+   (accent-fill) button with light bars — reverse contrast, readable at a glance. */
 function npModule(): string | null { return audioFocus??(cordon.size===1?[...cordon][0]:null); }
 function refreshTransport(): void {
  const any=audibleModules().length>0;
@@ -695,9 +695,8 @@ function refreshTransport(): void {
  npPlay.hidden=false;
  const audible=masterAudio&&!!npModule();
  npPlay.classList.toggle("is-playing",audible);
- npPlay.classList.toggle("is-muted",!audible);
  npPlay.setAttribute("aria-pressed",String(audible));
- npPlay.setAttribute("aria-label",audible?"Sound on — click to mute":"Sound off — click to unmute");
+ npPlay.setAttribute("aria-label",audible?"Sound on — click for controls":"Sound — click for controls");
 }
 /* speaker glyphs come from the bundled Desert Pants volume icons (no emoji) */
 function setSpanIcon(span: HTMLElement, source: string): void {
@@ -708,8 +707,7 @@ function setSpanIcon(span: HTMLElement, source: string): void {
  icon.setAttribute("width","20");icon.setAttribute("height","20");icon.setAttribute("aria-hidden","true");
  span.replaceChildren(icon);
 }
-setSpanIcon(npIco,iconSoundOn);
-setSpanIcon(npMute,iconSoundOff);
+/* (the FAB itself never takes an icon — it is always the moving equalizer) */
 /* plain click opens the transport popover — the controls come out of the button,
    not on hover. The first click also unlocks audio (the gesture), teeing up sound. */
 npPlay.addEventListener("click",ev=>{

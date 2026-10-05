@@ -11,8 +11,12 @@ declare global {
         state: (id: string) => { hasMedia: boolean; audible: boolean; playing: boolean; t: number };
         togglePlay: (id: string) => void;
         solo: (id: string) => void;
+        restart: (id: string) => void;
       };
-      state: () => { zoom: number; cordon: string[]; audioFocus: string | null; masterAudio: boolean };
+      viewFace: (id: string, face: "roof" | "north" | "south" | "east" | "west" | "bottom") => void;
+      faceView: () => { id: string; face: string } | null;
+      exitFace: () => void;
+      state: () => { zoom: number; cordon: string[]; audioFocus: string | null; masterAudio: boolean; faceView: { id: string; face: string } | null };
     };
     __isoRouteQC: Record<string, unknown>;
     __lblMeasured: boolean;

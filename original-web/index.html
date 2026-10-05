@@ -129,8 +129,22 @@
   <!-- bottom-left cluster: the one sound button (speaker) above the user avatar -->
   <div class="me-cluster" id="meCluster">
     <div class="np-popover" id="npPopover" hidden role="menu" aria-label="Track controls">
-      <button class="np-pop-btn" id="npPopRestart" type="button" role="menuitem">Start over</button>
-      <button class="np-pop-btn" id="npPopMute" type="button" role="menuitem">Mute everything</button>
+      <header class="np-head">
+        <p class="np-head-title dp-type-label-sm" id="npHeadTitle">Nothing playing</p>
+        <p class="np-head-track dp-type-meta" id="npHeadTrack"></p>
+      </header>
+      <div class="np-transport" role="group" aria-label="Transport">
+        <button class="np-pop-btn np-t-btn" id="npPopPlay" type="button" role="menuitem" aria-label="Play or pause">
+          <span class="np-t-ico" id="npPopPlayIco" aria-hidden="true"></span><span id="npPopPlayLabel">Play</span>
+        </button>
+        <button class="np-pop-btn np-t-btn" id="npPopRestart" type="button" role="menuitem" aria-label="Start over">
+          <span class="np-t-ico" id="npPopRestartIco" aria-hidden="true"></span><span>Start over</span>
+        </button>
+        <button class="np-pop-btn np-t-btn" id="npPopMute" type="button" role="menuitem" aria-label="Mute or unmute everything">
+          <span class="np-t-ico" id="npPopMuteIco" aria-hidden="true"></span><span id="npPopMuteLabel">Mute</span>
+        </button>
+      </div>
+      <div class="np-track-list" id="npTrackList" role="listbox" aria-label="Playlist"></div>
     </div>
     <button class="np-fab" id="npPlay" type="button" hidden title="Sound on/off · right-click or hold for track controls" aria-label="Sound on or off" aria-pressed="false">
       <span class="np-eq" id="npEq" aria-hidden="true"><i></i><i></i><i></i></span>

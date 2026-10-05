@@ -9,6 +9,7 @@ import { tokens, type TokenPath } from "../vendor/desert-pants/build/web/tokens"
 import { presentedThemes } from "./theme-order";
 import { pageNavigation, type NavigationNode } from "./navigation";
 import iconPlay from "../vendor/desert-pants/icons/svg/play.svg?raw";
+import iconPause from "../vendor/desert-pants/icons/svg/pause.svg?raw";
 import iconTrace from "../vendor/desert-pants/icons/svg/arrow-right.svg?raw";
 import iconDraw from "../vendor/desert-pants/icons/svg/pen.svg?raw";
 import iconLayers from "../vendor/desert-pants/icons/svg/layers.svg?raw";
@@ -714,14 +715,78 @@ npPlay.addEventListener("click",()=>{
  masterAudio=!masterAudio;
  applyAudio();
 });
-/* ————— popover above the button: start over + mute all ————— */
+/* ————— popover above the button: media transport + playlist —————
+   The popover carries a heading (current module + track), a transport row
+   (play/pause, start over, mute all) and a module-level playlist. The playlist
+   is a lightweight in-memory store of module ids; for now it mirrors
+   audibleModules() so every module with audible media is listed. Picking a row
+   gives that cube the one audio voice (setAudioFocus + solo). */
+const playlist: string[]=[];
+function playlistSync(): string[] { /* keep the store live: every audible module, in stable order */
+ const mods=audibleModules();
+ playlist.length=0;playlist.push(...mods);
+ return playlist;
+}
+function trackNameOf(id: string): string { /* derive a human track name from the video src filename */
+ const e=audibleEntry(id);
+ const src=e&&e.video?e.video.currentSrc||e.video.src:"";
+ if(!src)return "";
+ let file=src.split(/[?#]/)[0].split("/").pop()||"";
+ try{file=decodeURIComponent(file);}catch{/* keep raw */}
+ file=file.replace(/\.[a-z0-9]+$/i,"");
+ const words=file.split(/[-_\s]+/).filter(Boolean).map(w=>w.charAt(0).toUpperCase()+w.slice(1));
+ return words.join(" ")||"Untitled track";
+}
 const npPop=$<HTMLDivElement>("npPopover");
+const npHeadTitle=$<HTMLParagraphElement>("npHeadTitle"),npHeadTrack=$<HTMLParagraphElement>("npHeadTrack");
+const npPopPlay=$<HTMLButtonElement>("npPopPlay"),npPopPlayLabel=$<HTMLSpanElement>("npPopPlayLabel"),npPopPlayIco=$<HTMLSpanElement>("npPopPlayIco");
+const npPopMuteBtn=$<HTMLButtonElement>("npPopMute"),npPopMuteLabel=$<HTMLSpanElement>("npPopMuteLabel"),npPopMuteIco=$<HTMLSpanElement>("npPopMuteIco");
+const npTrackList=$<HTMLDivElement>("npTrackList");
+setSpanIcon(npPopPlayIco,iconPlay);
+setSpanIcon($<HTMLSpanElement>("npPopRestartIco"),iconReset);
+setSpanIcon(npPopMuteIco,iconSoundOff);
 let npPopOpen=false;
 function npPopoverHide(): void { npPopOpen=false;if(npPop)npPop.hidden=true; }
+function npPlaylistRender(): void { /* rebuild the playlist rows from the store */
+ const mods=playlistSync();
+ const current=npModule();
+ npTrackList.replaceChildren();
+ for(const id of mods){
+  const n=byId[id];
+  const row=document.createElement("button");
+  row.type="button";row.className="np-track";row.setAttribute("role","option");
+  row.dataset.moduleId=id;
+  row.setAttribute("aria-selected",String(id===current));
+  if(id===current)row.classList.add("is-active");
+  const name=document.createElement("span");name.className="np-track-name";name.textContent=n?n.name:id;
+  const track=document.createElement("span");track.className="np-track-title";track.textContent=trackNameOf(id);
+  row.append(name,track);
+  row.addEventListener("click",()=>{ /* this cube takes the voice */
+   setAudioFocus(id);mediaControls.solo(id);npHeadSync();npPlaylistRender();
+  });
+  npTrackList.append(row);
+ }
+ npTrackList.toggleAttribute("hidden",mods.length===0);
+}
+function npHeadSync(): void { /* heading: current module name + its track */
+ const id=npModule();
+ npHeadTitle.textContent=id&&byId[id]?byId[id].name:"Nothing playing";
+ npHeadTrack.textContent=id?trackNameOf(id):"";
+}
+function npTransportSync(): void { /* reflect live play/pause/mute state */
+ const id=npModule();
+ const st=id?mediaControls.state(id):null;
+ npPopPlay.toggleAttribute("disabled",!id);
+ $("npPopRestart").toggleAttribute("disabled",!id);
+ npPopPlayLabel.textContent=st&&st.playing?"Pause":"Play";
+ setSpanIcon(npPopPlayIco,st&&st.playing?iconPause:iconPlay);
+ npPopMuteLabel.textContent=masterAudio?"Mute":"Unmute";
+ setSpanIcon(npPopMuteIco,masterAudio?iconSoundOff:iconSoundOn);
+}
 function npPopoverToggle(): void {
  npPopOpen=!npPopOpen;
  npPop.hidden=!npPopOpen;
- if(npPopOpen){const id=npModule();$("npPopRestart").toggleAttribute("disabled",!id);}
+ if(npPopOpen){npHeadSync();npTransportSync();npPlaylistRender();}
 }
 npPlay.addEventListener("contextmenu",ev=>{ev.preventDefault();npPopoverToggle();});
 npPlay.addEventListener("pointerdown",ev=>{ /* long-press opens the popover too */
@@ -730,8 +795,11 @@ npPlay.addEventListener("pointerdown",ev=>{ /* long-press opens the popover too 
  const clear=()=>{clearTimeout(t);npPlay.removeEventListener("pointerup",clear);npPlay.removeEventListener("pointerleave",clear);};
  npPlay.addEventListener("pointerup",clear);npPlay.addEventListener("pointerleave",clear);
 });
-$("npPopRestart").addEventListener("click",()=>{const id=npModule();if(id)mediaControls.restart(id);npPopoverHide();});
-$("npPopMute").addEventListener("click",()=>{masterAudio=false;applyAudio();npPopoverHide();});
+npPopPlay.addEventListener("click",()=>{const id=npModule();if(id)mediaControls.togglePlay(id);npTransportSync();});
+$("npPopRestart").addEventListener("click",()=>{const id=npModule();if(id)mediaControls.restart(id);npTransportSync();});
+npPopMuteBtn.addEventListener("click",()=>{ /* same path as the FAB: set masterAudio, then applyAudio() */
+ masterAudio=!masterAudio;applyAudio();npTransportSync();
+});
 document.addEventListener("pointerdown",ev=>{ /* click-away closes the popover */
  if(!npPopOpen)return;
  if(ev.target instanceof Node&&(npPop.contains(ev.target)||npPlay.contains(ev.target)))return;
@@ -741,6 +809,14 @@ function nowPlayingTick(): void {
  if(npPlay.hidden)return;
  const audible=masterAudio&&!!npModule();
  if(audible!==npPlay.classList.contains("is-playing"))refreshTransport();
+ if(npPopOpen){ /* live state for the open popover — same RAF hook, no second loop */
+  const id=npModule();
+  const st=id?mediaControls.state(id):null;
+  const playing=!!(st&&st.playing);
+  if(playing!==(npPopPlayLabel.textContent==="Pause"))npTransportSync();
+  const cur=npTrackList.querySelector(".np-track.is-active") as HTMLElement | null;
+  if((cur&&cur.dataset.moduleId!==id)||(!cur&&id)){npHeadSync();npPlaylistRender();}
+ }
 }
 /* graph edges on the ground */
 /* connection health: a link can be broken/degraded independent of its modules.
@@ -879,8 +955,9 @@ function placeCamera(az: number,pol: number,r: number,tx: number,ty: number,tz: 
  controls.update();
 }
 placeCamera(HOME.az,HOME.pol,HOME.r,HOME.tx,HOME.ty,HOME.tz,HOME.zoom);
-let flyGoal: { tx: number; ty: number; tz: number; zoom: number; az?: number; pol?: number } | null = null;
-controls.addEventListener("start",()=>{flyGoal=null;}); /* user input cancels autopilot */
+let flyGoal: { tx: number; ty: number; tz: number; zoom: number; az?: number; pol?: number; faceView?: { id: string; face: FaceKey } } | null = null;
+let faceView: { id: string; face: FaceKey } | null = null; /* active straight-on face viewer */
+controls.addEventListener("start",()=>{flyGoal=null;faceView=null;}); /* user input cancels autopilot + exits the face viewer */
 function resetView(){clearEdgeSel();flowing=false;btnFlow.setAttribute("aria-pressed","false");setCanonicalIcon(btnFlow,iconPlay);exitCordon();brush.clear();flyGoal={tx:HOME.tx,ty:HOME.ty,tz:HOME.tz,zoom:HOME.zoom,az:HOME.az,pol:HOME.pol};clearTrace();renderModuleNavigator();}
 $("btnReset").addEventListener("click",resetView);
 /* R/W/Space are global camera/draw/transport commands. They should only yield when
@@ -935,9 +1012,31 @@ window.odinView={set(az,pol,r,zoom){placeCamera(az??HOME.az,pol??HOME.pol,r??HOM
  restore(){flyGoal=null;exitCordon();paintCircuit();renderPanel(null);},
  inspect(id){pinned=id;NODES.forEach(n=>mark(n.id,n.id===id));renderPanel(id);},
  media:mediaControls, /* per-module media: state/togglePlay/solo (inspector + QA) */
- state:()=>({zoom:camera.zoom,cordon:[...cordon],audioFocus,masterAudio})};
+ /* face viewer: fly square-on to a module's face so it becomes the screen/reader */
+ viewFace(id: string,face: FaceKey){const n=byId[id];if(n)flyToFace(n,face);},
+ faceView:()=>faceView,
+ exitFace(){faceView=null;flyGoal={tx:HOME.tx,ty:HOME.ty,tz:HOME.tz,zoom:HOME.zoom,az:HOME.az,pol:HOME.pol};},
+ state:()=>({zoom:camera.zoom,cordon:[...cordon],audioFocus,masterAudio,faceView})};
 function flyTo(n: MapNode): void {flyGoal={tx:n.x+n.w/2,ty:(n._lyT||0)+0.5,tz:n.y+n.d/2,
  zoom:Math.max(camera.zoom,2.1)};}
+/* ————— face viewer: fly square-on to one face so it becomes a screen/reader —————
+   Computes the face's outward center + a straight-on camera (az/pol) for it. The
+   face fills the view like a monitor; Esc or orbit input returns to the city. */
+function flyToFace(n: MapNode,face: FaceKey): void {
+ const h=Math.max(n.h,0.6),px=n.x+n.w/2,pz=n.y+n.d/2;
+ /* face center in world space */
+ let cx=px,cy=h/2,cz=pz,az=0,pol=Math.PI/2;
+ if(face==="north"){cz=n.y+n.d;az=0;}
+ else if(face==="south"){cz=n.y;az=Math.PI;}
+ else if(face==="east"){cx=n.x+n.w;az=Math.PI/2;}
+ else if(face==="west"){cx=n.x;az=-Math.PI/2;}
+ else if(face==="roof"){cy=h;pol=0.02;}
+ else if(face==="bottom"){cy=0;pol=Math.PI-0.02;}
+ /* ortho: frame the face to ~72% of the view height (clamped to the zoom ceiling) */
+ const fh=(face==="roof"||face==="bottom")?n.d:h;
+ const zoom=Math.min(20,Math.max(2,(VIEW*0.72)/Math.max(fh,0.5)));
+ flyGoal={tx:cx,ty:cy,tz:cz,az,pol,zoom,faceView:{id:n.id,face}};
+}
 /* click-vs-drag disambiguation (no pointer capture — OrbitControls owns the gestures) */
 let downPt: { x: number; y: number } | null = null;
 canvas.addEventListener("pointerdown",ev=>{downPt={x:ev.clientX,y:ev.clientY};});
@@ -1934,7 +2033,9 @@ function tick(){
      angDone=Math.abs(dth)<0.01&&Math.abs((flyGoal.pol ?? sph.phi)-sph.phi)<0.01;
    }
    if(Math.abs(nz-flyGoal.zoom)<1e-5&&controls.target.distanceTo(new THREE.Vector3(flyGoal.tx,flyGoal.ty,flyGoal.tz))<1e-5&&angDone){
-    controls.target.set(flyGoal.tx,flyGoal.ty,flyGoal.tz);camera.zoom=flyGoal.zoom;camera.updateProjectionMatrix();flyGoal=null;
+    controls.target.set(flyGoal.tx,flyGoal.ty,flyGoal.tz);camera.zoom=flyGoal.zoom;camera.updateProjectionMatrix();
+    if(flyGoal.faceView)faceView=flyGoal.faceView; /* the face is now framed as the viewer */
+    flyGoal=null;
    }
  }
  controls.update();

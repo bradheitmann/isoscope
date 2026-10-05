@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Isoscope rail — phone options</title>
+<style>
+  :root { color-scheme: light; --ink:#1f2328; --mut:#6a737d; --line:#d0d7de; --bg:#f6f8fa; --card:#fff; --accent:#0969da; }
+  * { box-sizing: border-box; }
+  body { margin:0; padding:24px; font:14px/1.45 -apple-system, "Segoe UI", Roboto, sans-serif; background:var(--bg); color:var(--ink); }
+  h1 { margin:0 0 4px; font-size:20px; }
+  p.lede { margin:0 0 20px; color:var(--mut); max-width:72ch; }
+  .row { display:flex; flex-wrap:wrap; gap:24px; align-items:flex-start; }
+  .opt { display:flex; flex-direction:column; gap:8px; }
+  .opt h2 { margin:0; font-size:15px; }
+  .opt .note { margin:0; color:var(--mut); font-size:12.5px; max-width:390px; }
+
+  /* phone frame */
+  .phone { position:relative; width:390px; height:700px; background:#e9edf1; border:1px solid var(--line); border-radius:24px; overflow:hidden; box-shadow:0 6px 24px rgba(0,0,0,.08); }
+
+  /* fake isometric map: 12 boxes in a 4x3 iso-ish diamond */
+  .map { position:absolute; inset:0; }
+  .mod { position:absolute; width:64px; height:64px; background:#c9d1d9; border:1px solid #8c959f; border-radius:6px; display:grid; place-items:center; font:600 12px/1 ui-monospace, monospace; color:#24292f; transform:rotateX(54deg) rotateZ(45deg); transform-style:preserve-3d; box-shadow:8px 10px 0 rgba(0,0,0,.10); }
+  .mod span { transform:rotateZ(-45deg); }
+
+  /* rail */
+  .rail { position:absolute; top:12px; left:12px; z-index:10; display:flex; flex-direction:column; gap:8px; }
+  .rail button { width:40px; height:40px; border-radius:8px; border:1px solid var(--line); background:var(--card); color:var(--ink); font-size:16px; cursor:pointer; box-shadow:0 1px 3px rgba(0,0,0,.12); }
+  .rail button:hover { background:#eef1f4; }
+
+  /* ————— option A: collapse to one menu button ————— */
+  #a .rail { display:none; }
+  #a.open .rail { display:flex; top:64px; background:var(--card); padding:10px; border:1px solid var(--line); border-radius:12px; box-shadow:0 8px 24px rgba(0,0,0,.18); }
+  #a .menu-fab { position:absolute; top:12px; left:12px; z-index:11; width:44px; height:44px; border-radius:10px; border:1px solid var(--line); background:var(--card); font-size:18px; cursor:pointer; box-shadow:0 2px 6px rgba(0,0,0,.15); }
+  #a.open .menu-fab { background:var(--accent); color:#fff; border-color:var(--accent); }
+
+  /* ————— option B: shift the start view ————— */
+  #b .map { transform:translate(150px, 90px); }
+
+  /* ————— option C: collapsible rail with tab ————— */
+  #c .rail { transition:transform .25s ease; }
+  #c.closed .rail { transform:translateX(calc(-100% - 12px)); }
+  #c .tab { position:absolute; top:12px; left:0; z-index:9; width:22px; height:56px; border:1px solid var(--line); border-left:none; border-radius:0 8px 8px 0; background:var(--card); cursor:pointer; font-size:12px; color:var(--mut); display:grid; place-items:center; transition:left .25s ease; }
+  #c:not(.closed) .tab { left:64px; }
+  #c .chev { position:absolute; top:12px; left:56px; z-index:11; width:24px; height:40px; border:1px solid var(--line); background:var(--card); border-radius:0 8px 8px 0; cursor:pointer; font-size:12px; color:var(--mut); display:grid; place-items:center; transition:transform .25s ease; }
+  #c.closed .chev { transform:translateX(calc(-100% - 56px + 24px)); }
+</style>
+</head>
+<body>
+  <h1>Control rail on phone widths — three fixes</h1>
+  <p class="lede">Each frame is a 390×700 phone viewport with the same fake 12-module map. Tap the controls to try the interaction. Today the left rail covers the first column of modules.</p>
+
+  <div class="row">
+    <section class="opt">
+      <h2>A — Collapse to menu</h2>
+      <div class="phone" id="a">
+        <div class="map" data-map></div>
+        <button class="menu-fab" id="aFab" aria-label="Toggle controls">☰</button>
+        <nav class="rail" data-rail></nav>
+      </div>
+      <p class="note">Map is fully visible by default; controls cost one tap and float as a sheet over the map while open.</p>
+    </section>
+
+    <section class="opt">
+      <h2>B — Shift start view</h2>
+      <div class="phone" id="b">
+        <div class="map" data-map></div>
+        <nav class="rail" data-rail></nav>
+      </div>
+      <p class="note">Zero new UI; but the map is permanently offset, wasting the top-right and confusing pan/zoom anchors.</p>
+    </section>
+
+    <section class="opt">
+      <h2>C — Collapsible rail</h2>
+      <div class="phone" id="c">
+        <div class="map" data-map></div>
+        <nav class="rail" data-rail></nav>
+        <button class="chev" id="cChev" aria-label="Collapse rail">‹</button>
+        <button class="tab" id="cTab" aria-label="Expand rail">›</button>
+      </div>
+      <p class="note">Rail is one tap away and never overlaps when dismissed; adds a persistent slim tab affordance on the edge.</p>
+    </section>
+  </div>
+
+<script>
+(function () {
+  var ICONS = ['⟲','≈','⌖','✎','▦','⊞','⚙','⤢','+','−'];
+  var MODS  = ['SP','DB','CL','MC','AD','TP','BU','SV','AR','EX','CO','DR'];
+  // 4x3 grid, iso-skewed placement: columns drift down-right
+  function buildMap(el) {
+    for (var i = 0; i < 12; i++) {
+      var col = i % 4, row = (i / 4) | 0;
+      var d = document.createElement('div');
+      d.className = 'mod';
+      d.style.left = (30 + col * 82 + row * 26) + 'px';
+      d.style.top  = (90 + row * 96 - col * 14) + 'px';
+      d.innerHTML = '<span>' + MODS[i] + '</span>';
+      el.appendChild(d);
+    }
+  }
+  function buildRail(el) {
+    ICONS.forEach(function (ic, i) {
+      var b = document.createElement('button');
+      b.textContent = ic;
+      b.title = 'Control ' + (i + 1);
+      el.appendChild(b);
+    });
+  }
+  document.querySelectorAll('[data-map]').forEach(buildMap);
+  document.querySelectorAll('[data-rail]').forEach(buildRail);
+
+  // A: tap fab to toggle sheet; tap map to close
+  var a = document.getElementById('a');
+  document.getElementById('aFab').addEventListener('click', function (e) {
+    e.stopPropagation();
+    a.classList.toggle('open');
+  });
+  a.querySelector('.map').addEventListener('click', function () { a.classList.remove('open'); });
+
+  // C: chevron collapses rail off-canvas; tab brings it back
+  var c = document.getElementById('c');
+  document.getElementById('cChev').addEventListener('click', function () { c.classList.add('closed'); });
+  document.getElementById('cTab').addEventListener('click', function () { c.classList.remove('closed'); });
+})();
+</script>
+</body>
+</html>

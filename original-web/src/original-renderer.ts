@@ -763,8 +763,13 @@ function npPlaylistRender(): void { /* rebuild the playlist rows from the store 
   const name=document.createElement("span");name.className="np-track-name";name.textContent=n?n.name:id;
   const track=document.createElement("span");track.className="np-track-title";track.textContent=trackNameOf(id);
   row.append(name,track);
-  row.addEventListener("click",()=>{ /* this cube takes the voice */
-   setAudioFocus(id);mediaControls.solo(id);npHeadSync();npPlaylistRender();
+  row.addEventListener("click",()=>{ /* picking a track selects + energizes its cube and gives it the voice */
+   clearEdgeSel();
+   cordon.clear();cordon.add(id);pinned=null;
+   flyTo(byId[id]);
+   setAudioFocus(id);mediaControls.solo(id);
+   applyCircuit(); /* lights the cube + label, refreshes panel + transport */
+   npHeadSync();npPlaylistRender();
   });
   npTrackList.append(row);
  }

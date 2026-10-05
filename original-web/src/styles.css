@@ -275,14 +275,30 @@ details > summary { cursor: pointer; }
 /* speaker button states: audible = accent + equalizer; muted = plain + muted speaker */
 .np-fab .np-ico svg,.np-fab .np-mute svg{display:block}
 .np-fab.is-muted .np-eq{display:none}
-/* popover above the sound button: start over + mute everything */
+/* popover above the sound button: media transport + playlist */
 .np-popover{position:absolute;inset-block-end:calc(100% + var(--dp-space-2));inset-inline-start:0;z-index:35;
-  display:flex;flex-direction:column;gap:2px;padding:6px;min-inline-size:150px;
+  display:flex;flex-direction:column;gap:var(--dp-space-2,8px);padding:var(--dp-space-2,8px);min-inline-size:220px;max-inline-size:280px;
   background:var(--dp-color-bg-raised,#f4f4f2);border:1px solid var(--dp-color-border-default,rgb(0 0 0/0.14));
   border-radius:12px;box-shadow:0 12px 32px rgb(0 0 0/0.28)}
+.np-head{padding:var(--dp-space-1,4px) var(--dp-space-2,8px) 0;display:flex;flex-direction:column;gap:1px}
+.np-head-title{margin:0;color:var(--dp-color-text-primary,#14181f)}
+.np-head-track{margin:0;color:var(--dp-color-text-secondary,#666);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.np-transport{display:flex;gap:2px}
 .np-pop-btn{display:block;inline-size:100%;text-align:start;padding:8px 10px;border:0;border-radius:8px;
   background:transparent;color:inherit;font-size:13px;font-weight:600;cursor:pointer;white-space:nowrap}
 .np-pop-btn:hover{background:var(--dp-color-accent-default,#3a63f3);color:var(--dp-color-accent-contrast,#fff)}
 .np-pop-btn[disabled]{opacity:.4;cursor:default}
 .np-pop-btn[disabled]:hover{background:transparent;color:inherit}
+.np-t-btn{display:flex;flex-direction:column;align-items:center;gap:3px;text-align:center;padding:6px 4px;font-size:10px;font-weight:600}
+.np-t-btn .np-t-ico{display:grid;place-items:center;inline-size:18px;block-size:18px}
+.np-t-btn .np-t-ico svg{display:block}
+.np-track-list{display:flex;flex-direction:column;gap:2px;max-block-size:180px;overflow-y:auto;
+  border-block-start:1px solid var(--dp-color-border-default,rgb(0 0 0/0.14));padding-block-start:var(--dp-space-2,8px)}
+.np-track{display:flex;flex-direction:column;align-items:flex-start;gap:1px;inline-size:100%;text-align:start;
+  padding:6px 10px;border:0;border-radius:8px;background:transparent;color:inherit;cursor:pointer}
+.np-track:hover{background:var(--dp-color-bg-surface,#fff)}
+.np-track.is-active{background:color-mix(in srgb,var(--dp-color-accent-default,#3a63f3) 14%,var(--dp-color-bg-raised,#f4f4f2))}
+.np-track-name{font-size:12px;font-weight:700;color:var(--dp-color-text-primary,#14181f);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-inline-size:100%}
+.np-track-title{font-size:11px;color:var(--dp-color-text-secondary,#666);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-inline-size:100%}
+.np-track.is-active .np-track-name{color:var(--dp-color-accent-default,#3a63f3)}
 .me-cluster{position:fixed} /* anchor for the absolutely-positioned popover */

@@ -257,19 +257,17 @@ details > summary { cursor: pointer; }
   border:2px solid var(--dp-color-bg-surface,#fff);cursor:default;user-select:none}
 .np-fab{inline-size:44px;block-size:44px;border-radius:50%;flex:none;cursor:pointer;position:relative;
   display:grid;place-items:center;border:1px solid var(--dp-color-border-default,rgb(0 0 0/0.14));
-  background:var(--dp-color-bg-raised,#f4f4f2);color:var(--dp-color-text-primary,#14181f);
-  box-shadow:0 8px 24px rgb(0 0 0/0.22);transition:background .18s ease,transform .12s ease}
+  background:var(--dp-color-bg-raised,#f4f4f2);color:var(--dp-color-text-secondary,#5a6270); /* muted: dark bars on light */
+  box-shadow:0 8px 24px rgb(0 0 0/0.22);transition:background .18s ease,color .18s ease,transform .12s ease}
 .np-fab:hover{background:var(--dp-color-bg-surface,#fff);transform:translateY(-1px)}
 .np-fab:active{transform:translateY(0)}
-.np-ico{font-size:17px;line-height:1}
-.np-mute{display:none;font-size:16px;line-height:1;font-weight:700}
+/* the equalizer is ALWAYS on the button, always moving — that motion is the beckon.
+   Playing = dark accent fill with light bars (reverse contrast); muted = light with dark bars. */
 .np-fab.is-playing{background:var(--dp-color-accent-default,#3a63f3);color:var(--dp-color-accent-contrast,#fff);border-color:transparent}
-.np-eq{display:none;align-items:flex-end;gap:2px;block-size:14px}
+.np-eq{display:flex;align-items:flex-end;gap:2px;block-size:15px}
 .np-eq i{inline-size:3px;background:currentColor;border-radius:1px;animation:npEq 0.9s ease-in-out infinite}
 .np-eq i:nth-child(2){animation-delay:.22s}.np-eq i:nth-child(3){animation-delay:.44s}
-.np-fab.is-playing .np-eq{display:flex}.np-fab.is-playing .np-ico{display:none}
-.np-fab.is-muted{color:var(--dp-color-text-secondary,#666);opacity:.8}
-.np-fab.is-muted .np-mute{display:block}.np-fab.is-muted .np-ico,.np-fab.is-muted .np-eq{display:none}
+.np-fab[hidden]{display:none} /* only appears once there is audible media */
 @keyframes npEq{0%,100%{block-size:5px}50%{block-size:14px}}
 @media (prefers-reduced-motion:reduce){.np-eq i{animation:none;block-size:9px}}
 /* speaker button states: audible = accent + equalizer; muted = plain + muted speaker */
@@ -280,6 +278,7 @@ details > summary { cursor: pointer; }
   display:flex;flex-direction:column;gap:var(--dp-space-2,8px);padding:var(--dp-space-2,8px);min-inline-size:220px;max-inline-size:280px;
   background:var(--dp-color-bg-raised,#f4f4f2);border:1px solid var(--dp-color-border-default,rgb(0 0 0/0.14));
   border-radius:12px;box-shadow:0 12px 32px rgb(0 0 0/0.28)}
+.np-popover[hidden]{display:none} /* the hidden attribute must win over display:flex */
 .np-head{padding:var(--dp-space-1,4px) var(--dp-space-2,8px) 0;display:flex;flex-direction:column;gap:1px}
 .np-head-title{margin:0;color:var(--dp-color-text-primary,#14181f)}
 .np-head-track{margin:0;color:var(--dp-color-text-secondary,#666);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}

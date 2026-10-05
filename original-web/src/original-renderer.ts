@@ -469,7 +469,10 @@ function acquireVideo(src: string,ref: SurfaceRef): PooledVideo {
  /* a live feed is content, not decoration: it plays even under reduced-motion.
     Looping/decorative video holds its first frame for RM users; live does not. */
  const mayPlay=!RM||live;
- video.autoplay=mayPlay;video.preload=live?"auto":"metadata";
+ /* preload=auto so every cube shows the SAME leader frame at the same time instead
+    of a patchwork of blank faces and buffered frames while the sources warm up;
+    the shared theater group then frame-locks them from t=0. */
+ video.autoplay=mayPlay;video.preload="auto";
  video.src=src; /* native HLS plays where supported; an hls.js shim can attach here later */
  if(mayPlay)video.play().catch(()=>{/* autoplay may wait for a gesture */});
  const pv: PooledVideo={video,live,refs:1,group:ref.group,src};
@@ -880,17 +883,25 @@ let flyGoal: { tx: number; ty: number; tz: number; zoom: number; az?: number; po
 controls.addEventListener("start",()=>{flyGoal=null;}); /* user input cancels autopilot */
 function resetView(){clearEdgeSel();flowing=false;btnFlow.setAttribute("aria-pressed","false");setCanonicalIcon(btnFlow,iconPlay);exitCordon();brush.clear();flyGoal={tx:HOME.tx,ty:HOME.ty,tz:HOME.tz,zoom:HOME.zoom,az:HOME.az,pol:HOME.pol};clearTrace();renderModuleNavigator();}
 $("btnReset").addEventListener("click",resetView);
+/* R/W/Space are global camera/draw/transport commands. They should only yield when
+   a true modal owns the keyboard (Settings) or the user is interacting INSIDE the
+   reading tray — not merely because the tray happens to be open at its peek strip,
+   where the art is still alive underneath. */
+function readerOwnsKeys(): boolean {
+ if(drawer.classList.contains("open"))return true;
+ return readingPanel.contains(document.activeElement);
+}
 document.addEventListener("keydown",ev=>{
  if(ev.key!=="r"&&ev.key!=="R")return;
  if(isEditableTarget(ev.target))return; /* typing "r" in the search field is not a camera command */
- if(readerModalOpen||drawer.classList.contains("open"))return; /* a modal owns the screen */
+ if(readerOwnsKeys())return;
  resetView();
 });
 /* quick media control: Space = play/pause the module holding the voice, 0 = start it over */
 document.addEventListener("keydown",ev=>{
  if(ev.key!==" "&&ev.key!=="0")return;
  if(isEditableTarget(ev.target))return;                 /* typing in a field is not a transport command */
- if(readerModalOpen||drawer.classList.contains("open"))return;
+ if(readerOwnsKeys())return;
  const id=audioFocus??(cordon.size===1?[...cordon][0]:null);
  if(!id)return;
  ev.preventDefault();
@@ -900,7 +911,7 @@ document.addEventListener("keydown",ev=>{
 document.addEventListener("keydown",ev=>{
  if(ev.key!=="w"&&ev.key!=="W")return;
  if(isEditableTarget(ev.target))return;
- if(readerModalOpen||drawer.classList.contains("open"))return;
+ if(readerOwnsKeys())return;
  brush.setActive(!brush.isActive());
 });
 /* zoom bounds are communicated, not silent: buttons report aria-disabled at the limits */

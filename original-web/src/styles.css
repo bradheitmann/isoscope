@@ -27,9 +27,10 @@ body { display: grid; grid-template-rows: auto minmax(0, 1fr); background: var(-
 .controls-float { position: absolute; inset-block-start: var(--dp-space-3); inset-inline-start: var(--dp-space-3); z-index: var(--dp-z-raised); display: flex; flex-direction: column; gap: var(--dp-space-2); }
 .controls-float .dp-button { position: relative; inline-size: var(--dp-layout-grid-component-visualization-workbench-rail-touch-min); min-inline-size: var(--dp-layout-grid-component-visualization-workbench-rail-touch-min); min-block-size: var(--dp-layout-grid-component-visualization-workbench-rail-touch-min); padding-inline: 0; overflow: visible; box-shadow: var(--dp-shadow-sm); background: var(--dp-color-bg-raised); border: var(--dp-border-width-hair) solid var(--dp-color-border-subtle); color: var(--dp-color-text-primary); }
 .controls-float .dp-button:hover { background: var(--dp-color-bg-surface); }
-/* labels expand to the right of the icon on hover/focus (desktop pointer affordance) */
+/* dock labels no longer pop on hover — they stay hidden until the control is
+   actually pressed (or focused by keyboard), and fade right back out after. */
 .controls-float .dp-button::after { content: attr(title); position: absolute; inset-inline-start: calc(100% + var(--dp-space-2)); inset-block-start: 50%; translate: 0 -50%; padding: var(--dp-space-1) var(--dp-space-2); border-radius: var(--dp-radius-md); background: var(--dp-color-bg-raised); color: var(--dp-color-text-primary); border: var(--dp-border-width-hair) solid var(--dp-color-border-subtle); box-shadow: var(--dp-shadow-sm); font-family: var(--dp-type-label-sm-font-family); font-size: var(--dp-type-label-sm-font-size); font-weight: var(--dp-type-label-sm-font-weight); letter-spacing: var(--dp-type-label-sm-letter-spacing); text-transform: var(--dp-type-label-sm-text-transform); white-space: nowrap; opacity: 0; visibility: hidden; transition: opacity var(--dp-duration-fast) var(--dp-easing-standard); pointer-events: none; }
-.controls-float .dp-button:hover::after, .controls-float .dp-button:focus-visible::after { opacity: 1; visibility: visible; }
+.controls-float .dp-button:active::after, .controls-float .dp-button:focus-visible::after { opacity: 1; visibility: visible; }
 @media (hover: none) { .controls-float .dp-button::after { display: none; } }
 /* toggle contract: momentaries (reset/zoom/trace) flash the press accent only while held;
    toggles (flow/stack) latch in the accent while on */

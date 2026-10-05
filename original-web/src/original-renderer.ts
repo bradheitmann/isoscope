@@ -27,7 +27,7 @@ import iconMinus from "../vendor/desert-pants/icons/svg/minus.svg?raw";
 import iconChevron from "../vendor/desert-pants/icons/svg/chevron-down.svg?raw";
 import { isoRouteAll } from "../../router.mjs";
 import { isEditableTarget } from "./editable-target";
-import { getModule, type FaceKey, type SurfaceKind, type SurfaceRef } from "./annotations";
+import { getModule, setNotes, setFace, addInside, removeInside, uploadFile, isRemote, FACES, type FaceKey, type SurfaceKind, type SurfaceRef } from "./annotations";
 
 type Item = { c: "red" | "amber" | "you" | "info" | string; l: string };
 type Group = { id: string; label: string };
@@ -47,6 +47,7 @@ type Spec = {
   edgeStatus?: Record<string, string>; edgeDocs?: Record<string, { title?: string; carries?: string; refs?: string }>;
   levels?: Record<string, number>; short?: Record<string, string>; trace?: string[]; traceText?: Record<string, string>;
   telemetry?: Record<string, { trace_boundary: string; event_stream?: string; wide_event_keys?: string[]; rationale?: string; installed_by?: string; offered_at?: string; verified_at?: string }>;
+  mediaLibrary?: Array<{ id: string; title: string; src: string; kind: string }>; /* the media bench for the face picker */
 };
 type EdgeRuntime = {
   key: string; line: Line2; type: string; health: string | null; basePts: THREE.Vector3[]; a: string; b: string;
@@ -819,6 +820,147 @@ function nowPlayingTick(): void {
   if((cur&&cur.dataset.moduleId!==id)||(!cur&&id)){npHeadSync();npPlaylistRender();}
  }
 }
+
+/* ════════ module detail page: the storage box, opened by double-click ════════
+   One overlay per module. Dense materials list (every surface + inside file +
+   note), notes, and a face editor. Selecting a material flies square-on to that
+   face and makes the face the viewer/player/reader for it. Persists via the
+   annotations endpoint. */
+const inspector=$<HTMLElement>("inspector"),inspectorScrim=$<HTMLElement>("inspectorScrim");
+const inspName=$<HTMLElement>("inspName"),inspTag=$<HTMLElement>("inspTag"),inspPersist=$<HTMLElement>("inspPersist");
+const materialsList=$<HTMLUListElement>("materialsList"),faceChips=$<HTMLDivElement>("faceChips");
+const inspNotes=$<HTMLTextAreaElement>("inspNotes"),notesSaved=$<HTMLElement>("notesSaved");
+const insideList=$<HTMLUListElement>("insideList");
+let inspId: string | null=null, inspFace: FaceKey="north";
+function kindOf(ref: SurfaceRef|null|undefined): string { return ref?ref.kind:"empty"; }
+function faceMaterialLabel(id: string,face: FaceKey): string {
+ const e=surfacesById[id]?.[face];
+ const ann=getModule(id).faces?.[face];
+ const ref=ann!==undefined?ann:(e?{kind:e.kind,src:e.video?.currentSrc}:null);
+ if(!ref)return "Empty";
+ if(ref.kind==="video")return "Video — "+trackNameOf(id);
+ if(ref.kind==="doc")return "Document";
+ if(ref.kind==="image")return "Image";
+ if(ref.kind==="slides")return "Slides";
+ if(ref.kind==="mist")return "Wash";
+ return ref.kind;
+}
+function materialsRender(): void {
+ if(!inspId)return;const id=inspId;
+ materialsList.replaceChildren();
+ /* one row per face that has content, plus inside items — each opens on its face */
+ for(const face of FACES){
+  const e=surfacesById[id]?.[face];const ann=getModule(id).faces?.[face];
+  const has=ann!==undefined?!!ann:!!e;
+  if(!has)continue;
+  const li=document.createElement("li");
+  const btn=document.createElement("button");btn.type="button";btn.className="material";
+  btn.innerHTML=`<span class="material-face">${face}</span><span class="material-kind">${faceMaterialLabel(id,face)}</span>`;
+  btn.addEventListener("click",()=>{ inspFace=face; renderFaceChips(); flyToFace(byId[id],face); });
+  const pl=document.createElement("button");pl.type="button";pl.className="material-pl";pl.title="Add to playlist";pl.textContent="+ playlist";
+  pl.addEventListener("click",ev=>{ev.stopPropagation();setAudioFocus(id);mediaControls.solo(id);refreshTransport();});
+  li.append(btn,pl);materialsList.append(li);
+ }
+ /* inside files/notes as materials too (they open on the chosen face) */
+ (getModule(id).inside??[]).forEach((it)=>{
+  const li=document.createElement("li");
+  const btn=document.createElement("button");btn.type="button";btn.className="material";
+  btn.innerHTML=`<span class="material-face">inside</span><span class="material-kind">${it.kind==="note"?"Note":"File"} — ${it.name}</span>`;
+  btn.addEventListener("click",()=>{ flyToFace(byId[id],inspFace); });
+  li.append(btn);materialsList.append(li);
+ });
+ if(!materialsList.children.length){const li=document.createElement("li");li.className="material-empty";li.textContent="No materials yet — assign a surface or add a file below.";materialsList.append(li);}
+}
+function renderFaceChips(): void {
+ if(!inspId)return;const id=inspId;
+ faceChips.replaceChildren();
+ for(const face of FACES){
+  const b=document.createElement("button");b.type="button";b.className="face-chip"+(face===inspFace?" is-on":"");
+  b.setAttribute("role","tab");b.setAttribute("aria-selected",String(face===inspFace));
+  b.innerHTML=`${face}<span class="fk">${kindOf(getModule(id).faces?.[face]??(surfacesById[id]?.[face]?{kind:surfacesById[id][face]!.kind}:null))}</span>`;
+  b.addEventListener("click",()=>{ inspFace=face; renderFaceChips(); flyToFace(byId[id],face); });
+  faceChips.append(b);
+ }
+}
+function insideRender(): void {
+ if(!inspId)return;const id=inspId;
+ insideList.replaceChildren();
+ (getModule(id).inside??[]).forEach((it,idx)=>{
+  const li=document.createElement("li");
+  const label=it.src?`<a href="${it.src}" target="_blank" rel="noreferrer">${it.name}</a>`:`<span>${it.name}</span>`;
+  li.innerHTML=`${label}`;
+  const x=document.createElement("button");x.type="button";x.className="inside-x";x.setAttribute("aria-label","Remove");x.textContent="×";
+  x.addEventListener("click",()=>{void removeInside(id,idx).then(()=>{insideRender();materialsRender();});});
+  li.append(x);insideList.append(li);
+ });
+}
+function openInspector(id: string): void {
+ if(!byId[id])return;
+ inspId=id;inspFace="north";
+ inspName.textContent=byId[id].name||id;
+ inspTag.textContent=(byId[id].g?String(byId[id].g):"module")+" · "+id;
+ inspNotes.value=getModule(id).notes??"";
+ inspPersist.textContent=isRemote()?"Saved to this module's record (shared).":"Local only — export to keep.";
+ inspector.hidden=false;inspector.inert=false;inspectorScrim.hidden=false;
+ inspector.classList.add("is-open");inspectorScrim.classList.add("is-open");
+ renderFaceChips();materialsRender();insideRender();
+}
+function closeInspector(): void {
+ inspector.classList.remove("is-open");inspectorScrim.classList.remove("is-open");
+ inspector.hidden=true;inspector.inert=true;inspectorScrim.hidden=true;inspId=null;
+}
+$("inspectorClose").addEventListener("click",closeInspector);
+inspectorScrim.addEventListener("click",closeInspector);
+inspNotes.addEventListener("change",()=>{ if(!inspId)return; void setNotes(inspId,inspNotes.value).then(()=>{notesSaved.textContent="Saved.";setTimeout(()=>notesSaved.textContent="",1500);}); });
+$("insideAddNote").addEventListener("click",()=>{
+ if(!inspId)return;const inp=$<HTMLInputElement>("insideNoteIn");const v=inp.value.trim();if(!v)return;
+ void addInside(inspId,{kind:"note",name:v,text:v,addedAt:Date.now()}).then(()=>{inp.value="";insideRender();materialsRender();});
+});
+$("insideFileIn").addEventListener("change",ev=>{
+ if(!inspId)return;const f=(ev.target as HTMLInputElement).files?.[0];if(!f)return;
+ void uploadFile(f).then(r=>addInside(inspId!,{kind:"file",name:f.name,src:r.src,addedAt:Date.now()})).then(()=>{insideRender();materialsRender();inspPersist.textContent=isRemote()?"File uploaded + saved.":"Added for this session — export to keep.";});
+ (ev.target as HTMLInputElement).value="";
+});
+/* ————— face editor: pick a kind + source, apply to the active face ————— */
+let inspKind: SurfaceKind="video";
+const faceLibSel=$<HTMLSelectElement>("faceLibSel"),faceUrlIn=$<HTMLInputElement>("faceUrlIn"),
+      faceDocIn=$<HTMLTextAreaElement>("faceDocIn"),faceFileIn=$<HTMLInputElement>("faceFileIn");
+const MEDIALIB=(SPEC.mediaLibrary??[]) as { id: string; title: string; src: string; kind: string }[];
+{ /* build the kind segmented control + the library select once */
+ const seg=$("kindSeg");
+ for(const k of ["video","image","doc","slides","mist","ink"] as SurfaceKind[]){
+  const b=document.createElement("button");b.type="button";b.textContent=k;b.dataset.kind=k;
+  b.setAttribute("aria-pressed",String(k===inspKind));
+  b.addEventListener("click",()=>{ inspKind=k; seg.querySelectorAll("button").forEach(x=>x.setAttribute("aria-pressed",String(x===b)));
+    faceDocIn.hidden=k!=="doc"; faceLibSel.parentElement&&(faceLibSel.style.display=(k==="video"||k==="image")?"":"none"); });
+  seg.append(b);
+ }
+ faceLibSel.replaceChildren();
+ const blank=document.createElement("option");blank.value="";blank.textContent="From the media bench…";faceLibSel.append(blank);
+ for(const m of MEDIALIB){const o=document.createElement("option");o.value=m.src;o.textContent=m.title;faceLibSel.append(o);}
+ faceLibSel.addEventListener("change",()=>{ if(faceLibSel.value)faceUrlIn.value=faceLibSel.value; });
+}
+function applyFace(): void {
+ if(!inspId)return;const id=inspId,face=inspFace;
+ let ref: SurfaceRef | null=null;
+ if(inspKind==="doc"){ const t=faceDocIn.value.trim(); ref=t?{kind:"doc",text:t}:null; }
+ else if(inspKind==="mist"){ ref={kind:"mist"}; }
+ else if(inspKind==="ink"){ ref={kind:"ink"}; }
+ else{ const src=faceUrlIn.value.trim(); ref=src?{kind:inspKind,src,fit:"cover",audio:inspKind==="video",group:"theater"}:null; }
+ void setFace(id,face,ref).then(()=>{
+  const n=byId[id];if(n){refreshSurfaces(n);setMediaDim(id,false);}
+  materialsRender();renderFaceChips();
+  inspPersist.textContent=ref?`${face} → ${ref.kind} (saved).`:`${face} cleared.`;
+ });
+}
+$("faceApply").addEventListener("click",applyFace);
+$("faceClear").addEventListener("click",()=>{ if(!inspId)return; void setFace(inspId,inspFace,null).then(()=>{const n=byId[inspId!];if(n)refreshSurfaces(n);materialsRender();renderFaceChips();}); });
+faceFileIn.addEventListener("change",ev=>{
+ const f=(ev.target as HTMLInputElement).files?.[0];if(!f)return;
+ void uploadFile(f).then(r=>{ faceUrlIn.value=r.src; inspPersist.textContent=r.durable?"Uploaded.":"Added for this session — export to keep."; });
+ (ev.target as HTMLInputElement).value="";
+});
+
 /* graph edges on the ground */
 /* connection health: a link can be broken/degraded independent of its modules.
    broken = risk red, gapped, and flow refuses to cross. degraded = amber, slow flow. */
@@ -1047,7 +1189,11 @@ canvas.addEventListener("pointerup",ev=>{
    pickAt(ev.clientX,ev.clientY,ev.shiftKey,false);
  downPt=null;
 });
-canvas.addEventListener("dblclick",ev=>{pickAt(ev.clientX,ev.clientY,ev.shiftKey,true);});
+canvas.addEventListener("dblclick",ev=>{
+ pickAt(ev.clientX,ev.clientY,ev.shiftKey,true);
+ const hit=castAt(ev.clientX,ev.clientY);
+ if(hit&&hit.kind==="node")openInspector(hit.id); /* double-click opens the module detail page */
+});
 
 /* ————— picking, hover, selection ————— */
 const ray=new THREE.Raycaster(),ptr=new THREE.Vector2();

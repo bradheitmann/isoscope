@@ -709,11 +709,13 @@ function setSpanIcon(span: HTMLElement, source: string): void {
 }
 setSpanIcon(npIco,iconSoundOn);
 setSpanIcon(npMute,iconSoundOff);
-/* plain click toggles sound (the click is the gesture that unlocks audio) */
-npPlay.addEventListener("click",()=>{
- if(!masterAudio&&audioFocus==null)audioFocus=audibleModules()[0]??null; /* ensure a voice exists */
- masterAudio=!masterAudio;
- applyAudio();
+/* plain click opens the transport popover — the controls come out of the button,
+   not on hover. The first click also unlocks audio (the gesture), teeing up sound. */
+npPlay.addEventListener("click",ev=>{
+ if(npPopOpen){npPopoverHide();return;}     /* click again closes the controls */
+ if(!masterAudio){masterAudio=true;applyAudio();} /* gesture unlocks + tees up the voice */
+ npPopoverToggle();                          /* defined just below; opens + syncs state */
+ ev.stopPropagation();
 });
 /* ————— popover above the button: media transport + playlist —————
    The popover carries a heading (current module + track), a transport row
@@ -788,13 +790,7 @@ function npPopoverToggle(): void {
  npPop.hidden=!npPopOpen;
  if(npPopOpen){npHeadSync();npTransportSync();npPlaylistRender();}
 }
-npPlay.addEventListener("contextmenu",ev=>{ev.preventDefault();npPopoverToggle();});
-npPlay.addEventListener("pointerdown",ev=>{ /* long-press opens the popover too */
- if(ev.button!==0)return;
- const t=setTimeout(()=>{if(!npPopOpen)npPopoverToggle();},550);
- const clear=()=>{clearTimeout(t);npPlay.removeEventListener("pointerup",clear);npPlay.removeEventListener("pointerleave",clear);};
- npPlay.addEventListener("pointerup",clear);npPlay.addEventListener("pointerleave",clear);
-});
+npPlay.addEventListener("contextmenu",ev=>{ev.preventDefault();npPopoverToggle();}); /* right-click also opens it */
 npPopPlay.addEventListener("click",()=>{const id=npModule();if(id)mediaControls.togglePlay(id);npTransportSync();});
 $("npPopRestart").addEventListener("click",()=>{const id=npModule();if(id)mediaControls.restart(id);npTransportSync();});
 npPopMuteBtn.addEventListener("click",()=>{ /* same path as the FAB: set masterAudio, then applyAudio() */
@@ -1586,7 +1582,8 @@ settingsButton.addEventListener("click",()=>{
  const open=!drawer.classList.contains("open");
  if(open){
   if(readerModalOpen)closeReadingPanel(); /* layers are exclusive: one surface at a time */
-  settingsBackdrop.hidden=false;drawer.hidden=false;drawer.inert=false;workbench.inert=true;drawer.classList.add("open");settingsButton.setAttribute("aria-expanded","true");$("drawerClose").focus();
+  /* no dim scrim: Brad picks theme colors here and needs the map at full brightness */
+  settingsBackdrop.hidden=true;drawer.hidden=false;drawer.inert=false;workbench.inert=true;drawer.classList.add("open");settingsButton.setAttribute("aria-expanded","true");$("drawerClose").focus();
  }
  else closeSettings();
 });

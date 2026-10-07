@@ -7,7 +7,8 @@
     "build": "tsc --noEmit && vite build",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
-    "qc:layout": "bun scripts/edge-layout-qc.ts"
+    "qc:layout": "bun scripts/edge-layout-qc.ts",
+    "graph:codebase": "bun scripts/codebase-graph.ts"
   },
   "dependencies": {
     "three": "0.180.0"

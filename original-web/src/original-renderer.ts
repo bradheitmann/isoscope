@@ -55,7 +55,7 @@ type EdgeRuntime = {
   key: string; line: Line2; type: string; health: string | null; basePts: THREE.Vector3[]; a: string; b: string;
   dotted: boolean; speed: number; t: number; dots: THREE.Mesh[]; pts: THREE.Vector3[]; L: number[];
   total: number; jn: Array<THREE.Mesh<THREE.CylinderGeometry, THREE.MeshBasicMaterial>>;
-  xmark?: THREE.Group; /* red X at the midpoint of a broken edge */
+  xmark?: Line2; /* slim red X at a broken edge's midpoint, same line weight as the edge */
 };
 type LabelElement = HTMLElement & { _left?: string; _top?: string; _w?: number; _h?: number };
 type LabelEntry = { n: MapNode; lb: LabelElement; lx: number; ly: number; depth: number };
@@ -1200,12 +1200,31 @@ function rebuildEdge(o: EdgeRuntime): void {
  o.jn[0].position.copy(o.pts[0]);o.jn[1].position.copy(o.pts[o.pts.length-1]);
  o.jn.forEach(j=>j.scale.set(sc,1,sc));
  o.line.geometry.dispose();
- const flat: number[]=[];o.pts.forEach((p: THREE.Vector3)=>flat.push(p.x,p.y,p.z));
  o.line.geometry=new LineGeometry();
+ const flat: number[]=[];o.pts.forEach((p: THREE.Vector3)=>flat.push(p.x,p.y,p.z));
  o.line.geometry.setPositions(flat);
  o.L=[0];for(let i=1;i<o.pts.length;i++)o.L.push(o.L[i-1]+o.pts[i].distanceTo(o.pts[i-1]));
  o.total=Math.max(0.001,o.L[o.L.length-1]);
- if(o.xmark){const mid=o.pts[Math.floor(o.pts.length/2)];if(mid)o.xmark.position.set(mid.x,(mid.y||0)+0.12,mid.z);}
+ if(o.xmark){
+  /* circuit break symbol: a slim red X at the midpoint at the SAME pixel weight as
+     the conductor, centered on the line so it reads as a break in the run (like a
+     contact on a schematic), not a floating badge. ~4 line-weights across. */
+  const half=o.total/2;
+  const ptAt=(d: number): THREE.Vector3=>{let i=1;while(i<o.L.length&&o.L[i]<d)i++;const seg=(d-o.L[i-1])/Math.max(1e-6,o.L[i]-o.L[i-1]);return new THREE.Vector3().lerpVectors(o.pts[i-1],o.pts[i],seg);};
+  const mid=ptAt(half);
+  const ahead=ptAt(Math.min(o.total,half+0.05)),behind=ptAt(Math.max(0,half-0.05));
+  const dir=new THREE.Vector3().subVectors(ahead,behind);dir.y=0;if(dir.lengthSq()<1e-8)dir.set(1,0,0);dir.normalize();
+  const perp=new THREE.Vector3(-dir.z,0,dir.x);
+  const arm=0.16; /* half-span of the X in world units — slim, ~line scale */
+  const y=mid.y;
+  const a1=new THREE.Vector3().copy(mid).addScaledVector(dir,arm).addScaledVector(perp,arm);a1.y=y;
+  const a2=new THREE.Vector3().copy(mid).addScaledVector(dir,-arm).addScaledVector(perp,-arm);a2.y=y;
+  const b1=new THREE.Vector3().copy(mid).addScaledVector(dir,arm).addScaledVector(perp,-arm);b1.y=y;
+  const b2=new THREE.Vector3().copy(mid).addScaledVector(dir,-arm).addScaledVector(perp,arm);b2.y=y;
+  o.xmark.geometry.dispose();o.xmark.geometry=new LineGeometry();
+  o.xmark.geometry.setPositions([a1.x,a1.y,a1.z,a2.x,a2.y,a2.z, b1.x,b1.y,b1.z,b2.x,b2.y,b2.z]);
+  o.xmark.computeLineDistances();
+ }
 }
 function buildDots(o: EdgeRuntime): void {
  o.dots.forEach(d=>{scene.remove(d);d.geometry.dispose();});
@@ -2057,15 +2076,16 @@ EDGES.forEach(e=>{
  line.userData.edgeKey=key;
  scene.add(line);
  edgeLinesById[key]={key,line,type:e[2] ?? "data",health,basePts,a:e[0],b:e[1],dotted,speed,t:0,dots:[],pts:[],L:[0],total:1,jn:[junctionMesh(),junctionMesh()]};
- /* a broken edge carries a red X at its midpoint — a hard stop you can read at a glance */
+ /* a broken edge reads as a circuit break: the line parts at the midpoint and a
+    slim red X sits in the gap at the SAME line weight as the edge itself, like a
+    contact symbol on a schematic — part of the line, not a badge floating over it. */
  if(health==="broken"){
-  const mid=basePts[Math.floor(basePts.length/2)]||new THREE.Vector3();
-  const xg=new THREE.Group();
-  const xm=new THREE.MeshBasicMaterial({color:COL.risk,toneMapped:false});
-  const bx=new THREE.Mesh(new THREE.BoxGeometry(0.5,0.03,0.09),xm);
-  const bx2=bx.clone();bx2.rotation.y=Math.PI/2;
-  xg.add(bx,bx2);xg.position.set(mid.x,(mid.y||0)+0.12,mid.z);xg.rotation.y=Math.PI/4;xg.renderOrder=3;
-  scene.add(xg);edgeLinesById[key].xmark=xg;
+  const xm=new LineMaterial({color:COL.risk.getHex(),transparent:true,opacity:0.98,linewidth:LINEW[lineSet].w});
+  xm.resolution.set(canvas.width,canvas.height);
+  edgeMats.push(xm);themed.push({m:xm,get:()=>COL.risk});
+  const x=new Line2(new LineGeometry(),xm);
+  x.renderOrder=3;x.userData.edgeKey=key;
+  scene.add(x);edgeLinesById[key].xmark=x;
  }
 });
 
@@ -2091,7 +2111,7 @@ function disposeScene(){
   o.dots.forEach(d=>{scene.remove(d);geometries.add(d.geometry);});
   scene.remove(o.line);geometries.add(o.line.geometry);materials.add(o.line.material);
   o.jn.forEach(j=>{scene.remove(j);materials.add(j.material);});
-  if(o.xmark){o.xmark.traverse(m=>{if(m instanceof THREE.Mesh){geometries.add(m.geometry);materials.add(m.material as THREE.Material);}});scene.remove(o.xmark);}
+  if(o.xmark){geometries.add(o.xmark.geometry);materials.add(o.xmark.material);scene.remove(o.xmark);}
  });
  geometries.forEach(g=>g.dispose());textures.forEach(t=>t.dispose());materials.forEach(m=>m.dispose());
  pickables.length=0;themed.length=0;hatched.length=0;edgeMats.length=0;canvasSurfaces.length=0;

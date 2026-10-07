@@ -28,6 +28,7 @@ import iconPlus from "../vendor/desert-pants/icons/svg/plus.svg?raw";
 import iconMinus from "../vendor/desert-pants/icons/svg/minus.svg?raw";
 import iconChevron from "../vendor/desert-pants/icons/svg/chevron-down.svg?raw";
 import { isoRouteAll } from "../../router.mjs";
+import { checkRoutes } from "./edge-qc";
 import { isEditableTarget } from "./editable-target";
 import { getModule, setNotes, setFace, addInside, removeInside, uploadFile, isRemote, FACES, type FaceKey, type SurfaceKind, type SurfaceRef } from "./annotations";
 
@@ -2212,17 +2213,33 @@ blastIncident();
    junction dots, cross-level risers) all re-run on the new arrangement. Same nodes,
    same edges, same bounding box — a different layout. */
 function shuffleLayout(): void {
- const next=structuredClone(SPEC);
- const cells=next.nodes.map(n=>({x:n.x,y:n.y}));   /* the occupied ground cells */
- const levels=next.nodes.map(n=>(next.levels&&next.levels[n.id])||0); /* the level assignments */
- /* Fisher-Yates both, independently, so ground position and stack level both vary */
- for(let i=cells.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[cells[i],cells[j]]=[cells[j],cells[i]];}
- for(let i=levels.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[levels[i],levels[j]]=[levels[j],levels[i]];}
- next.nodes.forEach((n,i)=>{ n.x=cells[i].x; n.y=cells[i].y; });
+ const base=structuredClone(SPEC);
+ const cells0=base.nodes.map(n=>({x:n.x,y:n.y}));   /* the occupied ground cells */
+ const levels0=base.nodes.map(n=>(base.levels&&base.levels[n.id])||0);
+ const fy=<T,>(arr: T[]): T[]=>{const a=arr.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;};
+ /* Draw several candidate shuffles, route each headlessly, and keep the cleanest —
+    fewest routing defects (malformed elbows, self-crossings, bogus bridges, shared
+    runs) per the deterministic edge-QC. The first perfectly-clean candidate wins
+    outright; otherwise the least-defective. This is QC-guided layout, not luck. */
+ let best: { cells: {x:number;y:number}[]; levels: number[]; score: number } | null=null;
+ for(let attempt=0;attempt<14;attempt++){
+  const cells=fy(cells0),levels=fy(levels0);
+  const trial=structuredClone(base);
+  trial.nodes.forEach((n,i)=>{n.x=cells[i].x;n.y=cells[i].y;});
+  const lvl: Record<string,number>={};trial.nodes.forEach((n,i)=>{lvl[n.id]=levels[i];});
+  const routed=isoRouteAll(trial.nodes,trial.edges) as { routes: Record<string,[number,number][]>; hops: Record<string,[number,number][]> };
+  const defects=checkRoutes({routes:routed.routes,hops:routed.hops});
+  const hard=defects.filter(d=>d.kind!=="overlapping-segment").length;
+  const soft=defects.length-hard; /* shares are softer: discourage but don't forbid */
+  const score=hard*10+soft;
+  if(!best||score<best.score)best={cells,levels,score};
+  if(hard===0&&soft===0)break; /* a clean board on the first good draw — stop early */
+ }
+ const next=structuredClone(base);
+ next.nodes.forEach((n,i)=>{ n.x=best!.cells[i].x; n.y=best!.cells[i].y; });
  if(!next.levels)next.levels={};
- next.nodes.forEach((n,i)=>{ next.levels![n.id]=levels[i]; });
+ next.nodes.forEach((n,i)=>{ next.levels![n.id]=best!.levels[i]; });
  applySpec(next);
- /* re-fit home so the reshuffled city is framed; media mode + theme carry over */
  flyGoal={tx:HOME.tx,ty:HOME.ty,tz:HOME.tz,zoom:HOME.zoom,az:HOME.az,pol:HOME.pol};
 }
 $("btnShuffle").addEventListener("click",shuffleLayout);

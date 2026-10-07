@@ -958,7 +958,10 @@
    "auth"
   ]
  ],
- "edgeStatus": {},
+ "edgeStatus": {
+  "DB-SV": "broken",
+  "AD-CL": "degraded"
+ },
  "edgeDocs": {
   "EX-SP": {
    "title": "Examples prove the schema",
@@ -1083,16 +1086,71 @@
   "default": "CL"
  },
  "mediaLibrary": [
-  { "id": "jump", "title": "Van Halen — Jump (1984)", "src": "/media/van-halen-jump.mp4", "kind": "video" },
-  { "id": "right-now", "title": "Van Halen — Right Now (1991)", "src": "/media/van-halen-right-now.mp4", "kind": "video" },
-  { "id": "pour-some-sugar", "title": "Def Leppard — Pour Some Sugar on Me (1988)", "src": "/media/def-leppard-pour-some-sugar.mp4", "kind": "video" },
-  { "id": "livin-on-a-prayer", "title": "Bon Jovi — Livin' on a Prayer (1986)", "src": "/media/bon-jovi-livin-on-a-prayer.mp4", "kind": "video" },
-  { "id": "nothin-but-a-good-time", "title": "Poison — Nothin' but a Good Time (1988)", "src": "/media/poison-nothin-but-a-good-time.mp4", "kind": "video" },
-  { "id": "cum-on-feel-the-noize", "title": "Quiet Riot — Cum On Feel the Noize (1983)", "src": "/media/quiet-riot-cum-on-feel-the-noize.mp4", "kind": "video" },
-  { "id": "were-not-gonna-take-it", "title": "Twisted Sister — We're Not Gonna Take It (1984)", "src": "/media/twisted-sister-were-not-gonna-take-it.mp4", "kind": "video" },
-  { "id": "shout", "title": "Tears for Fears — Shout (1985)", "src": "/media/tears-for-fears-shout.mp4", "kind": "video" },
-  { "id": "power-of-love", "title": "Huey Lewis & The News — The Power of Love (1985)", "src": "/media/huey-lewis-power-of-love.mp4", "kind": "video" },
-  { "id": "every-breath-you-take", "title": "The Police — Every Breath You Take (1983)", "src": "/media/the-police-every-breath-you-take.mp4", "kind": "video" },
-  { "id": "dont-you-forget-about-me", "title": "Simple Minds — Don't You (Forget About Me) (1985)", "src": "/media/simple-minds-dont-you-forget-about-me.mp4", "kind": "video" }
+  {
+   "id": "jump",
+   "title": "Van Halen — Jump (1984)",
+   "src": "/media/van-halen-jump.mp4",
+   "kind": "video"
+  },
+  {
+   "id": "right-now",
+   "title": "Van Halen — Right Now (1991)",
+   "src": "/media/van-halen-right-now.mp4",
+   "kind": "video"
+  },
+  {
+   "id": "pour-some-sugar",
+   "title": "Def Leppard — Pour Some Sugar on Me (1988)",
+   "src": "/media/def-leppard-pour-some-sugar.mp4",
+   "kind": "video"
+  },
+  {
+   "id": "livin-on-a-prayer",
+   "title": "Bon Jovi — Livin' on a Prayer (1986)",
+   "src": "/media/bon-jovi-livin-on-a-prayer.mp4",
+   "kind": "video"
+  },
+  {
+   "id": "nothin-but-a-good-time",
+   "title": "Poison — Nothin' but a Good Time (1988)",
+   "src": "/media/poison-nothin-but-a-good-time.mp4",
+   "kind": "video"
+  },
+  {
+   "id": "cum-on-feel-the-noize",
+   "title": "Quiet Riot — Cum On Feel the Noize (1983)",
+   "src": "/media/quiet-riot-cum-on-feel-the-noize.mp4",
+   "kind": "video"
+  },
+  {
+   "id": "were-not-gonna-take-it",
+   "title": "Twisted Sister — We're Not Gonna Take It (1984)",
+   "src": "/media/twisted-sister-were-not-gonna-take-it.mp4",
+   "kind": "video"
+  },
+  {
+   "id": "shout",
+   "title": "Tears for Fears — Shout (1985)",
+   "src": "/media/tears-for-fears-shout.mp4",
+   "kind": "video"
+  },
+  {
+   "id": "power-of-love",
+   "title": "Huey Lewis & The News — The Power of Love (1985)",
+   "src": "/media/huey-lewis-power-of-love.mp4",
+   "kind": "video"
+  },
+  {
+   "id": "every-breath-you-take",
+   "title": "The Police — Every Breath You Take (1983)",
+   "src": "/media/the-police-every-breath-you-take.mp4",
+   "kind": "video"
+  },
+  {
+   "id": "dont-you-forget-about-me",
+   "title": "Simple Minds — Don't You (Forget About Me) (1985)",
+   "src": "/media/simple-minds-dont-you-forget-about-me.mp4",
+   "kind": "video"
+  }
  ]
 }

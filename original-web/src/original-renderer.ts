@@ -54,6 +54,7 @@ type EdgeRuntime = {
   key: string; line: Line2; type: string; health: string | null; basePts: THREE.Vector3[]; a: string; b: string;
   dotted: boolean; speed: number; t: number; dots: THREE.Mesh[]; pts: THREE.Vector3[]; L: number[];
   total: number; jn: Array<THREE.Mesh<THREE.CylinderGeometry, THREE.MeshBasicMaterial>>;
+  xmark?: THREE.Group; /* red X at the midpoint of a broken edge */
 };
 type LabelElement = HTMLElement & { _left?: string; _top?: string; _w?: number; _h?: number };
 type LabelEntry = { n: MapNode; lb: LabelElement; lx: number; ly: number; depth: number };
@@ -1080,6 +1081,7 @@ function rebuildEdge(o: EdgeRuntime): void {
  o.line.geometry.setPositions(flat);
  o.L=[0];for(let i=1;i<o.pts.length;i++)o.L.push(o.L[i-1]+o.pts[i].distanceTo(o.pts[i-1]));
  o.total=Math.max(0.001,o.L[o.L.length-1]);
+ if(o.xmark){const mid=o.pts[Math.floor(o.pts.length/2)];if(mid)o.xmark.position.set(mid.x,(mid.y||0)+0.12,mid.z);}
 }
 function buildDots(o: EdgeRuntime): void {
  o.dots.forEach(d=>{scene.remove(d);d.geometry.dispose();});
@@ -1921,6 +1923,16 @@ EDGES.forEach(e=>{
  line.userData.edgeKey=key;
  scene.add(line);
  edgeLinesById[key]={key,line,type:e[2] ?? "data",health,basePts,a:e[0],b:e[1],dotted,speed,t:0,dots:[],pts:[],L:[0],total:1,jn:[junctionMesh(),junctionMesh()]};
+ /* a broken edge carries a red X at its midpoint — a hard stop you can read at a glance */
+ if(health==="broken"){
+  const mid=basePts[Math.floor(basePts.length/2)]||new THREE.Vector3();
+  const xg=new THREE.Group();
+  const xm=new THREE.MeshBasicMaterial({color:COL.risk,toneMapped:false});
+  const bx=new THREE.Mesh(new THREE.BoxGeometry(0.5,0.03,0.09),xm);
+  const bx2=bx.clone();bx2.rotation.y=Math.PI/2;
+  xg.add(bx,bx2);xg.position.set(mid.x,(mid.y||0)+0.12,mid.z);xg.rotation.y=Math.PI/4;xg.renderOrder=3;
+  scene.add(xg);edgeLinesById[key].xmark=xg;
+ }
 });
 
  themed.push({m:dotMatN,get:()=>COL.accent},{m:dotMatW,get:()=>COL.caution});
@@ -1945,6 +1957,7 @@ function disposeScene(){
   o.dots.forEach(d=>{scene.remove(d);geometries.add(d.geometry);});
   scene.remove(o.line);geometries.add(o.line.geometry);materials.add(o.line.material);
   o.jn.forEach(j=>{scene.remove(j);materials.add(j.material);});
+  if(o.xmark){o.xmark.traverse(m=>{if(m instanceof THREE.Mesh){geometries.add(m.geometry);materials.add(m.material as THREE.Material);}});scene.remove(o.xmark);}
  });
  geometries.forEach(g=>g.dispose());textures.forEach(t=>t.dispose());materials.forEach(m=>m.dispose());
  pickables.length=0;themed.length=0;hatched.length=0;edgeMats.length=0;
@@ -2215,10 +2228,11 @@ function tick(){
     to move." No mist drift; the wash is a fixed state tint, not a living fog. */
  /* junction dots read exactly as their pipe: same ink, same opacity — ghosted pipe, ghosted join */
  Object.values(edgeLinesById).forEach(o=>{const lm=o.line.material;o.jn.forEach(j=>{j.material.color.copy(lm.color);j.material.opacity=lm.opacity;j.visible=lm.opacity>0.02;});});
- /* flow dots exist only where flow is on AND the line is lit */
+ /* flow dots exist only where flow is on AND the line is lit. A broken edge is a
+    hard stop: nothing crosses it, so its packets freeze (other edges keep moving). */
  Object.values(edgeLinesById).forEach(o=>{
   if(!o.dots.length)return;
-  const lit=flowing&&o.line.material.opacity>0.3; /* ghosted trace/circuit lines carry no dots */
+  const lit=flowing&&o.line.material.opacity>0.3&&o.health!=="broken"; /* ghosted/broken lines carry no dots */
   if(lit)o.t=(o.t+0.0018*o.speed)%1;
   const nd=o.dots.length;
   for(let k=0;k<nd;k++){

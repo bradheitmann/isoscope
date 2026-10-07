@@ -1185,6 +1185,11 @@
    "DP",
    "OW",
    "data"
+  ],
+  [
+   "OW",
+   "SV",
+   "data"
   ]
  ],
  "edgeStatus": {
@@ -1271,6 +1276,11 @@
    "title": "Painted by desert-pants",
    "carries": "Tokens, themes, fonts, and icons flowing into every panel and building — with a runtime contrast floor holding the map readable in all 18 themes.",
    "refs": "original-web/vendor/desert-pants/ · original-web/src/theme-order.ts"
+  },
+  "OW-SV": {
+   "title": "surface → serve",
+   "carries": "media + annotation + telemetry requests",
+   "refs": "vite dev server"
   }
  },
  "trace": [

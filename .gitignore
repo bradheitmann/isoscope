@@ -6,3 +6,4 @@ advisory/*/screens/
 *.log
 .odin/
 original-web/public/media/_originals/
+original-web/examples/telemetry.jsonl

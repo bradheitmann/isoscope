@@ -29,7 +29,7 @@ import iconMinus from "../vendor/desert-pants/icons/svg/minus.svg?raw";
 import iconChevron from "../vendor/desert-pants/icons/svg/chevron-down.svg?raw";
 import { isoRouteAll } from "../../router.mjs";
 import { checkRoutes } from "./edge-qc";
-import { edgeHealth, onEdgeHealthChange, onWideEvent, recentEvents } from "./telemetry";
+import { edgeHealth, onEdgeHealthChange, onWideEvent, recentEvents, emitWide } from "./telemetry";
 import iconActivity from "../vendor/desert-pants/icons/svg/activity.svg?raw";
 import iconMenu from "../vendor/desert-pants/icons/svg/menu.svg?raw";
 import { isEditableTarget } from "./editable-target";
@@ -429,7 +429,7 @@ function faceDims(n: MapNode,face: FaceKey): { pw: number; ph: number } {
    surfaces sampling 6 sources costs 6 decoders, not 60 — that is the difference
    between a slideshow and a smooth city. Each face gets its own VideoTexture over
    the shared element so UVs/letterboxing stay per-face. */
-type PooledVideo={ video: HTMLVideoElement; live: boolean; refs: number; group?: string; src: string; warmed?: boolean };
+type PooledVideo={ video: HTMLVideoElement; live: boolean; refs: number; group?: string; src: string; warmed?: boolean; traced?: boolean };
 const videoPool: Record<string, PooledVideo>={};
 function acquireVideo(src: string,ref: SurfaceRef): PooledVideo {
  const existing=videoPool[src];
@@ -447,6 +447,11 @@ function acquireVideo(src: string,ref: SurfaceRef): PooledVideo {
  video.src=src; /* native HLS plays where supported; an hls.js shim can attach here later */
  if(mayPlay)video.play().catch(()=>{/* autoplay may wait for a gesture */});
  const pv: PooledVideo={video,live,refs:1,group:ref.group,src};
+ /* media load crosses the surface→serve seam (the dev server streams the file).
+    Trace it so the OW-SV edge reflects real media flow + latency live. */
+ const loadT0=performance.now();
+ video.addEventListener("canplay",()=>{ if(!pv.traced){pv.traced=true;emitWide({edge:"OW-SV",from:"OW",to:"SV",name:"media.load",durationMs:performance.now()-loadT0,ok:true,kind:"CLIENT"});} },{once:true});
+ video.addEventListener("error",()=>{ if(!pv.traced){pv.traced=true;emitWide({edge:"OW-SV",from:"OW",to:"SV",name:"media.load",durationMs:performance.now()-loadT0,ok:false,kind:"CLIENT",error:"media failed to load: "+src});} },{once:true});
  /* decoder warm-up: preload=auto buffers bytes but leaves the decoder cold, so the
     first play() after media-mode-on stalls on a cold start. Once the element can
     play, prime it — play a frame muted, then hold paused at t=0 — so toggling media

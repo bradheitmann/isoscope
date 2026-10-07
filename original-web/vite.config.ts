@@ -1,11 +1,12 @@
 import { defineConfig, type Plugin } from "vite";
-import { readFileSync, writeFileSync, renameSync, existsSync, mkdirSync } from "node:fs";
+import { readFileSync, writeFileSync, renameSync, existsSync, mkdirSync, appendFileSync } from "node:fs";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const root = dirname(fileURLToPath(import.meta.url));
 const ANNOTATIONS = resolve(root, "examples/annotations.json");
 const UPLOAD_DIR = resolve(root, "public/media/uploads");
+const TELEMETRY_LOG = resolve(root, "examples/telemetry.jsonl");
 
 /* Per-module annotation write-back. The app is otherwise a static read of the
    spec; this endpoint is the one place a user's own annotations (notes, inside
@@ -72,6 +73,21 @@ function annotationsApi(): Plugin {
         const dest = resolve(UPLOAD_DIR, Date.now() + "-" + safe);
         writeFileSync(dest, buf);
         res.end(JSON.stringify({ ok: true, src: "/media/uploads/" + dest.split("/").pop() }));
+        return;
+      }
+      /* durable wide-event sink: POST /api/telemetry with a JSON array of wide events
+         appends one JSON line per event (lumbr-schema) to telemetry.jsonl. This is the
+         local-first telemetry store; a real lumbr/OTel backend can replace it later. */
+      if (req.method === "POST" && url === "/api/telemetry") {
+        const events = JSON.parse(await readBody(req)) as unknown;
+        const list = Array.isArray(events) ? events : [events];
+        const lines = list.map(e => JSON.stringify(e)).join("\n") + "\n";
+        appendFileSync(TELEMETRY_LOG, lines);
+        res.end(JSON.stringify({ ok: true, count: list.length }));
+        return;
+      }
+      if (req.method === "GET" && url === "/api/telemetry") {
+        res.end(existsSync(TELEMETRY_LOG) ? readFileSync(TELEMETRY_LOG, "utf8") : "");
         return;
       }
       res.writeHead(404, { "content-type": "application/json" });

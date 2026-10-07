@@ -47,6 +47,34 @@ type Listener = (e: WideEvent) => void;
 const listeners = new Set<Listener>();
 export function onWideEvent(fn: Listener): () => void { listeners.add(fn); return () => listeners.delete(fn); }
 
+/* ————— durable sink —————
+   Events also persist to a local wide-event log via the dev server's
+   /api/telemetry endpoint (lumbr-schema JSONL), so a session's telemetry survives
+   the page. Batched + best-effort: a static host without the endpoint just skips.
+   A real lumbr/OTel backend can replace this sink without touching emitters. */
+const sinkBuf: WideEvent[] = [];
+let sinkTimer: ReturnType<typeof setTimeout> | null = null;
+let sinkRemote = true; /* flips false if the endpoint 404s (static host) */
+function flushSink(): void {
+  sinkTimer = null;
+  if (!sinkRemote || !sinkBuf.length) return;
+  const batch = sinkBuf.splice(0, sinkBuf.length);
+  fetch("api/telemetry", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify(batch) })
+    .then(r => { if (!r.ok) sinkRemote = false; })
+    .catch(() => { sinkRemote = false; });
+}
+function enqueueSink(ev: WideEvent): void {
+  sinkBuf.push(ev);
+  if (!sinkTimer) sinkTimer = setTimeout(flushSink, 2000);
+  if (sinkBuf.length >= 50) flushSink(); /* flush promptly under burst */
+}
+if (typeof window !== "undefined") {
+  window.addEventListener("pagehide", () => { /* last call: send what we have */
+    if (sinkRemote && sinkBuf.length && navigator.sendBeacon)
+      navigator.sendBeacon("api/telemetry", JSON.stringify(sinkBuf.splice(0)));
+  });
+}
+
 /* the recent stream, kept in memory (ring) so the panel + health tracker read it */
 const STREAM_CAP = 500;
 const stream: WideEvent[] = [];
@@ -80,6 +108,7 @@ export function emitWide(p: {
   };
   stream.push(ev); if (stream.length > STREAM_CAP) stream.shift();
   track(p.edge, ev);
+  enqueueSink(ev); /* durable local sink */
   listeners.forEach(fn => fn(ev));
   return ev;
 }

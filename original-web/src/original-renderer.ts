@@ -335,95 +335,12 @@ function worstOf(n: MapNode): string | null {
  if(n.items.some(i=>i.c==="you"))return "you";
  return "amber";
 }
-/* ————— advisory gradient planes: a masked band on the front face ————— */
-const ADVISORY_VERT=`
- varying vec2 vUv;
- void main(){ vUv=uv; gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.0); }
-`;
-/* Mist rising off the base of each module. Not a wrapped phase (that snaps);
-   an fbm fog field scrolled slowly upward and billowed, so the motion is a
-   sampled continuum — it never resets, it just keeps drifting. The fog pools at
-   the foot, thins with height, and is lit by the category color with a warm-lit
-   crest and a cooler shadowed floor (value + saturation shift, the way light
-   actually moves through vapor). A per-module seed offsets the noise domain so
-   no two objects ever share a shape. Deselected keeps a low, thin veil. */
-const ADVISORY_FRAG=`
- uniform vec3 uColors[3]; uniform int uCount;
- uniform float uTime; uniform float uMotion; uniform float uVeil; uniform float uSeed;
- varying vec2 vUv;
- float hash(vec2 p){ return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453123); }
- float vnoise(vec2 p){
-  vec2 i=floor(p),f=fract(p); vec2 u=f*f*(3.0-2.0*f);
-  return mix(mix(hash(i),hash(i+vec2(1.0,0.0)),u.x),
-             mix(hash(i+vec2(0.0,1.0)),hash(i+vec2(1.0,1.0)),u.x),u.y);
- }
- float fbm(vec2 p){
-  float v=0.0,a=0.5;
-  for(int k=0;k<4;k++){ v+=a*vnoise(p); p=p*2.03+vec2(11.3,7.7); a*=0.5; }
-  return v;
- }
- void main(){
-  /* fog domain: per-module offset, stretched horizontally so billows are broad */
-  vec2 q=vec2(vUv.x*2.2+uSeed*17.0, vUv.y*2.6-uSeed*9.0);
-  float t=uTime*(0.05+0.03*uSeed)*uMotion;      /* slow drift; still unless flowing */
-  q.y-=t*3.0;                                    /* the rise: fog lifts off the base */
-  /* domain-warped fbm = billowing vapor, not banding */
-  float w=fbm(q+vec2(fbm(q+t), fbm(q-t))*0.6);
-  /* the color fills the WHOLE face: density modulates the wash, not its extent.
-     Only a whisper of pooling toward the foot; coverage runs edge to edge. */
-  float pool=1.0-0.28*smoothstep(0.55,1.0,vUv.y);  /* slightly denser low, never empty high */
-  float density=clamp(w*0.9+0.28,0.0,1.0)*pool;
-  /* a thin feather only at the extreme edges so it keys onto the face cleanly */
-  float edge=smoothstep(0.0,0.03,vUv.x)*smoothstep(1.0,0.97,vUv.x)
-            *smoothstep(0.0,0.03,vUv.y)*smoothstep(1.0,0.97,vUv.y);
-  density*=0.35+0.65*edge;
-  /* extradimensionality without touching the geometry: derive a pseudo-normal from
-     the fog's own density gradient and light it, so the vapor reads as a volume
-     with a lit ridge and a shadowed lee — depth from shading, not from a mesh */
-  float e=0.012;
-  float wX=fbm(q+vec2(e,0.0)+vec2(fbm(q+vec2(e,0.0)+t),fbm(q+vec2(e,0.0)-t))*0.6);
-  float wY=fbm(q+vec2(0.0,e)+vec2(fbm(q+vec2(0.0,e)+t),fbm(q+vec2(0.0,e)-t))*0.6);
-  vec2 grad=vec2(wX-w,wY-w)/e;
-  vec3 nrm=normalize(vec3(-grad*0.9,1.0));
-  vec3 lightDir=normalize(vec3(0.4,0.75,0.6));
-  float shade=clamp(dot(nrm,lightDir),0.0,1.0);
-  /* color: category fill, warmed toward the light where the fog is thickest,
-     cooled toward the paper where it thins — light moving through vapor */
-  vec3 base=uColors[0];
-  vec3 deep=(uCount>1)?uColors[1]:base;
-  vec3 col=mix(deep,base,clamp(density*1.3,0.0,1.0));
-  float lit=pow(density,1.6);
-  col=mix(col,col*1.18+vec3(0.04),lit);          /* crest catches light */
-  col*=(0.66+0.5*shade);                          /* volumetric self-shadow/highlight */
-  /* coverage floor: the wash is always present across the face; density deepens it */
-  float alpha=(0.34+0.6*density)*mix(1.0,0.42,uVeil);
-  gl_FragColor=vec4(col,alpha);
- }
-`;
-function advisoryPlane(n: MapNode,cats: string[]): THREE.Mesh<THREE.PlaneGeometry, THREE.ShaderMaterial> | null {
- const present=cats.filter(c=>ADVISORY[c]);
- if(!present.length)return null;
- const cols: THREE.Color[]=[];
- present.forEach(c=>{cols.push(ADVISORY[c].wash);});
- present.forEach(c=>{cols.push(ADVISORY[c].deep);});
- const uColors=[cols[0],cols[1]??cols[0],cols[2]??cols[cols.length-1]??cols[0]];
- const mat=new THREE.ShaderMaterial({
-  vertexShader:ADVISORY_VERT,fragmentShader:ADVISORY_FRAG,transparent:true,depthWrite:false,
-  uniforms:{uColors:{value:uColors},uCount:{value:Math.min(3,cols.length)},uTime:{value:seedOf(n.id)*7.3},uMotion:{value:0},uVeil:{value:0},uSeed:{value:seedOf(n.id)}}
- });
- const h=Math.max(n.h,0.6);
- const plane=new THREE.Mesh(new THREE.PlaneGeometry(n.w,h),mat);
- plane.position.set(n.x+n.w/2,h/2+0.02,n.y+n.d+0.012);
- plane.userData.advisoryCats=present;
- return plane;
-}
 function refreshAdvisory(n: MapNode): void {
- const cats=Array.from(new Set((n.items||[]).map(i=>i.c).filter(c=>ADVISORY_FILL[c])));
+ /* the marbled advisory fog is removed — faces stay clean state colors / gradients.
+    Just tear down any existing fog plane and add nothing. */
  const old=advisoryById[n.id]||[];
  old.forEach(p=>{const par=p.parent;if(par)par.remove(p);p.geometry.dispose();p.material.dispose();});
  advisoryById[n.id]=[];
- const plane=advisoryPlane(n,cats);
- if(plane){meshById[n.id].add(plane);advisoryById[n.id]=[plane];}
 }
 
 /* ————— per-face surfaces: any module face can carry a live surface —————

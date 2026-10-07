@@ -1,7 +1,7 @@
 {
  "title": "Isoscope — the map that maps itself",
  "wordmark": "ISOSCOPE",
- "asOf": "As of 2026-09-02 · maintained by its own MCP server",
+ "asOf": "As of 2026-10-06 · rendered by original-web",
  "brand": {
   "k": "Project",
   "v": "isoscope · schematic observability"
@@ -24,7 +24,7 @@
   "eyebrow": "Isoscope",
   "title": "So you always know what your codebase does",
   "sub": "how it is architected, what is broken, and what to work on next",
-  "proseHTML": "<p class='t-label' style='color:var(--okoa-semantic-fg3);margin-bottom:var(--okoa-space-2)'>What this is</p><p class='t-body-sm'>Isoscope renders a system as an inspectable isometric city: modules are buildings, connections are pipes that know <em>what flows</em> through them, and status is painted on the architecture itself. One JSON spec &mdash; or a SQLite graph store your agents maintain as they build &mdash; drives everything you see.</p><p class='t-body-sm'>This map is isoscope describing itself. The authoring row floats above (spec, store, CLI, MCP, adapters), the engine sits at ground level, and what ships lives below. Press <strong>Stack</strong> to see it; click any building or any pipe for its story.</p><p class='t-label' style='color:var(--okoa-semantic-fg3);margin:var(--okoa-space-4) 0 var(--okoa-space-2)'>The loop</p><p class='t-body-sm'>Open the map on day one of a project. As the codebase grows, agents mirror every module, link, and blocker into the store &mdash; and the browser repaints on every change. The map never trails reality.</p>"
+  "proseHTML": "<p class='dp-type-label'>What this is</p><p class='dp-type-body-sm'>Isoscope renders a system as an inspectable isometric city: modules are buildings, connections are pipes that know <em>what flows</em> through them, and status is painted on the architecture itself. One JSON spec &mdash; or a SQLite graph store your agents maintain as they build &mdash; drives everything you see.</p><p class='dp-type-body-sm'>This map is isoscope describing itself. The authoring row floats above (spec, store, CLI, MCP, adapters), the engine sits at ground level, and what ships lives below — and the original-web district renders all of it in the browser. Press <strong>Stack</strong> to see it; click any building or any pipe for its story.</p><p class='dp-type-label'>The loop</p><p class='dp-type-body-sm'>Open the map on day one of a project. As the codebase grows, agents mirror every module, link, and blocker into the store &mdash; and the browser repaints on every change. The map never trails reality.</p>"
  },
  "groups": [
   {
@@ -38,6 +38,10 @@
   {
    "id": "ships",
    "label": "What ships"
+  },
+  {
+   "id": "surface",
+   "label": "The web surface"
   }
  ],
  "nodes": [
@@ -53,7 +57,57 @@
    "h": 1,
    "does": "One JSON object that describes an entire system: modules, connections, status, levels, and the guided story. Hand-editable, diffable, and the interchange format between every other part.",
    "built": "Schema documented in SPEC.md — 16 keys, all optional except nodes and edges. Two examples ship: this map, and ODIN Sentinel (the first consumer).",
-   "refs": "SPEC.md · examples/"
+   "refs": "SPEC.md · examples/",
+   "media": [
+    {
+     "src": "/media/van-halen-right-now.mp4",
+     "face": "north",
+     "fit": "cover",
+     "group": "theater",
+     "audio": true
+    },
+    {
+     "src": "/media/van-halen-right-now.mp4",
+     "face": "south",
+     "fit": "cover",
+     "group": "theater",
+     "audio": true
+    },
+    {
+     "src": "/media/van-halen-right-now.mp4",
+     "face": "east",
+     "fit": "cover",
+     "group": "theater",
+     "audio": true
+    },
+    {
+     "src": "/media/van-halen-right-now.mp4",
+     "face": "west",
+     "fit": "cover",
+     "group": "theater",
+     "audio": true
+    },
+    {
+     "src": "/media/van-halen-right-now.mp4",
+     "face": "roof",
+     "fit": "cover",
+     "group": "theater",
+     "audio": true
+    },
+    {
+     "src": "/media/van-halen-right-now.mp4",
+     "face": "bottom",
+     "fit": "cover",
+     "group": "theater",
+     "audio": false
+    }
+   ],
+   "tags": [
+    "typescript",
+    "json-schema",
+    "zod",
+    "spec"
+   ]
   },
   {
    "id": "DB",
@@ -67,7 +121,57 @@
    "h": 1,
    "does": "Plain SQLite shaped as a graph: one row per node, one row per edge — edge attributes live on the edge. The living source of truth agents write to while they work.",
    "built": "bun:sqlite, zero dependencies. Six tables mirror the spec one-to-one; import/export round-trips losslessly.",
-   "refs": "db/schema.sql · lib.ts"
+   "refs": "db/schema.sql · lib.ts",
+   "media": [
+    {
+     "src": "/media/def-leppard-pour-some-sugar.mp4",
+     "face": "north",
+     "fit": "cover",
+     "group": "theater",
+     "audio": true
+    },
+    {
+     "src": "/media/def-leppard-pour-some-sugar.mp4",
+     "face": "south",
+     "fit": "cover",
+     "group": "theater",
+     "audio": true
+    },
+    {
+     "src": "/media/def-leppard-pour-some-sugar.mp4",
+     "face": "east",
+     "fit": "cover",
+     "group": "theater",
+     "audio": true
+    },
+    {
+     "src": "/media/def-leppard-pour-some-sugar.mp4",
+     "face": "west",
+     "fit": "cover",
+     "group": "theater",
+     "audio": true
+    },
+    {
+     "src": "/media/def-leppard-pour-some-sugar.mp4",
+     "face": "roof",
+     "fit": "cover",
+     "group": "theater",
+     "audio": true
+    },
+    {
+     "src": "/media/def-leppard-pour-some-sugar.mp4",
+     "face": "bottom",
+     "fit": "cover",
+     "group": "theater",
+     "audio": false
+    }
+   ],
+   "tags": [
+    "sqlite",
+    "typescript",
+    "storage",
+    "graph"
+   ]
   },
   {
    "id": "CL",
@@ -81,7 +185,57 @@
    "h": 1,
    "does": "Ten verbs: init, import, export, build, serve, ingest, mark, ci, sensor, install-hook. Everything a human, a pipeline, or a non-MCP agent needs to maintain the map from a shell.",
    "built": "TypeScript on Bun, no build step, thin face over lib.ts.",
-   "refs": "cli.ts"
+   "refs": "cli.ts",
+   "media": [
+    {
+     "src": "/media/bon-jovi-livin-on-a-prayer.mp4",
+     "face": "north",
+     "fit": "cover",
+     "group": "theater",
+     "audio": true
+    },
+    {
+     "src": "/media/bon-jovi-livin-on-a-prayer.mp4",
+     "face": "south",
+     "fit": "cover",
+     "group": "theater",
+     "audio": true
+    },
+    {
+     "src": "/media/bon-jovi-livin-on-a-prayer.mp4",
+     "face": "east",
+     "fit": "cover",
+     "group": "theater",
+     "audio": true
+    },
+    {
+     "src": "/media/bon-jovi-livin-on-a-prayer.mp4",
+     "face": "west",
+     "fit": "cover",
+     "group": "theater",
+     "audio": true
+    },
+    {
+     "src": "/media/bon-jovi-livin-on-a-prayer.mp4",
+     "face": "roof",
+     "fit": "cover",
+     "group": "theater",
+     "audio": true
+    },
+    {
+     "src": "/media/bon-jovi-livin-on-a-prayer.mp4",
+     "face": "bottom",
+     "fit": "cover",
+     "group": "theater",
+     "audio": false
+    }
+   ],
+   "tags": [
+    "typescript",
+    "cli",
+    "commander",
+    "node"
+   ]
   },
   {
    "id": "MC",
@@ -95,7 +249,57 @@
    "h": 1,
    "does": "Nine tools that let any MCP-capable agent maintain the living map as it builds: upsert modules and links, set status, read the spec, build the artifact, and offer a sensor where a seam has stabilised.",
    "built": "Hand-rolled stdio JSON-RPC — the zero-dependency promise holds even here. Proven end-to-end from the DeepSeek Harness: dsh called iso_overview through its MCP client and got live store data back. Runs under bun only (bun:sqlite), so registrations spawn bun directly rather than npx.",
-   "refs": "mcp.ts · adapters/mcp.json"
+   "refs": "mcp.ts · adapters/mcp.json",
+   "media": [
+    {
+     "src": "/media/u2-where-the-streets-have-no-name.mp4",
+     "face": "north",
+     "fit": "cover",
+     "group": "theater",
+     "audio": true
+    },
+    {
+     "src": "/media/u2-where-the-streets-have-no-name.mp4",
+     "face": "south",
+     "fit": "cover",
+     "group": "theater",
+     "audio": true
+    },
+    {
+     "src": "/media/u2-where-the-streets-have-no-name.mp4",
+     "face": "east",
+     "fit": "cover",
+     "group": "theater",
+     "audio": true
+    },
+    {
+     "src": "/media/u2-where-the-streets-have-no-name.mp4",
+     "face": "west",
+     "fit": "cover",
+     "group": "theater",
+     "audio": true
+    },
+    {
+     "src": "/media/u2-where-the-streets-have-no-name.mp4",
+     "face": "roof",
+     "fit": "cover",
+     "group": "theater",
+     "audio": true
+    },
+    {
+     "src": "/media/u2-where-the-streets-have-no-name.mp4",
+     "face": "bottom",
+     "fit": "cover",
+     "group": "theater",
+     "audio": false
+    }
+   ],
+   "tags": [
+    "mcp",
+    "model-context-protocol",
+    "typescript",
+    "server"
+   ]
   },
   {
    "id": "AD",
@@ -109,7 +313,56 @@
    "h": 1,
    "does": "How each harness is taught to keep the map honest. MCP-capable harnesses (Claude Code, Codex, the DeepSeek Harness) register the server and get the nine tools; harnesses with no MCP client get the same operations as a paste-in CLI contract. Every adapter carries the same working agreement: mirror the codebase in the same session, record what flows, never leave a broken thing unmarked.",
    "built": "DSH.md + dsh.cordis.patch.yml ship the DeepSeek Harness route (cordis insert layer, verified end-to-end against dsh 0.1.1-rc.2). mcp.json is the generic registration. DEEPSEEK.md remains the no-MCP fallback. LUMBR.md is the telemetry bridge: signals in through POST /ci?provider=signal, the remediation scope out through GET /blast-radius.",
-   "refs": "adapters/"
+   "refs": "adapters/",
+   "media": [
+    {
+     "src": "/media/poison-nothin-but-a-good-time.mp4",
+     "face": "north",
+     "fit": "cover",
+     "group": "theater",
+     "audio": true
+    },
+    {
+     "src": "/media/poison-nothin-but-a-good-time.mp4",
+     "face": "south",
+     "fit": "cover",
+     "group": "theater",
+     "audio": true
+    },
+    {
+     "src": "/media/poison-nothin-but-a-good-time.mp4",
+     "face": "east",
+     "fit": "cover",
+     "group": "theater",
+     "audio": true
+    },
+    {
+     "src": "/media/poison-nothin-but-a-good-time.mp4",
+     "face": "west",
+     "fit": "cover",
+     "group": "theater",
+     "audio": true
+    },
+    {
+     "src": "/media/poison-nothin-but-a-good-time.mp4",
+     "face": "roof",
+     "fit": "cover",
+     "group": "theater",
+     "audio": true
+    },
+    {
+     "src": "/media/poison-nothin-but-a-good-time.mp4",
+     "face": "bottom",
+     "fit": "cover",
+     "group": "theater",
+     "audio": false
+    }
+   ],
+   "tags": [
+    "typescript",
+    "adapters",
+    "interop"
+   ]
   },
   {
    "id": "TP",
@@ -124,7 +377,58 @@
    "does": "The rendered experience: orthographic Three.js city, etched buildings, PCB-routed pipes with escape pins at hubs and schematic junction grammar (dot = joined, arc = crossing), circuit-breaker interaction, three-level stacking, guided trace, single inspector, 18 themes with a runtime contrast floor, live-reload client.",
    "built": "One self-contained template.html. Routing obeys the laws in docs/DESIGN-RULES.md: no transit under strangers, no avoidable same-plane crossings, level-honest risers, R13 escape pins, R16 joint shove, R31 junction grammar.",
    "refs": "template.html · docs/DESIGN-RULES.md",
-   "stack": 5
+   "stack": 5,
+   "media": [
+    {
+     "src": "/media/van-halen-jump.mp4",
+     "face": "north",
+     "fit": "cover",
+     "group": "theater",
+     "audio": true
+    },
+    {
+     "src": "/media/van-halen-jump.mp4",
+     "face": "south",
+     "fit": "cover",
+     "group": "theater",
+     "audio": true
+    },
+    {
+     "src": "/media/van-halen-jump.mp4",
+     "face": "east",
+     "fit": "cover",
+     "group": "theater",
+     "audio": true
+    },
+    {
+     "src": "/media/van-halen-jump.mp4",
+     "face": "west",
+     "fit": "cover",
+     "group": "theater",
+     "audio": true
+    },
+    {
+     "src": "/media/van-halen-jump.mp4",
+     "face": "roof",
+     "fit": "cover",
+     "group": "theater",
+     "audio": true
+    },
+    {
+     "src": "/media/van-halen-jump.mp4",
+     "face": "bottom",
+     "fit": "cover",
+     "group": "theater",
+     "audio": false
+    }
+   ],
+   "tags": [
+    "typescript",
+    "three.js",
+    "webgl",
+    "vite",
+    "engine"
+   ]
   },
   {
    "id": "BU",
@@ -138,7 +442,57 @@
    "h": 1,
    "does": "Injects a spec into the engine template and emits one self-contained HTML file that works from disk — no server, no CORS, nothing to install.",
    "built": "build.mjs: importable function + runnable command, ~40 lines.",
-   "refs": "build.mjs"
+   "refs": "build.mjs",
+   "media": [
+    {
+     "src": "/media/quiet-riot-cum-on-feel-the-noize.mp4",
+     "face": "north",
+     "fit": "cover",
+     "group": "theater",
+     "audio": true
+    },
+    {
+     "src": "/media/quiet-riot-cum-on-feel-the-noize.mp4",
+     "face": "south",
+     "fit": "cover",
+     "group": "theater",
+     "audio": true
+    },
+    {
+     "src": "/media/quiet-riot-cum-on-feel-the-noize.mp4",
+     "face": "east",
+     "fit": "cover",
+     "group": "theater",
+     "audio": true
+    },
+    {
+     "src": "/media/quiet-riot-cum-on-feel-the-noize.mp4",
+     "face": "west",
+     "fit": "cover",
+     "group": "theater",
+     "audio": true
+    },
+    {
+     "src": "/media/quiet-riot-cum-on-feel-the-noize.mp4",
+     "face": "roof",
+     "fit": "cover",
+     "group": "theater",
+     "audio": true
+    },
+    {
+     "src": "/media/quiet-riot-cum-on-feel-the-noize.mp4",
+     "face": "bottom",
+     "fit": "cover",
+     "group": "theater",
+     "audio": false
+    }
+   ],
+   "tags": [
+    "typescript",
+    "build",
+    "esbuild",
+    "tooling"
+   ]
   },
   {
    "id": "SV",
@@ -152,7 +506,57 @@
    "h": 1,
    "does": "Runs the map in a browser from day one of a project: watches the graph store and repaints on every change — every commit, every agent edit, live.",
    "built": "Bun.serve + SSE + a three-line client in the template. The view survives every repaint (R30 phase 2: the scene rebuilds in place on every store change; camera, stack, theme, inspector, circuit preserved; a new red module still takes the camera). POST /mark and POST /ci accept CI/CD webhooks directly.",
-   "refs": "cli.ts (serve) · template.html (live client)"
+   "refs": "cli.ts (serve) · template.html (live client)",
+   "media": [
+    {
+     "src": "/media/twisted-sister-were-not-gonna-take-it.mp4",
+     "face": "north",
+     "fit": "cover",
+     "group": "theater",
+     "audio": true
+    },
+    {
+     "src": "/media/twisted-sister-were-not-gonna-take-it.mp4",
+     "face": "south",
+     "fit": "cover",
+     "group": "theater",
+     "audio": true
+    },
+    {
+     "src": "/media/twisted-sister-were-not-gonna-take-it.mp4",
+     "face": "east",
+     "fit": "cover",
+     "group": "theater",
+     "audio": true
+    },
+    {
+     "src": "/media/twisted-sister-were-not-gonna-take-it.mp4",
+     "face": "west",
+     "fit": "cover",
+     "group": "theater",
+     "audio": true
+    },
+    {
+     "src": "/media/twisted-sister-were-not-gonna-take-it.mp4",
+     "face": "roof",
+     "fit": "cover",
+     "group": "theater",
+     "audio": true
+    },
+    {
+     "src": "/media/twisted-sister-were-not-gonna-take-it.mp4",
+     "face": "bottom",
+     "fit": "cover",
+     "group": "theater",
+     "audio": false
+    }
+   ],
+   "tags": [
+    "vite",
+    "server",
+    "websocket",
+    "typescript"
+   ]
   },
   {
    "id": "AR",
@@ -166,7 +570,56 @@
    "h": 0.8,
    "does": "The shippable output: one HTML file anyone can open, orbit, and interrogate — email it, commit it, host it.",
    "built": "Banner-marked GENERATED; rebuilt from the store in one command.",
-   "refs": "out/ (gitignored)"
+   "refs": "out/ (gitignored)",
+   "media": [
+    {
+     "src": "/media/tears-for-fears-shout.mp4",
+     "face": "north",
+     "fit": "cover",
+     "group": "theater",
+     "audio": true
+    },
+    {
+     "src": "/media/tears-for-fears-shout.mp4",
+     "face": "south",
+     "fit": "cover",
+     "group": "theater",
+     "audio": true
+    },
+    {
+     "src": "/media/tears-for-fears-shout.mp4",
+     "face": "east",
+     "fit": "cover",
+     "group": "theater",
+     "audio": true
+    },
+    {
+     "src": "/media/tears-for-fears-shout.mp4",
+     "face": "west",
+     "fit": "cover",
+     "group": "theater",
+     "audio": true
+    },
+    {
+     "src": "/media/tears-for-fears-shout.mp4",
+     "face": "roof",
+     "fit": "cover",
+     "group": "theater",
+     "audio": true
+    },
+    {
+     "src": "/media/tears-for-fears-shout.mp4",
+     "face": "bottom",
+     "fit": "cover",
+     "group": "theater",
+     "audio": false
+    }
+   ],
+   "tags": [
+    "artifict",
+    "output",
+    "assets"
+   ]
   },
   {
    "id": "EX",
@@ -180,7 +633,56 @@
    "h": 0.8,
    "does": "Reference specs proving the schema: this self-portrait, ODIN Sentinel's 16-module governance map, and lumbr's 10-module remediation loop.",
    "built": "This map IS examples/isoscope.spec.json — the tool eats its own cooking.",
-   "refs": "examples/isoscope.spec.json · examples/odin.spec.json · examples/lumbr.spec.json"
+   "refs": "examples/isoscope.spec.json · examples/odin.spec.json · examples/lumbr.spec.json",
+   "media": [
+    {
+     "src": "/media/huey-lewis-power-of-love.mp4",
+     "face": "north",
+     "fit": "cover",
+     "group": "theater",
+     "audio": true
+    },
+    {
+     "src": "/media/huey-lewis-power-of-love.mp4",
+     "face": "south",
+     "fit": "cover",
+     "group": "theater",
+     "audio": true
+    },
+    {
+     "src": "/media/huey-lewis-power-of-love.mp4",
+     "face": "east",
+     "fit": "cover",
+     "group": "theater",
+     "audio": true
+    },
+    {
+     "src": "/media/huey-lewis-power-of-love.mp4",
+     "face": "west",
+     "fit": "cover",
+     "group": "theater",
+     "audio": true
+    },
+    {
+     "src": "/media/huey-lewis-power-of-love.mp4",
+     "face": "roof",
+     "fit": "cover",
+     "group": "theater",
+     "audio": true
+    },
+    {
+     "src": "/media/huey-lewis-power-of-love.mp4",
+     "face": "bottom",
+     "fit": "cover",
+     "group": "theater",
+     "audio": false
+    }
+   ],
+   "tags": [
+    "examples",
+    "fixtures",
+    "json"
+   ]
   },
   {
    "id": "CO",
@@ -194,7 +696,56 @@
    "h": 0.8,
    "does": "Any project that adopts the loop: a store in the repo, agents mirroring reality into it, a live map in a browser tab, and an artifact in every release.",
    "built": "ODIN Sentinel is consumer #1 (its architecture map is generated by this engine); lumbr is consumer #2 (examples/lumbr.spec.json, authored from its package graph).",
-   "refs": "../odin/product-research/architecture-map/"
+   "refs": "../odin/product-research/architecture-map/",
+   "media": [
+    {
+     "src": "/media/the-police-every-breath-you-take.mp4",
+     "face": "north",
+     "fit": "cover",
+     "group": "theater",
+     "audio": true
+    },
+    {
+     "src": "/media/the-police-every-breath-you-take.mp4",
+     "face": "south",
+     "fit": "cover",
+     "group": "theater",
+     "audio": true
+    },
+    {
+     "src": "/media/the-police-every-breath-you-take.mp4",
+     "face": "east",
+     "fit": "cover",
+     "group": "theater",
+     "audio": true
+    },
+    {
+     "src": "/media/the-police-every-breath-you-take.mp4",
+     "face": "west",
+     "fit": "cover",
+     "group": "theater",
+     "audio": true
+    },
+    {
+     "src": "/media/the-police-every-breath-you-take.mp4",
+     "face": "roof",
+     "fit": "cover",
+     "group": "theater",
+     "audio": true
+    },
+    {
+     "src": "/media/the-police-every-breath-you-take.mp4",
+     "face": "bottom",
+     "fit": "cover",
+     "group": "theater",
+     "audio": false
+    }
+   ],
+   "tags": [
+    "consumers",
+    "integration",
+    "api"
+   ]
   },
   {
    "id": "DR",
@@ -208,7 +759,185 @@
    "h": 1,
    "does": "Keeps the wiring lawful and the render honest. The collision lint scores weighted crossings against the spec's acknowledged budget and fails the build over it; the render proof drives headless Chrome across six viewports; the contrast proof clicks every theme and measures real text/background pairs against WCAG AA, and fails on any JS error.",
    "built": "drc.ts imports the same router.mjs the template is built from — one router, never two. scripts/render-proof.ts, overflow-diagnose.ts and contrast-proof.ts speak CDP over a Bun WebSocket, zero deps.",
-   "refs": "drc.ts · scripts/"
+   "refs": "drc.ts · scripts/",
+   "media": [
+    {
+     "src": "/media/simple-minds-dont-you-forget-about-me.mp4",
+     "face": "north",
+     "fit": "cover",
+     "group": "theater",
+     "audio": true
+    },
+    {
+     "src": "/media/simple-minds-dont-you-forget-about-me.mp4",
+     "face": "south",
+     "fit": "cover",
+     "group": "theater",
+     "audio": true
+    },
+    {
+     "src": "/media/simple-minds-dont-you-forget-about-me.mp4",
+     "face": "east",
+     "fit": "cover",
+     "group": "theater",
+     "audio": true
+    },
+    {
+     "src": "/media/simple-minds-dont-you-forget-about-me.mp4",
+     "face": "west",
+     "fit": "cover",
+     "group": "theater",
+     "audio": true
+    },
+    {
+     "src": "/media/simple-minds-dont-you-forget-about-me.mp4",
+     "face": "roof",
+     "fit": "cover",
+     "group": "theater",
+     "audio": true
+    },
+    {
+     "src": "/media/simple-minds-dont-you-forget-about-me.mp4",
+     "face": "bottom",
+     "fit": "cover",
+     "group": "theater",
+     "audio": false
+    }
+   ],
+   "tags": [
+    "typescript",
+    "driver",
+    "automation"
+   ]
+  },
+  {
+   "id": "OW",
+   "tag": "WEB",
+   "g": "surface",
+   "name": "original-web",
+   "x": 6.8,
+   "y": 7.2,
+   "w": 1.2,
+   "d": 1,
+   "h": 1.5,
+   "does": "The main user-facing surface: the isometric codebase-city web app. A Three.js orthographic renderer — modules as buildings with per-face video media surfaces, edges routed by the shared router with circuit-break X marks and advisory state colors, per-module annotations with server write-back, deterministic edge-routing QC, curated theme order, search and paged navigation.",
+   "built": "Vite + Three.js, strict TypeScript. src/original-renderer.ts renders this spec; src/annotations.ts keeps per-module notes/files/faces (write-back through the Vite middleware, localStorage fallback); src/edge-qc.ts flags structural routing defects; scripts/edge-layout-qc.ts is the headless QC + layout-optimizer harness (bun). Vitest gates: 16/16.",
+   "refs": "original-web/",
+   "media": [
+    {
+     "src": "/media/eurythmics-sweet-dreams.mp4",
+     "face": "north",
+     "fit": "cover",
+     "group": "theater",
+     "audio": true
+    },
+    {
+     "src": "/media/eurythmics-sweet-dreams.mp4",
+     "face": "south",
+     "fit": "cover",
+     "group": "theater",
+     "audio": true
+    },
+    {
+     "src": "/media/eurythmics-sweet-dreams.mp4",
+     "face": "east",
+     "fit": "cover",
+     "group": "theater",
+     "audio": true
+    },
+    {
+     "src": "/media/eurythmics-sweet-dreams.mp4",
+     "face": "west",
+     "fit": "cover",
+     "group": "theater",
+     "audio": true
+    },
+    {
+     "src": "/media/eurythmics-sweet-dreams.mp4",
+     "face": "roof",
+     "fit": "cover",
+     "group": "theater",
+     "audio": true
+    },
+    {
+     "src": "/media/eurythmics-sweet-dreams.mp4",
+     "face": "bottom",
+     "fit": "cover",
+     "group": "theater",
+     "audio": false
+    }
+   ],
+   "tags": [
+    "typescript",
+    "three.js",
+    "vite",
+    "web",
+    "renderer"
+   ]
+  },
+  {
+   "id": "DP",
+   "tag": "DESIGN",
+   "g": "surface",
+   "name": "desert-pants design system",
+   "x": 8.6,
+   "y": 7.6,
+   "w": 1,
+   "d": 1,
+   "h": 0.8,
+   "does": "The design system the city is painted with: tokens, 18 themes in light and dark modes, fonts, and the icon set — vendored with a provenance manifest, applied at runtime with a measured WCAG contrast floor.",
+   "built": "Vendored under original-web/vendor/desert-pants (CANONICAL-MANIFEST.sha256 + PROVENANCE.md); src/theme-order.ts curates the presented order. okoa.ts is the thin CLI client for the hosted OKOA Design MCP used to work on it upstream.",
+   "refs": "original-web/vendor/desert-pants/ · okoa.ts",
+   "media": [
+    {
+     "src": "/media/pet-shop-boys-west-end-girls.mp4",
+     "face": "north",
+     "fit": "cover",
+     "group": "theater",
+     "audio": true
+    },
+    {
+     "src": "/media/pet-shop-boys-west-end-girls.mp4",
+     "face": "south",
+     "fit": "cover",
+     "group": "theater",
+     "audio": true
+    },
+    {
+     "src": "/media/pet-shop-boys-west-end-girls.mp4",
+     "face": "east",
+     "fit": "cover",
+     "group": "theater",
+     "audio": true
+    },
+    {
+     "src": "/media/pet-shop-boys-west-end-girls.mp4",
+     "face": "west",
+     "fit": "cover",
+     "group": "theater",
+     "audio": true
+    },
+    {
+     "src": "/media/pet-shop-boys-west-end-girls.mp4",
+     "face": "roof",
+     "fit": "cover",
+     "group": "theater",
+     "audio": true
+    },
+    {
+     "src": "/media/pet-shop-boys-west-end-girls.mp4",
+     "face": "bottom",
+     "fit": "cover",
+     "group": "theater",
+     "audio": false
+    }
+   ],
+   "tags": [
+    "design-system",
+    "tokens",
+    "themes",
+    "icons"
+   ]
   }
  ],
  "short": {
@@ -223,7 +952,9 @@
   "AR": "Artifact",
   "EX": "Examples",
   "CO": "Consumers",
-  "DR": "Lint"
+  "DR": "Lint",
+  "OW": "Web",
+  "DP": "Design"
  },
  "status": {
   "SP": {
@@ -249,12 +980,7 @@
   },
   "AD": {
    "state": "ok",
-   "items": [
-    {
-     "c": "amber",
-     "l": "dsh-plugin/ is a package.json stub; DSH.md's MCP-client route already works — keep or delete"
-    }
-   ]
+   "items": []
   },
   "TP": {
    "state": "ok",
@@ -303,6 +1029,14 @@
   "DR": {
    "state": "ok",
    "items": []
+  },
+  "OW": {
+   "state": "ok",
+   "items": []
+  },
+  "DP": {
+   "state": "ok",
+   "items": []
   }
  },
  "levels": {
@@ -313,7 +1047,9 @@
   "AD": 1,
   "AR": -1,
   "EX": -1,
-  "CO": -1
+  "CO": -1,
+  "OW": 0,
+  "DP": 0
  },
  "paths": {
   "SP": [
@@ -331,8 +1067,7 @@
    "mcp.ts"
   ],
   "AD": [
-   "adapters/",
-   "dsh-plugin/"
+   "adapters/"
   ],
   "TP": [
    "docs/DESIGN-RULES.md",
@@ -361,6 +1096,13 @@
   "DR": [
    "drc.ts",
    "scripts/"
+  ],
+  "OW": [
+   "original-web/"
+  ],
+  "DP": [
+   "original-web/vendor/desert-pants/",
+   "okoa.ts"
   ]
  },
  "edges": [
@@ -428,9 +1170,27 @@
    "TP",
    "DR",
    "auth"
+  ],
+  [
+   "SP",
+   "OW",
+   "data"
+  ],
+  [
+   "TP",
+   "OW",
+   "auth"
+  ],
+  [
+   "DP",
+   "OW",
+   "data"
   ]
  ],
- "edgeStatus": {},
+ "edgeStatus": {
+  "DB-SV": "broken",
+  "AD-CL": "degraded"
+ },
  "edgeDocs": {
   "EX-SP": {
    "title": "Examples prove the schema",
@@ -496,6 +1256,21 @@
    "title": "One router, linted",
    "carries": "The router source itself — injected into the template at build and imported by the lint, so the law the map obeys is the law the lint checks.",
    "refs": "router.mjs · drc.ts"
+  },
+  "SP-OW": {
+   "title": "The spec is the scene",
+   "carries": "This very file, imported by the renderer — every node, media surface, tag, and status you see in the city.",
+   "refs": "examples/isoscope.spec.json · original-web/src/original-renderer.ts"
+  },
+  "TP-OW": {
+   "title": "One router, in the browser",
+   "carries": "The shared router.mjs imported straight into the web app — the same laws that route the artifact route the live city, hops and risers included.",
+   "refs": "router.mjs · original-web/src/edge-qc.ts"
+  },
+  "DP-OW": {
+   "title": "Painted by desert-pants",
+   "carries": "Tokens, themes, fonts, and icons flowing into every panel and building — with a runtime contrast floor holding the map readable in all 18 themes.",
+   "refs": "original-web/vendor/desert-pants/ · original-web/src/theme-order.ts"
   }
  },
  "trace": [
@@ -553,5 +1328,127 @@
    "token_velocity_*": "MC"
   },
   "default": "CL"
- }
+ },
+ "mediaLibrary": [
+  {
+   "id": "jump",
+   "title": "Van Halen — Jump (1984)",
+   "src": "/media/van-halen-jump.mp4",
+   "kind": "video"
+  },
+  {
+   "id": "right-now",
+   "title": "Van Halen — Right Now (1991)",
+   "src": "/media/van-halen-right-now.mp4",
+   "kind": "video"
+  },
+  {
+   "id": "pour-some-sugar",
+   "title": "Def Leppard — Pour Some Sugar on Me (1988)",
+   "src": "/media/def-leppard-pour-some-sugar.mp4",
+   "kind": "video"
+  },
+  {
+   "id": "livin-on-a-prayer",
+   "title": "Bon Jovi — Livin' on a Prayer (1986)",
+   "src": "/media/bon-jovi-livin-on-a-prayer.mp4",
+   "kind": "video"
+  },
+  {
+   "id": "nothin-but-a-good-time",
+   "title": "Poison — Nothin' but a Good Time (1988)",
+   "src": "/media/poison-nothin-but-a-good-time.mp4",
+   "kind": "video"
+  },
+  {
+   "id": "cum-on-feel-the-noize",
+   "title": "Quiet Riot — Cum On Feel the Noize (1983)",
+   "src": "/media/quiet-riot-cum-on-feel-the-noize.mp4",
+   "kind": "video"
+  },
+  {
+   "id": "were-not-gonna-take-it",
+   "title": "Twisted Sister — We're Not Gonna Take It (1984)",
+   "src": "/media/twisted-sister-were-not-gonna-take-it.mp4",
+   "kind": "video"
+  },
+  {
+   "id": "shout",
+   "title": "Tears for Fears — Shout (1985)",
+   "src": "/media/tears-for-fears-shout.mp4",
+   "kind": "video"
+  },
+  {
+   "id": "power-of-love",
+   "title": "Huey Lewis & The News — The Power of Love (1985)",
+   "src": "/media/huey-lewis-power-of-love.mp4",
+   "kind": "video"
+  },
+  {
+   "id": "every-breath-you-take",
+   "title": "The Police — Every Breath You Take (1983)",
+   "src": "/media/the-police-every-breath-you-take.mp4",
+   "kind": "video"
+  },
+  {
+   "id": "dont-you-forget-about-me",
+   "title": "Simple Minds — Don't You (Forget About Me) (1985)",
+   "src": "/media/simple-minds-dont-you-forget-about-me.mp4",
+   "kind": "video"
+  },
+  {
+   "id": "rem-the-one-i-love",
+   "title": "R.E.M. — The One I Love (1987)",
+   "src": "/media/rem-the-one-i-love.mp4",
+   "kind": "video"
+  },
+  {
+   "id": "pet-shop-boys-west-end-girls",
+   "title": "Pet Shop Boys — West End Girls (1984)",
+   "src": "/media/pet-shop-boys-west-end-girls.mp4",
+   "kind": "video"
+  },
+  {
+   "id": "eurythmics-sweet-dreams",
+   "title": "Eurythmics — Sweet Dreams (1983)",
+   "src": "/media/eurythmics-sweet-dreams.mp4",
+   "kind": "video"
+  },
+  {
+   "id": "tears-for-fears-everybody-wants-to-rule-the-world",
+   "title": "Tears for Fears — Everybody Wants to Rule the World (1985)",
+   "src": "/media/tears-for-fears-everybody-wants-to-rule-the-world.mp4",
+   "kind": "video"
+  },
+  {
+   "id": "billy-idol-dancing-with-myself",
+   "title": "Billy Idol — Dancing with Myself (1981)",
+   "src": "/media/billy-idol-dancing-with-myself.mp4",
+   "kind": "video"
+  },
+  {
+   "id": "dire-straits-money-for-nothing",
+   "title": "Dire Straits — Money for Nothing (1985)",
+   "src": "/media/dire-straits-money-for-nothing.mp4",
+   "kind": "video"
+  },
+  {
+   "id": "u2-where-the-streets-have-no-name",
+   "title": "U2 — Where the Streets Have No Name (1987)",
+   "src": "/media/u2-where-the-streets-have-no-name.mp4",
+   "kind": "video"
+  },
+  {
+   "id": "u2-with-or-without-you",
+   "title": "U2 — With or Without You (1987)",
+   "src": "/media/u2-with-or-without-you.mp4",
+   "kind": "video"
+  },
+  {
+   "id": "u2-i-still-havent-found",
+   "title": "U2 — I Still Haven't Found What I'm Looking For (1987)",
+   "src": "/media/u2-i-still-havent-found.mp4",
+   "kind": "video"
+  }
+ ]
 }

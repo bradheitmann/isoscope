@@ -248,42 +248,42 @@
    "refs": "mcp.ts · adapters/mcp.json",
    "media": [
     {
-     "src": "/media/ratt-round-and-round.mp4",
+     "src": "/media/u2-where-the-streets-have-no-name.mp4",
      "face": "north",
      "fit": "cover",
      "group": "theater",
      "audio": true
     },
     {
-     "src": "/media/ratt-round-and-round.mp4",
+     "src": "/media/u2-where-the-streets-have-no-name.mp4",
      "face": "south",
      "fit": "cover",
      "group": "theater",
      "audio": true
     },
     {
-     "src": "/media/ratt-round-and-round.mp4",
+     "src": "/media/u2-where-the-streets-have-no-name.mp4",
      "face": "east",
      "fit": "cover",
      "group": "theater",
      "audio": true
     },
     {
-     "src": "/media/ratt-round-and-round.mp4",
+     "src": "/media/u2-where-the-streets-have-no-name.mp4",
      "face": "west",
      "fit": "cover",
      "group": "theater",
      "audio": true
     },
     {
-     "src": "/media/ratt-round-and-round.mp4",
+     "src": "/media/u2-where-the-streets-have-no-name.mp4",
      "face": "roof",
      "fit": "cover",
      "group": "theater",
      "audio": true
     },
     {
-     "src": "/media/ratt-round-and-round.mp4",
+     "src": "/media/u2-where-the-streets-have-no-name.mp4",
      "face": "bottom",
      "fit": "cover",
      "group": "theater",
@@ -1218,6 +1218,60 @@
    "id": "dont-you-forget-about-me",
    "title": "Simple Minds — Don't You (Forget About Me) (1985)",
    "src": "/media/simple-minds-dont-you-forget-about-me.mp4",
+   "kind": "video"
+  },
+  {
+   "id": "rem-the-one-i-love",
+   "title": "R.E.M. — The One I Love (1987)",
+   "src": "/media/rem-the-one-i-love.mp4",
+   "kind": "video"
+  },
+  {
+   "id": "pet-shop-boys-west-end-girls",
+   "title": "Pet Shop Boys — West End Girls (1984)",
+   "src": "/media/pet-shop-boys-west-end-girls.mp4",
+   "kind": "video"
+  },
+  {
+   "id": "eurythmics-sweet-dreams",
+   "title": "Eurythmics — Sweet Dreams (1983)",
+   "src": "/media/eurythmics-sweet-dreams.mp4",
+   "kind": "video"
+  },
+  {
+   "id": "tears-for-fears-everybody-wants-to-rule-the-world",
+   "title": "Tears for Fears — Everybody Wants to Rule the World (1985)",
+   "src": "/media/tears-for-fears-everybody-wants-to-rule-the-world.mp4",
+   "kind": "video"
+  },
+  {
+   "id": "billy-idol-dancing-with-myself",
+   "title": "Billy Idol — Dancing with Myself (1981)",
+   "src": "/media/billy-idol-dancing-with-myself.mp4",
+   "kind": "video"
+  },
+  {
+   "id": "dire-straits-money-for-nothing",
+   "title": "Dire Straits — Money for Nothing (1985)",
+   "src": "/media/dire-straits-money-for-nothing.mp4",
+   "kind": "video"
+  },
+  {
+   "id": "u2-where-the-streets-have-no-name",
+   "title": "U2 — Where the Streets Have No Name (1987)",
+   "src": "/media/u2-where-the-streets-have-no-name.mp4",
+   "kind": "video"
+  },
+  {
+   "id": "u2-with-or-without-you",
+   "title": "U2 — With or Without You (1987)",
+   "src": "/media/u2-with-or-without-you.mp4",
+   "kind": "video"
+  },
+  {
+   "id": "u2-i-still-havent-found",
+   "title": "U2 — I Still Haven't Found What I'm Looking For (1987)",
+   "src": "/media/u2-i-still-havent-found.mp4",
    "kind": "video"
   }
  ]

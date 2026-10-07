@@ -14,6 +14,7 @@ import iconTrace from "../vendor/desert-pants/icons/svg/arrow-right.svg?raw";
 import iconDraw from "../vendor/desert-pants/icons/svg/pen.svg?raw";
 import iconLayers from "../vendor/desert-pants/icons/svg/layers.svg?raw";
 import iconGrid from "../vendor/desert-pants/icons/svg/grid.svg?raw";
+import iconShuffle from "../vendor/desert-pants/icons/svg/shuffle.svg?raw";
 import iconMedia from "../vendor/desert-pants/icons/svg/clapperboard.svg?raw";
 import iconSoundOn from "../vendor/desert-pants/icons/svg/volume-2.svg?raw";
 import iconSoundOff from "../vendor/desert-pants/icons/svg/volume-x.svg?raw";
@@ -109,6 +110,7 @@ setCanonicalIcon($<HTMLButtonElement>("btnDraw"),iconDraw);
 setCanonicalIcon($<HTMLButtonElement>("btnStack"),iconLayers);
 setCanonicalIcon($<HTMLButtonElement>("btnGrid"),iconGrid);
 setCanonicalIcon($<HTMLButtonElement>("btnMedia"),iconMedia);
+setCanonicalIcon($<HTMLButtonElement>("btnShuffle"),iconShuffle);
 setCanonicalIcon($<HTMLButtonElement>("btnSettings"),iconSettings);
 setCanonicalIcon($<HTMLButtonElement>("btnReadMap"),iconOverview);
 setCanonicalIcon($<HTMLButtonElement>("drawerClose"),iconClose);
@@ -2203,6 +2205,27 @@ function applySpec(next: Spec): void{
 buildScene(SPEC);
 renderPanel(null);
 blastIncident();
+
+/* ————— layout shuffle: rearrange the network when the user wants a fresh look —————
+   Permutes which node sits in which ground cell (and which level, for the stacked
+   view), then rebuilds through applySpec so the circuit-routing rules (hops,
+   junction dots, cross-level risers) all re-run on the new arrangement. Same nodes,
+   same edges, same bounding box — a different layout. */
+function shuffleLayout(): void {
+ const next=structuredClone(SPEC);
+ const cells=next.nodes.map(n=>({x:n.x,y:n.y}));   /* the occupied ground cells */
+ const levels=next.nodes.map(n=>(next.levels&&next.levels[n.id])||0); /* the level assignments */
+ /* Fisher-Yates both, independently, so ground position and stack level both vary */
+ for(let i=cells.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[cells[i],cells[j]]=[cells[j],cells[i]];}
+ for(let i=levels.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[levels[i],levels[j]]=[levels[j],levels[i]];}
+ next.nodes.forEach((n,i)=>{ n.x=cells[i].x; n.y=cells[i].y; });
+ if(!next.levels)next.levels={};
+ next.nodes.forEach((n,i)=>{ next.levels![n.id]=levels[i]; });
+ applySpec(next);
+ /* re-fit home so the reshuffled city is framed; media mode + theme carry over */
+ flyGoal={tx:HOME.tx,ty:HOME.ty,tz:HOME.tz,zoom:HOME.zoom,az:HOME.az,pol:HOME.pol};
+}
+$("btnShuffle").addEventListener("click",shuffleLayout);
 
 /* ————— the brush (static ink you own, drawn in the object's space) —————
    Toggle Draw (or press W) and orbit/pick are suspended. With a module selected

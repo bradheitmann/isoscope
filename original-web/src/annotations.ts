@@ -6,6 +6,8 @@
    The store is deliberately free of Three.js — pure data + fetch — so it is
    unit-testable and the renderer binds to it, not the reverse. */
 
+import { emitWide } from "./telemetry";
+
 export type FaceKey = "roof" | "north" | "south" | "east" | "west" | "bottom";
 export const FACES: FaceKey[] = ["roof", "north", "south", "east", "west", "bottom"];
 export type SurfaceKind = "video" | "image" | "doc" | "slides" | "ink";
@@ -74,13 +76,18 @@ export async function setModule(id: string, rec: ModuleAnnotation): Promise<void
   saveLocal();
   emit();
   if (!remote) return;
+  /* a record write crosses the web→serve seam (SV persists to the store). Trace it
+     as a wide event so that edge's health reflects real flow, live. */
+  const t0 = performance.now();
   try {
     const r = await fetch(`api/annotations/${encodeURIComponent(id)}`, {
       method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify(rec),
     });
     if (!r.ok) throw new Error("write failed");
-  } catch {
+    emitWide({ edge: "DB-SV", from: "SV", to: "DB", name: "annotation.save", durationMs: performance.now() - t0, ok: true, kind: "CLIENT" });
+  } catch (e) {
     remote = false; /* endpoint vanished mid-session; keep working locally */
+    emitWide({ edge: "DB-SV", from: "SV", to: "DB", name: "annotation.save", durationMs: performance.now() - t0, ok: false, kind: "CLIENT", error: e instanceof Error ? e.message : "write failed" });
   }
 }
 

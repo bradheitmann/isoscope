@@ -17,6 +17,7 @@ declare global {
       faceView: () => { id: string; face: string } | null;
       exitFace: () => void;
       state: () => { zoom: number; cordon: string[]; audioFocus: string | null; masterAudio: boolean; faceView: { id: string; face: string } | null };
+      edgeHealth: () => Record<string, string>;
     };
     __isoRouteQC: Record<string, unknown>;
     __lblMeasured: boolean;

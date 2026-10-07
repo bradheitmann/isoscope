@@ -29,6 +29,7 @@ import iconMinus from "../vendor/desert-pants/icons/svg/minus.svg?raw";
 import iconChevron from "../vendor/desert-pants/icons/svg/chevron-down.svg?raw";
 import { isoRouteAll } from "../../router.mjs";
 import { checkRoutes } from "./edge-qc";
+import { edgeHealth, onEdgeHealthChange } from "./telemetry";
 import { isEditableTarget } from "./editable-target";
 import { getModule, setNotes, setFace, addInside, removeInside, uploadFile, isRemote, FACES, type FaceKey, type SurfaceKind, type SurfaceRef } from "./annotations";
 
@@ -1344,7 +1345,8 @@ window.odinView={set(az,pol,r,zoom){placeCamera(az??HOME.az,pol??HOME.pol,r??HOM
  viewFace(id: string,face: FaceKey){const n=byId[id];if(n)flyToFace(n,face);},
  faceView:()=>faceView,
  exitFace(){faceView=null;flyGoal={tx:HOME.tx,ty:HOME.ty,tz:HOME.tz,zoom:HOME.zoom,az:HOME.az,pol:HOME.pol};},
- state:()=>({zoom:camera.zoom,cordon:[...cordon],audioFocus,masterAudio,faceView})};
+ state:()=>({zoom:camera.zoom,cordon:[...cordon],audioFocus,masterAudio,faceView}),
+ edgeHealth:()=>{const h: Record<string,string>={};Object.values(edgeLinesById).forEach(o=>{h[o.key]=edgeHealthLive(o)??"ok";});return h;}};
 function flyTo(n: MapNode): void {flyGoal={tx:n.x+n.w/2,ty:(n._lyT||0)+0.5,tz:n.y+n.d/2,
  zoom:Math.max(camera.zoom,2.1)};}
 /* ————— face viewer: fly square-on to one face so it becomes a screen/reader —————
@@ -1646,6 +1648,35 @@ function pin(id: string): void {
 const cordon=new Set<string>(); /* energized modules; empty = all live */
 let incidentActive=false;
 function exitCordon(){cordon.clear();incidentActive=false;}
+/* live health: a traced edge reports ok/degraded/broken from its recent wide-event
+   stream; an untraced edge falls back to its static spec status. This is what makes
+   the map reflect live truth instead of a hand-set flag. */
+function edgeHealthLive(o: EdgeRuntime): string | null { return edgeHealth(o.key) ?? o.health; }
+/* create the circuit-break X for an edge on demand (static-broken at build, or
+   lazily the moment a live-traced edge goes broken). rebuildEdge draws its geometry. */
+function ensureEdgeX(o: EdgeRuntime): void {
+ if(o.xmark)return;
+ const xm=new LineMaterial({color:COL.risk.getHex(),transparent:true,opacity:0.98,linewidth:LINEW[lineSet].w});
+ xm.resolution.set(canvas.width,canvas.height);
+ edgeMats.push(xm);themed.push({m:xm,get:()=>COL.risk});
+ const x=new Line2(new LineGeometry(),xm);
+ x.renderOrder=3;x.userData.edgeKey=o.key;
+ scene.add(x);o.xmark=x;
+ if(o.pts.length>1){rebuildEdge(o);} /* draw its geometry if the edge is already routed */
+}
+function refreshEdgeHealth(): void {
+ Object.values(edgeLinesById).forEach(o=>{
+  const h=edgeHealthLive(o);
+  const broken=h==="broken",degraded=h==="degraded";
+  const m=o.line.material;
+  m.color.copy(broken?COL.risk:degraded?COL.caution:o.type==="auth"?COL.accent:o.type==="intended"?mix(COL.fg1,COL.paper,0.45):COL.fg2);
+  m.opacity=baseOp(o);
+  if(broken)ensureEdgeX(o);                  /* a live break gets its X even if not static-broken */
+  if(o.xmark)o.xmark.visible=broken;          /* the circuit-break X appears only while broken */
+  o.health=broken?"broken":degraded?"degraded":o.health; /* keep the runtime in step for dots/panels */
+ });
+}
+onEdgeHealthChange(()=>{ refreshEdgeHealth(); });
 function paintCircuit(){
  const allLive=cordon.size===0;
  Object.entries(edgeLinesById).forEach(([k,o])=>{
@@ -1653,9 +1684,10 @@ function paintCircuit(){
   const live=allLive||(cordon.has(e[0])&&cordon.has(e[1]));
   const m=o.line.material;
   m.opacity=live?baseOp(o):0;
-  const base=o.type==="auth"?COL.accent:(o.health==="broken"?COL.risk:
-    o.health==="degraded"?COL.caution:o.type==="intended"?mix(COL.fg1,COL.paper,0.45):COL.fg2);
-  m.color.copy(live&&!allLive&&!o.health?COL.accent:base);
+  const h=edgeHealthLive(o);
+  const base=o.type==="auth"?COL.accent:(h==="broken"?COL.risk:
+    h==="degraded"?COL.caution:o.type==="intended"?mix(COL.fg1,COL.paper,0.45):COL.fg2);
+  m.color.copy(live&&!allLive&&!h?COL.accent:base);
  });
  NODES.forEach(n=>{
   const on=allLive||cordon.has(n.id);
@@ -2097,17 +2129,10 @@ EDGES.forEach(e=>{
  line.userData.edgeKey=key;
  scene.add(line);
  edgeLinesById[key]={key,line,type:e[2] ?? "data",health,basePts,a:e[0],b:e[1],dotted,speed,t:0,dots:[],pts:[],L:[0],total:1,jn:[junctionMesh(),junctionMesh()]};
- /* a broken edge reads as a circuit break: the line parts at the midpoint and a
-    slim red X sits in the gap at the SAME line weight as the edge itself, like a
-    contact symbol on a schematic — part of the line, not a badge floating over it. */
- if(health==="broken"){
-  const xm=new LineMaterial({color:COL.risk.getHex(),transparent:true,opacity:0.98,linewidth:LINEW[lineSet].w});
-  xm.resolution.set(canvas.width,canvas.height);
-  edgeMats.push(xm);themed.push({m:xm,get:()=>COL.risk});
-  const x=new Line2(new LineGeometry(),xm);
-  x.renderOrder=3;x.userData.edgeKey=key;
-  scene.add(x);edgeLinesById[key].xmark=x;
- }
+ /* a broken edge reads as a circuit break: a slim red X sits at the midpoint at the
+    SAME line weight as the edge, like a contact symbol on a schematic. Created on
+    demand so a live-traced edge that breaks later gets one too. */
+ if(health==="broken")ensureEdgeX(edgeLinesById[key]);
 });
 
  themed.push({m:dotMatN,get:()=>COL.accent},{m:dotMatW,get:()=>COL.caution});
@@ -2459,7 +2484,7 @@ function tick(){
     hard stop: nothing crosses it, so its packets freeze (other edges keep moving). */
  Object.values(edgeLinesById).forEach(o=>{
   if(!o.dots.length)return;
-  const lit=flowing&&o.line.material.opacity>0.3&&o.health!=="broken"; /* ghosted/broken lines carry no dots */
+  const lit=flowing&&o.line.material.opacity>0.3&&edgeHealthLive(o)!=="broken"; /* ghosted/broken lines carry no dots */
   if(lit)o.t=(o.t+0.0018*o.speed)%1;
   const nd=o.dots.length;
   for(let k=0;k<nd;k++){

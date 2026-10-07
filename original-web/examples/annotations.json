@@ -5,6 +5,11 @@
    "faces": {
     "north": null
    }
+  },
+  "TP": {
+   "faces": {
+    "north": null
+   }
   }
  }
 }

@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Isoscope theme matrix</title>
+<!-- real desert-pants tokens + every theme, so colors are the actual ones the app uses -->
+<link rel="stylesheet" href="../vendor/desert-pants/build/web/tokens.css" />
+<link rel="stylesheet" href="../vendor/desert-pants/build/web/themes.css" />
+<style>
+  * { box-sizing: border-box; }
+  body { margin:0; padding:24px; font:14px/1.45 -apple-system, "Segoe UI", Roboto, sans-serif; background:#888; }
+  h1 { margin:0 0 2px; font-size:20px; color:#fff; text-shadow:0 1px 2px rgb(0 0 0/.3); }
+  p.lede { margin:0 0 20px; color:#f0f0f0; max-width:80ch; }
+  .grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(300px,1fr)); gap:18px; }
+  .cell { border-radius:14px; overflow:hidden; box-shadow:0 8px 24px rgb(0 0 0/.25); }
+  /* each card is themed by data-dp-theme + a forced light/dark scheme */
+  .card { padding:14px; background:var(--dp-color-bg-canvas); color:var(--dp-color-text-primary); }
+  .card h3 { margin:0 0 2px; font-size:14px; display:flex; justify-content:space-between; align-items:baseline; }
+  .card h3 .mode { font-size:10px; font-weight:600; opacity:.55; text-transform:uppercase; letter-spacing:.05em; }
+  /* a fake mini scene: two cubes + a broken edge + labels, using theme tokens */
+  .scene { position:relative; height:120px; margin:10px 0; border-radius:8px; background:var(--dp-color-bg-canvas); border:1px solid var(--dp-color-border-subtle, rgb(128 128 128/.2)); overflow:hidden; }
+  .cube { position:absolute; width:34px; height:34px; transform:rotate(45deg) skew(-8deg,-8deg); background:var(--dp-color-bg-surface); border:1.5px solid var(--dp-color-text-primary); border-radius:3px; }
+  .cube.ok { background:var(--dp-color-bg-surface); }
+  .cube.bad { background:var(--dp-color-signal-danger-fill, #c00); border-color:var(--dp-color-signal-danger-fill,#c00); }
+  .edge { position:absolute; height:2px; background:var(--dp-color-text-secondary); transform-origin:left center; }
+  .edge.flow { background:var(--dp-color-accent-default); }
+  .edge.broken { background:var(--dp-color-signal-danger-fill,#c00); }
+  .xmark { position:absolute; color:var(--dp-color-signal-danger-fill,#c00); font-weight:700; font-size:14px; }
+  .lbl { position:absolute; font-size:9.5px; color:var(--dp-color-text-secondary); letter-spacing:.02em; }
+  .lbl .id { color:var(--dp-color-text-muted, var(--dp-color-text-secondary)); opacity:.7; }
+  /* tag pills */
+  .pills { display:flex; flex-wrap:wrap; gap:4px; margin-top:8px; }
+  .pill { font-size:10px; padding:2px 8px; border-radius:999px; background:var(--dp-color-bg-raised); border:1px solid var(--dp-color-border-subtle, rgb(128 128 128/.25)); color:var(--dp-color-text-secondary); }
+  .pill.acc { background:var(--dp-color-accent-default); color:var(--dp-color-accent-contrast,#fff); border-color:transparent; }
+  .score { font-size:10px; color:var(--dp-color-text-muted,var(--dp-color-text-secondary)); margin-top:8px; font-variant-numeric:tabular-nums; }
+  .good { color:var(--dp-color-signal-success-text,#187a3c); font-weight:700; }
+</style>
+</head>
+<body>
+<h1>Theme matrix — how each palette reads on the map</h1>
+<p class="lede">Each card is the real desert-pants theme applied to a representative slice: state-colored cubes, a flowing edge, a broken edge with its circuit-break X, scene labels, and a tag-pill cluster. Left half of each theme is light mode, right is dark. Scores are worst-case WCAG contrast (text over canvas · accent over canvas); higher is more readable. Starred = strong on both.</p>
+<div class="grid" id="grid"></div>
+
+<script>
+// worst-case contrast scores computed from the theme tokens (text,accent; light,dark)
+const SCORES = {
+  "high-contrast":[14.5,8.2,1], "github":[15.8,4.1,0], "dracula":[13.4,5.9,1], "monokai":[13.9,3,0],
+  "gruvbox":[10.2,5.5,1], "nord":[9.7,4.6,1], "catppuccin":[9.1,4.8,1], "vscode":[9.9,3.9,0],
+  "jetbrains":[10.1,3.6,0], "night-owl":[9.9,3.5,0], "kanagawa":[8.6,4.6,1], "everforest":[8.1,4.6,1],
+  "rose-pine":[7.7,4.5,1], "tokyo-night":[8.3,3.1,0], "ayu":[7.8,3,0], "solarized":[8.1,4.1,0],
+  "one":[8,3,0], "desert":[0,0,0]
+};
+const THEMES = Object.keys(SCORES);
+const grid = document.getElementById('grid');
+for (const id of THEMES) {
+  for (const mode of ["light","dark"]) {
+    const cell = document.createElement('div'); cell.className='cell';
+    const card = document.createElement('div'); card.className='card';
+    card.setAttribute('data-dp-theme', id);
+    card.style.colorScheme = mode;                       // force this card's light-dark() branch
+    const s = SCORES[id]; const star = s[2] ? '★' : '';
+    card.innerHTML = `
+      <h3>${id} <span class="mode">${mode} ${star}</span></h3>
+      <div class="scene">
+        <div class="edge flow"  style="left:18px;top:70px;width:70px;transform:rotate(-18deg)"></div>
+        <div class="edge broken" style="left:120px;top:40px;width:60px;transform:rotate(14deg)"></div>
+        <span class="xmark" style="left:146px;top:38px">×</span>
+        <div class="cube ok"  style="left:16px;top:54px"></div>
+        <div class="cube ok"  style="left:96px;top:30px"></div>
+        <div class="cube bad" style="left:190px;top:40px"></div>
+        <span class="lbl" style="left:8px;top:96px">DB STORE <span class="id">· 1 OPEN</span></span>
+        <span class="lbl" style="left:170px;top:96px">TP ENGINE <span class="id">· YOURS</span></span>
+      </div>
+      <div class="pills">
+        <span class="pill">typescript</span><span class="pill">three.js</span>
+        <span class="pill">webgl</span><span class="pill acc">selected</span>
+      </div>
+      <div class="score">worst-case contrast — text <b>${s[0]}</b> · accent <b>${s[1]}</b> <span class="${s[2]?'good':''}">${s[2]?'strong both modes':'weaker'}</span></div>`;
+    cell.append(card); grid.append(cell);
+  }
+}
+</script>
+</body>
+</html>

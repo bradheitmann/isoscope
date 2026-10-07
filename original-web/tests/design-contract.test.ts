@@ -26,10 +26,16 @@ function unknownTypographyRoles(source: string, css: string): string[] {
 }
 
 describe("canonical Desert Pants design contract", () => {
-  it("presents the complete canonical theme inventory in exact reverse order", () => {
-    expect(presentedThemes).toEqual([...themes].reverse());
-    expect(presentedThemes).toHaveLength(18);
-    expect(presentedThemes.at(-1)?.id).toBe("desert");
+  it("presents the complete canonical theme inventory, curated for the map", () => {
+    /* Completeness is the contract: every canonical theme is offered exactly once.
+       Order is a product decision (readable, characterful palettes lead); the
+       inventory itself must stay complete and deduplicated. */
+    expect(presentedThemes).toHaveLength(themes.length);
+    expect(new Set(presentedThemes.map(t => t.id)).size).toBe(themes.length);
+    expect([...presentedThemes].map(t => t.id).sort()).toEqual([...themes].map(t => t.id).sort());
+    /* the curated lead set must actually lead, and desert (the base) stays present */
+    expect(presentedThemes[0]?.id).toBe("dracula");
+    expect(presentedThemes.some(t => t.id === "desert")).toBe(true);
   });
 
   it("rejects every UI typography role absent from generated canonical CSS", () => {

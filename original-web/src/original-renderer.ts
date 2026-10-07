@@ -29,7 +29,9 @@ import iconMinus from "../vendor/desert-pants/icons/svg/minus.svg?raw";
 import iconChevron from "../vendor/desert-pants/icons/svg/chevron-down.svg?raw";
 import { isoRouteAll } from "../../router.mjs";
 import { checkRoutes } from "./edge-qc";
-import { edgeHealth, onEdgeHealthChange } from "./telemetry";
+import { edgeHealth, onEdgeHealthChange, onWideEvent, recentEvents } from "./telemetry";
+import iconActivity from "../vendor/desert-pants/icons/svg/activity.svg?raw";
+import iconMenu from "../vendor/desert-pants/icons/svg/menu.svg?raw";
 import { isEditableTarget } from "./editable-target";
 import { getModule, setNotes, setFace, addInside, removeInside, uploadFile, isRemote, FACES, type FaceKey, type SurfaceKind, type SurfaceRef } from "./annotations";
 
@@ -113,6 +115,48 @@ setCanonicalIcon($<HTMLButtonElement>("btnStack"),iconLayers);
 setCanonicalIcon($<HTMLButtonElement>("btnGrid"),iconGrid);
 setCanonicalIcon($<HTMLButtonElement>("btnMedia"),iconMedia);
 setCanonicalIcon($<HTMLButtonElement>("btnShuffle"),iconShuffle);
+setCanonicalIcon($<HTMLButtonElement>("btnTelemetry"),iconActivity);
+setCanonicalIcon($<HTMLButtonElement>("railToggle"),iconMenu);
+
+/* ————— collapse-to-menu rail (phone) —————
+   On narrow widths the control rail is hidden behind one menu button; tapping it
+   opens the rail as a floating sheet, tapping the map (or the button again) closes. */
+const railToggle=$<HTMLButtonElement>("railToggle"),mapControls=$<HTMLElement>("mapControls");
+function setRailOpen(open: boolean): void {
+ mapControls.classList.toggle("rail-open",open);
+ railToggle.setAttribute("aria-expanded",String(open));
+}
+railToggle.addEventListener("click",ev=>{ev.stopPropagation();setRailOpen(!mapControls.classList.contains("rail-open"));});
+/* tap anywhere outside the open rail dismisses it (map, background, anywhere) */
+document.addEventListener("pointerdown",ev=>{
+ if(!mapControls.classList.contains("rail-open"))return;
+ const t=ev.target; if(t instanceof Node&&(mapControls.contains(t)||railToggle.contains(t)))return;
+ setRailOpen(false);
+});
+
+/* ————— live telemetry feed: the wide-event stream as edges are traced ————— */
+const telemetryFeed=$<HTMLElement>("telemetryFeed"),tfBody=$<HTMLElement>("tfBody"),tfEmpty=$<HTMLElement>("tfEmpty");
+function tfRender(): void {
+ const evs=recentEvents().slice(-40).reverse(); /* newest first */
+ tfEmpty.style.display=evs.length?"none":"";
+ tfBody.querySelectorAll(".tf-row").forEach(r=>r.remove());
+ for(const ev of evs){
+  const row=document.createElement("div");row.className="tf-row dp-list-row "+(ev.status==="ERROR"?"error":"ok");
+  const dot=document.createElement("span");dot.className="tf-dot";
+  const mid=document.createElement("span");mid.className="tf-name";
+  mid.innerHTML=`<span class="tf-edge">${ev["isoscope.edge"]}</span> ${ev.name}`;
+  const ms=document.createElement("span");ms.className="tf-ms";ms.textContent=ev.duration_ms.toFixed(0)+"ms";
+  row.append(dot,mid,ms);tfBody.append(row);
+ }
+}
+$("btnTelemetry").addEventListener("click",()=>{
+ const open=telemetryFeed.hidden;
+ telemetryFeed.hidden=!open;
+ $("btnTelemetry").setAttribute("aria-pressed",String(open));
+ if(open)tfRender();
+});
+$("tfClose").addEventListener("click",()=>{telemetryFeed.hidden=true;$("btnTelemetry").setAttribute("aria-pressed","false");});
+onWideEvent(()=>{ if(!telemetryFeed.hidden)tfRender(); }); /* live-update while open */
 setCanonicalIcon($<HTMLButtonElement>("btnSettings"),iconSettings);
 setCanonicalIcon($<HTMLButtonElement>("btnReadMap"),iconOverview);
 setCanonicalIcon($<HTMLButtonElement>("drawerClose"),iconClose);
@@ -148,7 +192,7 @@ function setSafe(elm: Element, html: string): void {
   elm.replaceChildren(fragment);
 }
 const RM=window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-let activeTheme: ThemeId="desert";
+let activeTheme: ThemeId="dracula"; /* curated default: fun + strong contrast in both modes */
 let activeMode: Mode="light";
 try {
  const savedTheme=localStorage.getItem("isoscope.dp.theme");
@@ -893,12 +937,12 @@ function npPlaylistRender(): void { /* rebuild the playlist rows from the store 
  for(const id of mods){
   const n=byId[id];
   const row=document.createElement("button");
-  row.type="button";row.className="np-track";row.setAttribute("role","option");
+  row.type="button";row.className="np-track dp-list-row dp-list-row--two-line";row.setAttribute("role","option");
   row.dataset.moduleId=id;
   row.setAttribute("aria-selected",String(id===current));
   if(id===current)row.classList.add("is-active");
-  const name=document.createElement("span");name.className="np-track-name";name.textContent=n?n.name:id;
-  const track=document.createElement("span");track.className="np-track-title";track.textContent=trackNameOf(id);
+  const name=document.createElement("span");name.className="np-track-name dp-list-row__title";name.textContent=n?n.name:id;
+  const track=document.createElement("span");track.className="np-track-title dp-list-row__secondary";track.textContent=trackNameOf(id);
   row.append(name,track);
   row.addEventListener("click",()=>{ /* picking a track selects + energizes its cube and gives it the voice */
    clearEdgeSel();
@@ -1014,8 +1058,8 @@ function materialsRender(): void {
   const has=ann!==undefined?!!ann:!!e;
   if(!has)continue;
   const li=document.createElement("li");
-  const btn=document.createElement("button");btn.type="button";btn.className="material";
-  btn.innerHTML=`<span class="material-face">${face}</span><span class="material-kind">${faceMaterialLabel(id,face)}</span>`;
+  const btn=document.createElement("button");btn.type="button";btn.className="material dp-list-row";
+  btn.innerHTML=`<span class="material-face">${face}</span><span class="material-kind dp-list-row__title">${faceMaterialLabel(id,face)}</span>`;
   btn.addEventListener("click",()=>{ inspFace=face; renderFaceChips(); flyToFace(byId[id],face); });
   const pl=document.createElement("button");pl.type="button";pl.className="material-pl";pl.title="Add to playlist";pl.textContent="+ playlist";
   pl.addEventListener("click",ev=>{ev.stopPropagation();setAudioFocus(id);mediaControls.solo(id);refreshTransport();});
@@ -1024,8 +1068,8 @@ function materialsRender(): void {
  /* inside files/notes as materials too (they open on the chosen face) */
  (getModule(id).inside??[]).forEach((it)=>{
   const li=document.createElement("li");
-  const btn=document.createElement("button");btn.type="button";btn.className="material";
-  btn.innerHTML=`<span class="material-face">inside</span><span class="material-kind">${it.kind==="note"?"Note":"File"} — ${it.name}</span>`;
+  const btn=document.createElement("button");btn.type="button";btn.className="material dp-list-row";
+  btn.innerHTML=`<span class="material-face">inside</span><span class="material-kind dp-list-row__title">${it.kind==="note"?"Note":"File"} — ${it.name}</span>`;
   btn.addEventListener("click",()=>{ flyToFace(byId[id],inspFace); });
   li.append(btn);materialsList.append(li);
  });
@@ -1046,8 +1090,8 @@ function insideRender(): void {
  if(!inspId)return;const id=inspId;
  insideList.replaceChildren();
  (getModule(id).inside??[]).forEach((it,idx)=>{
-  const li=document.createElement("li");
-  const label=it.src?`<a href="${it.src}" target="_blank" rel="noreferrer">${it.name}</a>`:`<span>${it.name}</span>`;
+  const li=document.createElement("li");li.className="dp-list-row";
+  const label=it.src?`<a class="dp-list-row__title" href="${it.src}" target="_blank" rel="noreferrer">${it.name}</a>`:`<span class="dp-list-row__title">${it.name}</span>`;
   li.innerHTML=`${label}`;
   const x=document.createElement("button");x.type="button";x.className="inside-x";x.setAttribute("aria-label","Remove");x.textContent="×";
   x.addEventListener("click",()=>{void removeInside(id,idx).then(()=>{insideRender();materialsRender();});});

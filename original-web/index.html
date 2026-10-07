@@ -23,6 +23,7 @@
   <main class="canvas-wrap" id="canvasWrap" aria-label="Flyover architecture map">
     <canvas id="gl" tabindex="0" aria-label="Isometric city. Click a building to inspect it. Drag to orbit, right-drag to pan, scroll to zoom."></canvas>
     <div id="labels" aria-hidden="true"></div>
+    <button class="dp-button dp-button--sm rail-toggle" id="railToggle" type="button" aria-label="Map controls menu" aria-expanded="false" aria-controls="mapControls" title="Controls"></button>
     <div class="controls-float" id="mapControls" aria-label="Map controls">
       <button class="dp-button dp-button--sm dp-button--outline" id="btnReset" type="button" aria-label="Reset camera" aria-keyshortcuts="r" title="Reset camera (R)"></button>
       <button class="dp-button dp-button--sm" id="btnFlow" type="button" aria-label="Flow: animate data connections" aria-pressed="false" title="Flow"></button>
@@ -32,6 +33,7 @@
       <button class="dp-button dp-button--sm dp-button--outline" id="btnShuffle" type="button" aria-label="Shuffle layout: rearrange where each module sits (and its level when stacked)" title="Shuffle layout"></button>
       <button class="dp-button dp-button--sm dp-button--outline" id="btnMedia" type="button" aria-label="Media mode: surfaces show assigned media (video/image/doc); off shows module state colors" aria-pressed="false" title="Media mode"></button>
       <button class="dp-button dp-button--sm dp-button--outline" id="btnGrid" type="button" aria-label="Grid: show or hide the ground grid" aria-pressed="true" title="Grid"></button>
+      <button class="dp-button dp-button--sm dp-button--outline" id="btnTelemetry" type="button" aria-label="Telemetry: live edge-flow event feed" aria-pressed="false" title="Telemetry"></button>
       <button class="dp-button dp-button--sm dp-button--outline" id="btnSettings" type="button" aria-label="Settings" aria-haspopup="dialog" aria-controls="drawer" aria-expanded="false" title="Settings"></button>
       <button class="dp-button dp-button--sm dp-button--outline" id="btnReadMap" type="button" aria-label="Open map overview" aria-expanded="false" aria-controls="readingPanel" title="Map overview"></button>
       <button class="dp-button dp-button--sm dp-button--outline" id="zin" type="button" aria-label="Zoom in" title="Zoom in"></button>
@@ -147,13 +149,21 @@
           <span class="np-t-ico" id="npPopMuteIco" aria-hidden="true"></span><span id="npPopMuteLabel">Mute</span>
         </button>
       </div>
-      <div class="np-track-list" id="npTrackList" role="listbox" aria-label="Playlist"></div>
+      <div class="np-track-list dp-list" id="npTrackList" role="listbox" aria-label="Playlist"></div>
     </div>
     <button class="np-fab" id="npPlay" type="button" hidden title="Sound — click for controls" aria-label="Sound and track controls" aria-pressed="false">
       <span class="np-eq" id="npEq" aria-hidden="true"><i></i><i></i><i></i></span>
     </button>
     <span class="me-avatar" id="meAvatar" title="You" aria-label="You">You</span>
   </div>
+  <!-- live telemetry feed: the wide-event stream as edges are traced -->
+  <aside class="telemetry-feed" id="telemetryFeed" hidden aria-label="Live edge telemetry" aria-live="off">
+    <header class="tf-head">
+      <h2 class="dp-type-label" id="tfTitle">Edge flow · live</h2>
+      <button class="dp-icon-button" id="tfClose" type="button" aria-label="Close telemetry"></button>
+    </header>
+    <div class="tf-body dp-list" id="tfBody"><p class="tf-empty dp-type-meta" id="tfEmpty">No crossings yet — interact with the map and flows will appear here.</p></div>
+  </aside>
   <!-- per-module inspect & edit: the "storage box" surface -->
   <div class="dp-scrim inspector-scrim" id="inspectorScrim" hidden aria-hidden="true"></div>
   <aside class="inspector" id="inspector" role="dialog" aria-modal="true" aria-labelledby="inspName" hidden inert>
@@ -169,7 +179,7 @@
       <section class="insp-section" aria-label="Materials">
         <h3 class="dp-type-label-sm">Materials</h3>
         <p class="dp-type-body-xs insp-hint">Everything attached to this module. Select one to open it on a face — that side becomes the screen, reader, or player.</p>
-        <ul class="materials-list" id="materialsList"></ul>
+        <ul class="materials-list dp-list" id="materialsList"></ul>
       </section>
       <section class="insp-section" aria-label="Surfaces">
         <h3 class="dp-type-label-sm">Surfaces</h3>
@@ -178,7 +188,9 @@
         <div class="face-editor" id="faceEditor">
           <div class="dp-segmented" id="kindSeg" role="group" aria-label="Content kind"></div>
           <div class="face-src" id="faceSrcRow">
-            <select id="faceLibSel" class="dp-field__control" aria-label="From the media bench"></select>
+            <div class="dp-field">
+              <select id="faceLibSel" class="dp-field__control" aria-label="From the media bench"></select>
+            </div>
             <div class="face-src-row">
               <input id="faceUrlIn" class="dp-field__control" type="url" placeholder="or paste a URL (video, image, stream)" aria-label="Source URL" />
               <label class="dp-button dp-button--outline face-upload" for="faceFileIn">Upload<input id="faceFileIn" type="file" accept="video/*,image/*,audio/*" hidden /></label>
@@ -204,7 +216,7 @@
       <section class="insp-section" aria-label="Inside">
         <h3 class="dp-type-label-sm">Inside</h3>
         <p class="dp-type-body-xs insp-hint">Files and notes kept inside this box.</p>
-        <ul class="inside-list" id="insideList"></ul>
+        <ul class="inside-list dp-list" id="insideList"></ul>
         <div class="inside-add">
           <input id="insideNoteIn" class="dp-field__control" type="text" placeholder="Add an inside note" aria-label="Inside note" />
           <button class="dp-button dp-button--sm" id="insideAddNote" type="button">Add</button>

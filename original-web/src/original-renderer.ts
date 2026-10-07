@@ -726,7 +726,7 @@ function setMediaDim(id: string,on: boolean): void {
  Object.values(faces).forEach(e=>{
   if(!e)return;
   const m=e.plane.material as THREE.MeshBasicMaterial;
-  if("opacity" in m){m.opacity=on?1:0.28;m.transparent=true;}
+  if("opacity" in m){m.opacity=on?1:0.64;m.transparent=true;}
  });
 }
 /* modules that carry at least one audible surface */
@@ -1642,7 +1642,7 @@ function paintCircuit(){
   mark(n.id,!allLive&&cordon.has(n.id));
   meshById[n.id].traverse((o: THREE.Object3D)=>{
     materialsOf(o).forEach((m: THREE.Material)=>{const r=Number(m.userData.op0??1);
-      m.transparent=!on||r<1;m.opacity=on?r:(o instanceof THREE.Mesh?0.32:0.22);m.needsUpdate=true;});});
+      m.transparent=!on||r<1;m.opacity=on?r:(o instanceof THREE.Mesh?0.66:0.6);m.needsUpdate=true;});});
   /* advisory bands stay legible when deselected: a lighter veil, never erased */
   (advisoryById[n.id]||[]).forEach(p=>{
    p.material.uniforms.uMotion.value=on?1:0;

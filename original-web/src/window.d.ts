@@ -23,6 +23,7 @@ declare global {
     __lblTick: number;
     __isoViewState: () => ViewState;
     __isoApplySpec: (spec: unknown) => void;
+    __isoRenderTagPills: (container: HTMLElement, ids: string[]) => void;
     __isoSwapState: () => unknown;
   }
 }

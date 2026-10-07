@@ -38,6 +38,7 @@ type MapNode = {
   id: string; tag?: string; g: string; name: string; x: number; y: number; w: number; d: number; h: number;
   does?: string; built?: string; refs?: string; good?: string; cond?: string; items: Item[]; st: string;
   media?: MediaSpec | MediaSpec[];   /* one surface, or several (one per face) */
+  tags?: string[];                    /* GitHub-style metadata pills (lang/tech/lib) */
   stack?: number; _lvl: number; _ly: number; _lyT: number; _anchor: THREE.Vector3;
 };
 type EdgeTuple = [string, string, string?];
@@ -432,7 +433,7 @@ function refreshAdvisory(n: MapNode): void {
    mist reuses the advisory shader on the assigned face; doc/slides/ink get a
    placeholder plane this slice. Surfaces dim with the circuit, honor reduced-
    motion (video holds its first frame unless live), and dispose with the scene. */
-type SurfaceEntry={ plane: THREE.Mesh; dispose: () => void; video?: HTMLVideoElement; kind: SurfaceKind; moduleId: string; group?: string; audio?: boolean };
+type SurfaceEntry={ plane: THREE.Mesh; dispose: () => void; video?: HTMLVideoElement; kind: SurfaceKind; moduleId: string; group?: string; audio?: boolean; text?: string; pages?: string[] };
 const surfacesById: Record<string, Partial<Record<FaceKey, SurfaceEntry>>> = {};
 /* face → world placement: a plane floated just proud of that face */
 function facePlane(n: MapNode,face: FaceKey,mat: THREE.Material): THREE.Mesh<THREE.PlaneGeometry, THREE.Material> {
@@ -515,6 +516,7 @@ function releaseVideoTex(src: string,tex: THREE.VideoTexture,shared: boolean): v
 }
 function buildVideo(n: MapNode,face: FaceKey,ref: SurfaceRef): SurfaceEntry | null {
  const src=ref.src;if(!src)return null;
+ if(isAudioSrc(src))return buildAudioPlate(n,face,ref); /* an audio src renders a player plate, not a video frame */
  const pv=acquireVideo(src,ref);
  const video=pv.video;
  const fit=ref.fit??"cover";
@@ -551,6 +553,7 @@ function syncTick(): void {
 }
 function buildImage(n: MapNode,face: FaceKey,ref: SurfaceRef): SurfaceEntry | null {
  const src=ref.src;if(!src)return null;
+ if(isAudioSrc(src))return buildAudioPlate(n,face,ref); /* an audio file on an image ref is a player plate */
  const loader=new THREE.TextureLoader();loader.crossOrigin="anonymous";
  const mat=new THREE.MeshBasicMaterial({transparent:true,toneMapped:false});
  const plane=facePlane(n,face,mat);
@@ -562,12 +565,188 @@ function buildImage(n: MapNode,face: FaceKey,ref: SurfaceRef): SurfaceEntry | nu
  meshById[n.id].add(plane);
  return {plane,kind:"image",moduleId:n.id,dispose(){const par=plane.parent;if(par)par.remove(plane);plane.geometry.dispose();mat.dispose();tex.dispose();}};
 }
-function buildPlaceholder(n: MapNode,face: FaceKey,kind: SurfaceKind): SurfaceEntry {
- /* TODO(slice6): real doc/slides/ink renderer */
- const mat=new THREE.MeshBasicMaterial({color:COL.alt,transparent:true,opacity:0.35});
+/* ————— flat document surfaces: doc / slides / ink / audio plates —————
+   Each is a baked 2D canvas on a plane, floated proud of the face exactly like a
+   video surface. Colors come from the live palette at draw time and every canvas
+   surface re-draws on theme change through `canvasSurfaces` — the texture analogue
+   of the `themed` material list. Docs and ink are static; only the theme repaints. */
+type CanvasSurface={ redraw: () => void };
+const canvasSurfaces: CanvasSurface[]=[];
+function registerCanvasSurface(s: CanvasSurface): () => void {
+ canvasSurfaces.push(s);
+ return ()=>{const i=canvasSurfaces.indexOf(s);if(i>=0)canvasSurfaces.splice(i,1);};
+}
+type SurfPalette={ bg: string; fg: string; sub: string; accent: string };
+function surfPalette(): SurfPalette {
+ return {bg:"#"+COL.warm.getHexString(),fg:"#"+COL.fg1.getHexString(),sub:"#"+COL.fg2.getHexString(),accent:"#"+COL.accent.getHexString()};
+}
+function canvasTexture(w: number,h: number): { g: CanvasRenderingContext2D; tex: THREE.CanvasTexture } {
+ const cv=document.createElement("canvas");cv.width=w;cv.height=h;
+ const g=cv.getContext("2d");if(!g)throw new Error("Canvas 2D context is unavailable");
+ const tex=new THREE.CanvasTexture(cv);tex.colorSpace=THREE.SRGBColorSpace;
+ return {g,tex};
+}
+/* plane + contain-letterbox for a baked canvas of aspect vw:vh on a face */
+function canvasPlane(n: MapNode,face: FaceKey,tex: THREE.Texture,vw: number,vh: number): { plane: THREE.Mesh<THREE.PlaneGeometry,THREE.Material>; mat: THREE.MeshBasicMaterial } {
+ const mat=new THREE.MeshBasicMaterial({map:tex,transparent:true,toneMapped:false});
  const plane=facePlane(n,face,mat);
+ const {pw,ph}=faceDims(n,face);containFit(tex,vw,vh,pw,ph);
  meshById[n.id].add(plane);
- return {plane,kind,moduleId:n.id,dispose(){const par=plane.parent;if(par)par.remove(plane);plane.geometry.dispose();mat.dispose();}};
+ return {plane,mat};
+}
+/* markdown-lite: `# `/`## ` headings, `**bold**` runs, `- ` bullets, paragraphs */
+type MdRun={ t: string; b: boolean };
+function mdRuns(s: string): MdRun[] {
+ const out: MdRun[]=[];const re=/\*\*([^*]+)\*\*/g;let last=0;let m: RegExpExecArray | null;
+ while((m=re.exec(s))){if(m.index>last)out.push({t:s.slice(last,m.index),b:false});out.push({t:m[1],b:true});last=m.index+m[0].length;}
+ if(last<s.length)out.push({t:s.slice(last),b:false});
+ return out.filter(r=>r.t.length>0);
+}
+/* draw one styled line with word-wrap. o.y is the first baseline; returns the next block's y. */
+function drawWrapped(g: CanvasRenderingContext2D,runs: MdRun[],o: { x: number; y: number; maxW: number; size: number; color: string; bold?: boolean; lineH: number; bullet?: boolean; maxY: number }): number {
+ const words: Array<{ w: string; b: boolean }>=[];
+ runs.forEach(r=>r.t.split(/\s+/).filter(Boolean).forEach(w=>words.push({w,b:r.b||o.bold===true})));
+ if(!words.length)return o.y;
+ const indent=o.bullet?o.size*1.2:0;
+ if(o.bullet){g.font=`400 ${o.size}px system-ui, sans-serif`;g.fillStyle=o.color;g.fillText("•",o.x,o.y);}
+ let cx=o.x+indent,cy=o.y;
+ const spaceW=g.measureText(" ").width;
+ for(let i=0;i<words.length;i++){
+  const wd=words[i];
+  g.font=`${wd.b?"700":"400"} ${o.size}px system-ui, sans-serif`;
+  const ww=g.measureText(wd.w).width;
+  if(i>0&&cx+spaceW+ww>o.x+o.maxW){cy+=o.lineH;cx=o.x+indent;if(cy>o.maxY)return cy;}
+  else if(i>0)cx+=spaceW;
+  g.fillStyle=o.color;g.fillText(wd.w,cx,cy);cx+=ww;
+ }
+ return cy+o.lineH;
+}
+/* draw markdown-ish text into the canvas, clipped to one page (H px tall) */
+function drawMarkdown(g: CanvasRenderingContext2D,text: string,W: number,H: number,pal: SurfPalette): void {
+ g.fillStyle=pal.bg;g.fillRect(0,0,W,H);
+ const pad=Math.round(W*0.08),maxW=W-pad*2,maxY=H-pad;
+ let y=pad+8;
+ for(const raw of text.split("\n")){
+  if(y>maxY)break;
+  const line=raw.trimEnd();
+  if(!line.trim()){y+=10;continue;}
+  if(line.startsWith("# "))y=drawWrapped(g,mdRuns(line.slice(2)),{x:pad,y:y+26,maxW,size:30,color:pal.fg,bold:true,lineH:38,maxY})+8;
+  else if(line.startsWith("## "))y=drawWrapped(g,mdRuns(line.slice(3)),{x:pad,y:y+22,maxW,size:23,color:pal.fg,bold:true,lineH:30,maxY})+5;
+  else if(line.startsWith("- "))y=drawWrapped(g,mdRuns(line.slice(2)),{x:pad+4,y:y+16,maxW:maxW-4,size:17,color:pal.fg,lineH:24,bullet:true,maxY});
+  else y=drawWrapped(g,mdRuns(line),{x:pad,y:y+16,maxW,size:17,color:pal.fg,lineH:24,maxY});
+ }
+}
+function pageFoot(g: CanvasRenderingContext2D,label: string,W: number,H: number,pal: SurfPalette): void {
+ g.font="600 16px system-ui, sans-serif";g.fillStyle=pal.sub;g.textAlign="right";
+ g.fillText(label,W-24,H-20);g.textAlign="left";
+}
+function buildDoc(n: MapNode,face: FaceKey,ref: SurfaceRef): SurfaceEntry {
+ const W=512,H=683; /* portrait ~3:4 */
+ const {g,tex}=canvasTexture(W,H);
+ const draw=(): void=>drawMarkdown(g,ref.text??"",W,H,surfPalette());
+ draw(); /* page 1 only; overflow is clipped at the page foot for a later scroll slice */
+ const {plane,mat}=canvasPlane(n,face,tex,W,H);
+ const unregister=registerCanvasSurface({redraw(){draw();tex.needsUpdate=true;}});
+ return {plane,kind:"doc",moduleId:n.id,text:ref.text,dispose(){unregister();const par=plane.parent;if(par)par.remove(plane);plane.geometry.dispose();mat.dispose();tex.dispose();}};
+}
+function buildSlides(n: MapNode,face: FaceKey,ref: SurfaceRef): SurfaceEntry {
+ const W=640,H=480; /* landscape ~4:3 */
+ const {g,tex}=canvasTexture(W,H);
+ const isImages=!!(ref.slides&&ref.slides.length);
+ const pages=isImages?(ref.slides as string[]):(ref.text??"").split(/\n---\n/);
+ const draw=(): void=>{
+  const pal=surfPalette();
+  g.fillStyle=pal.bg;g.fillRect(0,0,W,H);
+  if(!isImages)drawMarkdown(g,pages[0]??"",W,H,pal);
+  pageFoot(g,"1 / "+pages.length,W,H,pal);
+ };
+ if(isImages){ /* draw the first slide image contain-fit, then the page foot */
+  const img=new Image();img.crossOrigin="anonymous";
+  img.onload=()=>{
+   const pal=surfPalette();
+   g.fillStyle=pal.bg;g.fillRect(0,0,W,H);
+   const s=Math.min(W/img.width,H/img.height),dw=img.width*s,dh=img.height*s;
+   g.drawImage(img,(W-dw)/2,(H-dh)/2,dw,dh);
+   pageFoot(g,"1 / "+pages.length,W,H,pal);
+   tex.needsUpdate=true;
+  };
+  img.src=pages[0];
+ }
+ draw();
+ const {plane,mat}=canvasPlane(n,face,tex,W,H);
+ const unregister=registerCanvasSurface({redraw(){draw();tex.needsUpdate=true;}});
+ return {plane,kind:"slides",moduleId:n.id,pages,dispose(){unregister();const par=plane.parent;if(par)par.remove(plane);plane.geometry.dispose();mat.dispose();tex.dispose();}};
+}
+function buildInk(n: MapNode,face: FaceKey,ref: SurfaceRef): SurfaceEntry {
+ const {pw,ph}=faceDims(n,face);
+ const H=512,W=Math.max(64,Math.round(H*(pw/ph))); /* canvas matches the face aspect */
+ const {g,tex}=canvasTexture(W,H);
+ const strokes=(ref.ink??[]).filter(s=>s.length>=4);
+ const draw=(): void=>{
+  const pal=surfPalette();
+  g.fillStyle=pal.bg;g.fillRect(0,0,W,H);
+  if(!strokes.length){
+   g.font="500 24px system-ui, sans-serif";g.fillStyle=pal.sub;g.globalAlpha=0.5;g.textAlign="center";
+   g.fillText("ink",W/2,H/2);g.textAlign="left";g.globalAlpha=1;return;
+  }
+  /* face-local points (x,y[,z] flattened per stroke) normalized into the canvas,
+     aspect preserved, y flipped (face-local up → canvas down) */
+  const stride=strokes.every(s=>s.length%3===0)?3:2;
+  let x0=Infinity,y0=Infinity,x1=-Infinity,y1=-Infinity;
+  strokes.forEach(s=>{for(let i=0;i+1<s.length;i+=stride){const x=s[i],y=s[i+1];x0=Math.min(x0,x);y0=Math.min(y0,y);x1=Math.max(x1,x);y1=Math.max(y1,y);}});
+  const m=W*0.09,sw=Math.max(x1-x0,1e-6),sh=Math.max(y1-y0,1e-6);
+  const s=Math.min((W-2*m)/sw,(H-2*m)/sh),ox=(W-sw*s)/2,oy=(H-sh*s)/2;
+  g.strokeStyle=pal.accent;g.lineWidth=Math.max(2,W*0.007);g.lineCap="round";g.lineJoin="round";
+  strokes.forEach(st=>{
+   g.beginPath();
+   for(let i=0;i+1<st.length;i+=stride){
+    const x=ox+(st[i]-x0)*s,y=oy+(sh-(st[i+1]-y0))*s;
+    if(i===0)g.moveTo(x,y);else g.lineTo(x,y);
+   }
+   g.stroke();
+  });
+ };
+ draw();
+ const {plane,mat}=canvasPlane(n,face,tex,W,H);
+ const unregister=registerCanvasSurface({redraw(){draw();tex.needsUpdate=true;}});
+ return {plane,kind:"ink",moduleId:n.id,dispose(){unregister();const par=plane.parent;if(par)par.remove(plane);plane.geometry.dispose();mat.dispose();tex.dispose();}};
+}
+/* ————— audio player plate —————
+   An audio src (.mp3/.wav/.m4a/.ogg/.flac) on a video/image ref renders a static
+   plate (equalizer-bar motif + the track name) instead of frames; the shared
+   pool's media element still carries the audible track, so the EQ/voice logic
+   treats it like any other surface. */
+const AUDIO_EXT=/\.(mp3|wav|m4a|ogg|flac)([?#]|$)/i;
+function isAudioSrc(src: string): boolean { return AUDIO_EXT.test(src); }
+function trackName(src: string): string {
+ const base=(src.split(/[?#]/)[0].split("/").pop())??src;
+ const bare=base.replace(/\.[a-z0-9]+$/i,"");
+ try{return decodeURIComponent(bare);}catch{return bare;}
+}
+function buildAudioPlate(n: MapNode,face: FaceKey,ref: SurfaceRef): SurfaceEntry | null {
+ const src=ref.src;if(!src)return null;
+ const pv=acquireVideo(src,ref); /* pooled media element carries the audible track */
+ const {pw,ph}=faceDims(n,face);
+ const H=384,W=Math.max(64,Math.round(H*(pw/ph)));
+ const {g,tex}=canvasTexture(W,H);
+ const draw=(): void=>{
+  const pal=surfPalette();
+  g.fillStyle=pal.bg;g.fillRect(0,0,W,H);
+  const bars=5,bw=W*0.05,gap=bw*0.7,cx0=W/2-(bars*bw+(bars-1)*gap)/2,cy=H*0.40;
+  const seed=seedOf(n.id);
+  g.fillStyle=pal.accent;
+  for(let i=0;i<bars;i++){const hh=H*(0.10+0.11*Math.abs(Math.sin(seed*7+i*1.7)));g.fillRect(cx0+i*(bw+gap),cy-hh/2,bw,hh);}
+  g.textAlign="center";
+  g.font=`600 ${Math.round(H*0.075)}px system-ui, sans-serif`;g.fillStyle=pal.fg;
+  g.fillText(trackName(src),W/2,H*0.70,W*0.86);
+  g.font=`500 ${Math.round(H*0.045)}px system-ui, sans-serif`;g.fillStyle=pal.sub;
+  g.fillText("audio",W/2,H*0.80);
+  g.textAlign="left";
+ };
+ draw();
+ const {plane,mat}=canvasPlane(n,face,tex,W,H);
+ const unregister=registerCanvasSurface({redraw(){draw();tex.needsUpdate=true;}});
+ return {plane,kind:ref.kind,moduleId:n.id,video:pv.video,group:ref.group,audio:ref.audio!==false,dispose(){unregister();const par=plane.parent;if(par)par.remove(plane);plane.geometry.dispose();mat.dispose();tex.dispose();releaseVideo(src);}};
 }
 /* spec's `media` field → effective per-face map, with legacy face aliases */
 const LEGACY_FACE: Record<string, FaceKey> = { front: "north", left: "west", right: "east" };
@@ -590,7 +769,9 @@ function refreshSurfaces(n: MapNode): void {
   const ref=effective[face];if(!ref)continue;
   const entry=ref.kind==="video"?buildVideo(n,face,ref)
    :ref.kind==="image"?buildImage(n,face,ref)
-   :buildPlaceholder(n,face,ref.kind);
+   :ref.kind==="doc"?buildDoc(n,face,ref)
+   :ref.kind==="slides"?buildSlides(n,face,ref)
+   :buildInk(n,face,ref);
   if(entry)next[face]=entry;
  }
  if(Object.keys(next).length)surfacesById[n.id]=next;
@@ -845,6 +1026,31 @@ function nowPlayingTick(): void {
 const inspector=$<HTMLElement>("inspector"),inspectorScrim=$<HTMLElement>("inspectorScrim");
 const inspName=$<HTMLElement>("inspName"),inspTag=$<HTMLElement>("inspTag"),inspPersist=$<HTMLElement>("inspPersist");
 const materialsList=$<HTMLUListElement>("materialsList"),faceChips=$<HTMLDivElement>("faceChips");
+const tagPills=$<HTMLDivElement>("tagPills"),panelTagPills=$<HTMLDivElement>("panelTagPills");
+/* metadata tag pills: deduped across the given module ids, read-only, role="list" */
+function fillTagPills(container: HTMLElement, tags: string[]): void {
+ container.replaceChildren();
+ const seen=new Set<string>();
+ for(const t of tags){
+  const v=t.trim();if(!v||seen.has(v))continue;seen.add(v);
+  const pill=document.createElement("span");pill.className="tag-pill";pill.setAttribute("role","listitem");pill.textContent=v;
+  container.append(pill);
+ }
+ container.hidden=!seen.size;
+}
+function renderTagPills(container: HTMLElement, ids: string[]): void {
+ const tags: string[]=[];
+ for(const id of ids){const n=byId[id];if(n?.tags)tags.push(...n.tags);}
+ fillTagPills(container,tags);
+}
+function renderEdgeTagPills(container: HTMLElement, key: string): void {
+ const o=edgeLinesById[key];if(!o){container.replaceChildren();container.hidden=true;return;}
+ const d=EDGEDOCS[key]||{};
+ const tags=[edgeTypeLabel(o)];
+ if(o.health)tags.push(o.health);
+ if(d.carries)tags.push(d.carries);
+ fillTagPills(container,tags);
+}
 const inspNotes=$<HTMLTextAreaElement>("inspNotes"),notesSaved=$<HTMLElement>("notesSaved");
 const insideList=$<HTMLUListElement>("insideList");
 let inspId: string | null=null, inspFace: FaceKey="north";
@@ -919,6 +1125,7 @@ function openInspector(id: string): void {
  inspector.hidden=false;inspector.inert=false;inspectorScrim.hidden=false;
  inspector.classList.add("is-open");inspectorScrim.classList.add("is-open");
  renderFaceChips();materialsRender();insideRender();
+ renderTagPills(tagPills,[...new Set([id,...cordon])]);
 }
 function closeInspector(): void {
  inspector.classList.remove("is-open");inspectorScrim.classList.remove("is-open");
@@ -1116,8 +1323,14 @@ placeCamera(HOME.az,HOME.pol,HOME.r,HOME.tx,HOME.ty,HOME.tz,HOME.zoom);
 let flyGoal: { tx: number; ty: number; tz: number; zoom: number; az?: number; pol?: number; faceView?: { id: string; face: FaceKey } } | null = null;
 let faceView: { id: string; face: FaceKey } | null = null; /* active straight-on face viewer */
 controls.addEventListener("start",()=>{flyGoal=null;faceView=null;}); /* user input cancels autopilot + exits the face viewer */
-function resetView(){clearEdgeSel();flowing=false;btnFlow.setAttribute("aria-pressed","false");setCanonicalIcon(btnFlow,iconPlay);exitCordon();brush.clear();flyGoal={tx:HOME.tx,ty:HOME.ty,tz:HOME.tz,zoom:HOME.zoom,az:HOME.az,pol:HOME.pol};clearTrace();renderModuleNavigator();}
+/* Reset clears camera + ink, but the ink is recoverable: snapshot before clearing
+   and hold it so the next Draw-undo (or Ctrl/Cmd+Z) restores the erased strokes. */
+let resetInkBackup: ReturnType<typeof brush.snapshot> | null=null;
+function resetView(){clearEdgeSel();flowing=false;btnFlow.setAttribute("aria-pressed","false");setCanonicalIcon(btnFlow,iconPlay);exitCordon();resetInkBackup=brush.strokeCount()>0?brush.snapshot():null;brush.clear();flyGoal={tx:HOME.tx,ty:HOME.ty,tz:HOME.tz,zoom:HOME.zoom,az:HOME.az,pol:HOME.pol};clearTrace();renderModuleNavigator();}
 $("btnReset").addEventListener("click",resetView);
+/* undo-after-reset: if the brush is empty but a reset backup exists, restore it */
+$("btnDrawUndo").addEventListener("click",()=>{ if(brush.strokeCount()===0&&resetInkBackup){brush.restoreAll(resetInkBackup);resetInkBackup=null;} });
+document.addEventListener("keydown",ev=>{ if((ev.metaKey||ev.ctrlKey)&&ev.key.toLowerCase()==="z"&&brush.strokeCount()===0&&resetInkBackup){brush.restoreAll(resetInkBackup);resetInkBackup=null;} });
 /* R/W/Space are global camera/draw/transport commands. They should only yield when
    a true modal owns the keyboard (Settings) or the user is interacting INSIDE the
    reading tray — not merely because the tray happens to be open at its peek strip,
@@ -1518,6 +1731,7 @@ function renderCircuitPanel(){
  pE.textContent="Circuit · "+live.length+" modules energized · "+hot.length+" link"+(hot.length!==1?"s":"")+" carrying flow";
  pT.textContent=live.map(i=>byId[i].name).join(" + ");
  pS.textContent=cut.length+" connection"+(cut.length!==1?"s":"")+" to dark modules — de-energized";
+ renderTagPills(panelTagPills,live); /* multi-select: every selected module's tags, deduplicated */
  let html="";
  live.forEach(i=>{const n=byId[i];
   html+="<p class='dp-type-body-sm'><strong>"+n.id+" &middot; "+n.name+"</strong> &mdash; "+
@@ -1591,6 +1805,7 @@ function edgeTypeLabel(o: EdgeRuntime): string {return o.type==="auth"?"installs
 function renderEdgePanel(key: string): void {
  const o=edgeLinesById[key],e=key.split("-");
  const d=EDGEDOCS[key]||{};
+ renderEdgeTagPills(panelTagPills,key);
  pE.textContent="LINK · "+edgeTypeLabel(o)+(o.health?" · "+o.health.toUpperCase():"");
  pT.textContent=d.title||(byId[e[0]].name+" → "+byId[e[1]].name);
  pS.textContent=byId[e[0]].id+" → "+byId[e[1]].id;
@@ -1608,6 +1823,7 @@ function renderEdgePanel(key: string): void {
  setSafe(pP,h);
 }
 function renderPanel(id: string | null): void {
+ panelTagPills.replaceChildren();panelTagPills.hidden=true; /* pills re-fill for edges in renderEdgePanel */
  if(!id){
   /* overview: what this is + the whole board's state, one scroll — no hidden mode */
   pE.textContent=DEF.e;pT.textContent=DEF.t||"Overview";pS.textContent=DEF.s;
@@ -1709,6 +1925,7 @@ function refreshTheme(): void {
  computePalette();scene.background=COL.paper.clone();ambient.color.copy(COL.paper);sun.color.copy(COL.paper);fill.color.copy(COL.paper);makeGrid();
  themed.forEach(t=>{if(t.m.color){t.m.color.copy(t.get());t.m.needsUpdate=true;}});
  hatched.forEach(h=>{const old=h.m.map;h.m.map=makeHatch(h.st);h.m.needsUpdate=true;if(old)old.dispose();});
+ canvasSurfaces.forEach(c=>c.redraw()); /* doc/slides/ink/audio plates repaint from the live palette */
  /* advisory gradients repaint from the live theme */
  computeAdvisory();
  NODES.forEach(n=>{
@@ -1960,7 +2177,7 @@ function disposeScene(){
   if(o.xmark){o.xmark.traverse(m=>{if(m instanceof THREE.Mesh){geometries.add(m.geometry);materials.add(m.material as THREE.Material);}});scene.remove(o.xmark);}
  });
  geometries.forEach(g=>g.dispose());textures.forEach(t=>t.dispose());materials.forEach(m=>m.dispose());
- pickables.length=0;themed.length=0;hatched.length=0;edgeMats.length=0;
+ pickables.length=0;themed.length=0;hatched.length=0;edgeMats.length=0;canvasSurfaces.length=0;
  Object.keys(surfacesById).forEach(id=>{const faces=surfacesById[id];Object.values(faces).forEach(e=>e&&e.dispose());delete surfacesById[id];});
  syncSoundButton();
  Object.keys(advisoryById).forEach(k=>delete advisoryById[k]);
@@ -2173,7 +2390,22 @@ const brush=(()=>{
  canvas.addEventListener("pointermove",ev=>{if(active)extend(ev.clientX,ev.clientY);},true);
  window.addEventListener("pointerup",()=>{if(active)end();},true);
  syncCount();
- return {setActive,undo,clear,repaint,relift,resizeAll,isActive:()=>active};
+ /* serialize/restore so Reset can clear ink yet still offer an undo back */
+ type StrokeSnap={pts: number[]; target: string | null; baseY: number; lw: number};
+ function snapshot(): StrokeSnap[] {
+  return strokes.map(s=>({pts:s.pts.flatMap(p=>[p.x,p.y,p.z]),target:s.target,baseY:s.baseY,lw:s.mat.linewidth}));
+ }
+ function restoreAll(snap: StrokeSnap[]): void {
+  clear();
+  snap.forEach(sn=>{
+   const pts: THREE.Vector3[]=[];for(let i=0;i<sn.pts.length;i+=3)pts.push(new THREE.Vector3(sn.pts[i],sn.pts[i+1],sn.pts[i+2]));
+   const mat=makeMat();mat.linewidth=sn.lw;
+   const line=new Line2(geomFrom(pts),mat);line.computeLineDistances();group.add(line);
+   strokes.push({line,mat,pts,target:sn.target,baseY:sn.baseY});
+  });
+  syncCount();
+ }
+ return {setActive,undo,clear,repaint,relift,resizeAll,snapshot,restoreAll,isActive:()=>active,strokeCount:()=>strokes.length};
 })();
 
 /* ————— frame loop ————— */
@@ -2303,6 +2535,7 @@ window.__isoViewState=()=>({
  if(saved.pinned&&byId[saved.pinned]&&cordon.size===0){pinned=saved.pinned;NODES.forEach(n=>mark(n.id,n.id===pinned));renderPanel(pinned);}
 })();
 window.__isoApplySpec=(spec: unknown)=>applySpec(spec as Spec);
+window.__isoRenderTagPills=(container,ids)=>renderTagPills(container,ids);
 window.__isoSwapState=()=>({stacked,pinned,selEdge,ti,flowing,dotSet,lineSet,cordon:[...cordon],
  cam:{p:camera.position.toArray(),t:controls.target.toArray(),zoom:camera.zoom},fly:!!flyGoal,
  center:{...CENTER},bounds:{..._bb},nodes:NODES.map(n=>({id:n.id,anchor:[n._anchor.x,n._ly,n._anchor.z],items:n.items})),

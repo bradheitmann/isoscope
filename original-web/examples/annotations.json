@@ -1,4 +1,10 @@
 {
  "$schema": "per-module annotations",
- "modules": {}
+ "modules": {
+  "TP": {
+   "faces": {
+    "north": null
+   }
+  }
+ }
 }

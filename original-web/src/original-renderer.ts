@@ -14,6 +14,7 @@ import iconTrace from "../vendor/desert-pants/icons/svg/arrow-right.svg?raw";
 import iconDraw from "../vendor/desert-pants/icons/svg/pen.svg?raw";
 import iconLayers from "../vendor/desert-pants/icons/svg/layers.svg?raw";
 import iconGrid from "../vendor/desert-pants/icons/svg/grid.svg?raw";
+import iconMedia from "../vendor/desert-pants/icons/svg/clapperboard.svg?raw";
 import iconSoundOn from "../vendor/desert-pants/icons/svg/volume-2.svg?raw";
 import iconSoundOff from "../vendor/desert-pants/icons/svg/volume-x.svg?raw";
 import iconStop from "../vendor/desert-pants/icons/svg/stop.svg?raw";
@@ -105,6 +106,7 @@ setCanonicalIcon($<HTMLButtonElement>("btnTrace"),iconTrace);
 setCanonicalIcon($<HTMLButtonElement>("btnDraw"),iconDraw);
 setCanonicalIcon($<HTMLButtonElement>("btnStack"),iconLayers);
 setCanonicalIcon($<HTMLButtonElement>("btnGrid"),iconGrid);
+setCanonicalIcon($<HTMLButtonElement>("btnMedia"),iconMedia);
 setCanonicalIcon($<HTMLButtonElement>("btnSettings"),iconSettings);
 setCanonicalIcon($<HTMLButtonElement>("btnReadMap"),iconOverview);
 setCanonicalIcon($<HTMLButtonElement>("drawerClose"),iconClose);
@@ -559,19 +561,6 @@ function buildImage(n: MapNode,face: FaceKey,ref: SurfaceRef): SurfaceEntry | nu
  meshById[n.id].add(plane);
  return {plane,kind:"image",moduleId:n.id,dispose(){const par=plane.parent;if(par)par.remove(plane);plane.geometry.dispose();mat.dispose();tex.dispose();}};
 }
-/* mist: the advisory wash, placed on the assigned face. Registered into
-   advisoryById so the tick loop's uTime accumulation and theme repaint reach it. */
-function buildMist(n: MapNode,face: FaceKey): SurfaceEntry | null {
- const cats=Array.from(new Set((n.items||[]).map(i=>i.c).filter(c=>ADVISORY_FILL[c])));
- const base=advisoryPlane(n,cats);if(!base)return null;
- base.geometry.dispose(); /* the advisory helper builds a front-face plane; re-place on the requested face */
- const placed=facePlane(n,face,base.material) as THREE.Mesh<THREE.PlaneGeometry, THREE.ShaderMaterial>;
- placed.userData.advisoryCats=base.userData.advisoryCats;
- meshById[n.id].add(placed);
- (advisoryById[n.id]=advisoryById[n.id]||[]).push(placed);
- return {plane:placed,kind:"mist",moduleId:n.id,dispose(){const par=placed.parent;if(par)par.remove(placed);placed.geometry.dispose();placed.material.dispose();
-  const arr=advisoryById[n.id];if(arr){const i=arr.indexOf(placed);if(i>=0)arr.splice(i,1);}}};
-}
 function buildPlaceholder(n: MapNode,face: FaceKey,kind: SurfaceKind): SurfaceEntry {
  /* TODO(slice6): real doc/slides/ink renderer */
  const mat=new THREE.MeshBasicMaterial({color:COL.alt,transparent:true,opacity:0.35});
@@ -600,13 +589,39 @@ function refreshSurfaces(n: MapNode): void {
   const ref=effective[face];if(!ref)continue;
   const entry=ref.kind==="video"?buildVideo(n,face,ref)
    :ref.kind==="image"?buildImage(n,face,ref)
-   :ref.kind==="mist"?buildMist(n,face)
    :buildPlaceholder(n,face,ref.kind);
   if(entry)next[face]=entry;
  }
  if(Object.keys(next).length)surfacesById[n.id]=next;
+ applySurfaceVisibility();
  syncSoundButton();
 }
+/* ————— media mode —————
+   Ships OFF. Off = every surface plane hides and its video pauses (but keeps
+   loading in the background), so the cubes read as clean state-colored boxes while
+   media warms up. On = assigned media appears on the faces and every video starts
+   from the beginning. Sound stays off until the user separately arms the EQ button. */
+let mediaMode=false;
+function applySurfaceVisibility(): void {
+ Object.values(surfacesById).forEach(faces=>Object.values(faces).forEach(e=>{
+  if(!e)return;
+  e.plane.visible=mediaMode;
+  if(e.video){ if(!mediaMode){e.video.pause();} }
+ }));
+}
+function applyMediaMode(): void {
+ applySurfaceVisibility();
+ if(mediaMode){ /* start every surface's video from the top, together */
+  Object.values(videoPool).forEach(pv=>{ pv.video.currentTime=0; if(!RM||pv.live)pv.video.play().catch(()=>{}); });
+  applyAudio(); /* re-evaluate the (still-muted-until-armed) voice + EQ motion */
+ }
+ refreshTransport();
+}
+$("btnMedia").addEventListener("click",()=>{
+ mediaMode=!mediaMode;
+ $("btnMedia").setAttribute("aria-pressed",String(mediaMode));
+ applyMediaMode();
+});
 function setMediaDim(id: string,on: boolean): void {
  const faces=surfacesById[id];if(!faces)return;
  Object.values(faces).forEach(e=>{
@@ -691,7 +706,9 @@ const mediaControls={
 function npModule(): string | null { return audioFocus??(cordon.size===1?[...cordon][0]:null); }
 function refreshTransport(): void {
  const any=audibleModules().length>0;
- if(!any){npPlay.hidden=true;npPopoverHide();return;}
+ /* the EQ button only exists once media mode is on — before that there is nothing
+    to hear, so it stays hidden rather than beckoning toward silence. */
+ if(!any||!mediaMode){npPlay.hidden=true;npPopoverHide();return;}
  npPlay.hidden=false;
  const audible=masterAudio&&!!npModule();
  npPlay.classList.toggle("is-playing",audible);
@@ -840,7 +857,6 @@ function faceMaterialLabel(id: string,face: FaceKey): string {
  if(ref.kind==="doc")return "Document";
  if(ref.kind==="image")return "Image";
  if(ref.kind==="slides")return "Slides";
- if(ref.kind==="mist")return "Wash";
  return ref.kind;
 }
 function materialsRender(): void {
@@ -926,7 +942,7 @@ const faceLibSel=$<HTMLSelectElement>("faceLibSel"),faceUrlIn=$<HTMLInputElement
 const MEDIALIB=(SPEC.mediaLibrary??[]) as { id: string; title: string; src: string; kind: string }[];
 { /* build the kind segmented control + the library select once */
  const seg=$("kindSeg");
- for(const k of ["video","image","doc","slides","mist","ink"] as SurfaceKind[]){
+ for(const k of ["video","image","doc","slides","ink"] as SurfaceKind[]){
   const b=document.createElement("button");b.type="button";b.textContent=k;b.dataset.kind=k;
   b.setAttribute("aria-pressed",String(k===inspKind));
   b.addEventListener("click",()=>{ inspKind=k; seg.querySelectorAll("button").forEach(x=>x.setAttribute("aria-pressed",String(x===b)));
@@ -942,7 +958,6 @@ function applyFace(): void {
  if(!inspId)return;const id=inspId,face=inspFace;
  let ref: SurfaceRef | null=null;
  if(inspKind==="doc"){ const t=faceDocIn.value.trim(); ref=t?{kind:"doc",text:t}:null; }
- else if(inspKind==="mist"){ ref={kind:"mist"}; }
  else if(inspKind==="ink"){ ref={kind:"ink"}; }
  else{ const src=faceUrlIn.value.trim(); ref=src?{kind:inspKind,src,fit:"cover",audio:inspKind==="video",group:"theater"}:null; }
  void setFace(id,face,ref).then(()=>{
@@ -2196,16 +2211,8 @@ function tick(){
  if(!lvlMoving&&rebuildDotsAfterLevelMotion){Object.values(edgeLinesById).forEach(o=>buildDots(o));rebuildDotsAfterLevelMotion=false;}
  /* while Stack lifts the levels, strokes bound to a module ride it each frame */
  if(lvlMoving||brushReliftPending){brush.relift();if(!lvlMoving)brushReliftPending=false;}
- /* advisory mist drifts only while Flow is on, and only on energized modules.
-    Time is a free-running accumulator — never wrapped — so the fog field is a
-    sampled continuum with no snap-back. */
- Object.keys(advisoryById).forEach(id=>{
-  const on=cordon.size===0||cordon.has(id);
-  advisoryById[id].forEach(p=>{
-   const live=flowing&&on&&!RM;
-   if(live)p.material.uniforms.uTime.value+=0.016;
-  });
- });
+ /* advisory gradients are STATIC now — Brad: "colors and gradients, they don't need
+    to move." No mist drift; the wash is a fixed state tint, not a living fog. */
  /* junction dots read exactly as their pipe: same ink, same opacity — ghosted pipe, ghosted join */
  Object.values(edgeLinesById).forEach(o=>{const lm=o.line.material;o.jn.forEach(j=>{j.material.color.copy(lm.color);j.material.opacity=lm.opacity;j.visible=lm.opacity>0.02;});});
  /* flow dots exist only where flow is on AND the line is lit */

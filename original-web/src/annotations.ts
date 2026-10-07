@@ -8,8 +8,8 @@
 
 export type FaceKey = "roof" | "north" | "south" | "east" | "west" | "bottom";
 export const FACES: FaceKey[] = ["roof", "north", "south", "east", "west", "bottom"];
-export type SurfaceKind = "video" | "image" | "mist" | "doc" | "slides" | "ink";
-export const SURFACE_KINDS: SurfaceKind[] = ["video", "image", "mist", "doc", "slides", "ink"];
+export type SurfaceKind = "video" | "image" | "doc" | "slides" | "ink";
+export const SURFACE_KINDS: SurfaceKind[] = ["video", "image", "doc", "slides", "ink"];
 
 export type SurfaceRef = {
   kind: SurfaceKind;

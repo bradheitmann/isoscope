@@ -381,7 +381,7 @@ function faceDims(n: MapNode,face: FaceKey): { pw: number; ph: number } {
    surfaces sampling 6 sources costs 6 decoders, not 60 — that is the difference
    between a slideshow and a smooth city. Each face gets its own VideoTexture over
    the shared element so UVs/letterboxing stay per-face. */
-type PooledVideo={ video: HTMLVideoElement; live: boolean; refs: number; group?: string; src: string };
+type PooledVideo={ video: HTMLVideoElement; live: boolean; refs: number; group?: string; src: string; warmed?: boolean };
 const videoPool: Record<string, PooledVideo>={};
 function acquireVideo(src: string,ref: SurfaceRef): PooledVideo {
  const existing=videoPool[src];
@@ -399,6 +399,14 @@ function acquireVideo(src: string,ref: SurfaceRef): PooledVideo {
  video.src=src; /* native HLS plays where supported; an hls.js shim can attach here later */
  if(mayPlay)video.play().catch(()=>{/* autoplay may wait for a gesture */});
  const pv: PooledVideo={video,live,refs:1,group:ref.group,src};
+ /* decoder warm-up: preload=auto buffers bytes but leaves the decoder cold, so the
+    first play() after media-mode-on stalls on a cold start. Once the element can
+    play, prime it — play a frame muted, then hold paused at t=0 — so toggling media
+    on is a resume, not a cold decode. Cheap: one frame per source, in the background. */
+ const warm=()=>{ if(pv.warmed)return; pv.warmed=true;
+  video.play().then(()=>{ video.pause(); video.currentTime=0; }).catch(()=>{});
+ };
+ if(video.readyState>=3)warm(); else video.addEventListener("canplay",warm,{once:true});
  videoPool[src]=pv;
  if(ref.group)joinSyncGroup(ref.group,video);
  return pv;
@@ -710,8 +718,18 @@ function applySurfaceVisibility(): void {
 }
 function applyMediaMode(): void {
  applySurfaceVisibility();
- if(mediaMode){ /* start every surface's video from the top, together */
-  Object.values(videoPool).forEach(pv=>{ pv.video.currentTime=0; if(!RM||pv.live)pv.video.play().catch(()=>{}); });
+ if(mediaMode){ /* start every surface's video from the top — decoders are pre-warmed,
+    so this is a resume, not a cold start. Stagger by ~40ms so a weak CPU isn't hit
+    with a 12-way decode spike in a single frame; imperceptible, but smooth. */
+  let i=0;
+  Object.values(videoPool).forEach(pv=>{
+   const v=pv.video;
+   setTimeout(()=>{
+    if(v.currentTime>0.5)v.currentTime=0; /* restart from the top, but skip a redundant seek */
+    if(!RM||pv.live)v.play().catch(()=>{});
+   }, i*40);
+   i++;
+  });
   applyAudio(); /* re-evaluate the (still-muted-until-armed) voice + EQ motion */
  }
  refreshTransport();

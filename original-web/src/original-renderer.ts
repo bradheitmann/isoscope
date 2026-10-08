@@ -40,6 +40,7 @@ import iconCode from "./icons/code.svg?raw";
 import { isEditableTarget } from "./editable-target";
 import { vetSrc, escapeHtml, safeLinkHref } from "./media-src";
 import { labelScale, legibleScale, planHomeFit, unobstructedRect, veryFarZoom, type HomeLabel, type Rect } from "./home-fit";
+import { insideUploadOutcome } from "./upload-policy";
 import { getModule, setNotes, setFace, addInside, removeInside, uploadFile, isRemote, FACES, type FaceKey, type SurfaceKind, type SurfaceRef } from "./annotations";
 
 type Item = { c: "red" | "amber" | "you" | "info" | string; l: string };
@@ -1231,7 +1232,7 @@ $("insideAddNote").addEventListener("click",()=>{
 });
 $("insideFileIn").addEventListener("change",ev=>{
  if(!inspId)return;const f=(ev.target as HTMLInputElement).files?.[0];if(!f)return;
- void uploadFile(f).then(r=>addInside(inspId!,{kind:"file",name:f.name,src:r.src,addedAt:Date.now()})).then(()=>{insideRender();materialsRender();inspPersist.textContent=isRemote()?"File uploaded + saved.":"Added for this session — export to keep.";});
+ const id=inspId;void uploadFile(f).then(r=>{const o=insideUploadOutcome(r,isRemote());if(!o.persist){inspPersist.textContent=o.message;return;}return addInside(id,{kind:"file",name:f.name,src:r.src,addedAt:Date.now()}).then(()=>{insideRender();materialsRender();inspPersist.textContent=o.message;});});
  (ev.target as HTMLInputElement).value="";
 });
 /* ————— face editor: pick a kind + source, apply to the active face ————— */
@@ -1269,7 +1270,7 @@ $("faceApply").addEventListener("click",applyFace);
 $("faceClear").addEventListener("click",()=>{ if(!inspId)return; void setFace(inspId,inspFace,null).then(()=>{const n=byId[inspId!];if(n)refreshSurfaces(n);materialsRender();renderFaceChips();}); });
 faceFileIn.addEventListener("change",ev=>{
  const f=(ev.target as HTMLInputElement).files?.[0];if(!f)return;
- void uploadFile(f).then(r=>{ faceUrlIn.value=r.src; inspPersist.textContent=r.durable?"Uploaded.":"Added for this session — export to keep."; });
+ void uploadFile(f).then(r=>{ if(r.error){inspPersist.textContent=`Upload refused (${r.error}) — not applied.`;return;} faceUrlIn.value=r.src; inspPersist.textContent=r.durable?"Uploaded.":"Added for this session — export to keep."; });
  (ev.target as HTMLInputElement).value="";
 });
 

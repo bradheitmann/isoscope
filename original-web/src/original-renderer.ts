@@ -9,17 +9,19 @@ import { themes as DP_THEMES, setTheme as setDPTheme, setMode as setDPMode, type
 import { tokens, type TokenPath } from "../vendor/desert-pants/build/web/tokens";
 import { presentedThemes } from "./theme-order";
 import { pageNavigation, type NavigationNode } from "./navigation";
+import { energizeTrack } from "./playlist";
+import { clearBrush, type BrushState } from "./brush-model";
 import iconPlay from "../vendor/desert-pants/icons/svg/play.svg?raw";
 import iconPause from "../vendor/desert-pants/icons/svg/pause.svg?raw";
 import iconTrace from "../vendor/desert-pants/icons/svg/arrow-right.svg?raw";
-import iconDraw from "../vendor/desert-pants/icons/svg/pen.svg?raw";
-import iconLayers from "../vendor/desert-pants/icons/svg/layers.svg?raw";
-import iconGrid from "../vendor/desert-pants/icons/svg/grid.svg?raw";
-import iconShuffle from "../vendor/desert-pants/icons/svg/shuffle.svg?raw";
-import iconMedia from "../vendor/desert-pants/icons/svg/clapperboard.svg?raw";
-import iconSoundOn from "../vendor/desert-pants/icons/svg/volume-2.svg?raw";
-import iconSoundOff from "../vendor/desert-pants/icons/svg/volume-x.svg?raw";
-import iconStop from "../vendor/desert-pants/icons/svg/stop.svg?raw";
+import iconDraw from "./icons/pen.svg?raw";
+import iconLayers from "./icons/layers.svg?raw";
+import iconGrid from "./icons/grid.svg?raw";
+import iconShuffle from "./icons/shuffle.svg?raw";
+import iconMedia from "./icons/clapperboard.svg?raw";
+import iconSoundOn from "./icons/volume-2.svg?raw";
+import iconSoundOff from "./icons/volume-x.svg?raw";
+import iconStop from "./icons/stop.svg?raw";
 import iconReset from "../vendor/desert-pants/icons/svg/rotate-ccw.svg?raw";
 import iconSettings from "../vendor/desert-pants/icons/svg/settings.svg?raw";
 import iconOverview from "../vendor/desert-pants/icons/svg/info.svg?raw";
@@ -32,9 +34,9 @@ import iconChevron from "../vendor/desert-pants/icons/svg/chevron-down.svg?raw";
 import { isoRouteAll } from "../../router.ts";
 import { buildGallery, type LayoutCandidate, type LayoutNode } from "./layouts";
 import { edgeHealth, onEdgeHealthChange, onWideEvent, recentEvents, emitWide, allEdgeMetrics, attentionEdges, edgeMetrics, type EdgeMetrics } from "./telemetry";
-import iconActivity from "../vendor/desert-pants/icons/svg/activity.svg?raw";
-import iconMenu from "../vendor/desert-pants/icons/svg/menu.svg?raw";
-import iconCode from "../vendor/desert-pants/icons/svg/code.svg?raw";
+import iconActivity from "./icons/activity.svg?raw";
+import iconMenu from "./icons/menu.svg?raw";
+import iconCode from "./icons/code.svg?raw";
 import { isEditableTarget } from "./editable-target";
 import { getModule, setNotes, setFace, addInside, removeInside, uploadFile, isRemote, FACES, type FaceKey, type SurfaceKind, type SurfaceRef } from "./annotations";
 
@@ -1051,7 +1053,7 @@ function npPlaylistRender(): void { /* rebuild the playlist rows from the store 
   row.append(name,track);
   row.addEventListener("click",()=>{ /* picking a track selects + energizes its cube and gives it the voice */
    clearEdgeSel();
-   cordon.clear();cordon.add(id);pinned=null;
+   energizeTrack(cordon,id);pinned=null;
    flyTo(byId[id]);
    setAudioFocus(id);mediaControls.solo(id);
    applyCircuit(); /* lights the cube + label, refreshes panel + transport */
@@ -1729,7 +1731,7 @@ syncReaderLayout();
 btnReadMap.addEventListener("click",()=>{
  renderPanel(null);
  readingPanel.scrollTop=0; /* the headline leads; search never hijacks the scroll position */
- if(compactReader.matches)openReadingPanel(false);
+ if(compactReader.matches)openReadingPanel(true);
  else readingPanel.focus({preventScroll:true});
 });
 /* the tray is non-modal: scrim clicks pass to the art; Escape rests the tray at peek */
@@ -2663,7 +2665,12 @@ const brush=(()=>{
   const i=brushMats.indexOf(s.mat);if(i>=0)brushMats.splice(i,1);
  }
  function undo(): void { const s=strokes.pop();if(!s)return;drop(s);syncCount(); }
- function clear(): void { while(strokes.length){const s=strokes.pop();if(!s)break;drop(s);}syncCount(); }
+ function clear(): void {
+  const st: BrushState<Stroke>={strokes,current,drawing};
+  clearBrush(st,drop);
+  current=st.current;drawing=st.drawing;
+  syncCount();
+ }
  function repaint(): void { const c=ink();strokes.forEach(s=>{s.mat.color.copy(c);}); }
  function resizeAll(): void { brushMats.forEach(m=>m.resolution.set(wrap.clientWidth,wrap.clientHeight)); }
  /* strokes bound to a module ride it when Stack lifts the levels */

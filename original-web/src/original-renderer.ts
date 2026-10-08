@@ -519,9 +519,14 @@ function acquireVideo(src: string,ref: SurfaceRef): PooledVideo {
  if(ref.group)joinSyncGroup(ref.group,video);
  return pv;
 }
+/* a layout-only rebuild (shuffle) must not tear down the media — the playing video
+   survives. keepMediaAlive makes releaseVideo a refcount-only no-op so the pooled,
+   still-playing element is re-acquired by the rebuilt surfaces without a hiccup. */
+let keepMediaAlive=false;
 function releaseVideo(src: string): void {
  const pv=videoPool[src];if(!pv)return;
  pv.refs--;
+ if(keepMediaAlive)return;              /* preserve the playing element across a relayout */
  if(pv.refs>0)return;
  pv.video.pause();pv.video.removeAttribute("src");pv.video.load();
  if(pv.group)leaveSyncGroup(pv.group,pv.video);
@@ -2373,7 +2378,8 @@ EDGES.forEach(e=>{
  Object.assign(DEF,{e:pE.textContent,t:pT.textContent,s:pS.textContent,node:pOv.cloneNode(true)});
  window.__lblMeasured=false;
 }
-function disposeScene(){
+function disposeScene(preserveMedia=false){
+ keepMediaAlive=preserveMedia; /* a layout-only rebuild keeps the playing media alive */
  const geometries=new Set<THREE.BufferGeometry>(),materials=new Set<THREE.Material>(),textures=new Set<THREE.Texture>();
  Object.values(meshById).forEach(g=>{
   g.traverse((o: THREE.Object3D)=>{if(o instanceof THREE.Mesh || o instanceof THREE.Line)geometries.add(o.geometry);
@@ -2394,6 +2400,7 @@ function disposeScene(){
  Object.keys(advisoryById).forEach(k=>delete advisoryById[k]);
  [meshById,edgeLinesById,byId].forEach(m=>Object.keys(m).forEach(k=>delete m[k]));
  lblLayer.replaceChildren();legend.replaceChildren();
+ keepMediaAlive=false; /* the preserve flag only lasts for the teardown */
 }
 function blastIncident(){
  const reds=NODES.filter(n=>n.items.some(i=>i.c==="red"));
@@ -2406,7 +2413,7 @@ function blastIncident(){
  flyTo(worst);
  flyGoal = { ...(flyGoal ?? { tx: HOME.tx, ty: HOME.ty, tz: HOME.tz, zoom: HOME.zoom }), tx: worst._anchor.x, ty: worst._lyT, tz: worst._anchor.z };
 }
-function applySpec(next: Spec): void{
+function applySpec(next: Spec,preserveMedia=false): void{
  // Clone before clearing: callers may supply objects aliased to the active spec.
  next=structuredClone(next);
  layoutGallery=null;galleryIndex=-1; /* a new graph means a freshly-computed layout gallery */
@@ -2422,7 +2429,7 @@ function applySpec(next: Spec): void{
    if(value&&typeof value==="object")Object.assign(record,value);
   }
  };
- disposeScene();
+ disposeScene(preserveMedia);
  const replacements: Array<readonly [unknown,unknown]> = [
   [NODES,next.nodes],[EDGES,next.edges],[GROUPS,next.groups],[STATUS,next.status],[SHORT,next.short],
   [EDGEDOCS,next.edgeDocs],[EDGESTATUS,next.edgeStatus],[TELEMETRY,next.telemetry],[LEVELS,next.levels],
@@ -2487,7 +2494,9 @@ function shuffleLayout(): void {
  const board=g[galleryIndex];
  const next=structuredClone(SPEC);
  next.nodes.forEach(n=>{ const p=board.positions[n.id]; if(p){n.x=p.x;n.y=p.y;} });
- applySpec(next);
+ /* layout-only change: the same nodes carry the same media, just repositioned.
+    preserveMedia keeps every playing video alive across the rebuild. */
+ applySpec(next,true);
  flyGoal={tx:HOME.tx,ty:HOME.ty,tz:HOME.tz,zoom:HOME.zoom,az:HOME.az,pol:HOME.pol};
  $("btnShuffle").setAttribute("title",`Layout: ${board.name} (${galleryIndex+1}/${g.length}) — click for next`);
 }

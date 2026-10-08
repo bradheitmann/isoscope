@@ -2,27 +2,40 @@ import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import type { Session } from "./cdp";
 import { typographyTuples, type RoleTuple } from "./cssvars";
+import { checkAgainstCanon, loadCanon, type Canon } from "./oracle";
 import type { Recorder } from "./report";
 
 const C = "typography";
 
-function checkSource(rec: Recorder, label: string, css: string): RoleTuple[] {
+function checkSource(rec: Recorder, label: string, css: string, canon: Canon | null): RoleTuple[] {
   const { tuples, roles, variantTuples } = typographyTuples(css);
   const bad = [...tuples, ...variantTuples].filter(t => t.value === null || t.value === "" || t.value.includes("var("));
   rec.check(C, `${label}: roles found`, roles.length > 0, `${roles.length} .dp-type-* roles, ${tuples.length} role tuples, ${variantTuples.length} web/compact variant tuples`);
   rec.check(C, `${label}: every var() chain resolves to a literal`, bad.length === 0,
     bad.length === 0 ? `${tuples.length + variantTuples.length} tuples, 0 mismatches` : `${bad.length} unresolved, first: ${bad.slice(0, 3).map(b => `${b.role}/${b.prop}: ${b.error ?? b.value}`).join("; ")}`);
+  if (canon) {
+    const r = checkAgainstCanon(canon, tuples);
+    rec.check(C, `${label}: roles match vendored token JSON (independent oracle)`, r.mismatches.length === 0 && r.rolesChecked > 0,
+      `${r.rolesChecked} roles checked, ${r.tuplesChecked} tuples, ${r.mismatches.length} mismatches` + (r.mismatches.length ? `, first: ${r.mismatches.slice(0, 3).join("; ")}` : "") + (r.skippedRoles.length ? `; ${r.skippedRoles.length} CSS roles not in tokens` : ""));
+  }
   return tuples;
 }
 
 /** No-browser check over the vendored token CSS and, when built, the dist CSS. Returns tuples for the browser check. */
 export function staticTypography(rec: Recorder, appRoot: string): RoleTuple[] {
   const tokens = readFileSync(join(appRoot, "vendor/desert-pants/build/web/tokens.css"), "utf8");
-  const tuples = checkSource(rec, "vendored tokens.css", tokens);
+  let canon: Canon | null = null;
+  try {
+    canon = loadCanon(appRoot);
+    rec.check(C, "oracle: token JSON loaded and manifest hashes verified", canon.roles.size > 0, `${canon.files.length} manifest-listed files (${canon.files.join(", ")}), ${canon.roles.size} canonical roles`);
+  } catch (error) {
+    rec.check(C, "oracle: token JSON loaded and manifest hashes verified", false, error instanceof Error ? error.message : String(error));
+  }
+  const tuples = checkSource(rec, "vendored tokens.css", tokens, canon);
   const assets = join(appRoot, "dist/assets");
   if (existsSync(assets)) {
     for (const file of readdirSync(assets).filter(f => f.endsWith(".css"))) {
-      checkSource(rec, `dist/assets/${file}`, readFileSync(join(assets, file), "utf8"));
+      checkSource(rec, `dist/assets/${file}`, readFileSync(join(assets, file), "utf8"), canon);
     }
   } else {
     rec.observe(C, "dist css", "dist/ not built; built-CSS pass skipped (run npm run build first)", "skipped");

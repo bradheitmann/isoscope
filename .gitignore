@@ -7,3 +7,5 @@ advisory/*/screens/
 .odin/
 original-web/public/media/_originals/
 original-web/examples/telemetry.jsonl
+original-web/examples/telemetry.db*
+original-web/.jev-receipts/

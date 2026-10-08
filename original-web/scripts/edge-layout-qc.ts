@@ -103,8 +103,25 @@ async function jevAdvisory(tag: string, out: Routed, defects: EdgeDefect[]): Pro
     candidate_findings: defects.slice(0, 8).map((d, i) => ({ id: `f${i}`, detail: `${d.kind}: ${d.detail}` })),
     deterministic_checks: det,
   };
-  const config = LIVE ? { mode: "live", apiKey: process.env.TYPESAFE_API_KEY } : { mode: "fixture" };
-  const res = await reviewQA(packet, config);
+  /* Live config follows the dsh-jev contract: the key is NEVER in config — the host
+     supplies a resolveCredential dep + a hash-only durable ledger. dataClass is
+     "public" (layout geometry is non-sensitive). Fixture mode is the offline default. */
+  if (!LIVE) {
+    const res = await reviewQA(packet, { mode: "fixture", enabled: true, dataClass: "public" });
+    return res.ok && res.qa ? res.qa : { disposition: "insufficient_evidence", error: res.error?.code ?? "unknown" };
+  }
+  if (!makeDurableLedger) return { disposition: "insufficient_evidence", error: "ledger-unavailable" };
+  const ledger = makeDurableLedger(LEDGER_DIR);
+  const config: JevConfig = { mode: "live", enabled: true, dataClass: "public", timeoutMs: 30000 };
+  const deps: JevDeps = {
+    resolveCredential: async () => {
+      const k = process.env.TYPESAFE_API_KEY;
+      if (!k) throw new Error("TYPESAFE_API_KEY not in environment");
+      return k;
+    },
+    ledger,
+  };
+  const res = await reviewQA(packet, config, deps);
   return res.ok && res.qa ? res.qa : { disposition: "insufficient_evidence", error: res.error?.code ?? "unknown" };
 }
 

@@ -90,7 +90,8 @@ function flowOrder(nodes: LayoutNode[], edges: EdgeSpec[]): LayoutNode[] {
     }
     ready.sort();
   }
-  nodes.forEach(n => { if (!seen.has(n.id)) order.push(n.id); });
+  /* cyclic remainder: id-sorted, so the order never depends on input array order (B15) */
+  nodes.map(n => n.id).filter(id => !seen.has(id)).sort().forEach(id => order.push(id));
   return order.map(id => byId.get(id)!);
 }
 

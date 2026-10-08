@@ -2506,6 +2506,11 @@ function applySpec(next: Spec,preserveMedia=false): void{
  // Clone before clearing: callers may supply objects aliased to the active spec.
  next=structuredClone(next);
  if(!Array.isArray(next.nodes)||!Array.isArray(next.edges)||!Array.isArray(next.groups))throw Error("invalid live spec");
+ /* deep record validation BEFORE any state moves (B13): malformed nodes/edges
+    get a named error here, not an internal TypeError mid-rebuild after teardown */
+ const badNode=next.nodes.some((n: MapNode)=>!n||typeof n.id!=="string"||!n.id.length||!Number.isFinite(n.x)||!Number.isFinite(n.y)||!(n.w>0)||!(n.d>0));
+ if(badNode)throw Error("invalid live graph: malformed node (id/finite x,y/positive w,d required)");
+ if(next.edges.some((e: EdgeTuple)=>!Array.isArray(e)||typeof e[0]!=="string"||typeof e[1]!=="string"))throw Error("invalid live graph: malformed edge");
  const ids=new Set<string>(next.nodes.map((n: MapNode)=>n.id));
  if(ids.size!==next.nodes.length||next.edges.some((e: EdgeTuple)=>!ids.has(e[0])||!ids.has(e[1])))throw Error("invalid live graph");
  /* edge keys are `${a}-${b}` throughout (routes, selection, deep links, pins):

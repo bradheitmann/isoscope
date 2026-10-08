@@ -2,102 +2,96 @@
 <html lang="en">
 <head>
 <meta charset="utf-8" />
-<title>How Jev QC fits the Isoscope pipeline</title>
+<title>How we catch drawing mistakes</title>
 <style>
-  body{margin:0;background:#f5f2ea;display:grid;place-items:center;min-height:100vh;font-family:ui-sans-serif,system-ui,sans-serif}
+  body{margin:0;background:#f7f4ee;display:grid;place-items:center;min-height:100vh;font-family:ui-sans-serif,system-ui,sans-serif}
   svg{display:block;width:100vw;height:auto;max-height:100vh}
 </style>
 </head>
 <body>
-<svg viewBox="0 0 980 820" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" font-family="ui-sans-serif,system-ui,sans-serif">
+<svg viewBox="0 0 980 760" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" font-family="ui-sans-serif,system-ui,sans-serif">
   <defs>
-    <marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
-      <path d="M0 0L10 5L0 10z" fill="#5a6270"/>
+    <marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M0 0L10 5L0 10z" fill="#7a7568"/>
     </marker>
     <style>
-      .box{fill:#ffffff;stroke:#c9c2b2;stroke-width:1.5;rx:10}
-      .det{fill:#eef6ee;stroke:#4a7a4a}
-      .jev{fill:#f3ecfb;stroke:#7a5aa0}
-      .opt{fill:#eef2fb;stroke:#4a5a98}
-      .gate{fill:#fbeeee;stroke:#b05a5a}
-      .src{fill:#efede6;stroke:#8a8474}
-      .t{font-size:15px;font-weight:700;fill:#26282c}
-      .s{font-size:11.5px;fill:#5a6270}
-      .sx{font-size:11px;fill:#5a6270;font-style:italic}
-      .lbl{font-size:11px;font-weight:700;fill:#5a6270}
-      .arrow{stroke:#5a6270;stroke-width:1.6;fill:none;marker-end:url(#arr)}
-      .dash{stroke-dasharray:5 4}
-      .hdr{font-size:13px;font-weight:700;letter-spacing:.04em}
+      .box{fill:#ffffff;stroke:#cfc9b8;stroke-width:1.5}
+      .good{fill:#eef5ec;stroke:#5a8a5a}
+      .ai{fill:#f2edfa;stroke:#8a6ab0}
+      .human{fill:#fdeee6;stroke:#b0724a}
+      .t{font-size:17px;font-weight:700;fill:#2a2c30}
+      .s{font-size:13px;fill:#5c5749}
+      .sx{font-size:12px;fill:#6c675a;font-style:italic}
+      .lbl{font-size:12px;font-weight:700;fill:#6c675a}
+      .arrow{stroke:#7a7568;stroke-width:2;fill:none;marker-end:url(#arr)}
+      .big{font-size:20px;font-weight:700;fill:#2a2c30}
+      .analogy{font-size:12.5px;fill:#8a6ab0;font-style:italic}
     </style>
   </defs>
 
-  <text x="40" y="44" class="hdr" fill="#26282c">HOW JEV QC FITS THE SYSTEM</text>
-  <text x="40" y="66" class="s">Every layout the map renders (or the shuffle proposes) flows through two QC layers — deterministic facts first, then an advisory semantic pass.</text>
+  <text x="40" y="50" class="big">How we catch drawing mistakes before you ever see them</text>
+  <text x="40" y="78" class="s">The map draws lines connecting the parts of your system. Sometimes a line gets drawn badly. Two safety nets catch that first.</text>
 
-  <!-- source -->
-  <rect class="box src" x="40" y="100" width="300" height="86" rx="10"/>
-  <text x="56" y="128" class="t">Trigger</text>
-  <text x="56" y="148" class="s">spec change · layout shuffle</text>
-  <text x="56" y="166" class="s">CI · a developer · the shuffle button</text>
+  <!-- start -->
+  <rect class="box" x="40" y="120" width="280" height="96" rx="12"/>
+  <text x="60" y="152" class="t">The map draws a line</text>
+  <text x="60" y="176" class="s">connecting two parts of your system</text>
+  <text x="60" y="196" class="s">(a wire, a flow, a link)</text>
 
-  <!-- router -->
-  <rect class="box" x="400" y="100" width="300" height="86" rx="10"/>
-  <text x="416" y="128" class="t">Isometric router</text>
-  <text x="416" y="148" class="s">isoRouteAll(nodes, edges) — the circuit research</text>
-  <text x="416" y="166" class="s">orthogonal routes, hops, lanes, risers</text>
+  <!-- rule checker -->
+  <rect class="box good" x="380" y="110" width="300" height="140" rx="12"/>
+  <text x="400" y="142" class="t">1 · The rule-checker</text>
+  <text x="400" y="166" class="s">Like a spell-checker for line-drawing.</text>
+  <text x="400" y="186" class="s">Instant, free, no AI. It catches clear mistakes:</text>
+  <text x="400" y="206" class="s">a line that bends wrong, a bridge over nothing,</text>
+  <text x="400" y="224" class="s">a line that crosses itself.</text>
+  <text x="400" y="242" class="sx">Hard rules — always right, always on.</text>
 
-  <!-- deterministic -->
-  <rect class="box det" x="40" y="270" width="380" height="150" rx="10"/>
-  <text x="56" y="298" class="t">1 · Deterministic edge-QC</text>
-  <text x="56" y="318" class="s">edge-qc.ts — offline, fast, NO model</text>
-  <text x="56" y="340" class="s">hard geometric facts, authoritative:</text>
-  <text x="56" y="360" class="s">off-grid elbows · zero-length steps ·</text>
-  <text x="56" y="378" class="s">self-crossings · unneeded bridges · shared runs</text>
-  <text x="56" y="404" class="sx">these are facts, not opinions</text>
+  <!-- good outcome -->
+  <rect class="box good" x="740" y="130" width="200" height="80" rx="12"/>
+  <text x="760" y="162" class="t">Looks clean</text>
+  <text x="760" y="184" class="s">It ships. You see a</text>
+  <text x="760" y="202" class="s">tidy drawing.</text>
 
-  <!-- clean path -->
-  <rect class="box det" x="560" y="270" width="340" height="86" rx="10"/>
-  <text x="576" y="298" class="t">Clean → ship / apply</text>
-  <text x="576" y="318" class="s">zero structural defects: the layout is used as-is</text>
-  <text x="576" y="336" class="s">(shuffle keeps the cleanest of N candidates)</text>
+  <!-- ai reader -->
+  <rect class="box ai" x="380" y="330" width="300" height="150" rx="12"/>
+  <text x="400" y="362" class="t">2 · A careful second reader</text>
+  <text x="400" y="384" class="analogy">(a small AI — the "second opinion")</text>
+  <text x="400" y="406" class="s">If a drawing isn't obviously fine or broken,</text>
+  <text x="400" y="424" class="s">this reads it. It can <tspan font-weight="700">only raise a flag</tspan> —</text>
+  <text x="400" y="444" class="s">"this might be off." It can <tspan font-weight="700">never approve</tspan></text>
+  <text x="400" y="462" class="s">or publish anything on its own.</text>
 
-  <!-- jev -->
-  <rect class="box jev" x="40" y="470" width="380" height="170" rx="10"/>
-  <text x="56" y="498" class="t">2 · Jev semantic (ADVISORY)</text>
-  <text x="56" y="518" class="s">qa-evidence-v1 · bounded system-one decision</text>
-  <text x="56" y="540" class="s">reads the QC evidence, judges readability:</text>
-  <text x="56" y="560" class="s">issue_candidate · insufficient_evidence · human_review</text>
-  <text x="56" y="586" class="sx">NEVER accepts, passes, or releases a layout.</text>
-  <text x="56" y="606" class="sx">Advisory only — it can flag, it cannot approve.</text>
+  <!-- human -->
+  <rect class="box human" x="740" y="350" width="200" height="110" rx="12"/>
+  <text x="760" y="382" class="t">A person decides</text>
+  <text x="760" y="404" class="s">Anything the AI flags</text>
+  <text x="760" y="422" class="s">goes to a human. You</text>
+  <text x="760" y="440" class="s">always have final say.</text>
 
-  <!-- governance gate -->
-  <rect class="box gate" x="560" y="470" width="340" height="170" rx="10"/>
-  <text x="576" y="498" class="t">Live-call governance</text>
-  <text x="576" y="520" class="s">fixture-first: offline + deterministic by default</text>
-  <text x="576" y="540" class="s">live only when ALL hold:</text>
-  <text x="576" y="560" class="s">· TYPESAFE_API_KEY (Doppler, never in config)</text>
-  <text x="576" y="578" class="s">· JEV_LIVE_BUDGET declared (1000) + decremented</text>
-  <text x="576" y="596" class="s">· hash-only durable ledger · no silent retries</text>
-  <text x="576" y="622" class="sx">a failed dispatch is counted, never auto-retried</text>
+  <!-- fine path from ai -->
+  <rect class="box good" x="380" y="540" width="300" height="70" rx="12"/>
+  <text x="400" y="572" class="t">Reads fine → ships</text>
+  <text x="400" y="592" class="s">No flag, nothing to decide.</text>
 
-  <!-- outcomes -->
-  <rect class="box opt" x="400" y="700" width="300" height="86" rx="10"/>
-  <text x="416" y="728" class="t">Outcome</text>
-  <text x="416" y="748" class="s">cleanest layout ships · flags go to a human ·</text>
-  <text x="416" y="766" class="s">the map only ever renders a QC'd board</text>
+  <!-- safety note -->
+  <rect class="box" x="40" y="560" width="280" height="120" rx="12"/>
+  <text x="60" y="590" class="t">Kept on a leash</text>
+  <text x="60" y="612" class="s">The AI runs free + offline by default.</text>
+  <text x="60" y="632" class="s">Real (paid) checks are capped by a budget</text>
+  <text x="60" y="650" class="s">and logged, so it can't run up a bill</text>
+  <text x="60" y="668" class="s">or quietly retry after failing.</text>
 
   <!-- arrows -->
-  <path class="arrow" d="M340 143 L398 143"/>
-  <path class="arrow" d="M550 186 L 260 268"/>
-  <path class="arrow" d="M420 345 L 558 313"/>
-  <path class="arrow" d="M230 420 L 230 468"/>
-  <text x="442" y="322" class="lbl">clean</text>
-  <text x="200" y="448" class="lbl">defects / ambiguous</text>
-  <path class="arrow" d="M420 555 L 558 555"/>
-  <text x="440" y="548" class="lbl">live only</text>
-  <path class="arrow dash" d="M230 640 L 470 698"/>
-  <path class="arrow" d="M730 640 L 620 698"/>
-  <text x="300" y="688" class="lbl">advisory disposition</text>
+  <path class="arrow" d="M320 168 L 378 175"/>
+  <path class="arrow" d="M680 150 L 738 165"/>
+  <text x="694" y="146" class="lbl">obviously fine</text>
+  <path class="arrow" d="M530 250 L 530 328"/>
+  <text x="540" y="296" class="lbl">not sure either way</text>
+  <path class="arrow" d="M680 390 L 738 400"/>
+  <text x="688" y="384" class="lbl">might be off</text>
+  <path class="arrow" d="M530 480 L 530 538"/>
+  <text x="540" y="516" class="lbl">reads fine</text>
 </svg>
 </body>
 </html>

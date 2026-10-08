@@ -572,16 +572,21 @@ const syncGroups: Record<string, HTMLVideoElement[]>={};
 function joinSyncGroup(g: string,v: HTMLVideoElement): void { (syncGroups[g]=syncGroups[g]||[]).push(v); }
 function leaveSyncGroup(g: string,v: HTMLVideoElement): void { const a=syncGroups[g];if(!a)return;const i=a.indexOf(v);if(i>=0)a.splice(i,1);if(!a.length)delete syncGroups[g]; }
 function syncTick(): void {
+ /* Only elements playing the SAME source can ever need aligning — and the shared
+    decode pool already gives one source ONE element, so in practice there is nothing
+    to steer. Never touch playbackRate: nudging the rate to chase a clock distorts
+    the audio (the speed wobble + warble Brad heard). If two distinct elements ever
+    share a source and grossly drift, snap the time once; otherwise leave them alone. */
  Object.values(syncGroups).forEach(members=>{
-  const ready=members.filter(v=>v.readyState>=2&&!v.paused);
-  if(ready.length<2)return;
-  const master=ready[0],mt=master.currentTime;
-  ready.slice(1).forEach(v=>{
-   const d=v.currentTime-mt;
-   if(Math.abs(d)>0.35){v.currentTime=mt;v.playbackRate=1;} /* gross drift: snap */
-   else if(Math.abs(d)>0.03)v.playbackRate=1-d*0.5;          /* fine drift: steer */
-   else v.playbackRate=1;
-  });
+  const ready=members.filter(v=>v.readyState>=2);
+  ready.forEach(v=>{ if(v.playbackRate!==1)v.playbackRate=1; }); /* undo any prior rate steering */
+  const playing=ready.filter(v=>!v.paused);
+  if(playing.length<2)return;
+  for(let i=1;i<playing.length;i++){
+   const a=playing[0],b=playing[i];
+   if(a.currentSrc!==b.currentSrc)continue;      /* different content: never align */
+   if(Math.abs(b.currentTime-a.currentTime)>0.5)b.currentTime=a.currentTime; /* gross drift only */
+  }
  });
 }
 function buildImage(n: MapNode,face: FaceKey,ref: SurfaceRef): SurfaceEntry | null {
@@ -913,7 +918,9 @@ const mediaControls={
   const faces=surfacesById[id];if(!faces)return;
   Object.values(faces).forEach(e=>{if(e&&e.video){if(e.video.paused)e.video.play().catch(()=>{});else e.video.pause();}});
  },
- solo(id: string): void { if(!masterAudio)masterAudio=true;setAudioFocus(id); },
+ /* solo chooses WHICH cube holds the voice; it never arms sound by itself. Sound
+    comes on only from the explicit sound control. */
+ solo(id: string): void { setAudioFocus(id); },
  restart(id: string): void {
   const faces=surfacesById[id];if(!faces)return;
   const seen=new Set<HTMLVideoElement>();
@@ -950,12 +957,11 @@ function setSpanIcon(span: HTMLElement, source: string): void {
  span.replaceChildren(icon);
 }
 /* (the FAB itself never takes an icon — it is always the moving equalizer) */
-/* plain click opens the transport popover — the controls come out of the button,
-   not on hover. The first click also unlocks audio (the gesture), teeing up sound. */
+/* plain click ONLY opens/closes the transport popover. It never arms sound — the
+   EQ motion is a beckon to open the controls, not a sound switch. Sound comes on
+   only from the explicit Mute/Unmute control inside (a deliberate gesture). */
 npPlay.addEventListener("click",ev=>{
- if(npPopOpen){npPopoverHide();return;}     /* click again closes the controls */
- if(!masterAudio){masterAudio=true;applyAudio();} /* gesture unlocks + tees up the voice */
- npPopoverToggle();                          /* defined just below; opens + syncs state */
+ npPopoverToggle();
  ev.stopPropagation();
 });
 /* ————— popover above the button: media transport + playlist —————
@@ -1539,8 +1545,10 @@ function pickAt(cx: number,cy: number,shift: boolean,dbl: boolean): void {
     module just steers the single voice to it — sound follows what you point at,
     without touching the cordon. */
  if(hit&&hit.kind==="node"&&!shift&&!dbl){
-  if(audibleModules().includes(hit.id)){if(!masterAudio)masterAudio=true;setAudioFocus(hit.id);}
-  return;                                        /* plain click: audio only, no select */
+  /* plain click steers WHICH cube would hold the voice — but never arms sound.
+     Sound stays off until the explicit sound control is used. */
+  if(audibleModules().includes(hit.id))setAudioFocus(hit.id);
+  return;                                        /* plain click: choose the voice, no select, no sound */
  }
  if(hit&&hit.kind==="node"){                    /* shift+click or double-click: toggle */
   clearEdgeSel();

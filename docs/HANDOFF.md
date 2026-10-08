@@ -29,9 +29,9 @@ bun run build:self     # examples/isoscope.spec.json -> out/isoscope.html
 bun run drc            # collision lint (bun drc.ts <spec>)
 ```
 
-**Known pre-existing issue:** `bun drc.ts examples/isoscope.spec.json` FAILS the weighted-crossing budget (4 > 1 at b76b003; 8 > 1 after the wave-4 D29 self-map sync). Budgets and geometry were deliberately left unchanged; not yet fixed.
+**Resolved (wave-4 drain):** `bun drc.ts examples/isoscope.spec.json` now PASSES (weighted 1, budget 1 unchanged) after a node x/y re-placement in the self-map; no nodes, edges or budget changed.
 
-**Open item (tracked):** the self-map drc budget failure is NOT gated by CI (the root job does not run `drc`, because it would fail). Fix the budget or the geometry, then add `bun drc.ts examples/isoscope.spec.json` to the root CI job.
+**CI:** the root job runs `bun run drc:self` (`bun drc.ts examples/isoscope.spec.json`), so the self-map drc budget is gated.
 
 **Note on `dsh-plugin/`:** it is an intentionally untracked, required local directory. It is deliberately kept out of git; the `tsconfig.json` exclude entry covers it.
 

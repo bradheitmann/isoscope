@@ -17,6 +17,7 @@
     "build:odin": "bun build.ts examples/odin.spec.json out/odin.html",
     "mcp": "bun mcp.ts",
     "drc": "bun drc.ts",
+    "drc:self": "bun drc.ts examples/isoscope.spec.json",
     "typecheck": "tsc --noEmit -p tsconfig.json",
     "test": "bun test ./tests/",
     "proof:contrast": "bun cli.ts render examples/isoscope.spec.json out/isoscope-contrast.html && bun scripts/contrast-proof.ts out/isoscope-contrast.html tokyo-night out/isoscope-contrast.png",

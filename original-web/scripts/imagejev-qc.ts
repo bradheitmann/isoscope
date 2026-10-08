@@ -9,6 +9,8 @@
    can flag a suspicious render, it can never accept, pass, or release a layout.
 
    Offline-safe: if the sidecar is down or unreachable, exits 2 with a clear error.
+   This script NEVER starts the sidecar (or any inference server); the operator
+   starts it manually per the llm-serve docs, then re-runs this script.
    No keys required: the sidecar is loopback-only with no auth.
 
    Usage:
@@ -65,21 +67,6 @@ async function resolveModelId(): Promise<string> {
   return `${homedir()}/local-llm/models/imajev-4b/base`;
 }
 
-/* Activate the sidecar via the llm-serve lifecycle supervisor (start-on-demand +
-   5-min idle shutdown). Returns true if the endpoint is serving after ensure. */
-async function ensureSidecar(): Promise<boolean> {
-  const { homedir } = await import("node:os");
-  const { spawnSync } = await import("node:child_process");
-  const sup = process.env.IMAGEJEV_SIDECAR ?? `${homedir()}/open_protocols/llm-serve/bin/imagejev-sidecar.ts`;
-  try {
-    spawnSync("bun", [sup, "ensure"], { stdio: "inherit", timeout: 150_000 });
-  } catch { return false; }
-  try {
-    const r = await fetch(`${ENDPOINT}/models`, { signal: AbortSignal.timeout(3000) });
-    return r.ok;
-  } catch { return false; }
-}
-
 async function main(): Promise<void> {
   const modelId = await resolveModelId();
   let png: Buffer;
@@ -104,9 +91,7 @@ async function main(): Promise<void> {
     max_tokens: MAX_TOKENS,
     temperature: 0,
   };
-  /* verify → activate → call. Isoscope assumes the sidecar is NOT running: health-check
-     it, and if down, activate it via the llm-serve supervisor (which also owns the
-     5-minute idle shutdown). Only a genuinely unreachable/failed activation degrades. */
+  /* Call the endpoint once. If it is down we report and exit 2; we never start it. */
   const call = async (): Promise<Response> =>
     fetch(`${ENDPOINT}/chat/completions`, {
       method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body),
@@ -116,20 +101,13 @@ async function main(): Promise<void> {
   try {
     res = await call();
   } catch {
-    /* endpoint down — try to activate the sidecar, then retry exactly once */
-    const activated = await ensureSidecar();
-    if (!activated) {
-      console.error(
-        `imagejev-qc: ImageJev sidecar unavailable at ${ENDPOINT} and could not be activated. ` +
-          `Deterministic QC (edge-layout-qc.ts) still applies — the model is advisory, never required.`,
-      );
-      process.exit(2);
-    }
-    try { res = await call(); }
-    catch (err) {
-      console.error(`imagejev-qc: sidecar still unreachable after activation (${err instanceof Error ? err.message : String(err)}). Deterministic QC still applies.`);
-      process.exit(2);
-    }
+    console.error(
+      `imagejev-qc: the ImageJev sidecar is down (unreachable at ${ENDPOINT}). This script does not start it.\n` +
+        `Start it manually, then re-run: bun ~/open_protocols/llm-serve/bin/imagejev-sidecar.ts ensure\n` +
+        `(see llm-serve docs/ai/IMAGEJEV-VISION-QC.md). ` +
+        `Deterministic QC (edge-layout-qc.ts) still applies — the model is advisory, never required.`,
+    );
+    process.exit(2);
   }
   const json = (await res.json().catch(() => null)) as ChatCompletion | null;
   if (!res.ok || !json) {

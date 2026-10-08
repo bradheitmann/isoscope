@@ -64,6 +64,8 @@ interface SpecNode {
   does: string;
   built: string;
   refs: string;
+  media?: unknown[];
+  tags?: unknown[];
 }
 
 type Edge = [string, string, string?];
@@ -193,15 +195,15 @@ const RULES: Rule[] = [
   { match: /^original-web\/scripts\//, mod: MOD("QCCLI", "QC", "surface", "QC harness", "Headless bun harnesses (edge-layout QC, this generator).") },
   { match: /^original-web\/src\/navigation/, mod: MOD("NAV", "NAV", "surface", "Navigation", "Page navigation tree over the spec.") },
   { match: /^original-web\/src\/theme-order/, mod: MOD("THEME", "THEME", "surface", "Theme order", "Deterministic theme presentation order.") },
-  { match: /^original-web\/src\/(router\.d|vite-env|window\.d)/, mod: MOD("TYPES", "TYPES", "surface", "Ambient types", "Type declarations for the .mjs router and DOM env.") },
+  { match: /^original-web\/src\/(vite-env|window\.d)/, mod: MOD("TYPES", "TYPES", "surface", "Ambient types", "Ambient type declarations for the DOM env and Vite.") },
   { match: /^original-web\/src\//, mod: MOD("RENDER", "UI", "surface", "Renderer", "Isometric three.js city renderer, styles, editable-target picking, and the app entrypoint.") },
-  { match: /^router\.mjs$/, mod: MOD("ROUTER", "ROUTE", "tools", "Iso router", "Manhattan isometric edge router shared by web and harnesses.") },
+  { match: /^router\.ts$/, mod: MOD("ROUTER", "ROUTE", "tools", "Iso router", "Manhattan isometric edge router shared by web and harnesses.") },
   { match: /^lib\.ts$/, mod: MOD("LIB", "STORE", "tools", "Graph store lib", "SQLite graph store: import/export spec, sensors, CI, history, blast radius.") },
   { match: /^cli\.ts$/, mod: MOD("CLI", "CLI", "tools", "CLI", "Command-line front end to the graph store.") },
   { match: /^mcp\.ts$/, mod: MOD("MCP", "MCP", "tools", "MCP server", "Model-Context-Protocol surface over the store.") },
   { match: /^okoa\.ts$/, mod: MOD("OKOA", "OKOA", "tools", "Okoa", "Okoa tooling entrypoint.") },
   { match: /^drc\.ts$/, mod: MOD("DRC", "DRC", "tools", "DRC", "Design-rule checks over the spec graph.") },
-  { match: /^build\.mjs$/, mod: MOD("BUILD", "BUILD", "tools", "Build", "Self-contained HTML build pipeline.") },
+  { match: /^build\.ts$/, mod: MOD("BUILD", "BUILD", "tools", "Build", "Self-contained HTML build pipeline.") },
   { match: /^original-web\/vendor\/desert-pants/, mod: MOD("VENDOR", "DESERT", "vendor", "desert-pants (vendored)", "Vendored design system: themes, tokens, icons.") },
   { match: /^original-web\/examples\//, mod: MOD("DATA", "DATA", "data", "Example data", "Shipped spec JSON and annotation fixtures.") },
   { match: /^<ext>:(three|three\/)/, mod: MOD("THREE", "3D", "vendor", "three.js", "External 3D engine dependency.") },

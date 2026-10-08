@@ -12,7 +12,7 @@ const root = resolve(import.meta.dir, "..");
 const out = resolve(Bun.argv.slice(2).find(x => !x.startsWith("--")) ?? `.odin/audit/2026-09-07-scp-isoscope/scratch-s3/run-${Date.now()}`);
 mkdirSync(out, { recursive: true });
 const db = resolve(out, "live.db"), errors: string[] = [], results: Record<string, any> = {};
-const env = { ...process.env, ISOSCOPE_DB: db }; delete env.ISOSCOPE_TOKEN;
+const env: Record<string, string | undefined> = { ...process.env, ISOSCOPE_DB: db }; delete env.ISOSCOPE_TOKEN;
 const sleep = (ms: number) => new Promise(r => setTimeout(r, ms));
 function assert(ok: any, message: string) { if (!ok) throw Error(message); }
 function run(args: string[], input?: string) {

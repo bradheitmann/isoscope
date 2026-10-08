@@ -9,7 +9,7 @@
    efficient random arrangements, plus at least one linear workflow and at least one
    phased (grouped) workflow — about 7–10 boards total. */
 
-import { isoRouteAll } from "../../router.mjs";
+import { isoRouteAll } from "../../router.ts";
 import { checkRoutes } from "./edge-qc";
 
 export interface LayoutNode { id: string; x: number; y: number; w: number; d: number; g?: string }

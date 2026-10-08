@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { isoRouteAll } from "../../router.mjs";
+import { isoRouteAll } from "../../router.ts";
 import { checkRoutes, summarize, type RouteInput } from "../src/edge-qc";
 import SPEC from "../examples/isoscope.spec.json";
 

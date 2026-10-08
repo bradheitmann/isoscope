@@ -2,6 +2,33 @@
 
 **As of 2026-09-02 · remote: github.com/bradheitmann/isoscope (private) · name "isoscope" is a working title**
 
+## Current state: original-web
+
+`original-web/` is the live Isoscope web product: a Vite + three.js app (Kimi's
+interface reconstruction of the isometric city) that renders the self-map
+`examples/isoscope.spec.json`. It has its own `package.json` and lockfile
+(npm, `package-lock.json`); the root engine is separate and runs on Bun.
+The self-map exists twice (root `examples/` and `original-web/examples/`) and the
+two copies must stay byte-identical (`tests/spec-sync.test.ts` enforces it).
+
+```bash
+# original-web (live web product; dev server on 127.0.0.1:4182)
+cd original-web
+npm ci
+npm run dev            # vite dev server
+npm run typecheck      # tsc for src + scripts
+npm test               # vitest
+bun run qa:static      # static QA checks
+npm run qa             # browser QA harness (tests/qa/, headless Chrome)
+npm run build          # tsc + vite build -> dist/
+
+# root engine
+bun run typecheck
+bun run test           # bun test ./tests/
+bun run build:self     # examples/isoscope.spec.json -> out/isoscope.html
+bun run drc            # collision lint (bun drc.ts <spec>)
+```
+
 ## What this is
 Schematic observability engine: a system rendered as an inspectable isometric
 city, driven entirely by one JSON spec. Extracted 2026-08-22 from the ODIN
@@ -53,8 +80,8 @@ Sentinel architecture map (built iteratively with the operator, 2026-08-19..22).
   job (tag `[source:job]`), moved wherever the job now fails; a passing job
   deletes its tag everywhere = the building heals. `cli.ts ci <db> <payload>
   --provider p [--dry]`; `POST /ci` on serve (provider from header or
-  `?provider=`, ISOSCOPE_TOKEN Bearer). Verified with fixtures in
-  /tmp/ci-fixtures (all providers, unknown job → default, heal, 401/400).
+  `?provider=`, ISOSCOPE_TOKEN Bearer). Verified with fixtures (ephemeral, not retained;
+  regenerate from the provider payload shapes: all providers, unknown job → default, heal, 401/400).
 - **R30 phase 1 — stateful reload**: live client snapshots
   `window.__isoViewState()` (theme, dot/line weights, stacked, pinned, camera,
   red ids) to sessionStorage before `location.reload()`; module end restores
@@ -161,7 +188,7 @@ Sentinel architecture map (built iteratively with the operator, 2026-08-19..22).
   `bun ../../../isoscope/build.ts odin.spec.json ../../ODIN-ARCHITECTURE-MAP.html`
 - ODIN-side files are **uncommitted** in odin (its governance requires slices);
   legacy `ODIN-ARCHITECTURE-MAP-3D.html` retired 2026-08-22 (operator order;
-  quarantined at /tmp/retired-ODIN-ARCHITECTURE-MAP-3D-20260822.html, evaporates on reboot).
+  quarantined in /tmp, ephemeral and not retained).
 
 ## STRATEGY & DIRECTION — crash-proof snapshot (2026-08-22, operator-ratified)
 

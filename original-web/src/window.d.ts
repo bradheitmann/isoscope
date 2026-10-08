@@ -18,6 +18,8 @@ declare global {
       exitFace: () => void;
       state: () => { zoom: number; cordon: string[]; audioFocus: string | null; masterAudio: boolean; faceView: { id: string; face: string } | null };
       edgeHealth: () => Record<string, string>;
+      /* the current broken/degraded edges with live metrics (worst first) */
+      attention: () => Array<{ edge: string; health: string; total: number; errors: number; errorRate: number; p50: number; p95: number; ratePerMin: number }>;
     };
     __isoRouteQC: Record<string, unknown>;
     __lblMeasured: boolean;

@@ -4,6 +4,7 @@
   "description": "Schematic observability: your system as an inspectable isometric city, driven by one JSON spec or a SQLite graph store.",
   "type": "module",
   "license": "MIT",
+  "packageManager": "bun@1.3.9",
   "engines": {
     "bun": ">=1.1.0"
   },
@@ -12,11 +13,17 @@
     "isoscope-mcp": "./mcp.ts"
   },
   "scripts": {
-    "build:self": "bun cli.ts import examples/isoscope.spec.json /tmp/isoscope-self.db && bun cli.ts build /tmp/isoscope-self.db out/isoscope.html",
-    "build:odin": "node build.mjs examples/odin.spec.json out/odin.html",
+    "build:self": "bun cli.ts render examples/isoscope.spec.json out/isoscope.html",
+    "build:odin": "bun build.mjs examples/odin.spec.json out/odin.html",
     "mcp": "bun mcp.ts",
     "drc": "bun drc.ts",
-    "proof:contrast": "bun cli.ts import examples/isoscope.spec.json /tmp/isoscope-self.db && bun cli.ts build /tmp/isoscope-self.db /tmp/isoscope-self.html && bun scripts/contrast-proof.ts /tmp/isoscope-self.html",
-    "build:lumbr": "bun cli.ts import examples/lumbr.spec.json /tmp/isoscope-lumbr.db && bun cli.ts build /tmp/isoscope-lumbr.db out/lumbr.html"
+    "typecheck": "tsc --noEmit -p tsconfig.json",
+    "test": "bun test ./tests/",
+    "proof:contrast": "bun cli.ts render examples/isoscope.spec.json out/isoscope-contrast.html && bun scripts/contrast-proof.ts out/isoscope-contrast.html",
+    "build:lumbr": "bun cli.ts render examples/lumbr.spec.json out/lumbr.html"
+  },
+  "devDependencies": {
+    "@types/bun": "1.3.9",
+    "typescript": "5.9.2"
   }
 }

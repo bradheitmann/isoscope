@@ -1,3 +1,8 @@
+/* Fixture provenance: router-original.json = isoRouteAll(spec.nodes, spec.edges) from the ORIGINAL
+   router.mjs (`git show b76b003:router.mjs`, evaluated without writing a .mjs file) over every root
+   examples/*.spec.json, JSON round-tripped. Re-verified after the wave-4 self-map sync: byte-identical
+   per spec. To regenerate, run that same function on each spec and write { "<file>.spec.json": result }
+   with keys sorted; never regenerate from router.ts. */
 import { describe, it, expect } from "vitest";
 import { readdirSync, readFileSync } from "node:fs";
 import { dirname, join } from "node:path";

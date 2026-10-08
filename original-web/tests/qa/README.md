@@ -38,6 +38,9 @@ Besides resolving var() chains, `oracle.ts` reads the canonical role tuples stra
 - D5 (Escape and Close on the reader sheet) is reported as `pending-owner-ruling`, not pass or fail, until the owner rules on the intended behavior.
 - `npm run qa:static` needs no browser and exits 0.
 
+### D6: "1 label not rendered (width 0)" at 1280x600
+The viewport observation `1 not rendered (width 0)` at 1280x600 is pre-existing, not caused by the D6 fit. The same harness run against main b76b003 (detached worktree, harness copied in untracked) reports the identical `0/14 off-canvas, 1 not rendered` at 1280x600; at every other viewport at or above 1024x768 both builds report 0 not rendered. The cause is the clash declutter in `original-renderer.ts` (label placement loop): a lower-priority label that overlaps an already placed one gets class `clash`, and `.lbl.clash { display: none }` in `styles.css` gives it a zero-size box, which the probe counts as "not rendered". At 1280x600 the shorter canvas makes two labels overlap, so one recedes by design. The D6 fit only changes the off-canvas count (390x844 went from 7/14 on main to 0/14, 768x1024 from 2/14 to 0/14) and does not touch the not-rendered count. Evidence: `~/.local/share/isoscope-qa/evidence/final/viewport-main-b76b003.txt` and `viewport-final.txt`.
+
 ## Outputs
 Screenshots go to `tests/qa/out/` (gitignored). Files are in `tests/qa/*.ts`; none are named `*.test.ts`, so vitest ignores them, and `npm run typecheck` covers them via the `tests/**/*.ts` include.
 

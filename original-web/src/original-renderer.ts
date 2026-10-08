@@ -52,7 +52,8 @@ type MapNode = {
 type EdgeTuple = [string, string, string?];
 type Spec = {
   title: string; brand?: { k: string; v: string }; metrics?: Array<{ k: string; v: string }>;
-  wordmark?: string; asOf?: string; intro?: { eyebrow?: string; title?: string; sub?: string; proseHTML?: string };
+  wordmark?: string; asOf?: string; operator?: { name: string; initials: string }; /* the user avatar (neutral "You" if unset) */
+  intro?: { eyebrow?: string; title?: string; sub?: string; proseHTML?: string };
   groups: Group[]; nodes: MapNode[]; edges: EdgeTuple[]; status?: Record<string, { state?: string; items?: Item[] }>;
   edgeStatus?: Record<string, string>; edgeDocs?: Record<string, { title?: string; carries?: string; refs?: string }>;
   levels?: Record<string, number>; short?: Record<string, string>; trace?: string[]; traceText?: Record<string, string>;
@@ -260,6 +261,9 @@ setDPTheme(activeTheme);setDPMode(activeMode);
 /* ————— data (identical content to the 2D edition) ————— */
 /* ————— Isoscope spec: everything project-specific lives in this JSON ————— */
 document.title=SPEC.title||"Isoscope";
+/* the operator avatar: whoever this deployment belongs to (spec.operator), neutral
+   "You" when unset — so the open-source default has no PII and a deployment shows its owner */
+{const op=SPEC.operator;const av=document.getElementById("meAvatar");if(av){av.textContent=op?op.initials:"You";av.title=op?op.name:"You";av.setAttribute("aria-label",op?op.name:"You");}}
 const GROUPS: Group[] = SPEC.groups;
 const NODES: MapNode[] = SPEC.nodes;
 const STATUS: NonNullable<Spec["status"]> = SPEC.status ?? {};

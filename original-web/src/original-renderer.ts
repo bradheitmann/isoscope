@@ -406,6 +406,7 @@ const fill=new THREE.DirectionalLight(COL.paper,0.25);fill.position.set(-14,12,-
 /* ground grid — OKOA hairline field (rebuilt on theme switch) */
 const LVL_H=2.8;let stacked=false;let rebuildDotsAfterLevelMotion=false;let brushReliftPending=false; /* declared before makeGrid runs at setup */
 let grids: THREE.GridHelper[] = [];
+let gridOn=true; /* declared before makeGrid runs at setup; the Grid toggle owns it */
 function makeGrid(){
  grids.forEach(g=>{scene.remove(g);g.geometry.dispose();g.material.dispose();});grids=[];
  const gridC=mix(COL.paper,COL.fg1,0.20);
@@ -419,6 +420,7 @@ function makeGrid(){
  defs.forEach(d=>{
   const g=new THREE.GridHelper(80,40,d.c,d.c);
   g.material.transparent=true;g.material.opacity=d.op;
+  g.visible=gridOn; /* rebuilding the grid (e.g. on Stack) must respect the toggle */
   g.position.set(CENTER.x,d.y-0.01,CENTER.z);scene.add(g);grids.push(g);
  });
 }
@@ -2130,7 +2132,6 @@ btnStack.addEventListener("click",()=>{
 });
 /* the ground grid is a reading aid, not a fixture — a toggle turns it off for a clean page */
 const btnGrid=$<HTMLButtonElement>("btnGrid");
-let gridOn=true;
 btnGrid.addEventListener("click",()=>{
  gridOn=!gridOn;
  btnGrid.setAttribute("aria-pressed",String(gridOn));
@@ -2479,7 +2480,11 @@ function applySpec(next: Spec,preserveMedia=false): void{
  if(ti>=TRACE.length||ti<0||!EDGES.some(e=>e[0]+"-"+e[1]===TRACE[ti]))ti=-1;
  hoverId=null;flyGoal=null;
  buildScene(SPEC);refreshTheme();resize();
- brush.clear(); /* a new map is a new page; old sketches don't carry over */
+ /* a new map (codebase view) drops ink, but never silently — snapshot it so the
+    Draw-undo / Cmd-Z restores it, exactly like Reset. A layout shuffle keeps the
+    same nodes, so its ink would ideally ride along; until strokes re-project onto
+    moved modules, we snapshot rather than destroy. */
+ resetInkBackup=brush.strokeCount()>0?brush.snapshot():null;brush.clear();
  const reds=NODES.filter(n=>n.items.some(i=>i.c==="red"));
  if(reds.some(n=>!oldReds.has(n.id))){blastIncident();return;}
  if(incidentActive&&!reds.length){cordon.clear();incidentActive=false;}

@@ -484,8 +484,36 @@ function faceDims(n: MapNode,face: FaceKey): { pw: number; ph: number } {
    surfaces sampling 6 sources costs 6 decoders, not 60 — that is the difference
    between a slideshow and a smooth city. Each face gets its own VideoTexture over
    the shared element so UVs/letterboxing stay per-face. */
-type PooledVideo={ video: HTMLVideoElement; live: boolean; refs: number; group?: string; src: string; warmed?: boolean; traced?: boolean };
+type PooledVideo={ video: HTMLVideoElement; live: boolean; refs: number; group?: string; src: string; warmed?: boolean; traced?: boolean; started?: boolean };
 const videoPool: Record<string, PooledVideo>={};
+/* ————— progressive background warmup —————
+   Sources are queued at acquire time (preload=none, no fetch). An idle loader starts
+   a few at a time so startup is never blocked by a 582MB fetch storm; each promoted
+   source then warms its decoder so media-mode-on is a resume, not a cold start. */
+const warmupQueue: PooledVideo[]=[];
+let warmupScheduled=false;
+function startVideo(pv: PooledVideo): void {
+ if(pv.started)return;pv.started=true;
+ const video=pv.video;
+ video.preload="auto";video.src=pv.src;
+ /* the decoder is primed by the canplay→warm listener (play one frame, hold at 0).
+    We don't play here — warming is the listener's job, so a started-but-hidden video
+    isn't running. */
+}
+function promoteAllNow(): void { warmupQueue.forEach(startVideo); warmupQueue.length=0; }
+function scheduleWarmup(): void {
+ if(warmupScheduled)return;warmupScheduled=true;
+ const step=()=>{
+  /* promote 3 per idle tick — steady background progress without a startup spike */
+  for(let i=0;i<3&&warmupQueue.length;i++)startVideo(warmupQueue.shift()!);
+  if(warmupQueue.length)idle(step);
+ };
+ idle(step);
+}
+function idle(fn: ()=>void): void {
+ if("requestIdleCallback" in window)(window as unknown as {requestIdleCallback:(f:()=>void)=>void}).requestIdleCallback(fn);
+ else setTimeout(fn,120);
+}
 function acquireVideo(src: string,ref: SurfaceRef): PooledVideo {
  const existing=videoPool[src];
  if(existing){existing.refs++;return existing;}
@@ -494,14 +522,13 @@ function acquireVideo(src: string,ref: SurfaceRef): PooledVideo {
  video.muted=true;video.loop=!live;video.playsInline=true;video.crossOrigin="anonymous";
  /* a live feed is content, not decoration: it plays even under reduced-motion.
     Looping/decorative video holds its first frame for RM users; live does not. */
- const mayPlay=!RM||live;
- /* preload=auto so every cube shows the SAME leader frame at the same time instead
-    of a patchwork of blank faces and buffered frames while the sources warm up;
-    the shared theater group then frame-locks them from t=0. */
- video.autoplay=mayPlay;video.preload="auto";
- video.src=src; /* native HLS plays where supported; an hls.js shim can attach here later */
- if(mayPlay)video.play().catch(()=>{/* autoplay may wait for a gesture */});
- const pv: PooledVideo={video,live,refs:1,group:ref.group,src};
+ /* Progressive background load: DON'T fetch all ~21 sources at startup (that chokes
+    first paint). Each starts as preload=none with no src; an idle loader promotes a
+    few at a time so the map is instant and the videos warm up in the background —
+    "lazy load in the background, ready within a couple seconds of activation." */
+ video.autoplay=false;video.preload="none";
+ const pv: PooledVideo={video,live,refs:1,group:ref.group,src,started:false};
+ warmupQueue.push(pv);
  /* media load crosses the surface→serve seam (the dev server streams the file).
     Trace it so the OW-SV edge reflects real media flow + latency live. */
  const loadT0=performance.now();
@@ -836,9 +863,10 @@ function applySurfaceVisibility(): void {
 }
 function applyMediaMode(): void {
  applySurfaceVisibility();
- if(mediaMode){ /* start every surface's video from the top — decoders are pre-warmed,
-    so this is a resume, not a cold start. Stagger by ~40ms so a weak CPU isn't hit
-    with a 12-way decode spike in a single frame; imperceptible, but smooth. */
+ if(mediaMode){ /* promote any not-yet-loaded sources immediately, then play. Decoders
+    are pre-warmed by the idle loader, so this is a resume, not a cold start; stagger
+    the plays ~40ms so a weak CPU isn't hit with a 12-way decode spike in one frame. */
+  promoteAllNow();
   let i=0;
   Object.values(videoPool).forEach(pv=>{
    const v=pv.video;
@@ -2468,6 +2496,9 @@ buildScene(SPEC);
 renderPanel(null);
 blastIncident();
 updateHealthStrip();
+scheduleWarmup(); /* warm the media progressively in idle time — startup stays instant */
+idle(()=>{ gallery(); }); /* precompute the layout gallery in idle time so the first
+   shuffle is instant; system-one models (Jev/ImageJev) are QC tooling, never runtime */
 /* deep links: #/module/<ID> and #/edge/<KEY> open that object's detail in the panel */
 window.addEventListener("hashchange",applyDeepHash);
 applyDeepHash();

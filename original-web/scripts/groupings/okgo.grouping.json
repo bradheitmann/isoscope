@@ -1,0 +1,44 @@
+{
+  "comment": "Grouping table for mapping the okgo monorepo (~/open_protocols/okgo) with codebase-graph.ts --repo ... --grouping scripts/groupings/okgo.grouping.json. Regexes are tested against repo-relative posix paths; <ext>:name matches external/bare imports.",
+  "groups": [
+    { "id": "app",      "label": "Mobile app (apps/mobile)" },
+    { "id": "lib",      "label": "Core libraries (src/lib)" },
+    { "id": "services", "label": "Backend services (src/services)" },
+    { "id": "plugins",  "label": "First-party plugins (src/plugins)" },
+    { "id": "fork",     "label": "Fork patches (src/fork-patches)" },
+    { "id": "tools",    "label": "Scripts & CI tooling" },
+    { "id": "tests",    "label": "Test suites" },
+    { "id": "vendor",   "label": "External packages" },
+    { "id": "platform", "label": "Runtime builtins" }
+  ],
+  "rules": [
+    { "match": "^apps/mobile/", "mod": { "id": "MOBILE", "tag": "APP", "g": "app", "name": "Mobile app", "blurb": "@okgo/mobile — React Native / uniwind mobile client." } },
+
+    { "match": "^src/lib/envelope/", "mod": { "id": "ENVELOPE", "tag": "LIB", "g": "lib", "name": "Envelope", "blurb": "Core envelope/message library." } },
+    { "match": "^src/lib/plane-supervisor/", "mod": { "id": "PLANESUP", "tag": "LIB", "g": "lib", "name": "Plane supervisor", "blurb": "Supervision/control-plane library." } },
+    { "match": "^src/lib/telemetry/", "mod": { "id": "TELEM", "tag": "LIB", "g": "lib", "name": "Telemetry lib", "blurb": "Telemetry/instrumentation library." } },
+
+    { "match": "^src/services/authgw/", "mod": { "id": "AUTHGW", "tag": "SVC", "g": "services", "name": "Auth gateway", "blurb": "Authentication gateway service." } },
+    { "match": "^src/services/bus/", "mod": { "id": "BUS", "tag": "SVC", "g": "services", "name": "Bus", "blurb": "Message bus service." } },
+    { "match": "^src/services/clearance/", "mod": { "id": "CLEARANCE", "tag": "SVC", "g": "services", "name": "Clearance", "blurb": "Clearance/authorization service." } },
+    { "match": "^src/services/executor/", "mod": { "id": "EXECUTOR", "tag": "SVC", "g": "services", "name": "Executor", "blurb": "Task execution service." } },
+    { "match": "^src/services/inference/", "mod": { "id": "INFERENCE", "tag": "SVC", "g": "services", "name": "Inference", "blurb": "Model inference service." } },
+    { "match": "^src/services/model-router/", "mod": { "id": "MODELRT", "tag": "SVC", "g": "services", "name": "Model router", "blurb": "Routes model requests across providers." } },
+    { "match": "^src/services/receipts/", "mod": { "id": "RECEIPTS", "tag": "SVC", "g": "services", "name": "Receipts", "blurb": "Receipt ledger service." } },
+    { "match": "^src/services/seatd/", "mod": { "id": "SEATD", "tag": "SVC", "g": "services", "name": "Seat daemon", "blurb": "Seat/session daemon." } },
+    { "match": "^src/services/skills-registry/", "mod": { "id": "SKILLSREG", "tag": "SVC", "g": "services", "name": "Skills registry svc", "blurb": "Skills registry service." } },
+
+    { "match": "^src/plugins/okgo-orchestration-view/", "mod": { "id": "PLGORCH", "tag": "PLG", "g": "plugins", "name": "Orchestration view", "blurb": "Plugin: orchestration visualization." } },
+    { "match": "^src/plugins/okoa-theme/", "mod": { "id": "PLGTHEME", "tag": "PLG", "g": "plugins", "name": "Okoa theme", "blurb": "Plugin: OKOA design-system theming." } },
+    { "match": "^src/plugins/", "mod": { "id": "PLUGINS", "tag": "PLG", "g": "plugins", "name": "Plugins", "blurb": "First-party okgo plugins (approvals, audit, comms, orgchart, sso, skills, triad, tutorial, ...)." } },
+
+    { "match": "^src/fork-patches/", "mod": { "id": "FORK", "tag": "FORK", "g": "fork", "name": "Fork patches", "blurb": "Patches carried on the DeepSeek Harness fork." } },
+
+    { "match": "^deploy/", "mod": { "id": "DEPLOY", "tag": "OPS", "g": "tools", "name": "Deploy", "blurb": "Deployment tooling (fly seats, secrets, shared infra)." } },
+    { "match": "^scripts/", "mod": { "id": "SCRIPTS", "tag": "TOOL", "g": "tools", "name": "Scripts & CI", "blurb": "Repo tooling: CI checks, verification, governance diagnostics." } },
+    { "match": "^tests/", "mod": { "id": "TESTS", "tag": "TEST", "g": "tests", "name": "Test suites", "blurb": "Cross-cutting test suites (ci, hosting, migration, services, sso, triad, ...)." } },
+
+    { "match": "^<ext>:(node:|bun:)", "mod": { "id": "PLAT", "tag": "RT", "g": "platform", "name": "Runtime builtins", "blurb": "Node/Bun builtin modules." } },
+    { "match": "^<ext>:", "mod": { "id": "EXT", "tag": "PKG", "g": "vendor", "name": "External packages", "blurb": "Bare-specifier package dependencies." } }
+  ]
+}

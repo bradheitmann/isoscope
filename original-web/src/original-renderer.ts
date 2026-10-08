@@ -2937,6 +2937,14 @@ $("btnCodebase").addEventListener("click",()=>{
  applySpec(structuredClone(codebaseView?CODEBASE_SOURCE:SPEC_SOURCE) as unknown as Spec);
  flyGoal={tx:HOME.tx,ty:HOME.ty,tz:HOME.tz,zoom:HOME.zoom,az:HOME.az,pol:HOME.pol};
 });
+/* ————— ?spec=<url>: load an externally generated map (e.g. a different repo's
+   codebase view from codebase-graph.ts --repo ... --grouping ...) ————— */
+const specParam=new URLSearchParams(location.search).get("spec");
+if(specParam){
+ fetch(specParam).then(r=>{if(!r.ok)throw new Error(`HTTP ${r.status}`);return r.json();})
+ .then(s=>{applySpec(s as Spec);flyGoal={tx:HOME.tx,ty:HOME.ty,tz:HOME.tz,zoom:HOME.zoom,az:HOME.az,pol:HOME.pol};})
+ .catch(e=>console.error("[isoscope] ?spec= load failed:",e));
+}
 window.__isoRenderTagPills=(container,ids)=>renderTagPills(container,ids);
 window.__isoSwapState=()=>({stacked,pinned,selEdge,ti,flowing,dotSet,lineSet,cordon:[...cordon],
  cam:{p:camera.position.toArray(),t:controls.target.toArray(),zoom:camera.zoom},fly:!!flyGoal,

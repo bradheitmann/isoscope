@@ -161,7 +161,7 @@ export async function viewportMatrix(ctx: Ctx): Promise<void> {
       const inView = (b: [number, number, number, number] | null): boolean => b !== null && b[2] > b[0] && b[0] >= 0 && b[1] >= 0 && b[2] <= p.iw && b[3] <= p.ih;
       const reachable = inView(p.controls["btnReset"] ?? null) || inView(p.controls["railToggle"] ?? null);
       ctx.rec.check(C, `${tag} controls reachable in viewport`, reachable, JSON.stringify(p.controls));
-      ctx.rec.observe(C, `${tag} home-view labels off-canvas`, `${p.labelsOff}/${p.labelsTotal} labels outside the viewport, ${p.labelsUnrendered} not rendered (width 0; not counted as off-canvas) (drain item D6, owner decision pending)`);
+      ctx.rec.observe(C, `${tag} home-view labels off-canvas`, `${p.labelsOff}/${p.labelsTotal} labels outside the viewport, ${p.labelsUnrendered} not rendered (width 0; not counted as off-canvas) (drain item D6, ruled: fit)`);
       ctx.rec.check(C, `${tag} no uncaught exceptions`, s.exceptions.length === 0, s.exceptions.slice(0, 2).join("; ") || "none");
     });
   }
@@ -191,22 +191,22 @@ export async function modalContracts(ctx: Ctx): Promise<void> {
       ctx.rec.check(C, "open: visible, not inert, aria-expanded=true, role=dialog", !open.hidden && !open.inert && open.expanded === "true" && open.role === "dialog", JSON.stringify(open));
       ctx.rec.check(C, "open: focus moves into the sheet", open.focusInPanel, `activeElement=${open.active}`, "D4");
 
-      /* Escape: recorded as observed. The close-vs-peek ruling is the open owner decision D5; neither side is asserted. */
+      /* Escape: asserted. Owner ruling D5: Escape closes the reader sheet fully. */
       await s.key("Escape", "Escape", 27);
       await sleep(500);
       const esc = await s.eval<PanelProbe>(PANEL);
       await shot(ctx, s, `modal-escape-${w}x${h}`);
       const closedByEsc = esc.hidden && esc.inert && esc.expanded === "false";
-      ctx.rec.observe(C, "Escape behavior", `observed: ${closedByEsc ? "closed" : "NOT closed (peek/other)"}; ${JSON.stringify(esc)}; pending owner ruling D5`, "pending-owner-ruling");
+      ctx.rec.check(C, "Escape closes the reader sheet", closedByEsc, JSON.stringify(esc), "D5");
 
-      /* reopen if Escape left it open, then record the explicit Close button the same way */
+      /* reopen if Escape left it open, then assert the explicit Close button */
       if (closedByEsc) await s.eval(`document.getElementById("btnReadMap").click()`);
       await sleep(400);
       await s.eval(`document.getElementById("closeReadingPanel").click()`);
       await sleep(500);
       const closeProbe = await s.eval<PanelProbe>(PANEL);
       const closedByBtn = closeProbe.hidden && closeProbe.inert && closeProbe.expanded === "false";
-      ctx.rec.observe(C, "Close button behavior", `observed: ${closedByBtn ? "closed" : "NOT closed (peek/other)"}; ${JSON.stringify(closeProbe)}; tied to D5 ruling`, "pending-owner-ruling");
+      ctx.rec.check(C, "Close button closes the reader sheet", closedByBtn, JSON.stringify(closeProbe), "D5");
       ctx.rec.check(C, "no uncaught exceptions", s.exceptions.length === 0, s.exceptions.slice(0, 2).join("; ") || "none");
     });
   }
@@ -295,7 +295,7 @@ export async function scene100Contract(ctx: Ctx): Promise<void> {
     })()`);
     await shot(ctx, s, "scene-100");
     ctx.rec.check(C, "scene holds 100 nodes and 99 edges", st.nodes === 100 && st.edges === 99, `${st.nodes} nodes, ${st.edges} edges`);
-    ctx.rec.observe(C, "labels under the reading panel (observed)", `${st.under}/${st.labels} labels overlap the panel at 1920x1080 (drain item D6, owner decision pending)`);
+    ctx.rec.observe(C, "labels under the reading panel (observed)", `${st.under}/${st.labels} labels overlap the panel at 1920x1080 (drain item D6, ruled: fit)`);
     ctx.rec.observe(C, "frame rate (observed)", `${st.frames} fps via software GL (SwiftShader); informational only`);
     ctx.rec.check(C, "no uncaught exceptions", s.exceptions.length === 0, s.exceptions.slice(0, 2).join("; ") || "none");
   });

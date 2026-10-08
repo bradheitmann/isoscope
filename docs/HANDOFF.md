@@ -20,7 +20,7 @@ is set (a CSP can break media playback); one remains a documented proposal.
 
 **Bundle and theme weight (measured 2026-10-08 at drain/final, D12).** `vite.config.ts` splits
 three.js into its own `three-*.js` chunk (530.5 kB raw / 133.5 kB gzip) beside the
-app entry (150.95 kB / 49.43 kB); before the split there was one 679.5 kB / 181.2 kB
+app entry (151.0 kB / 49.5 kB); before the split there was one 679.5 kB / 181.2 kB
 chunk (681.5 kB / 182.9 kB combined now). Loading is unchanged (both chunks eager); the gain is cache stability.
 `bun run check:chunks` (run in CI after the build) fails if three leaves its chunk.
 The built CSS is 1,532.9 kB raw / 170.2 kB gzip; `themes.css` alone is 526.1 kB in

@@ -22,7 +22,7 @@ Note: the shell `npm` may be a pnpm wrapper; use `/opt/homebrew/bin/npm`.
 | typography | static var() resolution and an independent oracle against the vendored token JSON (both also in `--static`), plus computed style of each role equals the resolved literals |
 | navigation | generated 100-sections (10 groups "Area NN", 99 edges) and 100-groups fixtures: 12-row paging, reach every module, search by id/name/group label (expectations derive from the fixture), select pins |
 | viewport | 8 viewports 390x844, 768x1024, 1024x768, 1280x600, 1280x800, 1440x900, 1920x1080, 2560x1440: applied size, no horizontal overflow, canvas fill, controls reachable; off-canvas labels recorded (D6) |
-| modal | reader sheet at 390x844 and 1024x768: open state, focus entry (D4). Escape and Close are RECORDED, not asserted: status `pending-owner-ruling` (D5) |
+| modal | reader sheet at 390x844 and 1024x768: open state, focus entry (D4). Escape and Close are asserted to close the sheet (D5, ruled) |
 | resize | wide/compact/wide/compact handshake: docking, inert, role, aria-expanded, focus |
 | gestures | synthetic wheel in/out changes zoom, R returns to home |
 | motion | `prefers-reduced-motion`: R snaps home within 2 frames |
@@ -35,7 +35,8 @@ Besides resolving var() chains, `oracle.ts` reads the canonical role tuples stra
 
 ## Known results on the b76b003 product
 - The full run (`npm run qa`) exits 1 on the b76b003 product because of a real defect, D4: in the compact layout, opening the reader sheet leaves focus on the btnReadMap button instead of moving it into the sheet (check "open: focus moves into the sheet"). It is fixed by the D4 commit in this PR, after which that check passes.
-- D5 (Escape and Close on the reader sheet) is reported as `pending-owner-ruling`, not pass or fail, until the owner rules on the intended behavior.
+- D5 (Escape and Close on the reader sheet) is ruled: both close the sheet fully, and the modal checks assert it. The `pending-owner-ruling` status remains available in the harness but is no longer emitted.
+- The D6 home clash exemption applies only when the label scale is below 1, so one label can still be hidden by the clash declutter at 1280x600 (same on main).
 - `npm run qa:static` needs no browser and exits 0.
 
 ### D6: "1 label not rendered (width 0)" at 1280x600

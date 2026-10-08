@@ -164,7 +164,7 @@ function tfRender(): void {
   row.title="Fly to this crossing";
   const dot=document.createElement("span");dot.className="tf-dot";
   const mid=document.createElement("span");mid.className="tf-name";
-  mid.innerHTML=`<span class="tf-edge">${ev["isoscope.edge"]}</span> ${ev.name}`;
+  mid.innerHTML=`<span class="tf-edge">${escapeHtml(ev["isoscope.edge"])}</span> ${escapeHtml(ev.name)}`;
   const ms=document.createElement("span");ms.className="tf-ms";ms.textContent=ev.duration_ms.toFixed(0)+"ms";
   row.append(dot,mid,ms);
   const key=ev["isoscope.edge"];

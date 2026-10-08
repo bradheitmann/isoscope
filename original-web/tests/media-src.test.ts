@@ -77,5 +77,8 @@ describe("safeLinkHref / escapeHtml", () => {
     expect(r).not.toMatch(/href="\$\{it\.src\}"/);
     expect(r).not.toMatch(/\$\{it\.name\}/);
     expect(r).toMatch(/escapeHtml\(it\.name\)/);
+    expect(r).not.toMatch(/\$\{ev\.name\}/);
+    expect(r).not.toMatch(/\$\{ev\["isoscope\.edge"\]\}/);
+    expect(r).toMatch(/escapeHtml\(ev\.name\)/);
   });
 });

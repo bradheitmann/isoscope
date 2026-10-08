@@ -4,8 +4,8 @@ A decision explainer is an Isoscope map built to help the operator make one deci
 comes from, how the options or cases split, and what each choice unblocks or affects. The intro prose then says what
 reply is needed. The worked example is `../examples/decision-explainer.spec.json`, in this skill's `examples/`
 folder: a real explainer that let the operator answer a spec question that had gone unanswered while it was asked in
-internal jargon. Build it with `node <isoscope>/build.mjs <skill>/examples/decision-explainer.spec.json <out.html>`
-(from an Isoscope checkout: `node build.mjs skills/isoscope/examples/decision-explainer.spec.json
+internal jargon. Build it with `bun <isoscope>/build.ts <skill>/examples/decision-explainer.spec.json <out.html>`
+(from an Isoscope checkout: `bun build.ts skills/isoscope/examples/decision-explainer.spec.json
 out/decision-explainer.html`) and read it next to this page.
 
 ## Layout: three groups, left to right
@@ -102,6 +102,6 @@ names and metrics had moved on and its tags had not.
 - The numbers in names, tags, metrics and prose agree.
 - The prose follows the six steps and ends with the exact reply needed.
 - The copy rules pass: terms defined, identifiers glossed, no banned words.
-- `node build.mjs` succeeds and `bun scripts/shot.ts <html> <png> 1440 900` reports zero JS errors.
+- `bun build.ts` succeeds and `bun scripts/shot.ts <html> <png> 1440 900` reports zero JS errors.
 - Then follow the ask protocol in `../SKILL.md`: show, ask in plain chat, act only on the typed answer, record it
   verbatim.

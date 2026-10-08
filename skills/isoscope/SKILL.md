@@ -40,7 +40,7 @@ A short factual status reply ("the build passed") does not need a map.
 ## Build and open a map
 
 ```bash
-node <isoscope>/build.mjs <spec.json> <out.html>
+bun <isoscope>/build.ts <spec.json> <out.html>
 open -a "Google Chrome" <out.html>          # macOS; any browser opening the file works
 ```
 

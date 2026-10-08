@@ -2,7 +2,7 @@ import { describe, expect, test } from "bun:test";
 import { existsSync, mkdtempSync, readFileSync, rmSync } from "fs";
 import { tmpdir } from "os";
 import { join, resolve } from "path";
-import { buildHtml } from "../build.mjs";
+import { buildHtml } from "../build.ts";
 
 const root = resolve(import.meta.dir, "..");
 const specPath = join(root, "examples/isoscope.spec.json");

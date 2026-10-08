@@ -14,7 +14,7 @@
   },
   "scripts": {
     "build:self": "bun cli.ts render examples/isoscope.spec.json out/isoscope.html",
-    "build:odin": "bun build.mjs examples/odin.spec.json out/odin.html",
+    "build:odin": "bun build.ts examples/odin.spec.json out/odin.html",
     "mcp": "bun mcp.ts",
     "drc": "bun drc.ts",
     "typecheck": "tsc --noEmit -p tsconfig.json",

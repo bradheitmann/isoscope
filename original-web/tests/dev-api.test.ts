@@ -139,3 +139,82 @@ describe("annotations seed vs local store", () => {
     }
   });
 });
+
+async function withApi(opts: { seed: string; local?: string; dir: string }, fn: (b: string) => Promise<void>): Promise<void> {
+  const h = createApiHandler({
+    annotationsPath: opts.seed,
+    ...(opts.local ? { localAnnotationsPath: opts.local } : {}),
+    uploadDir: join(opts.dir, "u"),
+    telemetryDbPath: join(opts.dir, "t.db"),
+  });
+  const s = createServer((req, res) => { void h(req, res, () => { res.writeHead(404); res.end(); }); });
+  await new Promise<void>(r => s.listen(0, "127.0.0.1", r));
+  try { await fn(`http://127.0.0.1:${(s.address() as AddressInfo).port}`); }
+  finally { await new Promise<void>(r => { s.closeAllConnections(); s.close(() => r()); }); }
+}
+
+describe("default local-store path derivation", () => {
+  it("derives <seed-without-.json>.local.json when no localAnnotationsPath is given", async () => {
+    const { writeFileSync, existsSync } = await import("node:fs");
+    const d = mkdtempSync(join(tmpdir(), "isoscope-default-"));
+    try {
+      const seed = join(d, "annotations.json");
+      const seedBody = JSON.stringify({ modules: { SP: { notes: "seed" } } }) + "\n";
+      writeFileSync(seed, seedBody);
+      await withApi({ seed, dir: d }, async (b) => {
+        expect((await fetch(b + "/api/annotations/CL", { method: "POST", body: JSON.stringify({ n: 1 }) })).status).toBe(200);
+        expect(existsSync(join(d, "annotations.local.json"))).toBe(true);
+        expect(readFileSync(seed, "utf8")).toBe(seedBody);
+        expect(await (await fetch(b + "/api/annotations")).json()).toEqual({ SP: { notes: "seed" }, CL: { n: 1 } });
+      });
+      expect(JSON.parse(readFileSync(join(d, "annotations.local.json"), "utf8")).modules).toEqual({ SP: { notes: "seed" }, CL: { n: 1 } });
+    } finally { rmSync(d, { recursive: true, force: true }); }
+  });
+});
+
+describe("corrupt local store is never treated as empty", () => {
+  it("GET, POST and DELETE return 500 JSON and leave the corrupt file byte-identical", async () => {
+    const { writeFileSync } = await import("node:fs");
+    const d = mkdtempSync(join(tmpdir(), "isoscope-corrupt-"));
+    try {
+      const seed = join(d, "annotations.json"), local = join(d, "annotations.local.json");
+      const seedBody = JSON.stringify({ modules: { SP: {} } }) + "\n";
+      const corrupt = '{"modules": {"A": {"notes": "precious"';
+      writeFileSync(seed, seedBody);
+      writeFileSync(local, corrupt);
+      await withApi({ seed, dir: d }, async (b) => {
+        const calls: [string, RequestInit][] = [
+          ["/api/annotations", {}],
+          ["/api/annotations/X", { method: "POST", body: "{}" }],
+          ["/api/annotations/A", { method: "DELETE" }],
+        ];
+        for (const [path, init] of calls) {
+          const r = await fetch(b + path, init);
+          expect(r.status, path).toBe(500);
+          const j = await r.json() as { ok: boolean; error: string };
+          expect(j.ok).toBe(false);
+          expect(j.error).toMatch(/annotations\.local\.json.*not valid JSON/);
+        }
+      });
+      expect(readFileSync(local, "utf8")).toBe(corrupt);
+      expect(readFileSync(seed, "utf8")).toBe(seedBody);
+      expect(readdirSync(d).sort()).toEqual(["annotations.json", "annotations.local.json"]);
+    } finally { rmSync(d, { recursive: true, force: true }); }
+  });
+
+  it("a wrongly-shaped store (modules is an array) is also refused, not overwritten", async () => {
+    const { writeFileSync } = await import("node:fs");
+    const d = mkdtempSync(join(tmpdir(), "isoscope-shape-"));
+    try {
+      const seed = join(d, "annotations.json"), local = join(d, "annotations.local.json");
+      const bad = '{"modules": [1,2]}';
+      writeFileSync(seed, "{}\n");
+      writeFileSync(local, bad);
+      await withApi({ seed, dir: d }, async (b) => {
+        expect((await fetch(b + "/api/annotations")).status).toBe(500);
+        expect((await fetch(b + "/api/annotations/X", { method: "POST", body: "{}" })).status).toBe(500);
+      });
+      expect(readFileSync(local, "utf8")).toBe(bad);
+    } finally { rmSync(d, { recursive: true, force: true }); }
+  });
+});

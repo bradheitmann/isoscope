@@ -88,13 +88,19 @@ export function createApiHandler(opts: ApiOptions): ApiHandler {
     return db;
   };
 
+  /* A missing store is empty; an unreadable or unparseable one is an error. Treating a corrupt
+     file as empty would let the next POST/DELETE overwrite (wipe) the user's data. */
   const readStore = (): { modules: Record<string, unknown> } => {
-    try {
-      const raw = JSON.parse(readFileSync(existsSync(localPath) ? localPath : annotationsPath, "utf8")) as { modules?: Record<string, unknown> };
-      return { modules: raw.modules ?? {} };
-    } catch {
-      return { modules: {} };
-    }
+    const file = existsSync(localPath) ? localPath : annotationsPath;
+    if (!existsSync(file)) return { modules: {} };
+    let raw: unknown;
+    try { raw = JSON.parse(readFileSync(file, "utf8")); }
+    catch (e) { throw new HttpError(500, `annotation store ${basename(file)} is unreadable or not valid JSON (${(e as Error).message}); fix or remove it - it was not modified`); }
+    const mods = (raw as { modules?: unknown } | null)?.modules;
+    const bad = typeof raw !== "object" || raw === null || Array.isArray(raw)
+      || (mods !== undefined && (typeof mods !== "object" || mods === null || Array.isArray(mods)));
+    if (bad) throw new HttpError(500, `annotation store ${basename(file)} has an unexpected shape; fix or remove it - it was not modified`);
+    return { modules: (mods as Record<string, unknown> | undefined) ?? {} };
   };
   const writeStore = (store: { modules: Record<string, unknown> }): void => {
     const body = JSON.stringify({ $schema: "per-module annotations", ...store }, null, 1) + "\n";

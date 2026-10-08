@@ -178,11 +178,25 @@ export function createApiHandler(opts: ApiOptions): ApiHandler {
       if (url === "/api/telemetry" || url.startsWith("/api/telemetry/")) {
         if (req.method === "POST" && url === "/api/telemetry") {
           const events = await readJson(req, maxTelemetry);
+          /* intake validation BEFORE touching the store (holdout item 2): a wide
+             event is an object whose timing fields, when present, are finite
+             numbers. Scalars, nulls, nested arrays and wrong-typed fields get a
+             clean 400 here — not a 500 from the insert layer, and never a row of
+             String()-coerced garbage. */
+          const list = (Array.isArray(events) ? events : [events]) as unknown[];
+          const isEvent = (e: unknown): e is Record<string, unknown> => {
+            if (!e || typeof e !== "object" || Array.isArray(e)) return false;
+            const r = e as Record<string, unknown>;
+            if ("duration_ms" in r && (typeof r.duration_ms !== "number" || !Number.isFinite(r.duration_ms))) return false;
+            if ("end_time_unix_nano" in r && (typeof r.end_time_unix_nano !== "number" || !Number.isFinite(r.end_time_unix_nano))) return false;
+            return true;
+          };
+          if (list.some(e => !isEvent(e))) throw new HttpError(400, "malformed wide event: object with finite numeric duration_ms/end_time_unix_nano required");
           const db = telemetryDb();
-          const list = (Array.isArray(events) ? events : [events]) as Record<string, unknown>[];
+          const typed = list as Record<string, unknown>[];
           const ins = db.prepare("INSERT INTO wide_events (edge,name,kind,status,duration_ms,end_ms,json) VALUES (?,?,?,?,?,?,?)");
           db.exec("BEGIN");
-          try { for (const e of list) ins.run(String(e["isoscope.edge"] ?? ""), String(e.name ?? ""), String(e.kind ?? ""), String(e.status ?? ""), Number(e.duration_ms ?? 0), Number((e.end_time_unix_nano ?? 0) as number) / 1e6, JSON.stringify(e)); db.exec("COMMIT"); }
+          try { for (const e of typed) ins.run(String(e["isoscope.edge"] ?? ""), String(e.name ?? ""), String(e.kind ?? ""), String(e.status ?? ""), Number(e.duration_ms ?? 0), Number((e.end_time_unix_nano ?? 0) as number) / 1e6, JSON.stringify(e)); db.exec("COMMIT"); }
           catch { db.exec("ROLLBACK"); throw new Error("telemetry insert failed"); }
           send(200, { ok: true, count: list.length });
           return;

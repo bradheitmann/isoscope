@@ -132,19 +132,25 @@ export async function clearModule(id: string): Promise<void> {
   });
 }
 
-/* Convenience mutators — read-modify-write the one module's record. */
+/* Convenience mutators — read-modify-write the one module's record. Each awaits
+   hydration BEFORE reading (B02 holdout catch): reading getModule pre-hydration
+   would spread an empty record and drop unseen server fields. */
 export async function setNotes(id: string, notes: string): Promise<void> {
+  await ensureHydrated();
   await setModule(id, { ...getModule(id), notes });
 }
 export async function setFace(id: string, face: FaceKey, ref: SurfaceRef | null): Promise<void> {
+  await ensureHydrated();
   const cur = getModule(id);
   await setModule(id, { ...cur, faces: { ...cur.faces, [face]: ref } });
 }
 export async function addInside(id: string, item: InsideItem): Promise<void> {
+  await ensureHydrated();
   const cur = getModule(id);
   await setModule(id, { ...cur, inside: [...(cur.inside ?? []), item] });
 }
 export async function removeInside(id: string, index: number): Promise<void> {
+  await ensureHydrated();
   const cur = getModule(id);
   const inside = (cur.inside ?? []).filter((_, i) => i !== index);
   await setModule(id, { ...cur, inside });

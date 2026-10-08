@@ -110,6 +110,9 @@ function setCanonicalIcon(button: HTMLElement, source: string, withClass=true): 
  if(svg.localName!=="svg"||svg.namespaceURI!=="http://www.w3.org/2000/svg"||parsed.querySelector("parsererror"))
   throw new Error("Invalid bundled Desert Pants icon asset");
  const tags=new Set(["svg","path","line","polyline","polygon","circle","rect"]);
+ /* points is intentionally UNSUPPORTED: polyline/polygon content must be authored
+    as path d — a 2026-10 boot crash from a points-bearing icon is the origin of
+    this contract, and the battery's B14 test asserts the rejection on purpose */
  const attributes=new Set(["xmlns","viewBox","width","height","fill","stroke","stroke-width","stroke-linecap","stroke-linejoin","d","x","y","x1","y1","x2","y2","cx","cy","r","rx"]);
  for(const element of [svg,...Array.from(svg.querySelectorAll("*"))]){
   if(!tags.has(element.localName))throw new Error(`Unsupported element in bundled icon: ${element.localName}`);

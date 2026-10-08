@@ -168,17 +168,35 @@ function repoName(): string {
 
 /* ----------------------------------------------------------------- parsing */
 
-const IMPORT_RE =
-  /(?:import|export)\s+(?:type\s+)?(?:[^'";]*?\sfrom\s+)?["']([^"']+)["']|import\(\s*["']([^"']+)["']\s*\)/g;
+/* Imports come from the real TypeScript parser, not a regex: a regex cannot
+   tell `import "./x"` the statement from `// import "./x"` the comment or
+   `'import "./x"'` the string literal, and those phantom edges corrupt the
+   map (F13). Export-name extraction stays regex-based: it feeds only the
+   display blurb, never the graph. */
+import ts from "typescript";
+
 const EXPORT_NAME_RE = /export\s+(?:async\s+)?(?:function|const|let|var|class|interface|type)\s+([A-Za-z0-9_]+)/g;
+
+function parseImports(text: string, fileName: string): string[] {
+  const sf = ts.createSourceFile(fileName, text, ts.ScriptTarget.Latest, true, ts.ScriptKind.TS);
+  const out: string[] = [];
+  const visit = (node: ts.Node): void => {
+    if (ts.isImportDeclaration(node) || ts.isExportDeclaration(node)) {
+      const ms = node.moduleSpecifier;
+      if (ms && ts.isStringLiteral(ms)) out.push(ms.text);
+    } else if (ts.isCallExpression(node) && node.expression.kind === ts.SyntaxKind.ImportKeyword) {
+      const arg = node.arguments[0];
+      if (arg && ts.isStringLiteral(arg)) out.push(arg.text);
+    }
+    ts.forEachChild(node, visit);
+  };
+  visit(sf);
+  return out;
+}
 
 function parseFile(abs: string): FileRec {
   const text = readFileSync(abs, "utf8");
-  const imports: string[] = [];
-  for (const m of text.matchAll(IMPORT_RE)) {
-    const spec = m[1] ?? m[2];
-    if (spec) imports.push(spec);
-  }
+  const imports = parseImports(text, abs);
   const exports: string[] = [];
   for (const m of text.matchAll(EXPORT_NAME_RE)) exports.push(m[1]!);
   let comment = "";
@@ -289,14 +307,21 @@ const RESOLVE_EXTS = ["", ".ts", ".mjs", ".js", ".tsx", ".d.ts", ".json", ".css"
 function resolveSpecifier(spec: string, fromAbs: string): { kind: "internal" | "external"; key: string } {
   const clean = spec.replace(/\?.*$/, ""); // strip ?raw etc.
   if (!clean.startsWith(".")) return { kind: "external", key: clean };
-  const base = resolve(dirname(fromAbs), clean);
-  for (const ext of RESOLVE_EXTS) {
-    const cand = base + ext;
-    if (existsSync(cand) && statSync(cand).isFile()) {
-      return { kind: "internal", key: toRel(cand) };
+  let base = resolve(dirname(fromAbs), clean);
+  /* standard TS emitted-JS spelling: `import "./b.js"` in source means b.ts —
+     try the stem variants before the literal .js file (F14) */
+  const bases = /\.m?js$/.test(base)
+    ? [base.replace(/\.js$/, ".ts"), base.replace(/\.js$/, ".tsx"), base.replace(/\.js$/, ".d.ts"), base.replace(/\.mjs$/, ".mts"), base]
+    : [base];
+  for (const b of bases) {
+    for (const ext of RESOLVE_EXTS) {
+      const cand = b + ext;
+      if (existsSync(cand) && statSync(cand).isFile()) {
+        return { kind: "internal", key: toRel(cand) };
+      }
     }
   }
-  for (const idx of ["index.ts", "index.mjs"]) {
+  for (const idx of ["index.ts", "index.tsx", "index.mjs"]) {
     const cand = join(base, idx);
     if (existsSync(cand)) return { kind: "internal", key: toRel(cand) };
   }

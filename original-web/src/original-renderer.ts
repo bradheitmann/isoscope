@@ -499,7 +499,9 @@ function faceDims(n: MapNode,face: FaceKey): { pw: number; ph: number } {
    surfaces sampling 6 sources costs 6 decoders, not 60 — that is the difference
    between a slideshow and a smooth city. Each face gets its own VideoTexture over
    the shared element so UVs/letterboxing stay per-face. */
-type PooledVideo={ video: HTMLVideoElement; live: boolean; refs: number; group?: string; src: string; warmed?: boolean; traced?: boolean; started?: boolean };
+type PooledVideo={ video: HTMLVideoElement; live: boolean; refs: number; group?: string; src: string; warmed?: boolean; traced?: boolean; started?: boolean;
+ disposed?: boolean;  /* released: every async callback must stand down (F05) */
+ wantPlay?: boolean;  /* a real play intent exists — warmup never pauses/rewinds it (F07) */ };
 const videoPool: Record<string, PooledVideo>={};
 /* ————— progressive background warmup —————
    Sources are queued at acquire time (preload=none, no fetch). An idle loader starts
@@ -507,21 +509,25 @@ const videoPool: Record<string, PooledVideo>={};
    source then warms its decoder so media-mode-on is a resume, not a cold start. */
 const warmupQueue: PooledVideo[]=[];
 let warmupScheduled=false;
+/* reverse lookup for per-source play intent (media lifecycle, F04-F09) */
+const pvByVideo=new Map<HTMLVideoElement,PooledVideo>();
 function startVideo(pv: PooledVideo): void {
- if(pv.started)return;pv.started=true;
+ if(pv.started||pv.disposed)return;pv.started=true;
  const video=pv.video;
  video.preload="auto";video.src=pv.src;
  /* the decoder is primed by the canplay→warm listener (play one frame, hold at 0).
     We don't play here — warming is the listener's job, so a started-but-hidden video
     isn't running. */
 }
-function promoteAllNow(): void { warmupQueue.forEach(startVideo); warmupQueue.length=0; }
+function promoteAllNow(): void { warmupQueue.forEach(pv=>{ if(!pv.disposed)startVideo(pv); }); warmupQueue.length=0; }
 function scheduleWarmup(): void {
  if(warmupScheduled)return;warmupScheduled=true;
  const step=()=>{
   /* promote 3 per idle tick — steady background progress without a startup spike */
-  for(let i=0;i<3&&warmupQueue.length;i++)startVideo(warmupQueue.shift()!);
+  for(let i=0;i<3&&warmupQueue.length;i++){const pv=warmupQueue.shift()!;if(!pv.disposed)startVideo(pv);}
   if(warmupQueue.length)idle(step);
+  else warmupScheduled=false; /* the flag means outstanding work, not "ever ran" (F04):
+     sources acquired after a drain get a fresh drain via acquireVideo→scheduleWarmup */
  };
  idle(step);
 }
@@ -544,17 +550,22 @@ function acquireVideo(src: string,ref: SurfaceRef): PooledVideo {
  video.autoplay=false;video.preload="none";
  const pv: PooledVideo={video,live,refs:1,group:ref.group,src,started:false};
  warmupQueue.push(pv);
+ pvByVideo.set(video,pv);
+ scheduleWarmup(); /* every enqueue keeps a drain outstanding (F04) */
  /* media load crosses the surface→serve seam (the dev server streams the file).
     Trace it so the OW-SV edge reflects real media flow + latency live. */
  const loadT0=performance.now();
- video.addEventListener("canplay",()=>{ if(!pv.traced){pv.traced=true;emitWide({edge:"OW-SV",from:"OW",to:"SV",name:"media.load",durationMs:performance.now()-loadT0,ok:true,kind:"CLIENT"});} },{once:true});
- video.addEventListener("error",()=>{ if(!pv.traced){pv.traced=true;emitWide({edge:"OW-SV",from:"OW",to:"SV",name:"media.load",durationMs:performance.now()-loadT0,ok:false,kind:"CLIENT",error:"media failed to load: "+src});} },{once:true});
+ video.addEventListener("canplay",()=>{ if(pv.disposed)return; if(!pv.traced){pv.traced=true;emitWide({edge:"OW-SV",from:"OW",to:"SV",name:"media.load",durationMs:performance.now()-loadT0,ok:true,kind:"CLIENT"});} },{once:true});
+ video.addEventListener("error",()=>{ if(pv.disposed)return; if(!pv.traced){pv.traced=true;emitWide({edge:"OW-SV",from:"OW",to:"SV",name:"media.load",durationMs:performance.now()-loadT0,ok:false,kind:"CLIENT",error:"media failed to load: "+src});} },{once:true});
  /* decoder warm-up: preload=auto buffers bytes but leaves the decoder cold, so the
     first play() after media-mode-on stalls on a cold start. Once the element can
     play, prime it — play a frame muted, then hold paused at t=0 — so toggling media
     on is a resume, not a cold decode. Cheap: one frame per source, in the background. */
- const warm=()=>{ if(pv.warmed)return; pv.warmed=true;
-  video.play().then(()=>{ video.pause(); video.currentTime=0; }).catch(()=>{});
+ /* the warm play is a PRIME, never an override: if real play intent arrived while
+    the warm frame was in flight (media activated, transport play), do not
+    pause/rewind the wanted stream when the prime resolves (F07) */
+ const warm=()=>{ if(pv.warmed||pv.disposed||pv.wantPlay)return; pv.warmed=true;
+  video.play().then(()=>{ if(pv.wantPlay||pv.disposed)return; video.pause(); video.currentTime=0; }).catch(()=>{});
  };
  if(video.readyState>=3)warm(); else video.addEventListener("canplay",warm,{once:true});
  videoPool[src]=pv;
@@ -570,6 +581,9 @@ function releaseVideo(src: string): void {
  pv.refs--;
  if(keepMediaAlive)return;              /* preserve the playing element across a relayout */
  if(pv.refs>0)return;
+ pv.disposed=true;pv.wantPlay=false;    /* async callbacks (warm, telemetry, staggered plays) check this and stand down (F05) */
+ const qi=warmupQueue.indexOf(pv);if(qi>=0)warmupQueue.splice(qi,1); /* a released source is never promoted from the grave */
+ pvByVideo.delete(pv.video);
  pv.video.pause();pv.video.removeAttribute("src");pv.video.load();
  if(pv.group)leaveSyncGroup(pv.group,pv.video);
  delete videoPool[src];
@@ -603,12 +617,18 @@ function buildVideo(n: MapNode,face: FaceKey,ref: SurfaceRef): SurfaceEntry | nu
  const {tex,shared}=acquireVideoTex(pv,fit);
  const mat=new THREE.MeshBasicMaterial({map:tex,transparent:true,toneMapped:false});
  const plane=facePlane(n,face,mat);
- /* fit:contain letterboxes by shrinking the UVs to the source aspect once known */
- if(fit==="contain")video.addEventListener("loadedmetadata",()=>{
-  const {pw,ph}=faceDims(n,face);containFit(tex,video.videoWidth,video.videoHeight,pw,ph);
- });
+ /* fit:contain letterboxes by shrinking the UVs to the source aspect. Apply
+    immediately when metadata is already in (pooled element reused across
+    rebuilds), else a one-shot listener the dispose path can remove — listeners
+    must not accumulate on a surviving element across shuffles (F09) */
+ let fitListener: (()=>void)|null=null;
+ if(fit==="contain"){
+  const applyFit=()=>{const {pw,ph}=faceDims(n,face);containFit(tex,video.videoWidth,video.videoHeight,pw,ph);};
+  if(video.readyState>=1)applyFit();
+  else{fitListener=()=>{applyFit();fitListener=null;};video.addEventListener("loadedmetadata",fitListener,{once:true});}
+ }
  meshById[n.id].add(plane);
- return {plane,kind:"video",video,moduleId:n.id,group:ref.group,audio:ref.audio,dispose(){const par=plane.parent;if(par)par.remove(plane);plane.geometry.dispose();mat.dispose();releaseVideoTex(src,tex,shared);releaseVideo(src);}};
+ return {plane,kind:"video",video,moduleId:n.id,group:ref.group,audio:ref.audio,dispose(){if(fitListener){video.removeEventListener("loadedmetadata",fitListener);fitListener=null;}const par=plane.parent;if(par)par.remove(plane);plane.geometry.dispose();mat.dispose();releaseVideoTex(src,tex,shared);releaseVideo(src);}};
 }
 /* ————— synchronized theater: surfaces that share a group play frame-locked —————
    One clock per group. The first ready video is the master; every other member's
@@ -876,7 +896,11 @@ function applySurfaceVisibility(): void {
   if(e.video){ if(!mediaMode){e.video.pause();} }
  }));
 }
+/* every activation is a generation: staggered starts from an older generation
+   (media already turned off again, source released) must not fire (F06) */
+let mediaGen=0;
 function applyMediaMode(): void {
+ const gen=++mediaGen;
  applySurfaceVisibility();
  if(mediaMode){ /* promote any not-yet-loaded sources immediately, then play. Decoders
     are pre-warmed by the idle loader, so this is a resume, not a cold start; stagger
@@ -886,12 +910,16 @@ function applyMediaMode(): void {
   Object.values(videoPool).forEach(pv=>{
    const v=pv.video;
    setTimeout(()=>{
+    if(gen!==mediaGen||!mediaMode||pv.disposed)return; /* a later mode flip owns the transport now */
+    pv.wantPlay=true;
     if(v.currentTime>0.5)v.currentTime=0; /* restart from the top, but skip a redundant seek */
     if(!RM||pv.live)v.play().catch(()=>{});
    }, i*40);
    i++;
   });
   applyAudio(); /* re-evaluate the (still-muted-until-armed) voice + EQ motion */
+ } else {
+  Object.values(videoPool).forEach(pv=>{ pv.wantPlay=false; });
  }
  refreshTransport();
 }
@@ -964,7 +992,13 @@ const mediaControls={
  },
  togglePlay(id: string): void {
   const faces=surfacesById[id];if(!faces)return;
-  Object.values(faces).forEach(e=>{if(e&&e.video){if(e.video.paused)e.video.play().catch(()=>{});else e.video.pause();}});
+  /* faces sharing one pooled element must not each toggle it (an even number of
+     shares canceled the control outright — F08): one intent per module, applied
+     once per distinct element */
+  const vids=[...new Set(Object.values(faces).filter(e=>e&&e.video).map(e=>e!.video!))];
+  if(!vids.length)return;
+  const play=vids.some(v=>v.paused);
+  vids.forEach(v=>{ const pv=pvByVideo.get(v); if(play){ if(pv)pv.wantPlay=true; v.play().catch(()=>{}); } else { if(pv)pv.wantPlay=false; v.pause(); } });
  },
  /* solo chooses WHICH cube holds the voice; it never arms sound by itself. Sound
     comes on only from the explicit sound control. */
@@ -972,7 +1006,7 @@ const mediaControls={
  restart(id: string): void {
   const faces=surfacesById[id];if(!faces)return;
   const seen=new Set<HTMLVideoElement>();
-  Object.values(faces).forEach(e=>{if(e&&e.video&&!seen.has(e.video)){seen.add(e.video);e.video.currentTime=0;if(e.video.paused)e.video.play().catch(()=>{});}});
+  Object.values(faces).forEach(e=>{if(e&&e.video&&!seen.has(e.video)){seen.add(e.video);const pv=pvByVideo.get(e.video);if(pv)pv.wantPlay=true;e.video.currentTime=0;if(e.video.paused)e.video.play().catch(()=>{});}});
  },
 };
 

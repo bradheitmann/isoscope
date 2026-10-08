@@ -1,8 +1,10 @@
 # Isoscope-authored icons (not part of the pinned Desert Pants vendor tree)
 
-These 11 SVGs were previously in `vendor/desert-pants/icons/svg/` but are not in the
-upstream Desert Pants checkout at the pinned commit
-`ba99de27974f623c20679962e8e3dc4d74c2a273` and were never listed in
+These 11 SVGs were previously in `vendor/desert-pants/icons/svg/` but are not byte-identical to
+any file in the upstream Desert Pants checkout at the pinned commit
+`ba99de27974f623c20679962e8e3dc4d74c2a273` (`code`, `menu`, `volume-2` and `volume-x` share
+names with upstream files but differ in content; the other 7 have no upstream counterpart),
+and were never listed in
 `vendor/desert-pants/CANONICAL-MANIFEST.sha256`. They were moved here (D13) so the
 vendor tree contains only upstream bytes. They are imported by `src/original-renderer.ts`
 with `?raw` and inlined by the vite build.

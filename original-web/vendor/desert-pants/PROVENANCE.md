@@ -21,6 +21,6 @@ Lucide assets used by controls and kept in this tree (all byte-identical to upst
 
 `tests/vendor-manifest.test.ts` requires every file under this directory to be listed in `CANONICAL-MANIFEST.sha256` with exact case and a matching sha256. The only exceptions are the two meta files `CANONICAL-MANIFEST.sha256` and `PROVENANCE.md`, named explicitly in the test.
 
-- Icons: the 11 files not present upstream moved to `src/icons/`. `chevron-down.svg` was verified byte-identical to upstream at the pin and is now in the manifest.
+- Icons: the 11 files not byte-identical to upstream at the pin moved to `src/icons/` (4 of them — code, menu, volume-2, volume-x — share an upstream name but differ in content). `chevron-down.svg` was verified byte-identical to upstream at the pin and is now in the manifest.
 - Tokens: `tokens/01`-`03` and `05`-`09` were verified byte-identical to `git show ba99de2:tokens/<file>` in `~/open_protocols/desert-pants` and added to the manifest. `tokens/04-layout.tokens.json` differs from the pin (missing the upstream `visualization-workbench` block) so it moved to `src/tokens/`.
 - Case: upstream's filename is `icons/LICENSE-lucide.txt`; the manifest line was corrected to match (the file and git already used lowercase).

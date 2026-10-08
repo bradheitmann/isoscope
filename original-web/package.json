@@ -8,7 +8,9 @@
     "typecheck": "tsc --noEmit && tsc --noEmit -p tsconfig.scripts.json",
     "test": "vitest run",
     "qc:layout": "bun scripts/edge-layout-qc.ts",
-    "graph:codebase": "bun scripts/codebase-graph.ts"
+    "graph:codebase": "bun scripts/codebase-graph.ts",
+    "qa": "bun tests/qa/run.ts",
+    "qa:static": "bun tests/qa/run.ts --static"
   },
   "dependencies": {
     "three": "0.180.0"

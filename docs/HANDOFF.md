@@ -33,7 +33,7 @@ bun run drc            # collision lint (bun drc.ts <spec>)
 
 **Open item (tracked):** the self-map drc budget failure is NOT gated by CI (the root job does not run `drc`, because it would fail). Fix the budget or the geometry, then add `bun drc.ts examples/isoscope.spec.json` to the root CI job.
 
-**Note on `dsh-plugin/`:** it is an untracked local stub, not part of the repo. Mentions of it below (and the `tsconfig.json` exclude entry, which is harmless when the directory is absent) are historical; keep-or-remove is the operator's call.
+**Note on `dsh-plugin/`:** it is an intentionally untracked, required local directory. It is deliberately kept out of git; the `tsconfig.json` exclude entry covers it.
 
 ## What this is
 Schematic observability engine: a system rendered as an inspectable isometric
@@ -181,9 +181,8 @@ Sentinel architecture map (built iteratively with the operator, 2026-08-19..22).
   proof, edge TP→DR auth = shared router source), paths now cover drc.ts,
   scripts/, okoa.ts, dsh-plugin/, advisory/, all docs. DRC: 2/2 weighted, PASS.
 - **SPEC.md** gained the `paths` and `drcBudget` rows the code already read.
-- **dsh-plugin/** is untracked on purpose: a package.json stub whose `main`
-  does not exist. `adapters/DSH.md` already gets isoscope into dsh via its MCP
-  client, so this native-plugin route may be redundant — operator: keep or rm.
+- **dsh-plugin/** is an intentionally untracked, required local directory
+  (kept out of git on purpose). `adapters/DSH.md` documents the MCP-client route into dsh.
 - Verified this session: `import`+`build` of the self-map and `drc` on both
   examples pass from the working tree; contrast proof = zero JS errors across
   boot + 18 theme switches (headless Chrome).
@@ -233,8 +232,7 @@ example and must stay current with the repo.
     started, by design: largest spec today is 28 links (advisory topology lab).
 
 **Still open after 2026-09-02:** R30 phase 2 (in-place hot-swap) · R10 lane
-assignment (topology-lab spec still has 6 shared channels) · `dsh-plugin/`
-keep-or-remove (untracked stub) · sensor-offer trigger needs a change log ·
+assignment (topology-lab spec still has 6 shared channels) · sensor-offer trigger needs a change log ·
 lumbr-side exporter · going public is the operator's call.
 
 **KNOWN BUGS:**

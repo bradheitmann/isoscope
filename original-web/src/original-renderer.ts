@@ -2489,7 +2489,8 @@ function applySpec(next: Spec,preserveMedia=false): void{
  hoverId=null;flyGoal=null;
  buildScene(SPEC);refreshTheme();resize();
  /* a new map (codebase view) drops ink, but never silently — snapshot it so the
-    Draw-undo / Cmd-Z restores it, exactly like Reset. A layout shuffle keeps the
+    Draw-undo / Cmd-Z restores it. (Reset no longer touches ink; only a map swap
+    snapshots it.) A layout shuffle keeps the
     same nodes, so its ink would ideally ride along; until strokes re-project onto
     moved modules, we snapshot rather than destroy. */
  resetInkBackup=brush.strokeCount()>0?brush.snapshot():null;brush.clear();

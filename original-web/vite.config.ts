@@ -7,11 +7,12 @@ const root = dirname(fileURLToPath(import.meta.url));
 
 /* Per-module annotation write-back + upload + wide-event telemetry. The app is otherwise a
    static read of the spec; these endpoints (server/api.ts) are the one place a user's own
-   annotations persist durably and share via the git-tracked JSON. A pure static host has no
+   annotations persist durably, in the gitignored examples/annotations.local.json (the tracked examples/annotations.json is a read-only seed used until the first write). A pure static host has no
    such endpoint — the client detects that and falls back to localStorage + export. */
 function annotationsApi(): Plugin {
   const handler = createApiHandler({
-    annotationsPath: resolve(root, "examples/annotations.json"),
+    annotationsPath: resolve(root, "examples/annotations.json"), /* tracked read-only seed */
+    localAnnotationsPath: resolve(root, "examples/annotations.local.json"), /* gitignored runtime store */
     uploadDir: resolve(root, "public/media/uploads"),
     telemetryDbPath: resolve(root, "examples/telemetry.db"),
   });

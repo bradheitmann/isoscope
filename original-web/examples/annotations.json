@@ -1,16 +1,8 @@
 {
  "$schema": "per-module annotations",
  "modules": {
-  "CL": {
-   "faces": {
-    "north": null
-   }
-  },
-  "TP": {
-   "faces": {
-    "north": null
-   }
-  },
+  "CL": {},
+  "TP": {},
   "SP": {
    "notes": "live health probe 1791341611649"
   }

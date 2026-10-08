@@ -473,6 +473,7 @@ function refreshAdvisory(n: MapNode): void {
    motion (video holds its first frame unless live), and dispose with the scene. */
 type SurfaceEntry={ plane: THREE.Mesh; dispose: () => void; video?: HTMLVideoElement; kind: SurfaceKind; moduleId: string; group?: string; audio?: boolean; text?: string; pages?: string[] };
 const surfacesById: Record<string, Partial<Record<FaceKey, SurfaceEntry>>> = {};
+const skippedFaces: Record<string, FaceKey[]> = {}; /* faces explicitly cleared via annotations: built nothing, by design */
 /* face → world placement: a plane floated just proud of that face */
 function facePlane(n: MapNode,face: FaceKey,mat: THREE.Material): THREE.Mesh<THREE.PlaneGeometry, THREE.Material> {
  const h=Math.max(n.h,0.6),proud=0.016;
@@ -883,8 +884,12 @@ function refreshSurfaces(n: MapNode): void {
  const ann=getModule(n.id).faces;
  if(ann)for(const k of Object.keys(ann) as FaceKey[])effective[k]=ann[k];
  const next: Partial<Record<FaceKey, SurfaceEntry>> = {};
+ const skipped: FaceKey[]=[];
  for(const face of Object.keys(effective) as FaceKey[]){
-  const ref=effective[face];if(!ref)continue;
+  const ref=effective[face];
+  /* a null face (annotation-cleared) builds no plane — record it so scans can
+     see what's NOT there, not only what is (the CL/TP empties hid this way) */
+  if(!ref){skipped.push(face);continue;}
   const entry=ref.kind==="video"?buildVideo(n,face,ref)
    :ref.kind==="image"?buildImage(n,face,ref)
    :ref.kind==="doc"?buildDoc(n,face,ref)
@@ -893,6 +898,7 @@ function refreshSurfaces(n: MapNode): void {
   if(entry)next[face]=entry;
  }
  if(Object.keys(next).length)surfacesById[n.id]=next;
+ if(skipped.length)skippedFaces[n.id]=skipped; else delete skippedFaces[n.id];
  applySurfaceVisibility();
  syncSoundButton();
 }
@@ -3102,6 +3108,8 @@ window.__isoSwapState=()=>({stacked,pinned,selEdge,ti,flowing,dotSet,lineSet,cor
  center:{...CENTER},bounds:{..._bb},grids:grids.map(g=>g.position.y),trace:[...TRACE],journey:journeyIds(),nodes:NODES.map(n=>({id:n.id,lvl:n._lvl,anchor:[n._anchor.x,n._ly,n._anchor.z],items:n.items})),
  edges:Object.fromEntries(Object.entries(edgeLinesById).map(([k,o])=>[k,{junctions:o.jn.filter(j=>j.parent===scene).length}])),
  memory:{...renderer.info.memory,programs:renderer.info.programs?.length ?? 0},children:scene.children.length,
- videos:{pool:Object.keys(videoPool).length,queued:warmupQueue.length,playing:Object.values(videoPool).filter(p=>!p.video.paused&&!p.video.ended).length,ready:Object.values(videoPool).filter(p=>p.video.readyState>=2).length}});
+ videos:{pool:Object.keys(videoPool).length,queued:warmupQueue.length,playing:Object.values(videoPool).filter(p=>!p.video.paused&&!p.video.ended).length,ready:Object.values(videoPool).filter(p=>p.video.readyState>=2).length},
+ surfaces:Object.fromEntries(Object.entries(surfacesById).map(([id,faces])=>[id,Object.fromEntries(Object.entries(faces).map(([f,e])=>[f,e?{kind:e.kind,rs:e.video?e.video.readyState:null,paused:e.video?e.video.paused:null,visible:e.plane.visible}:null]))])),
+ facesSkipped:skippedFaces});
 window.dispatchEvent(new Event("isoscope-ready"));
 tick();

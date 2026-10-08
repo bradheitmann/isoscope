@@ -200,7 +200,9 @@ details > summary { cursor: pointer; }
 .panel-back{position:absolute;inset-inline-start:var(--dp-space-1);inset-block-start:var(--dp-space-1)}
 .panel-back svg{transform:rotate(180deg)}
 .panel-back[hidden]{display:none}
-.panel[data-view="detail"] .panel-context .inspector-head{padding-inline-start:var(--dp-space-6)}
+/* the back button occupies the header's top-start corner: reserve its full
+   footprint (offset + icon button + gap) so it never sits on the title text */
+.panel[data-view="detail"] .panel-context .inspector-head{padding-inline-start:calc(var(--dp-space-1) + var(--dp-space-8,32px) + var(--dp-space-2))}
 .health-strip{flex:none;display:flex;align-items:center;gap:var(--dp-space-2);inline-size:100%;
   padding:var(--dp-space-2) var(--dp-space-5);border:0;cursor:pointer;text-align:start;
   background:var(--dp-color-bg-raised);color:var(--dp-color-text-secondary);

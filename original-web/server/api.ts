@@ -2,6 +2,7 @@ import { readFileSync, writeFileSync, renameSync, existsSync, mkdirSync } from "
 import type { IncomingMessage, ServerResponse } from "node:http";
 import { DatabaseSync } from "node:sqlite";
 import { basename, dirname, resolve } from "node:path";
+import { UPLOAD_EXTENSION_LIST } from "../src/upload-policy";
 
 export interface ApiOptions {
   /** tracked, read-only seed/example annotations (never written by the server) */
@@ -24,14 +25,12 @@ const MAX_UPLOAD_BODY = 200e6;
 const MAX_TELEMETRY_BODY = 1e6;
 const MAX_JSON_BODY = 25e6;
 
-/* Upload extension allowlist: only inert media/image/audio/document types the app uses (the face
-   picker accepts video/*, image/*, audio/*). Uploads are served back from the app origin, so
-   anything a browser could execute or render as markup is refused with 415: html, htm, xhtml,
-   js, mjs, svg (script-capable), xml. ".bin" stays for opaque payloads (served as octet-stream). */
-export const UPLOAD_EXTENSIONS: ReadonlySet<string> = new Set([
-  "mp4", "m4v", "webm", "mov", "ogv", "m4a", "mp3", "wav", "ogg", "oga", "flac", "aac",
-  "png", "jpg", "jpeg", "gif", "webp", "avif", "pdf", "txt", "md", "bin",
-]);
+/* Upload extension allowlist (list lives in src/upload-policy.ts): inert media/image/audio and
+   document types people attach (csv, tsv, txt, md, json, pdf, zip, docx, xlsx, pptx, key, pages,
+   numbers, rtf, odt, ods, odp). Uploads are served back from the app origin, so anything a browser
+   could execute or render as markup is refused with 415: html, htm, xhtml, svg, xml, js, mjs, cjs,
+   ts, wasm, exe, sh, php, and anything not listed. */
+export const UPLOAD_EXTENSIONS: ReadonlySet<string> = new Set(UPLOAD_EXTENSION_LIST);
 
 class HttpError extends Error {
   constructor(readonly status: number, message: string) { super(message); }

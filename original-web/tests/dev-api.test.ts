@@ -252,7 +252,7 @@ describe("dev-server api: configurable caps and cross-site writes", () => {
     expect(ok.status).toBe(200);
   });
 
-  it.each(["x.html", "x.htm", "x.svg", "x.js", "x.mjs", "x.xml", "x.xhtml", "X.HTML", "noext", "x.html.", "x.png.html"])(
+  it.each(["x.html", "x.htm", "x.svg", "x.js", "x.mjs", "x.xml", "x.xhtml", "X.HTML", "noext", "x.html.", "x.png.html", "x.cjs", "x.ts", "x.wasm", "x.exe", "x.sh", "x.php"])(
     "upload of %s -> 415 and nothing written", async (name) => {
       const count = () => { try { return readdirSync(join(dir2, "uploads")).length; } catch { return 0; } };
       const before = count();
@@ -262,7 +262,8 @@ describe("dev-server api: configurable caps and cross-site writes", () => {
       await alive2();
     });
 
-  it.each(["a.mp4", "a.webm", "a.mov", "a.m4a", "a.mp3", "a.wav", "a.png", "a.JPG", "a.jpeg", "a.gif", "a.webp", "a.pdf"])(
+  it.each(["a.mp4", "a.webm", "a.mov", "a.m4a", "a.mp3", "a.wav", "a.png", "a.JPG", "a.jpeg", "a.gif", "a.webp", "a.pdf",
+    "a.csv", "a.tsv", "a.txt", "a.md", "a.json", "a.zip", "a.docx", "a.xlsx", "a.pptx", "a.key", "a.pages", "a.numbers", "a.rtf", "a.odt", "a.ods", "a.odp", "A.DOCX"])(
     "upload of %s is accepted", async (name) => {
       const r = await fetch(base2 + "/api/upload?name=" + encodeURIComponent(name), { method: "POST", body: new Uint8Array(10) });
       expect(r.status).toBe(200);

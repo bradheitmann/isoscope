@@ -8,6 +8,7 @@
    unit-testable and the renderer binds to it, not the reverse. */
 
 import { emitWide } from "./telemetry";
+import type { UploadResult } from "./upload-policy";
 
 export type FaceKey = "roof" | "north" | "south" | "east" | "west" | "bottom";
 export const FACES: FaceKey[] = ["roof", "north", "south", "east", "west", "bottom"];
@@ -120,13 +121,21 @@ export async function removeInside(id: string, index: number): Promise<void> {
 /* Upload a binary to the served media dir; returns the same-origin src. On a
    static host, falls back to an object URL that lives only for the session and
    is flagged so the UI can say "export to keep". */
-export async function uploadFile(file: File): Promise<{ src: string; durable: boolean }> {
+export async function uploadFile(file: File): Promise<UploadResult> {
   if (remote) {
     try {
       const r = await fetch(`api/upload?name=${encodeURIComponent(file.name)}`, {
         method: "POST", headers: { "content-type": "application/octet-stream" }, body: file,
       });
-      if (r.ok) { const j = (await r.json()) as { src?: string }; if (j.src) return { src: j.src, durable: true }; }
+      if (r.ok) {
+        const j = (await r.json()) as { src?: string };
+        if (j.src) return { src: j.src, durable: true };
+        return { src: "", durable: false, error: `${r.status} malformed upload response` };
+      }
+      /* The server refused: surface the reason; never hand back a blob: URL that looks saved. */
+      let msg = r.statusText || "refused";
+      try { const j = (await r.json()) as { error?: string; message?: string }; msg = j.error ?? j.message ?? msg; } catch { /* non-JSON body */ }
+      return { src: "", durable: false, error: `${r.status} ${msg}` };
     } catch { remote = false; }
   }
   return { src: URL.createObjectURL(file), durable: false };

@@ -11,6 +11,8 @@ interface reconstruction of the isometric city) that renders the self-map
 The self-map exists twice (root `examples/` and `original-web/examples/`) and the
 two copies must stay byte-identical (`tests/spec-sync.test.ts` enforces it).
 
+Uploads: `POST /api/upload` accepts only the inert allowlist in `original-web/src/upload-policy.ts` (media/image/audio, csv, tsv, txt, md, json, pdf, zip, docx, xlsx, pptx, key, pages, numbers, rtf, odt, ods, odp, bin); html/htm/xhtml/svg/xml/js/mjs/cjs/ts/wasm/exe/sh/php and anything unlisted get 415. The file inputs' `accept` lists come from the same module (test-asserted), and the UI shows a refusal instead of saving a blob: link.
+
 Media sources and HLS: spec-provided media `src` values are validated by
 `original-web/src/media-src.ts` (same-origin relative, http(s) and blob: only;
 javascript:, data:, file: and protocol-relative are rejected and logged once per

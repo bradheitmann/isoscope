@@ -181,3 +181,23 @@ describe("annotations: constants and export shape", () => {
     vi.useRealTimers();
   });
 });
+
+describe("annotations: uploadFile surfaces a server refusal", () => {
+  it("a 415 yields durable:false with the error and no blob: src while the remote store is active", async () => {
+    const createObjectURL = vi.fn(() => "blob:should-not-be-used");
+    vi.stubGlobal("URL", Object.assign(URL, { createObjectURL }));
+    const { a } = await fresh({
+      fetchImpl: async (u: unknown) => String(u).includes("api/upload")
+        ? { ok: false, status: 415, statusText: "Unsupported", json: async () => ({ ok: false, error: 'unsupported upload type ".html"' }) }
+        : { ok: true, status: 200, json: async () => ({ modules: {} }) },
+    });
+    await a.loadAnnotations();
+    expect(a.isRemote()).toBe(true);
+    const r = await a.uploadFile(new File(["x"], "x.html"));
+    expect(r.durable).toBe(false);
+    expect(r.error).toContain("415");
+    expect(r.error).toContain("unsupported upload type");
+    expect(r.src).toBe("");
+    expect(createObjectURL).not.toHaveBeenCalled();
+  });
+});

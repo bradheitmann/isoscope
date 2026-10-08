@@ -39,7 +39,7 @@ import iconMenu from "./icons/menu.svg?raw";
 import iconCode from "./icons/code.svg?raw";
 import { isEditableTarget } from "./editable-target";
 import { vetSrc, escapeHtml, safeLinkHref } from "./media-src";
-import { fitHomeZoom, labelScale, unobstructedRect, veryFarZoom, type HomeLabel, type Rect } from "./home-fit";
+import { centerShift, fitHomeZoom, labelScale, legibleFloor, unobstructedRect, veryFarZoom, type HomeLabel, type Rect } from "./home-fit";
 import { getModule, setNotes, setFace, addInside, removeInside, uploadFile, isRemote, FACES, type FaceKey, type SurfaceKind, type SurfaceRef } from "./annotations";
 
 type Item = { c: "red" | "amber" | "you" | "info" | string; l: string };
@@ -2733,6 +2733,12 @@ function canvasFreeRect(): Rect {
  return unobstructedRect({left:r.left,top:r.top,right:r.right,bottom:r.bottom},obstacles,4);
 }
 window.__isoCanvasRect=canvasFreeRect;
+/* the smallest scale a label may take so its rendered font stays legible (>= MIN_LABEL_PX) */
+let LABEL_FLOOR=0.55;
+function labelFloor(): number {
+ const lb=NODES.length?document.getElementById("lb-"+NODES[0]!.id):null;
+ return legibleFloor(lb?parseFloat(getComputedStyle(lb).fontSize):0);
+}
 function refitHome(): void {
  const w=wrap.clientWidth,h=wrap.clientHeight;
  if(!w||!h||!NODES.length)return;
@@ -2746,11 +2752,20 @@ function refitHome(): void {
   return {dx:fitV.x*w/2,dy:-fitV.y*h/2+4,w:lb.offsetWidth||80,h:lb.offsetHeight||30};
  });
  const r=wrap.getBoundingClientRect(),cx=r.left+w/2,cy=r.top+h/2,free=canvasFreeRect();
- const z=fitHomeZoom(labels,{left:free.left-cx,right:free.right-cx,top:free.top-cy,bottom:free.bottom-cy},HOME_ZOOM,0.15,2,0.55);
+ const fb={left:free.left-cx,right:free.right-cx,top:free.top-cy,bottom:free.bottom-cy},floor=LABEL_FLOOR=labelFloor();
+ const z=fitHomeZoom(labels,fb,HOME_ZOOM,0.15,2,floor);
  controls.minZoom=Math.min(0.35,z); /* the fitted home is always reachable */
  const atHome=!flyGoal&&Math.abs(camera.zoom-HOME.zoom)<1e-3&&controls.target.distanceTo(fitV.set(HOME.tx,HOME.ty,HOME.tz))<1e-3;
- HOME.zoom=z;
- if(atHome){camera.zoom=z;camera.updateProjectionMatrix();controls.update();}
+ /* a fit that had to zoom out also centres the framed scene in the unobstructed rectangle (the wide home is left exactly as it was) */
+ const px=new THREE.Vector3(HOME.tx,HOME.ty,HOME.tz);
+ let nx=CENTER.x,ny=1.0,nz=CENTER.z;
+ if(z<HOME_ZOOM-1e-3){
+  const sh=centerShift(labels,fb,z/HOME_ZOOM,labelScale(z,HOME_ZOOM,floor)),upp=VIEW/(z*h);
+  const e=fitCam.matrixWorld.elements;
+  nx+=(-sh.dx*e[0]+sh.dy*e[4])*upp;ny+=(-sh.dx*e[1]+sh.dy*e[5])*upp;nz+=(-sh.dx*e[2]+sh.dy*e[6])*upp;
+ }
+ Object.assign(HOME,{tx:nx,ty:ny,tz:nz,zoom:z});
+ if(atHome){camera.position.add(fitV.set(nx,ny,nz).sub(px));controls.target.set(nx,ny,nz);camera.zoom=z;camera.updateProjectionMatrix();controls.update();}
 }
 /* ————— frame loop ————— */
 function resize(){
@@ -2822,7 +2837,8 @@ function tick(){
   }
  });
  const rect=canvas.getBoundingClientRect();
- const far=camera.zoom<0.8,veryfar=camera.zoom<veryFarZoom(HOME.zoom),lk=HOME.zoom<HOME_ZOOM-1e-3?labelScale(camera.zoom,HOME_ZOOM):1;
+ /* the home view's labels are never dimmed as "far"; only zooming out past the home does that */
+ const far=camera.zoom<0.8&&camera.zoom<HOME.zoom-0.01,veryfar=camera.zoom<veryFarZoom(HOME.zoom),lk=HOME.zoom<HOME_ZOOM-1e-3?labelScale(camera.zoom,HOME_ZOOM,LABEL_FLOOR):1;
  const ents: LabelEntry[]=[];
  NODES.forEach(n=>{
    tmpV.copy(n._anchor);tmpV.y+=n._ly;tmpV.project(camera);
@@ -2849,7 +2865,7 @@ function tick(){
  ents.forEach(e=>{
    const w=(e.lb._w||80)*(e.lb._k||1),h=(e.lb._h||30)*(e.lb._k||1);
    const r: LabelRect={x0:e.lx-w/2,x1:e.lx+w/2,y0:e.ly,y1:e.ly+h};
-   const hit=!(lk<1&&camera.zoom<=HOME.zoom*1.02)&&placed.some(p=>r.x0<p.x1&&r.x1>p.x0&&r.y0<p.y1&&r.y1>p.y0);
+   const hit=placed.some(p=>r.x0<p.x1&&r.x1>p.x0&&r.y0<p.y1&&r.y1>p.y0);
    e.lb.classList.toggle("clash",hit);
    if(!hit)placed.push(r);
  });

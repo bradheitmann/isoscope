@@ -158,7 +158,7 @@ export async function viewportMatrix(ctx: Ctx): Promise<void> {
         }
         const g = document.createElement("canvas").getContext("2d");
         const sizes = vis.map(l => {
-          const cs = getComputedStyle(l), k = l.getBoundingClientRect().width / (l.offsetWidth || 1);
+          const cs = getComputedStyle(l), k = cs.transform && cs.transform !== "none" ? new DOMMatrix(cs.transform).a : 1;
           g.font = cs.fontWeight + " " + cs.fontSize + " " + cs.fontFamily;
           return { px: parseFloat(cs.fontSize) * k, cap: g.measureText("H").actualBoundingBoxAscent * k };
         });
@@ -186,6 +186,8 @@ export async function viewportMatrix(ctx: Ctx): Promise<void> {
       ctx.rec.observe(C, `${tag} home-view label legibility`, `${p.labelsVisible} visible, ${p.overlaps} overlapping pairs, min rendered font ${p.minPx.toFixed(1)}px, min cap height ${p.minCap.toFixed(1)}px, ${p.labelsUnrendered} of ${p.labelsTotal} hidden by declutter; ${p.offWrap} outside the canvas wrap itself; home zoom ${p.zoom.toFixed(3)}, target ${p.target.map(v => v.toFixed(2)).join("/")}`);
       if (w <= 768) {
         ctx.rec.check(C, `${tag} home labels inside the unobstructed canvas`, p.labelsOff === 0, `${p.labelsOff} of ${p.labelsVisible} visible labels outside [${freeTxt}]`, "D6");
+        ctx.rec.check(C, `${tag} home labels do not overlap`, p.overlaps === 0, `${p.overlaps} overlapping pairs among ${p.labelsVisible} visible labels`, "D6");
+        ctx.rec.check(C, `${tag} home label font >= 9px`, p.minPx >= 8.95, `min rendered font ${p.minPx.toFixed(2)}px, min cap height ${p.minCap.toFixed(2)}px`, "D6");
       }
       ctx.rec.check(C, `${tag} no uncaught exceptions`, s.exceptions.length === 0, s.exceptions.slice(0, 2).join("; ") || "none");
     });

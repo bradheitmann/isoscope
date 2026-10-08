@@ -1,5 +1,4 @@
-/* Post-build check: three.js must live in its own chunk in dist/assets, and the entry chunk must
-   not also bundle it. Run after `npm run build`. */
+/* Post-build check: fails unless three.js lives in exactly one dist/assets three-*.js chunk and no other chunk bundles it; run after `npm run build`. */
 import { readdirSync, readFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";

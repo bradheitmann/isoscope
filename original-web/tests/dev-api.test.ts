@@ -218,3 +218,65 @@ describe("corrupt local store is never treated as empty", () => {
     } finally { rmSync(d, { recursive: true, force: true }); }
   });
 });
+
+describe("dev-server api: configurable caps and cross-site writes", () => {
+  let dir2: string, server2: Server, base2: string;
+  beforeAll(async () => {
+    dir2 = mkdtempSync(join(tmpdir(), "isoscope-dev-api-cap-"));
+    const handler = createApiHandler({
+      annotationsPath: join(dir2, "annotations.json"),
+      uploadDir: join(dir2, "uploads"),
+      telemetryDbPath: join(dir2, "telemetry.db"),
+      maxUploadBytes: 1000,
+      maxTelemetryBytes: 500,
+    });
+    server2 = createServer((req, res) => {
+      void handler(req, res, () => { res.writeHead(404); res.end("static"); });
+    });
+    await new Promise<void>(r => server2.listen(0, "127.0.0.1", r));
+    base2 = `http://127.0.0.1:${(server2.address() as AddressInfo).port}`;
+  });
+  afterAll(async () => {
+    await new Promise<void>(r => { server2.closeAllConnections(); server2.close(() => r()); });
+    rmSync(dir2, { recursive: true, force: true });
+  });
+  const alive2 = async () => expect((await fetch(base2 + "/api/annotations")).status).toBe(200);
+  const evil = { origin: "http://evil.example" };
+
+  it("upload over the configured cap -> 413, nothing written, server stays alive", async () => {
+    const r = await fetch(base2 + "/api/upload?name=big.bin", { method: "POST", body: new Uint8Array(5000) });
+    expect(r.status).toBe(413);
+    expect(() => readdirSync(join(dir2, "uploads"))).toThrow();
+    await alive2();
+    const ok = await fetch(base2 + "/api/upload?name=small.bin", { method: "POST", body: new Uint8Array(900) });
+    expect(ok.status).toBe(200);
+  });
+
+  it("telemetry over the configured cap -> 413 and server stays alive", async () => {
+    const r = await fetch(base2 + "/api/telemetry", { method: "POST", body: JSON.stringify([{ name: "x".repeat(800) }]) });
+    expect(r.status).toBe(413);
+    await alive2();
+  });
+
+  it("cross-site Origin POST to /api/upload -> 403 and nothing written", async () => {
+    const before = (() => { try { return readdirSync(join(dir2, "uploads")).length; } catch { return 0; } })();
+    const r = await fetch(base2 + "/api/upload?name=x.bin", { method: "POST", body: new Uint8Array(10), headers: evil });
+    expect(r.status).toBe(403);
+    const after = (() => { try { return readdirSync(join(dir2, "uploads")).length; } catch { return 0; } })();
+    expect(after).toBe(before);
+  });
+
+  it("cross-site Origin POST to /api/telemetry -> 403 and nothing stored", async () => {
+    const r = await fetch(base2 + "/api/telemetry", { method: "POST", body: JSON.stringify([{ "isoscope.edge": "e", name: "n" }]), headers: evil });
+    expect(r.status).toBe(403);
+    const rows = await (await fetch(base2 + "/api/telemetry")).json() as unknown[];
+    expect(rows).toHaveLength(0);
+  });
+
+  it("cross-site DELETE /api/annotations/:id -> 403 and the record survives", async () => {
+    expect((await fetch(base2 + "/api/annotations/keep", { method: "POST", body: JSON.stringify({ a: 1 }) })).status).toBe(200);
+    const d = await fetch(base2 + "/api/annotations/keep", { method: "DELETE", headers: evil });
+    expect(d.status).toBe(403);
+    expect(await (await fetch(base2 + "/api/annotations")).json()).toEqual({ keep: { a: 1 } });
+  });
+});

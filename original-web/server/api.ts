@@ -12,6 +12,10 @@ export interface ApiOptions {
   uploadDir: string;
   /** SQLite file for the wide-event store (opened lazily) */
   telemetryDbPath: string;
+  /** max bytes accepted by POST /api/upload (default 200e6) */
+  maxUploadBytes?: number;
+  /** max bytes accepted by POST /api/telemetry (default 1e6) */
+  maxTelemetryBytes?: number;
 }
 
 export type ApiHandler = (req: IncomingMessage, res: ServerResponse, next: () => void) => Promise<void>;
@@ -67,6 +71,8 @@ function sameOrigin(req: IncomingMessage): boolean {
 export function createApiHandler(opts: ApiOptions): ApiHandler {
   const { annotationsPath, uploadDir, telemetryDbPath } = opts;
   const localPath = opts.localAnnotationsPath ?? annotationsPath.replace(/\.json$/, "") + ".local.json";
+  const maxUpload = opts.maxUploadBytes ?? MAX_UPLOAD_BODY;
+  const maxTelemetry = opts.maxTelemetryBytes ?? MAX_TELEMETRY_BODY;
 
   let telemetry: DatabaseSync | null = null;
   const telemetryDb = (): DatabaseSync => {
@@ -146,7 +152,7 @@ export function createApiHandler(opts: ApiOptions): ApiHandler {
       if (req.method === "POST" && url === "/api/upload") {
         const name = new URL(req.url ?? "", "http://x").searchParams.get("name") ?? "file";
         const safe = name.replace(/[^A-Za-z0-9._-]+/g, "_").slice(-80) || "file";
-        const buf = await readBody(req, MAX_UPLOAD_BODY);
+        const buf = await readBody(req, maxUpload);
         if (!existsSync(uploadDir)) mkdirSync(uploadDir, { recursive: true });
         const dest = resolve(uploadDir, Date.now() + "-" + safe);
         writeFileSync(dest, buf);
@@ -160,7 +166,7 @@ export function createApiHandler(opts: ApiOptions): ApiHandler {
          backend (SurrealDB/Honeycomb) can replace this store without touching emitters. */
       if (url === "/api/telemetry" || url.startsWith("/api/telemetry/")) {
         if (req.method === "POST" && url === "/api/telemetry") {
-          const events = await readJson(req, MAX_TELEMETRY_BODY);
+          const events = await readJson(req, maxTelemetry);
           const db = telemetryDb();
           const list = (Array.isArray(events) ? events : [events]) as Record<string, unknown>[];
           const ins = db.prepare("INSERT INTO wide_events (edge,name,kind,status,duration_ms,end_ms,json) VALUES (?,?,?,?,?,?,?)");

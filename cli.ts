@@ -7,7 +7,7 @@
 import { readFileSync, writeFileSync, mkdirSync, mkdtempSync, rmSync } from "fs";
 import { dirname, join } from "path";
 import { tmpdir } from "os";
-import { buildHtml } from "./build.mjs";
+import { buildHtml } from "./build.ts";
 import { DB_DEFAULT, open, importSpec, exportSpec, proposeSensor, setSensor, normalizeCi, applyCi, detectCiProvider, blastRadius, withHistory, markNode, overview } from "./lib.ts";
 
 /* write a file, creating its parent directory first (fresh clones have no out/) */

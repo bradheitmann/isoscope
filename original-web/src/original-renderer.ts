@@ -29,7 +29,7 @@ import iconSearch from "../vendor/desert-pants/icons/svg/search.svg?raw";
 import iconPlus from "../vendor/desert-pants/icons/svg/plus.svg?raw";
 import iconMinus from "../vendor/desert-pants/icons/svg/minus.svg?raw";
 import iconChevron from "../vendor/desert-pants/icons/svg/chevron-down.svg?raw";
-import { isoRouteAll } from "../../router.mjs";
+import { isoRouteAll } from "../../router.ts";
 import { buildGallery, type LayoutCandidate, type LayoutNode } from "./layouts";
 import { edgeHealth, onEdgeHealthChange, onWideEvent, recentEvents, emitWide, allEdgeMetrics, attentionEdges, edgeMetrics, type EdgeMetrics } from "./telemetry";
 import iconActivity from "../vendor/desert-pants/icons/svg/activity.svg?raw";

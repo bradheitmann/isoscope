@@ -25,7 +25,7 @@ Sentinel architecture map (built iteratively with the operator, 2026-08-19..22).
   routing, double-jog candidates, 2 rip-up passes; ODIN spec 23→10 weighted;
   residue = PB hub, genuinely forced); L3 cross-level pipes riser-outside +
   stub-in at destination level. QC: `window.__isoRouteQC`.
-- `build.mjs` — spec→self-contained HTML (file://-safe, GENERATED banner).
+- `build.ts` — spec→self-contained HTML (file://-safe, GENERATED banner).
 - `SPEC.md` — schema. `DESIGN-RULES.md` — doctrine + scale roadmap + sources.
 - `examples/odin.spec.json` — reference spec (16 modules / 18 links).
 
@@ -100,7 +100,7 @@ Sentinel architecture map (built iteratively with the operator, 2026-08-19..22).
   PASS; build + inspector screenshot, 0 JS errors.
 
 ## 2026-09-02 — routing laws R13 / R16 / R31 landed
-- `router.mjs` (single source, unchanged contract + new outputs): R13 escape
+- `router.ts` (single source, unchanged contract + new outputs): R13 escape
   pins for degree≥3 modules (per-wall even spacing, perpendicular stub, a
   backtrack penalty keeps routes from doubling back under their own module);
   R16 joint-shove pass over surviving crossing pairs (top-14 × top-14 joint
@@ -158,7 +158,7 @@ Sentinel architecture map (built iteratively with the operator, 2026-08-19..22).
 ## ODIN integration contract (consumer #1)
 - ODIN owns `odin/product-research/architecture-map/odin.spec.json` (+README).
 - Root `odin/ODIN-ARCHITECTURE-MAP.html` is a GENERATED artifact:
-  `node ../../../isoscope/build.mjs odin.spec.json ../../ODIN-ARCHITECTURE-MAP.html`
+  `bun ../../../isoscope/build.ts odin.spec.json ../../ODIN-ARCHITECTURE-MAP.html`
 - ODIN-side files are **uncommitted** in odin (its governance requires slices);
   legacy `ODIN-ARCHITECTURE-MAP-3D.html` retired 2026-08-22 (operator order;
   quarantined at /tmp/retired-ODIN-ARCHITECTURE-MAP-3D-20260822.html, evaporates on reboot).
@@ -234,7 +234,7 @@ lumbr-side exporter · going public is the operator's call.
    panel = incident readout (verified: coderabbit error on lib.ts opened the map
    scoped to Store+Spec+MCP+CLI+Serve with the finding on top). Provider webhook
    adapters = roadmap.
-0c. DONE 2026-08-22 (DRC + CI loop): router.mjs = SINGLE SOURCE (injected into
+0c. DONE 2026-08-22 (DRC + CI loop): router.ts = SINGLE SOURCE (injected into
    template at build via /*__ISOSCOPE_ROUTER__*/ slot; imported by drc.ts) —
    never two router implementations. drc.ts = collision LINT (weighted crossings
    vs spec drcBudget.maxWeightedCrossings; exit 1 over budget; offender list).
@@ -268,7 +268,7 @@ lumbr-side exporter · going public is the operator's call.
 
 ## 2026-09-07 · S1 R10 conservative lanes (QA PASS · 6c13e6e)
 
-`router.mjs` assigns corridor lanes after joint shove, retains R13 pins/stubs,
+`router.ts` assigns corridor lanes after joint shove, retains R13 pins/stubs,
 checks obstacle clearance and non-increasing weighted cost, and derives all QC
 and hop points from final trimmed routes. `drc.ts` exposes displaced runs,
 resolved corridors, and every residual share pair with its reason.

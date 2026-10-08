@@ -2535,8 +2535,19 @@ applyDeepHash();
    Each Shuffle click steps to the next board, in order — not a random walk. */
 let layoutGallery: LayoutCandidate[] | null=null;
 let galleryIndex=-1;
+/* The authored journey order, derived from the spec's trace (edge keys walked in
+   order, nodes collected first-seen). Feeds the Linear board so it reads as the
+   map's logical flow — the user journey when the spec authors one. */
+function journeyIds(): string[] {
+ const out: string[]=[];const seen=new Set<string>();
+ (TRACE as unknown as string[]).forEach(k=>{
+  const e=EDGES.find(ed=>ed[0]+"-"+ed[1]===k);if(!e)return;
+  [e[0],e[1]].forEach(id=>{if(!seen.has(id)){seen.add(id);out.push(id);}});
+ });
+ return out;
+}
 function gallery(): LayoutCandidate[] {
- if(!layoutGallery)layoutGallery=buildGallery(SPEC.nodes as unknown as LayoutNode[], SPEC.edges);
+ if(!layoutGallery)layoutGallery=buildGallery(SPEC.nodes as unknown as LayoutNode[], SPEC.edges, 1, journeyIds());
  return layoutGallery;
 }
 function shuffleLayout(): void {
@@ -3007,7 +3018,7 @@ if(specParam){
 window.__isoRenderTagPills=(container,ids)=>renderTagPills(container,ids);
 window.__isoSwapState=()=>({stacked,pinned,selEdge,ti,flowing,dotSet,lineSet,cordon:[...cordon],
  cam:{p:camera.position.toArray(),t:controls.target.toArray(),zoom:camera.zoom},fly:!!flyGoal,
- center:{...CENTER},bounds:{..._bb},grids:grids.map(g=>g.position.y),nodes:NODES.map(n=>({id:n.id,lvl:n._lvl,anchor:[n._anchor.x,n._ly,n._anchor.z],items:n.items})),
+ center:{...CENTER},bounds:{..._bb},grids:grids.map(g=>g.position.y),trace:[...TRACE],journey:journeyIds(),nodes:NODES.map(n=>({id:n.id,lvl:n._lvl,anchor:[n._anchor.x,n._ly,n._anchor.z],items:n.items})),
  edges:Object.fromEntries(Object.entries(edgeLinesById).map(([k,o])=>[k,{junctions:o.jn.filter(j=>j.parent===scene).length}])),
  memory:{...renderer.info.memory,programs:renderer.info.programs?.length ?? 0},children:scene.children.length});
 window.dispatchEvent(new Event("isoscope-ready"));

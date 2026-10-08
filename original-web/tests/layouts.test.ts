@@ -42,12 +42,27 @@ describe("layouts: linear", () => {
       if (horizontal) expect(ys.size).toBe(1); else expect(xs.size).toBe(1);
     });
   }
-  it("is deterministic and orders low-degree nodes first", () => {
+  it("is deterministic and orders along the edge flow, sources first", () => {
     expect(genLinear(nodes, edges, true)).toEqual(genLinear(nodes, edges, true));
     const p = genLinear(nodes, edges, true).positions;
-    /* c and f have degree 1; b,e have degree 3 and must sit after them */
-    expect(p.c.x).toBeLessThan(p.b.x);
-    expect(p.f.x).toBeLessThan(p.e.x);
+    /* topological: every edge a->b must place a before b (the fixture's chain) */
+    expect(p.a.x).toBeLessThan(p.b.x);
+    expect(p.b.x).toBeLessThan(p.c.x);
+    expect(p.a.x).toBeLessThan(p.d.x);
+    expect(p.d.x).toBeLessThan(p.e.x);
+    expect(p.b.x).toBeLessThan(p.e.x);
+    expect(p.e.x).toBeLessThan(p.f.x);
+  });
+  it("follows an authored journey order when one is supplied", () => {
+    const p = genLinear(nodes, edges, true, ["f", "c"]).positions;
+    /* journey nodes lead, in journey order; the rest follow topologically */
+    expect(p.f.x).toBeLessThan(p.c.x);
+    expect(p.c.x).toBeLessThan(p.a.x);
+    expect(p.a.x).toBeLessThan(p.b.x);
+    expect(p.e.x).toBeLessThan(p.f.x + 1e9); /* f placed by journey, e topological after a */
+    const ids = Object.entries(p).sort((x, y) => x[1].x - y[1].x).map(([id]) => id);
+    expect(ids.slice(0, 2)).toEqual(["f", "c"]);
+    expect(ids).toHaveLength(nodes.length);
   });
   it("does not mutate its inputs", () => {
     const snap = JSON.stringify(nodes);

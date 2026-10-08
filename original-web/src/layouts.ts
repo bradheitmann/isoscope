@@ -52,16 +52,54 @@ function gridPositions(order: LayoutNode[], cols: number, sx: number, sz: number
 }
 
 /* a topological-ish order: nodes with fewer dependencies first, hubs toward the middle */
+/* Flow order along the edges themselves (Kahn topological, sources first —
+   modules nothing points at come first, each module before the ones it feeds).
+   Deterministic: ready set and adjacency are id-sorted. Cyclic remainder
+   (rare) appends by id. Replaces the old degree-sort, which read as random. */
 function flowOrder(nodes: LayoutNode[], edges: EdgeSpec[]): LayoutNode[] {
-  const deg: Record<string, number> = {}; edges.forEach(e => { deg[e[0]] = (deg[e[0]] ?? 0) + 1; deg[e[1]] = (deg[e[1]] ?? 0) + 1; });
-  return nodes.slice().sort((a, b) => (deg[a.id] ?? 0) - (deg[b.id] ?? 0) || a.id.localeCompare(b.id));
+  const byId = new Map(nodes.map(n => [n.id, n]));
+  const indeg = new Map<string, number>(); nodes.forEach(n => indeg.set(n.id, 0));
+  const out = new Map<string, string[]>();
+  edges.forEach(([a, b]) => {
+    if (!byId.has(a) || !byId.has(b)) return;
+    indeg.set(b, (indeg.get(b) ?? 0) + 1);
+    if (!out.has(a)) out.set(a, []);
+    out.get(a)!.push(b);
+  });
+  const ready = nodes.filter(n => (indeg.get(n.id) ?? 0) === 0).map(n => n.id).sort();
+  const order: string[] = [];
+  const seen = new Set<string>();
+  while (ready.length) {
+    const id = ready.shift()!;
+    if (seen.has(id)) continue;
+    seen.add(id); order.push(id);
+    for (const b of (out.get(id) ?? []).slice().sort()) {
+      const d = (indeg.get(b) ?? 1) - 1; indeg.set(b, d);
+      if (d === 0) ready.push(b);
+    }
+    ready.sort();
+  }
+  nodes.forEach(n => { if (!seen.has(n.id)) order.push(n.id); });
+  return order.map(id => byId.get(id)!);
+}
+
+/* Reorder a flow to follow the spec's authored journey (trace) when one exists:
+   journey nodes first, in journey order; the rest follow topologically. */
+function journeyOrder(nodes: LayoutNode[], edges: EdgeSpec[], journey: string[]): LayoutNode[] {
+  if (!journey.length) return flowOrder(nodes, edges);
+  const byId = new Map(nodes.map(n => [n.id, n]));
+  const used = new Set<string>();
+  const out: LayoutNode[] = [];
+  journey.forEach(id => { const n = byId.get(id); if (n && !used.has(id)) { used.add(id); out.push(n); } });
+  flowOrder(nodes, edges).forEach(n => { if (!used.has(n.id)) out.push(n); });
+  return out;
 }
 
 /* ————— generators ————— */
 
 /* linear workflow: one row left-to-right (or one column top-to-bottom), in flow order */
-export function genLinear(nodes: LayoutNode[], edges: EdgeSpec[], horizontal: boolean): LayoutCandidate {
-  const order = flowOrder(nodes, edges);
+export function genLinear(nodes: LayoutNode[], edges: EdgeSpec[], horizontal: boolean, journey: string[] = []): LayoutCandidate {
+  const order = journeyOrder(nodes, edges, journey);
   const sx = Math.max(...nodes.map(n => n.w)) + 1.6, sz = Math.max(...nodes.map(n => n.d)) + 1.6;
   const positions = horizontal
     ? gridPositions(order, order.length, sx, sz, false)
@@ -97,7 +135,7 @@ export function genRandom(nodes: LayoutNode[], rand: () => number): LayoutCandid
 /* ————— the curated gallery —————
    Top-5 most efficient random boards, then guarantee at least one linear and one
    phased board. ~7–10 total. Each candidate is scored on the real router. */
-export function buildGallery(nodes: LayoutNode[], edges: EdgeSpec[], seed = 1): LayoutCandidate[] {
+export function buildGallery(nodes: LayoutNode[], edges: EdgeSpec[], seed = 1, journey: string[] = []): LayoutCandidate[] {
   let s = seed;
   const rand = () => { s = (s * 1103515245 + 12345) % 2147483648; return s / 2147483648; };
   const score = (c: LayoutCandidate): number => { const placed = place(nodes, c.positions); c.score = scoreLayout(placed, edges); return c.score; };
@@ -109,8 +147,8 @@ export function buildGallery(nodes: LayoutNode[], edges: EdgeSpec[], seed = 1): 
   randoms.sort((a, b) => a.score - b.score);
   const top = randoms.slice(0, 5).map((c, i) => ({ ...c, kind: "efficient" as const, name: `Efficient ${i + 1}` }));
 
-  const linH = genLinear(nodes, edges, true);
-  const linV = genLinear(nodes, edges, false);
+  const linH = genLinear(nodes, edges, true, journey);
+  const linV = genLinear(nodes, edges, false, journey);
   const phased = genPhased(nodes, edges);
   [linH, linV, phased].forEach(score);
   const linear = linH.score <= linV.score ? linH : linV;

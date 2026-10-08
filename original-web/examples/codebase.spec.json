@@ -238,9 +238,9 @@
    "w": 1,
    "d": 1,
    "h": 2,
-   "does": "Fails when examples/codebase.spec.json differs from a fresh regeneration.",
-   "built": "4 files, ~868 lines",
-   "refs": "original-web/scripts/check-codebase-map.ts · original-web/scripts/codebase-graph.ts · original-web/scripts/edge-layout-qc.ts · original-web/scripts/imagejev-qc.ts",
+   "does": "Post-build check: three.js must live in its own chunk in dist/assets, and the entry chunk must",
+   "built": "5 files, ~892 lines",
+   "refs": "original-web/scripts/check-chunks.ts · original-web/scripts/check-codebase-map.ts · original-web/scripts/codebase-graph.ts · original-web/scripts/edge-layout-qc.ts · original-web/scripts/imagejev-qc.ts",
    "media": [],
    "tags": []
   },

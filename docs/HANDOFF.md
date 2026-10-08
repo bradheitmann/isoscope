@@ -11,6 +11,16 @@ interface reconstruction of the isometric city) that renders the self-map
 The self-map exists twice (root `examples/` and `original-web/examples/`) and the
 two copies must stay byte-identical (`tests/spec-sync.test.ts` enforces it).
 
+**Bundle and theme weight (measured 2026-10-08, D12).** `vite.config.ts` splits
+three.js into its own `three-*.js` chunk (530.5 kB raw / 133.0 kB gzip) beside the
+app entry (148.4 kB / 48.3 kB); before the split there was one 679.5 kB / 181.2 kB
+chunk. Loading is unchanged (both chunks eager); the gain is cache stability.
+`bun run check:chunks` (run in CI after the build) fails if three leaves its chunk.
+The built CSS is 1,532.9 kB raw / 165.4 kB gzip; `themes.css` alone is 526.1 kB in
+source. 18 themes ship and all 18 are presented (`src/theme-order.ts`: 9 lead + 9
+rest). No theme was pruned: theme order and the presented set are a curated product
+decision, so pruning is Kimi's call.
+
 ```bash
 # original-web (live web product; dev server on 127.0.0.1:4182)
 cd original-web

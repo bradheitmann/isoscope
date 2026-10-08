@@ -28,6 +28,18 @@ function annotationsApi(): Plugin {
 export default defineConfig({
   base: "./",
   plugins: [annotationsApi()],
+  build: {
+    rollupOptions: {
+      output: {
+        /* three.js in its own long-lived vendor chunk so app edits don't invalidate its cache.
+           Same eager load; no runtime behavior change. Enforced by `bun run check:chunks`. */
+        manualChunks(id: string) {
+          if (id.includes("/node_modules/three/")) return "three";
+          return undefined;
+        },
+      },
+    },
+  },
   server: { port: 4182, strictPort: true },
   preview: { port: 4182, strictPort: true },
 });

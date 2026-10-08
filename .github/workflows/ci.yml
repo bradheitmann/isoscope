@@ -37,6 +37,7 @@ jobs:
       - run: npm run typecheck
       - run: npm test
       - run: npm run build
+      - run: bun run check:chunks
 
   root:
     name: root (typecheck, test, build)

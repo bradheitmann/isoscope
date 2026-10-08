@@ -15,7 +15,10 @@ concurrency:
 jobs:
   original-web:
     name: original-web (typecheck, test, build)
-    runs-on: ubuntu-latest
+    # self-hosted: GitHub-hosted minutes are billing-blocked; mbp-isoscope-1 is
+    # registered to this repo with the `isoscope` label and started manually by
+    # the owner. Jobs queue (they never fail on billing) until it is online.
+    runs-on: [self-hosted, isoscope]
     timeout-minutes: 20
     defaults:
       run:
@@ -43,7 +46,7 @@ jobs:
 
   root:
     name: root (typecheck, test, build)
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, isoscope]
     timeout-minutes: 20
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1

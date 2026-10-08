@@ -133,28 +133,12 @@
    "tags": []
   },
   {
-   "id": "TELEM",
-   "tag": "WIDE",
-   "g": "surface",
-   "name": "Telemetry",
-   "x": 0,
-   "y": 12,
-   "w": 1,
-   "d": 1,
-   "h": 1,
-   "does": "Live edge telemetry — wide events in the lumbr schema, driving live edge health.",
-   "built": "1 file, ~210 lines · exports: SpanStatus, SpanKind, WideEvent, EdgeHealth, onWideEvent, recentEvents",
-   "refs": "original-web/src/telemetry.ts",
-   "media": [],
-   "tags": []
-  },
-  {
    "id": "THREE",
    "tag": "3D",
    "g": "vendor",
    "name": "three.js",
    "x": 0,
-   "y": 14,
+   "y": 12,
    "w": 1,
    "d": 1,
    "h": 1,
@@ -170,7 +154,7 @@
    "g": "surface",
    "name": "Ambient types",
    "x": 0,
-   "y": 16,
+   "y": 14,
    "w": 1,
    "d": 1,
    "h": 1,
@@ -186,7 +170,7 @@
    "g": "vendor",
    "name": "desert-pants (vendored)",
    "x": 0,
-   "y": 18,
+   "y": 16,
    "w": 1,
    "d": 1,
    "h": 1,
@@ -223,7 +207,7 @@
    "d": 1,
    "h": 2,
    "does": "Post-build check: fails unless three.js lives in exactly one dist/assets three-*.js chunk and no other chunk bundles it; run after `npm run build`. */",
-   "built": "5 files, ~912 lines",
+   "built": "5 files, ~937 lines",
    "refs": "original-web/scripts/check-chunks.ts · original-web/scripts/check-codebase-map.ts · original-web/scripts/codebase-graph.ts · original-web/scripts/edge-layout-qc.ts · original-web/scripts/imagejev-qc.ts",
    "media": [],
    "tags": []
@@ -271,24 +255,8 @@
    "d": 1,
    "h": 4,
    "does": "Pure brush-stroke bookkeeping, extracted from the renderer's brush closure.",
-   "built": "9 files, ~3493 lines · exports: BrushState, clearBrush, isEditableTarget, HomeLabel, HomeBounds, labelScale",
+   "built": "9 files, ~3509 lines · exports: BrushState, clearBrush, isEditableTarget, HomeLabel, HomeBounds, labelScale",
    "refs": "original-web/src/brush-model.ts · original-web/src/editable-target.ts · original-web/src/home-fit.ts · original-web/src/layouts.ts · original-web/src/main.ts · original-web/src/media-src.ts · original-web/src/original-renderer.ts · original-web/src/playlist.ts · original-web/src/upload-policy.ts",
-   "media": [],
-   "tags": []
-  },
-  {
-   "id": "ANNOT",
-   "tag": "NOTES",
-   "g": "surface",
-   "name": "Annotations",
-   "x": 9,
-   "y": 0,
-   "w": 1,
-   "d": 1,
-   "h": 1,
-   "does": "Per-module annotation store: notes, an inside drawer of files/notes, and",
-   "built": "1 file, ~185 lines · exports: FaceKey, FACES, SurfaceKind, SURFACE_KINDS, SurfaceRef, InsideItem",
-   "refs": "original-web/src/annotations.ts",
    "media": [],
    "tags": []
   },
@@ -298,7 +266,7 @@
    "g": "tools",
    "name": "CLI",
    "x": 9,
-   "y": 2,
+   "y": 0,
    "w": 1,
    "d": 1,
    "h": 1,
@@ -314,7 +282,7 @@
    "g": "tools",
    "name": "DRC",
    "x": 9,
-   "y": 4,
+   "y": 2,
    "w": 1,
    "d": 1,
    "h": 1,
@@ -330,13 +298,45 @@
    "g": "tools",
    "name": "MCP server",
    "x": 9,
-   "y": 6,
+   "y": 4,
    "w": 1,
    "d": 1,
    "h": 1,
    "does": "Model-Context-Protocol surface over the store.",
    "built": "1 file, ~132 lines",
    "refs": "mcp.ts",
+   "media": [],
+   "tags": []
+  },
+  {
+   "id": "TELEM",
+   "tag": "WIDE",
+   "g": "surface",
+   "name": "Telemetry",
+   "x": 9,
+   "y": 6,
+   "w": 1,
+   "d": 1,
+   "h": 1,
+   "does": "Live edge telemetry — wide events in the lumbr schema, driving live edge health.",
+   "built": "1 file, ~220 lines · exports: SpanStatus, SpanKind, WideEvent, onWideEvent, recentEvents, emitWide",
+   "refs": "original-web/src/telemetry.ts",
+   "media": [],
+   "tags": []
+  },
+  {
+   "id": "ANNOT",
+   "tag": "NOTES",
+   "g": "surface",
+   "name": "Annotations",
+   "x": 12,
+   "y": 0,
+   "w": 1,
+   "d": 1,
+   "h": 1,
+   "does": "Per-module annotation store: notes, an inside drawer of files/notes, and",
+   "built": "1 file, ~185 lines · exports: FaceKey, FACES, SurfaceKind, SURFACE_KINDS, SurfaceRef, InsideItem",
+   "refs": "original-web/src/annotations.ts",
    "media": [],
    "tags": []
   }
@@ -348,7 +348,6 @@
   "OKOA": "Okoa",
   "PLAT": "Runtime builtins",
   "ROUTER": "Iso router",
-  "TELEM": "Telemetry",
   "THREE": "three.js",
   "TYPES": "Ambient types",
   "VENDOR": "desert-pants (vendored)",
@@ -357,10 +356,11 @@
   "THEME": "Theme order",
   "LIB": "Graph store lib",
   "RENDER": "Renderer",
-  "ANNOT": "Annotations",
   "CLI": "CLI",
   "DRC": "DRC",
-  "MCP": "MCP server"
+  "MCP": "MCP server",
+  "TELEM": "Telemetry",
+  "ANNOT": "Annotations"
  },
  "status": {
   "DATA": {
@@ -384,10 +384,6 @@
    "items": []
   },
   "ROUTER": {
-   "state": "ok",
-   "items": []
-  },
-  "TELEM": {
    "state": "ok",
    "items": []
   },
@@ -423,10 +419,6 @@
    "state": "ok",
    "items": []
   },
-  "ANNOT": {
-   "state": "ok",
-   "items": []
-  },
   "CLI": {
    "state": "ok",
    "items": []
@@ -438,6 +430,14 @@
   "MCP": {
    "state": "ok",
    "items": []
+  },
+  "TELEM": {
+   "state": "ok",
+   "items": []
+  },
+  "ANNOT": {
+   "state": "ok",
+   "items": []
   }
  },
  "levels": {
@@ -447,7 +447,6 @@
   "OKOA": 0,
   "PLAT": 0,
   "ROUTER": 0,
-  "TELEM": 0,
   "THREE": 0,
   "TYPES": 0,
   "VENDOR": 0,
@@ -456,10 +455,11 @@
   "THEME": 1,
   "LIB": 1,
   "RENDER": 1,
-  "ANNOT": 2,
   "CLI": 2,
   "DRC": 2,
-  "MCP": 2
+  "MCP": 2,
+  "TELEM": 2,
+  "ANNOT": 2
  },
  "paths": {},
  "edges": [
@@ -596,6 +596,11 @@
   [
    "RENDER",
    "VENDOR",
+   "data"
+  ],
+  [
+   "TELEM",
+   "RENDER",
    "data"
   ],
   [
@@ -737,6 +742,11 @@
    "refs": ""
   },
   "RENDER-VENDOR": {
+   "title": "import",
+   "carries": "module dependency",
+   "refs": ""
+  },
+  "TELEM-RENDER": {
    "title": "import",
    "carries": "module dependency",
    "refs": ""

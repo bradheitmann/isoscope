@@ -22,6 +22,17 @@ export interface LayoutCandidate { name: string; kind: "efficient" | "linear" | 
    then total Manhattan wirelength. This is HPWL + crossing-count, the standard
    circuit-placement objective. */
 export function scoreLayout(nodes: LayoutNode[], edges: EdgeSpec[]): number {
+  /* placement validity dominates everything: overlapping footprints are not a
+     layout, whatever the routes score (F12). genRandom permutes cells without
+     regard to footprint size, so this term is what keeps invalid boards off
+     the podium — including the zero-edge case where route scores are all 0. */
+  let overlaps = 0;
+  for (let i = 0; i < nodes.length; i++) {
+    for (let j = i + 1; j < nodes.length; j++) {
+      const a = nodes[i], b = nodes[j];
+      if (a.x < b.x + b.w && b.x < a.x + a.w && a.y < b.y + b.d && b.y < a.y + a.d) overlaps++;
+    }
+  }
   const out = isoRouteAll(nodes, edges) as { routes: Record<string, [number, number][]>; hops: Record<string, [number, number][]>; qc: { crossings: number } };
   const defects = checkRoutes({ routes: out.routes, hops: out.hops });
   const hard = defects.filter(d => d.kind !== "overlapping-segment").length;
@@ -31,7 +42,7 @@ export function scoreLayout(nodes: LayoutNode[], edges: EdgeSpec[]): number {
     const pts = out.routes[key];
     for (let i = 1; i < pts.length; i++) wire += Math.abs(pts[i][0] - pts[i - 1][0]) + Math.abs(pts[i][1] - pts[i - 1][1]);
   }
-  return hard * 10000 + soft * 500 + out.qc.crossings * 50 + wire;
+  return overlaps * 1000000 + hard * 10000 + soft * 500 + out.qc.crossings * 50 + wire;
 }
 
 /* apply a positions map to a fresh copy of nodes */

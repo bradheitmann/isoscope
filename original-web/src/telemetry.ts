@@ -36,7 +36,10 @@ export interface WideEvent {
   "error.message"?: string;
 }
 
-export type EdgeHealth = "ok" | "degraded" | "broken";
+import { newEdgeWindow, trackCrossing, healthOfWindow, windowP95, type EdgeWindowState } from "./edge-health";
+
+export type { EdgeHealth } from "./edge-health";
+import type { EdgeHealth } from "./edge-health";
 
 let seq = 0;
 const SESSION = `web-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 8)}`;
@@ -52,26 +55,44 @@ export function onWideEvent(fn: Listener): () => void { listeners.add(fn); retur
    /api/telemetry endpoint (lumbr-schema JSONL), so a session's telemetry survives
    the page. Batched + best-effort: a static host without the endpoint just skips.
    A real lumbr/OTel backend can replace this sink without touching emitters. */
+/* F16: the old sink lost its batch on transient failure, then disabled itself
+   forever while the buffer grew unbounded. Now: only a 404/405 (endpoint truly
+   absent, static host) disables delivery; transient failures requeue with
+   backoff; the buffer is hard-bounded; and the burst flush clears the timer. */
+const SINK_CAP = 1000;      /* hard bound: telemetry must never grow memory without limit */
 const sinkBuf: WideEvent[] = [];
 let sinkTimer: ReturnType<typeof setTimeout> | null = null;
-let sinkRemote = true; /* flips false if the endpoint 404s (static host) */
+let sinkRemote = true; /* flips false only if the endpoint 404/405s (static host) */
+let sinkDropped = 0; /* events shed at the cap, for diagnosis */
+function requeueSink(batch: WideEvent[]): void {
+  sinkBuf.unshift(...batch);
+  if (sinkBuf.length > SINK_CAP) { sinkDropped += sinkBuf.length - SINK_CAP; sinkBuf.length = SINK_CAP; }
+  if (!sinkTimer) sinkTimer = setTimeout(flushSink, 5000); /* transient failure: back off, retry */
+}
 function flushSink(): void {
-  sinkTimer = null;
+  if (sinkTimer) { clearTimeout(sinkTimer); sinkTimer = null; }
   if (!sinkRemote || !sinkBuf.length) return;
   const batch = sinkBuf.splice(0, sinkBuf.length);
   fetch("api/telemetry", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify(batch) })
-    .then(r => { if (!r.ok) sinkRemote = false; })
-    .catch(() => { sinkRemote = false; });
+    .then(r => {
+      if (r.status === 404 || r.status === 405) sinkRemote = false; /* no endpoint here */
+      else if (!r.ok) requeueSink(batch);                           /* 5xx etc: keep, retry */
+    })
+    .catch(() => requeueSink(batch));                               /* network: keep, retry */
 }
 function enqueueSink(ev: WideEvent): void {
   sinkBuf.push(ev);
+  if (sinkBuf.length > SINK_CAP) { sinkDropped++; sinkBuf.shift(); }
   if (!sinkTimer) sinkTimer = setTimeout(flushSink, 2000);
   if (sinkBuf.length >= 50) flushSink(); /* flush promptly under burst */
 }
 if (typeof window !== "undefined") {
   window.addEventListener("pagehide", () => { /* last call: send what we have */
-    if (sinkRemote && sinkBuf.length && navigator.sendBeacon)
-      navigator.sendBeacon("api/telemetry", JSON.stringify(sinkBuf.splice(0)));
+    if (sinkRemote && sinkBuf.length && navigator.sendBeacon) {
+      /* only dequeue when the browser accepted the beacon — a refused beacon
+         keeps the events for a same-document continuation */
+      if (navigator.sendBeacon("api/telemetry", JSON.stringify(sinkBuf))) sinkBuf.length = 0;
+    }
   });
 }
 
@@ -130,34 +151,23 @@ export async function traceEdge<T>(edge: string, from: string, to: string, name:
    A rolling window per edge of recent span outcomes. Health is derived, not set:
    a recent ERROR, or latency blowing past the p95 budget, degrades the edge; a
    crossing that throws and is never retried marks it broken until it recovers. */
-interface EdgeWindow { times: number[]; errors: number; total: number; lastErrorAt: number; lastOkAt: number }
-const windows = new Map<string, EdgeWindow>();
-const WIN = 24;                 /* rolling window of recent crossings per edge */
-const SLOW_MS = 120;            /* a crossing slower than this reads as degraded */
+/* The rule lives in edge-health.ts, shared with the server's /api/telemetry/attention
+   endpoint (F15): one definition, one window, one recovery semantics. */
+const windows = new Map<string, EdgeWindowState>();
 const healthListeners = new Set<() => void>();
 export function onEdgeHealthChange(fn: () => void): void { healthListeners.add(fn); }
 
 function track(edge: string, ev: WideEvent): void {
   let w = windows.get(edge);
-  if (!w) { w = { times: [], errors: 0, total: 0, lastErrorAt: 0, lastOkAt: 0 }; windows.set(edge, w); }
-  w.times.push(ev.duration_ms); if (w.times.length > WIN) w.times.shift();
-  w.total++;
-  if (ev.status === "ERROR") { w.errors++; w.lastErrorAt = ev.end_time_unix_nano / 1e6; }
-  else w.lastOkAt = ev.end_time_unix_nano / 1e6;
+  if (!w) { w = newEdgeWindow(); windows.set(edge, w); }
+  trackCrossing(w, ev.duration_ms, ev.status === "ERROR", ev.end_time_unix_nano / 1e6);
   healthListeners.forEach(fn => fn());
 }
 
 export function edgeHealth(edge: string): EdgeHealth | null {
   const w = windows.get(edge);
-  if (!w || w.total === 0) return null; /* untraced so far — fall back to static status */
-  const errRate = w.errors / w.total;
-  const recent = w.times.slice(-8);
-  const p95 = recent.sort((a, b) => a - b)[Math.floor(recent.length * 0.95)] ?? 0;
-  /* broken: errors dominate and it has not recovered since */
-  if (errRate >= 0.5 && w.lastErrorAt > w.lastOkAt) return "broken";
-  /* degraded: some errors, or the recent tail is slow */
-  if (errRate >= 0.15 || p95 > SLOW_MS) return "degraded";
-  return "ok";
+  if (!w) return null; /* untraced so far — fall back to static status */
+  return healthOfWindow(w);
 }
 
 /* point-in-time health of every traced edge (for the map + tests) */
@@ -183,9 +193,9 @@ const sessionStart = Date.now();
 export function edgeMetrics(edge: string): EdgeMetrics | null {
   const w = windows.get(edge);
   if (!w || w.total === 0) return null;
-  const sorted = w.times.slice().sort((a, b) => a - b);
+  const sorted = w.recent.map(r => r.d).sort((a, b) => a - b);
   const p50 = sorted[Math.floor(sorted.length * 0.5)] ?? 0;
-  const p95 = sorted[Math.floor(sorted.length * 0.95)] ?? 0;
+  const p95 = windowP95(w);
   const elapsedMin = Math.max(0.016, (Date.now() - sessionStart) / 60000);
   return {
     edge, health: edgeHealth(edge) ?? "ok",

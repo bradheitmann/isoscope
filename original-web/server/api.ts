@@ -3,6 +3,7 @@ import type { IncomingMessage, ServerResponse } from "node:http";
 import { DatabaseSync } from "node:sqlite";
 import { basename, dirname, resolve } from "node:path";
 import { UPLOAD_EXTENSION_LIST } from "../src/upload-policy";
+import { newEdgeWindow, trackCrossing, healthOfWindow, windowErrorRate, windowP95, type EdgeWindowState } from "../src/edge-health";
 
 export interface ApiOptions {
   /** tracked, read-only seed/example annotations (never written by the server) */
@@ -205,24 +206,32 @@ export function createApiHandler(opts: ApiOptions): ApiHandler {
           return;
         }
         /* the primary AX hook: current offenders, derived server-side from the
-           durable wide-event store with the same health rules the browser applies
-           (telemetry.ts): errorRate>=0.5 with a recent crossing → broken;
-           errorRate>=0.15 or slow average → degraded. Non-ok edges only, worst first. */
+           durable wide-event store with EXACTLY the browser's health rule —
+           src/edge-health.ts is the single definition both sides run (F15):
+           windowed error rate (errors roll out, recovery heals), p95 tail,
+           broken only while errors dominate AND no recovery crossing since. */
         if (req.method === "GET" && url === "/api/telemetry/attention") {
           const db = telemetryDb();
-          const SLOW_MS = 120, RECENT_MS = 5 * 60e3;
-          const rows = db.prepare("SELECT edge, COUNT(*) total, SUM(status='ERROR') errors, AVG(duration_ms) avg_ms, MAX(end_ms) last_ms FROM wide_events WHERE edge != '' GROUP BY edge").all() as
-            { edge: string; total: number; errors: number; avg_ms: number; last_ms: number }[];
-          const now = Date.now();
-          const out = rows.map(r => {
-            const errorRate = r.total ? r.errors / r.total : 0;
-            const health = (errorRate >= 0.5 && now - r.last_ms < RECENT_MS) ? "broken"
-              : (errorRate >= 0.15 || r.avg_ms > SLOW_MS) ? "degraded" : "ok";
-            return { edge: r.edge, health, total: r.total, errors: r.errors,
-              errorRate: Math.round(errorRate * 1000) / 1000,
-              avg_ms: Math.round(r.avg_ms * 10) / 10, last_ms: r.last_ms };
-          }).filter(r => r.health !== "ok")
-            .sort((a, b) => (a.health === b.health ? 0 : a.health === "broken" ? -1 : 1) || (b.errorRate - a.errorRate) || (b.avg_ms - a.avg_ms));
+          /* bounded: the last 10k crossings are plenty for a 24-wide window per edge */
+          const rows = db.prepare("SELECT edge, status, duration_ms, end_ms FROM (SELECT * FROM wide_events WHERE edge != '' ORDER BY id DESC LIMIT 10000) ORDER BY end_ms ASC, id ASC").all() as
+            { edge: string; status: string; duration_ms: number; end_ms: number }[];
+          const windows = new Map<string, EdgeWindowState>();
+          const lastAny = new Map<string, number>();
+          for (const r of rows) {
+            let w = windows.get(r.edge);
+            if (!w) { w = newEdgeWindow(); windows.set(r.edge, w); }
+            trackCrossing(w, r.duration_ms, r.status === "ERROR", r.end_ms);
+            lastAny.set(r.edge, r.end_ms);
+          }
+          const out = [...windows].map(([edge, w]) => {
+            const health = healthOfWindow(w);
+            return { edge, health, total: w.total, errors: w.errors,
+              errorRate: Math.round((w.total ? w.errors / w.total : 0) * 1000) / 1000,
+              windowErrorRate: Math.round(windowErrorRate(w) * 1000) / 1000,
+              p95: Math.round(windowP95(w) * 10) / 10,
+              last_ms: lastAny.get(edge) ?? 0 };
+          }).filter(r => r.health !== null && r.health !== "ok")
+            .sort((a, b) => (a.health === b.health ? 0 : a.health === "broken" ? -1 : 1) || (b.errorRate - a.errorRate) || (b.p95 - a.p95));
           send(200, out);
           return;
         }

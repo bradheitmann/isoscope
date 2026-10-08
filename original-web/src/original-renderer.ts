@@ -2505,10 +2505,15 @@ function blastIncident(){
 function applySpec(next: Spec,preserveMedia=false): void{
  // Clone before clearing: callers may supply objects aliased to the active spec.
  next=structuredClone(next);
- layoutGallery=null;galleryIndex=-1; /* a new graph means a freshly-computed layout gallery */
  if(!Array.isArray(next.nodes)||!Array.isArray(next.edges)||!Array.isArray(next.groups))throw Error("invalid live spec");
  const ids=new Set<string>(next.nodes.map((n: MapNode)=>n.id));
  if(ids.size!==next.nodes.length||next.edges.some((e: EdgeTuple)=>!ids.has(e[0])||!ids.has(e[1])))throw Error("invalid live graph");
+ /* edge keys are `${a}-${b}` throughout (routes, selection, deep links, pins):
+    a hyphen inside an id makes two different edges share one key (F17) */
+ if(next.nodes.some((n: MapNode)=>n.id.includes("-")))throw Error("invalid live graph: node ids must not contain '-'");
+ /* validation FIRST: a rejected spec must not reset the gallery of the map that
+    is still on screen (preservation regression found by the RSCH battery) */
+ layoutGallery=null;galleryIndex=-1; /* a new graph means a freshly-computed layout gallery */
  const oldReds=new Set(NODES.filter(n=>n.items.some(i=>i.c==="red")).map(n=>n.id));
  const replace=(target: unknown,value: unknown): void=>{
   if(Array.isArray(target)){target.splice(0,target.length,...(Array.isArray(value)?value:[]));return;}

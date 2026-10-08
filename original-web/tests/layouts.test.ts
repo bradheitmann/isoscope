@@ -115,6 +115,15 @@ describe("layouts: scoring and gallery", () => {
     expect(s).toBeGreaterThanOrEqual(0);
     expect(scoreLayout(nodes, edges)).toBe(s);
   });
+  it("footprint overlap dominates the score, even with no edges (F12)", () => {
+    /* two different-width nodes: swapping cells makes the wide one cover the narrow */
+    const a: LayoutNode = { id: "a", x: 0, y: 0, w: 1, d: 1 };
+    const b: LayoutNode = { id: "b", x: 2, y: 0, w: 5, d: 1 };
+    const valid = scoreLayout([a, b], []);
+    const overlapped = scoreLayout([{ ...b, x: 0 }, { ...a, x: 2 }], []);
+    expect(valid).toBe(0);
+    expect(overlapped).toBeGreaterThanOrEqual(1000000);
+  });
   it("buildGallery returns 5 efficient (ascending) + linear + phased, all complete, finite and deterministic", () => {
     const g = buildGallery(nodes, edges, 42);
     expect(g.map(c => c.kind)).toEqual(["efficient", "efficient", "efficient", "efficient", "efficient", "linear", "phased"]);

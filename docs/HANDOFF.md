@@ -29,6 +29,8 @@ bun run build:self     # examples/isoscope.spec.json -> out/isoscope.html
 bun run drc            # collision lint (bun drc.ts <spec>)
 ```
 
+**Known pre-existing issue:** `bun drc.ts examples/isoscope.spec.json` FAILS the weighted-crossing budget (4 > 1 at b76b003; 8 > 1 after the wave-4 D29 self-map sync). Budgets and geometry were deliberately left unchanged; not yet fixed.
+
 ## What this is
 Schematic observability engine: a system rendered as an inspectable isometric
 city, driven entirely by one JSON spec. Extracted 2026-08-22 from the ODIN

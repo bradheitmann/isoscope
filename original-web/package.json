@@ -9,6 +9,8 @@
     "test": "vitest run",
     "qc:layout": "bun scripts/edge-layout-qc.ts",
     "graph:codebase": "bun scripts/codebase-graph.ts",
+    "regen:codebase-map": "bun scripts/codebase-graph.ts --out examples/codebase.spec.json",
+    "check:codebase-map": "bun scripts/check-codebase-map.ts",
     "qa": "bun tests/qa/run.ts",
     "qa:static": "bun tests/qa/run.ts --static"
   },

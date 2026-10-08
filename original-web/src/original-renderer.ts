@@ -36,7 +36,7 @@ import iconActivity from "../vendor/desert-pants/icons/svg/activity.svg?raw";
 import iconMenu from "../vendor/desert-pants/icons/svg/menu.svg?raw";
 import iconCode from "../vendor/desert-pants/icons/svg/code.svg?raw";
 import { isEditableTarget } from "./editable-target";
-import { fitHomeZoom, type HomeLabel } from "./home-fit";
+import { fitHomeZoom, labelScale, veryFarZoom, type HomeLabel } from "./home-fit";
 import { getModule, setNotes, setFace, addInside, removeInside, uploadFile, isRemote, FACES, type FaceKey, type SurfaceKind, type SurfaceRef } from "./annotations";
 
 type Item = { c: "red" | "amber" | "you" | "info" | string; l: string };
@@ -67,7 +67,7 @@ type EdgeRuntime = {
   total: number; jn: Array<THREE.Mesh<THREE.CylinderGeometry, THREE.MeshBasicMaterial>>;
   xmark?: Line2; /* slim red X at a broken edge's midpoint, same line weight as the edge */
 };
-type LabelElement = HTMLElement & { _left?: string; _top?: string; _w?: number; _h?: number };
+type LabelElement = HTMLElement & { _left?: string; _top?: string; _w?: number; _h?: number; _k?: number };
 type LabelEntry = { n: MapNode; lb: LabelElement; lx: number; ly: number; depth: number };
 type LabelRect = { x0: number; x1: number; y0: number; y1: number };
 type Palette = Record<string, THREE.Color>;
@@ -2719,7 +2719,7 @@ function refitHome(): void {
   return {dx:fitV.x*w/2,dy:-fitV.y*h/2+4,w:lb.offsetWidth||80,h:lb.offsetHeight||30};
  });
  const r=wrap.getBoundingClientRect(),cx=r.left+w/2,cy=r.top+h/2;
- const z=fitHomeZoom(labels,{left:-cx,right:innerWidth-cx,top:-cy,bottom:innerHeight-cy},HOME_ZOOM,0.15);
+ const z=fitHomeZoom(labels,{left:-cx,right:innerWidth-cx,top:-cy,bottom:innerHeight-cy},HOME_ZOOM,0.15,2,0.55);
  controls.minZoom=Math.min(0.35,z); /* the fitted home is always reachable */
  const atHome=!flyGoal&&Math.abs(camera.zoom-HOME.zoom)<1e-3&&controls.target.distanceTo(fitV.set(HOME.tx,HOME.ty,HOME.tz))<1e-3;
  HOME.zoom=z;
@@ -2795,7 +2795,7 @@ function tick(){
   }
  });
  const rect=canvas.getBoundingClientRect();
- const far=camera.zoom<0.8,veryfar=camera.zoom<0.62;
+ const far=camera.zoom<0.8,veryfar=camera.zoom<veryFarZoom(HOME.zoom),lk=HOME.zoom<HOME_ZOOM-1e-3?labelScale(camera.zoom,HOME_ZOOM):1;
  const ents: LabelEntry[]=[];
  NODES.forEach(n=>{
    tmpV.copy(n._anchor);tmpV.y+=n._ly;tmpV.project(camera);
@@ -2804,7 +2804,7 @@ function tick(){
    if(lb.style.display!=="")lb.style.display="";
    lb.classList.toggle("far",far);
    const vf=veryfar&&!(n.items&&n.items.length);
-   lb.classList.toggle("veryfar",vf);
+   lb.classList.toggle("veryfar",vf);if(lb._k!==lk){lb._k=lk;lb.style.transformOrigin="50% 0";lb.style.transform=lk<1?"translate(-50%,0) scale("+lk.toFixed(3)+")":"";}
    const lx=(tmpV.x*0.5+0.5)*rect.width,ly=(-tmpV.y*0.5+0.5)*rect.height+4;
    const left=lx.toFixed(4)+"px",top=ly.toFixed(4)+"px";
    if(lb._left!==left){lb.style.left=left;lb._left=left;}
@@ -2820,9 +2820,9 @@ function tick(){
  ents.sort((a,b)=>(prio(b)-prio(a))||(a.depth-b.depth));
  const placed: LabelRect[]=[];
  ents.forEach(e=>{
-   const w=e.lb._w||80,h=e.lb._h||30;
+   const w=(e.lb._w||80)*(e.lb._k||1),h=(e.lb._h||30)*(e.lb._k||1);
    const r: LabelRect={x0:e.lx-w/2,x1:e.lx+w/2,y0:e.ly,y1:e.ly+h};
-   const hit=placed.some(p=>r.x0<p.x1&&r.x1>p.x0&&r.y0<p.y1&&r.y1>p.y0);
+   const hit=!(lk<1&&camera.zoom<=HOME.zoom*1.02)&&placed.some(p=>r.x0<p.x1&&r.x1>p.x0&&r.y0<p.y1&&r.y1>p.y0);
    e.lb.classList.toggle("clash",hit);
    if(!hit)placed.push(r);
  });

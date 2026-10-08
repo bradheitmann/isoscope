@@ -30,7 +30,7 @@ import iconPlus from "../vendor/desert-pants/icons/svg/plus.svg?raw";
 import iconMinus from "../vendor/desert-pants/icons/svg/minus.svg?raw";
 import iconChevron from "../vendor/desert-pants/icons/svg/chevron-down.svg?raw";
 import { isoRouteAll } from "../../router.mjs";
-import { checkRoutes } from "./edge-qc";
+import { buildGallery, type LayoutCandidate, type LayoutNode } from "./layouts";
 import { edgeHealth, onEdgeHealthChange, onWideEvent, recentEvents, emitWide, allEdgeMetrics, attentionEdges, edgeMetrics, type EdgeMetrics } from "./telemetry";
 import iconActivity from "../vendor/desert-pants/icons/svg/activity.svg?raw";
 import iconMenu from "../vendor/desert-pants/icons/svg/menu.svg?raw";
@@ -2409,6 +2409,7 @@ function blastIncident(){
 function applySpec(next: Spec): void{
  // Clone before clearing: callers may supply objects aliased to the active spec.
  next=structuredClone(next);
+ layoutGallery=null;galleryIndex=-1; /* a new graph means a freshly-computed layout gallery */
  if(!Array.isArray(next.nodes)||!Array.isArray(next.edges)||!Array.isArray(next.groups))throw Error("invalid live spec");
  const ids=new Set<string>(next.nodes.map((n: MapNode)=>n.id));
  if(ids.size!==next.nodes.length||next.edges.some((e: EdgeTuple)=>!ids.has(e[0])||!ids.has(e[1])))throw Error("invalid live graph");
@@ -2469,35 +2470,26 @@ applyDeepHash();
    view), then rebuilds through applySpec so the circuit-routing rules (hops,
    junction dots, cross-level risers) all re-run on the new arrangement. Same nodes,
    same edges, same bounding box — a different layout. */
+/* ————— layout gallery: the shuffle cycles a curated set of boards —————
+   Built once per spec from the real router. The gallery is the top-5 most efficient
+   random arrangements (circuit-design score: structural defects ≫ crossings ≫ total
+   wirelength) plus at least one linear workflow and one phased/grouped workflow.
+   Each Shuffle click steps to the next board, in order — not a random walk. */
+let layoutGallery: LayoutCandidate[] | null=null;
+let galleryIndex=-1;
+function gallery(): LayoutCandidate[] {
+ if(!layoutGallery)layoutGallery=buildGallery(SPEC.nodes as unknown as LayoutNode[], SPEC.edges);
+ return layoutGallery;
+}
 function shuffleLayout(): void {
- const base=structuredClone(SPEC);
- const cells0=base.nodes.map(n=>({x:n.x,y:n.y}));   /* the occupied ground cells */
- const levels0=base.nodes.map(n=>(base.levels&&base.levels[n.id])||0);
- const fy=<T,>(arr: T[]): T[]=>{const a=arr.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;};
- /* Draw several candidate shuffles, route each headlessly, and keep the cleanest —
-    fewest routing defects (malformed elbows, self-crossings, bogus bridges, shared
-    runs) per the deterministic edge-QC. The first perfectly-clean candidate wins
-    outright; otherwise the least-defective. This is QC-guided layout, not luck. */
- let best: { cells: {x:number;y:number}[]; levels: number[]; score: number } | null=null;
- for(let attempt=0;attempt<14;attempt++){
-  const cells=fy(cells0),levels=fy(levels0);
-  const trial=structuredClone(base);
-  trial.nodes.forEach((n,i)=>{n.x=cells[i].x;n.y=cells[i].y;});
-  const lvl: Record<string,number>={};trial.nodes.forEach((n,i)=>{lvl[n.id]=levels[i];});
-  const routed=isoRouteAll(trial.nodes,trial.edges) as { routes: Record<string,[number,number][]>; hops: Record<string,[number,number][]> };
-  const defects=checkRoutes({routes:routed.routes,hops:routed.hops});
-  const hard=defects.filter(d=>d.kind!=="overlapping-segment").length;
-  const soft=defects.length-hard; /* shares are softer: discourage but don't forbid */
-  const score=hard*10+soft;
-  if(!best||score<best.score)best={cells,levels,score};
-  if(hard===0&&soft===0)break; /* a clean board on the first good draw — stop early */
- }
- const next=structuredClone(base);
- next.nodes.forEach((n,i)=>{ n.x=best!.cells[i].x; n.y=best!.cells[i].y; });
- if(!next.levels)next.levels={};
- next.nodes.forEach((n,i)=>{ next.levels![n.id]=best!.levels[i]; });
+ const g=gallery();
+ galleryIndex=(galleryIndex+1)%g.length;
+ const board=g[galleryIndex];
+ const next=structuredClone(SPEC);
+ next.nodes.forEach(n=>{ const p=board.positions[n.id]; if(p){n.x=p.x;n.y=p.y;} });
  applySpec(next);
  flyGoal={tx:HOME.tx,ty:HOME.ty,tz:HOME.tz,zoom:HOME.zoom,az:HOME.az,pol:HOME.pol};
+ $("btnShuffle").setAttribute("title",`Layout: ${board.name} (${galleryIndex+1}/${g.length}) — click for next`);
 }
 $("btnShuffle").addEventListener("click",shuffleLayout);
 

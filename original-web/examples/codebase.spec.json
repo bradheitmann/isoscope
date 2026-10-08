@@ -207,7 +207,7 @@
    "d": 1,
    "h": 1,
    "does": "Per-module annotation store: notes, an inside drawer of files/notes, and",
-   "built": "1 file, ~143 lines · exports: FaceKey, FACES, SurfaceKind, SURFACE_KINDS, SurfaceRef, InsideItem",
+   "built": "1 file, ~144 lines · exports: FaceKey, FACES, SurfaceKind, SURFACE_KINDS, SurfaceRef, InsideItem",
    "refs": "original-web/src/annotations.ts",
    "media": [],
    "tags": []

@@ -57,7 +57,7 @@ function loadLocal(): AnnotationStore {
   try { return JSON.parse(localStorage.getItem(LS_KEY) ?? "{}") as AnnotationStore; } catch { return {}; }
 }
 
-export async function loadAnnotations(): Promise<AnnotationStore> {
+async function doLoad(): Promise<AnnotationStore> {
   try {
     const r = await fetch("api/annotations", { cache: "no-store" });
     if (!r.ok) throw new Error("no endpoint");
@@ -71,33 +71,65 @@ export async function loadAnnotations(): Promise<AnnotationStore> {
   return cache;
 }
 
+/* Hydration barrier (F01): every read-modify-write awaits the initial load, so a
+   first edit can never replace unseen server fields (faces/inside) with a
+   partial record built from an empty cache. An explicit loadAnnotations seals
+   the barrier, so tests/boot paths that load directly are not double-counted. */
+let hydrating: Promise<AnnotationStore> | null = null;
+export function loadAnnotations(): Promise<AnnotationStore> {
+  hydrating = doLoad().catch(() => cache);
+  return hydrating;
+}
+export function ensureHydrated(): Promise<AnnotationStore> {
+  if (!hydrating) hydrating = doLoad().catch(() => cache);
+  return hydrating;
+}
+
+/* Per-module write serialization (F03): each write POSTs the CURRENT cache
+   record when it runs, so rapid edits coalesce and an older body can never
+   arrive last. DELETEs chain on the same per-module queue. */
+const writeQueue = new Map<string, Promise<void>>();
+function enqueue(id: string, op: () => Promise<void>): Promise<void> {
+  const next = (writeQueue.get(id) ?? Promise.resolve()).then(op, op);
+  writeQueue.set(id, next.catch(() => { /* keep the queue alive after a failure */ }));
+  return next;
+}
+
 /* Write one module's record. Remote-first; on a static host the local mirror is
    the store of record and the change is marked for manual export. */
 export async function setModule(id: string, rec: ModuleAnnotation): Promise<void> {
+  await ensureHydrated();
   cache = { ...cache, [id]: rec };
   saveLocal();
   emit();
   if (!remote) return;
   /* a record write crosses the web→serve seam (SV persists to the store). Trace it
      as a wide event so that edge's health reflects real flow, live. */
-  const t0 = performance.now();
-  try {
-    const r = await fetch(`api/annotations/${encodeURIComponent(id)}`, {
-      method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify(rec),
-    });
-    if (!r.ok) throw new Error("write failed");
-    emitWide({ edge: "DB-SV", from: "SV", to: "DB", name: "annotation.save", durationMs: performance.now() - t0, ok: true, kind: "CLIENT" });
-  } catch (e) {
-    remote = false; /* endpoint vanished mid-session; keep working locally */
-    emitWide({ edge: "DB-SV", from: "SV", to: "DB", name: "annotation.save", durationMs: performance.now() - t0, ok: false, kind: "CLIENT", error: e instanceof Error ? e.message : "write failed" });
-  }
+  return enqueue(id, async () => {
+    const current = cache[id];
+    if (current === undefined) return; /* cleared while queued */
+    const t0 = performance.now();
+    try {
+      const r = await fetch(`api/annotations/${encodeURIComponent(id)}`, {
+        method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify(current),
+      });
+      if (!r.ok) throw new Error("write failed");
+      emitWide({ edge: "DB-SV", from: "SV", to: "DB", name: "annotation.save", durationMs: performance.now() - t0, ok: true, kind: "CLIENT" });
+    } catch (e) {
+      remote = false; /* endpoint vanished mid-session; keep working locally */
+      emitWide({ edge: "DB-SV", from: "SV", to: "DB", name: "annotation.save", durationMs: performance.now() - t0, ok: false, kind: "CLIENT", error: e instanceof Error ? e.message : "write failed" });
+    }
+  });
 }
 
 export async function clearModule(id: string): Promise<void> {
+  await ensureHydrated();
   const next = { ...cache }; delete next[id]; cache = next;
   saveLocal(); emit();
   if (!remote) { return; }
-  try { await fetch(`api/annotations/${encodeURIComponent(id)}`, { method: "DELETE" }); } catch { remote = false; }
+  return enqueue(id, async () => {
+    try { await fetch(`api/annotations/${encodeURIComponent(id)}`, { method: "DELETE" }); } catch { remote = false; }
+  });
 }
 
 /* Convenience mutators — read-modify-write the one module's record. */

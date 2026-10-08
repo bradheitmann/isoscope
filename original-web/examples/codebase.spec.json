@@ -271,7 +271,7 @@
    "d": 1,
    "h": 4,
    "does": "Pure brush-stroke bookkeeping, extracted from the renderer's brush closure.",
-   "built": "9 files, ~3435 lines · exports: BrushState, clearBrush, isEditableTarget, HomeLabel, HomeBounds, labelScale",
+   "built": "9 files, ~3443 lines · exports: BrushState, clearBrush, isEditableTarget, HomeLabel, HomeBounds, labelScale",
    "refs": "original-web/src/brush-model.ts · original-web/src/editable-target.ts · original-web/src/home-fit.ts · original-web/src/layouts.ts · original-web/src/main.ts · original-web/src/media-src.ts · original-web/src/original-renderer.ts · original-web/src/playlist.ts · original-web/src/upload-policy.ts",
    "media": [],
    "tags": []
@@ -287,7 +287,7 @@
    "d": 1,
    "h": 1,
    "does": "Per-module annotation store: notes, an inside drawer of files/notes, and",
-   "built": "1 file, ~153 lines · exports: FaceKey, FACES, SurfaceKind, SURFACE_KINDS, SurfaceRef, InsideItem",
+   "built": "1 file, ~185 lines · exports: FaceKey, FACES, SurfaceKind, SURFACE_KINDS, SurfaceRef, InsideItem",
    "refs": "original-web/src/annotations.ts",
    "media": [],
    "tags": []

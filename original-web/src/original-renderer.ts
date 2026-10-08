@@ -41,7 +41,7 @@ import { isEditableTarget } from "./editable-target";
 import { vetSrc, escapeHtml, safeLinkHref } from "./media-src";
 import { labelScale, legibleScale, planHomeFit, unobstructedRect, veryFarZoom, type HomeLabel, type Rect } from "./home-fit";
 import { insideUploadOutcome } from "./upload-policy";
-import { getModule, setNotes, setFace, addInside, removeInside, uploadFile, isRemote, FACES, type FaceKey, type SurfaceKind, type SurfaceRef } from "./annotations";
+import { getModule, setNotes, setFace, addInside, removeInside, uploadFile, isRemote, ensureHydrated, FACES, type FaceKey, type SurfaceKind, type SurfaceRef } from "./annotations";
 
 type Item = { c: "red" | "amber" | "you" | "info" | string; l: string };
 type Group = { id: string; label: string };
@@ -2095,8 +2095,11 @@ function renderPanel(id: string | null): void {
    n.items.forEach(it=>{h+="<span class='pip "+(it.c==="you"?"you":it.c)+"'></span>"+(it.c==="you"?"YOUR CALL &mdash; ":"")+it.l+"<br>";});
    h+="</div>";
   });
-  const tail=new DOMParser().parseFromString("<div>"+h+"</div>","text/html").body.firstElementChild;
-  if(tail)while(tail.firstChild)pOv.appendChild(document.adoptNode(tail.firstChild));
+  /* route through the same allowlist sanitizer as every other panel path:
+     status labels, node ids and names are TEXT, never live markup (F02) */
+  const tail=document.createElement("div");
+  setSafe(tail,h);
+  while(tail.firstChild)pOv.appendChild(tail.firstChild);
   setDeepHash(null);
   return;
  }
@@ -2513,6 +2516,11 @@ function applySpec(next: Spec,preserveMedia=false): void{
  updateRailAvailability();
 }
 buildScene(SPEC);
+/* Hydrate the annotation store, THEN rebuild surfaces: the first scene is built
+   against an empty cache, so saved faces/notes would otherwise stay invisible
+   until an unrelated edit (F01). Writes themselves are hydration-barred in
+   annotations.ts, so no edit can erase unseen server fields either. */
+void ensureHydrated().then(()=>{ NODES.forEach(n=>refreshSurfaces(n)); });
 renderPanel(null);
 blastIncident();
 updateHealthStrip();

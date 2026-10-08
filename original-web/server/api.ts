@@ -24,6 +24,15 @@ const MAX_UPLOAD_BODY = 200e6;
 const MAX_TELEMETRY_BODY = 1e6;
 const MAX_JSON_BODY = 25e6;
 
+/* Upload extension allowlist: only inert media/image/audio/document types the app uses (the face
+   picker accepts video/*, image/*, audio/*). Uploads are served back from the app origin, so
+   anything a browser could execute or render as markup is refused with 415: html, htm, xhtml,
+   js, mjs, svg (script-capable), xml. ".bin" stays for opaque payloads (served as octet-stream). */
+export const UPLOAD_EXTENSIONS: ReadonlySet<string> = new Set([
+  "mp4", "m4v", "webm", "mov", "ogv", "m4a", "mp3", "wav", "ogg", "oga", "flac", "aac",
+  "png", "jpg", "jpeg", "gif", "webp", "avif", "pdf", "txt", "md", "bin",
+]);
+
 class HttpError extends Error {
   constructor(readonly status: number, message: string) { super(message); }
 }
@@ -152,6 +161,8 @@ export function createApiHandler(opts: ApiOptions): ApiHandler {
       if (req.method === "POST" && url === "/api/upload") {
         const name = new URL(req.url ?? "", "http://x").searchParams.get("name") ?? "file";
         const safe = name.replace(/[^A-Za-z0-9._-]+/g, "_").slice(-80) || "file";
+        const ext = (/\.([A-Za-z0-9]+)$/.exec(safe)?.[1] ?? "").toLowerCase();
+        if (!UPLOAD_EXTENSIONS.has(ext)) throw new HttpError(415, `unsupported upload type ".${ext}"; allowed: ${[...UPLOAD_EXTENSIONS].join(", ")}`);
         const buf = await readBody(req, maxUpload);
         if (!existsSync(uploadDir)) mkdirSync(uploadDir, { recursive: true });
         const dest = resolve(uploadDir, Date.now() + "-" + safe);
@@ -179,7 +190,9 @@ export function createApiHandler(opts: ApiOptions): ApiHandler {
         if (req.method === "GET" && url === "/api/telemetry") {
           const db = telemetryDb();
           const q = new URL(req.url ?? "", "http://x").searchParams;
-          const edge = q.get("edge"), status = q.get("status"), limit = Math.min(500, Number(q.get("limit") ?? 100));
+          const edge = q.get("edge"), status = q.get("status"), limitRaw = q.get("limit") ?? "100";
+          if (!/^\d+$/.test(limitRaw)) throw new HttpError(400, "limit must be a non-negative integer");
+          const limit = Math.min(500, Number(limitRaw));
           const where = [edge ? "edge=?" : "", status ? "status=?" : ""].filter(Boolean).join(" AND ");
           const params = [edge, status].filter(Boolean) as string[];
           const rows = db.prepare(`SELECT json FROM wide_events ${where ? "WHERE " + where : ""} ORDER BY id DESC LIMIT ?`).all(...params, limit).map((r) => JSON.parse((r as { json: string }).json));

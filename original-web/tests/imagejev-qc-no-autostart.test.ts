@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { readFileSync, mkdtempSync, writeFileSync, rmSync } from "node:fs";
+import { readFileSync, mkdtempSync, writeFileSync, rmSync, existsSync } from "node:fs";
 import { spawnSync } from "node:child_process";
 import { createServer } from "node:net";
 import { tmpdir } from "node:os";
@@ -34,13 +34,20 @@ describe("imagejev-qc never starts the sidecar (D38)", () => {
     const png = join(dir, "x.png");
     writeFileSync(png, Buffer.from([0x89, 0x50, 0x4e, 0x47]));
     try {
+      // Fleet safety: a regression must invoke only this stub, never the real llm-serve sidecar supervisor.
+      const marker = join(dir, "STUB-SIDECAR-INVOKED");
+      const stub = join(dir, "stub-sidecar.ts");
+      writeFileSync(stub, `import { writeFileSync } from "node:fs";\nwriteFileSync(${JSON.stringify(marker)}, "invoked");\n`);
       const r = spawnSync("bun", [SCRIPT, png, "--endpoint", `http://127.0.0.1:${port}/v1`], {
         encoding: "utf8",
         timeout: 30_000,
+        env: { ...process.env, IMAGEJEV_SIDECAR: stub },
       });
+      expect(existsSync(marker)).toBe(false);
       expect(r.status).toBe(2);
       expect(r.stderr).toMatch(/sidecar is down/);
-      expect(r.stderr).toMatch(/imagejev-sidecar\.ts ensure/);
+      expect(r.stderr).toMatch(/owner action/);
+      expect(r.stderr).not.toMatch(/ensure/);
     } finally {
       rmSync(dir, { recursive: true, force: true });
     }

@@ -239,7 +239,7 @@
    "d": 1,
    "h": 2,
    "does": "Post-build check: fails unless three.js lives in exactly one dist/assets three-*.js chunk and no other chunk bundles it; run after `npm run build`. */",
-   "built": "5 files, ~869 lines",
+   "built": "5 files, ~868 lines",
    "refs": "original-web/scripts/check-chunks.ts · original-web/scripts/check-codebase-map.ts · original-web/scripts/codebase-graph.ts · original-web/scripts/edge-layout-qc.ts · original-web/scripts/imagejev-qc.ts",
    "media": [],
    "tags": []

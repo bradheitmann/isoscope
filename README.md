@@ -140,7 +140,7 @@ adapters/       contracts for non-MCP harnesses (DeepSeek first)
 examples/       isoscope-by-isoscope (primary) · ODIN Sentinel · lumbr
 scripts/        render/contrast/overflow proofs, screenshots, landing + theme tooling (Bun, TypeScript)
 skills/         agent skills (skills/isoscope: presentation layer)
-tests/          engine tests (bun test)
+tests/          engine tests (`bun run test`; bare `bun test` is scoped to this folder by bunfig.toml)
 advisory/       advisory deliverables (ODIN codebase map + topology lab)
 original-web/   the live web product (Vite + three.js) with its own tests, QA harness and build
 docs/           design rules (routing doctrine + sources) · dev handoff

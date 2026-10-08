@@ -103,8 +103,7 @@ async function main(): Promise<void> {
   } catch {
     console.error(
       `imagejev-qc: the ImageJev sidecar is down (unreachable at ${ENDPOINT}). This script does not start it.\n` +
-        `Start it manually, then re-run: bun ~/open_protocols/llm-serve/bin/imagejev-sidecar.ts ensure\n` +
-        `(see llm-serve docs/ai/IMAGEJEV-VISION-QC.md). ` +
+        `Starting it is an owner action (see llm-serve docs/ai/IMAGEJEV-VISION-QC.md). ` +
         `Deterministic QC (edge-layout-qc.ts) still applies — the model is advisory, never required.`,
     );
     process.exit(2);

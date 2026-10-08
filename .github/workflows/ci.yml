@@ -2,6 +2,7 @@ name: CI
 
 on:
   push:
+    branches: [main]
   pull_request:
 
 permissions:
@@ -37,6 +38,7 @@ jobs:
       - run: npm run typecheck
       - run: npm test
       - run: npm run build
+      - run: bun run qa:static
       - run: bun run check:chunks
 
   root:
@@ -47,6 +49,11 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           fetch-depth: 1
+          # the root job never reads original-web/public/media (~550 MB); skip it
+          sparse-checkout: |
+            /*
+            !/original-web/public/media/
+          sparse-checkout-cone-mode: false
           lfs: false
           persist-credentials: false
       - uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0

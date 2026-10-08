@@ -1,14 +1,12 @@
 # Isoscope QA harness (strict TypeScript, raw CDP)
 
-Rebuilt in-repo after the old /tmp tooling was lost (drain item D25). Run from `original-web/`:
+Rebuilt in-repo after the old /tmp tooling was lost. Run from `original-web/`:
 
 ```
 npm run qa:static   # no browser: resolves every var() chain of the 96 .dp-type-* roles in vendor tokens.css (and dist CSS if built)
 npm run qa          # full run
 bun tests/qa/run.ts --only=navigation,modal   # subset: typography,navigation,viewport,modal,resize,gestures,motion,scene
 ```
-
-Note: the shell `npm` may be a pnpm wrapper; use `/opt/homebrew/bin/npm`.
 
 ## What it does
 - Starts vite on a free port in 4300-4399 and a PRIVATE headless Chrome (own `--user-data-dir` under `os.tmpdir()`, CDP on a free port in 9400-9499). It never uses 4190, 9333 or 8022.
@@ -34,13 +32,13 @@ Statuses: `pass`, `fail`, `observed`, `pending-owner-ruling`, `skipped`. Exit co
 Besides resolving var() chains, `oracle.ts` reads the canonical role tuples straight from the vendored Desert Pants DTCG JSON (`vendor/desert-pants/tokens/*.tokens.json`). Every file is first verified against its sha256 in `CANONICAL-MANIFEST.sha256`; references (`{font.size.7xl}`, whole-composite refs) are resolved from the JSON only. For every `.dp-type-<role>` the CSS defines that the tokens also define, font-family, font-size, font-weight, line-height, letter-spacing (tracking-em), text-transform and font-variant-numeric are compared with the token web composite. Fluid roles are checked against the token `fluid` block (min-px, vw, offset-px, max-px) and capped sizes against the web size. The report line reads `N roles checked, M tuples, K mismatches`; any mismatch fails. Current result: 96 roles, 672 tuples, 0 mismatches for both vendored tokens.css and the built dist CSS.
 
 ## Known results on the b76b003 product
-- The full run (`npm run qa`) exits 1 on the b76b003 product because of a real defect, D4: in the compact layout, opening the reader sheet leaves focus on the btnReadMap button instead of moving it into the sheet (check "open: focus moves into the sheet"). It is fixed by the D4 commit in this PR, after which that check passes.
+- The full run (`npm run qa`) exits 1 on the b76b003 product because of a real defect, D4: in the compact layout, opening the reader sheet leaves focus on the btnReadMap button instead of moving it into the sheet (check "open: focus moves into the sheet"). The D4 fix makes that check pass.
 - D5 (Escape and Close on the reader sheet) is ruled: both close the sheet fully, and the modal checks assert it. The `pending-owner-ruling` status remains available in the harness but is no longer emitted.
 - The D6 home clash exemption applies only when the label scale is below 1, so one label can still be hidden by the clash declutter at 1280x600 (same on main).
 - `npm run qa:static` needs no browser and exits 0.
 
 ### D6: "1 label not rendered (width 0)" at 1280x600
-The viewport observation `1 not rendered (width 0)` at 1280x600 is pre-existing, not caused by the D6 fit. The same harness run against main b76b003 (detached worktree, harness copied in untracked) reports the identical `0/14 off-canvas, 1 not rendered` at 1280x600; at every other viewport at or above 1024x768 both builds report 0 not rendered. The cause is the clash declutter in `original-renderer.ts` (label placement loop): a lower-priority label that overlaps an already placed one gets class `clash`, and `.lbl.clash { display: none }` in `styles.css` gives it a zero-size box, which the probe counts as "not rendered". At 1280x600 the shorter canvas makes two labels overlap, so one recedes by design. The D6 fit only changes the off-canvas count (390x844 went from 7/14 on main to 0/14, 768x1024 from 2/14 to 0/14) and does not touch the not-rendered count. Evidence: `~/.local/share/isoscope-qa/evidence/final/viewport-main-b76b003.txt` and `viewport-final.txt`.
+The viewport observation `1 not rendered (width 0)` at 1280x600 is pre-existing, not caused by the D6 fit. The same harness run against main b76b003 reports the identical `0/14 off-canvas, 1 not rendered` at 1280x600; at every other viewport at or above 1024x768 both builds report 0 not rendered. The cause is the clash declutter in `original-renderer.ts` (label placement loop): a lower-priority label that overlaps an already placed one gets class `clash`, and `.lbl.clash { display: none }` in `styles.css` gives it a zero-size box, which the probe counts as "not rendered". At 1280x600 the shorter canvas makes two labels overlap, so one recedes by design. The D6 fit only changes the off-canvas count (390x844 went from 7/14 on main to 0/14, 768x1024 from 2/14 to 0/14) and does not touch the not-rendered count. Evidence: the QA run logs kept with the drain evidence.
 
 ## Outputs
 Screenshots go to `tests/qa/out/` (gitignored). Files are in `tests/qa/*.ts`; none are named `*.test.ts`, so vitest ignores them, and `npm run typecheck` covers them via the `tests/**/*.ts` include.

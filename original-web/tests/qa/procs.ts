@@ -2,7 +2,7 @@
    here is killed by its own PID on exit, including on failure and on signals. */
 import { spawn, type ChildProcess } from "node:child_process";
 import { createServer } from "node:net";
-import { existsSync, mkdtempSync, rmSync } from "node:fs";
+import { existsSync, mkdtempSync, readdirSync, rmSync } from "node:fs";
 import { homedir, tmpdir } from "node:os";
 import { join } from "node:path";
 import process from "node:process";
@@ -66,10 +66,28 @@ export function ownedPids(): Array<{ name: string; pid: number | undefined }> {
   return owned.map(({ name, child }) => ({ name, pid: child.pid }));
 }
 
+/* Newest installed Playwright headless shell (highest chromium_headless_shell-<n>), or "" when none is installed. */
+function playwrightHeadlessShell(): string {
+  const cache = process.env["PLAYWRIGHT_BROWSERS_PATH"] ?? join(homedir(), "Library/Caches/ms-playwright");
+  let dirs: string[] = [];
+  try { dirs = readdirSync(cache); } catch { return ""; }
+  const builds = dirs
+    .map(d => d.match(/^chromium_headless_shell-(\d+)$/))
+    .filter((m): m is RegExpMatchArray => m !== null)
+    .sort((a, b) => Number(b[1]) - Number(a[1]));
+  for (const m of builds) {
+    for (const arch of ["mac-arm64", "mac-x64"]) {
+      const p = join(cache, m[0], `chrome-headless-shell-${arch}`, "chrome-headless-shell");
+      if (existsSync(p)) return p;
+    }
+  }
+  return "";
+}
+
 export function findChrome(): string {
   const candidates = [
     process.env["QA_CHROME"] ?? "",
-    join(homedir(), "Library/Caches/ms-playwright/chromium_headless_shell-1243/chrome-headless-shell-mac-arm64/chrome-headless-shell"),
+    playwrightHeadlessShell(),
     "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"
   ];
   for (const path of candidates) if (path && existsSync(path)) return path;

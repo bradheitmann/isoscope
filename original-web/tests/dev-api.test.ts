@@ -252,6 +252,34 @@ describe("dev-server api: configurable caps and cross-site writes", () => {
     expect(ok.status).toBe(200);
   });
 
+  it.each(["x.html", "x.htm", "x.svg", "x.js", "x.mjs", "x.xml", "x.xhtml", "X.HTML", "noext", "x.html.", "x.png.html"])(
+    "upload of %s -> 415 and nothing written", async (name) => {
+      const count = () => { try { return readdirSync(join(dir2, "uploads")).length; } catch { return 0; } };
+      const before = count();
+      const r = await fetch(base2 + "/api/upload?name=" + encodeURIComponent(name), { method: "POST", body: new Uint8Array(10) });
+      expect(r.status).toBe(415);
+      expect(count()).toBe(before);
+      await alive2();
+    });
+
+  it.each(["a.mp4", "a.webm", "a.mov", "a.m4a", "a.mp3", "a.wav", "a.png", "a.JPG", "a.jpeg", "a.gif", "a.webp", "a.pdf"])(
+    "upload of %s is accepted", async (name) => {
+      const r = await fetch(base2 + "/api/upload?name=" + encodeURIComponent(name), { method: "POST", body: new Uint8Array(10) });
+      expect(r.status).toBe(200);
+    });
+
+  it.each(["abc", "-1", "1.5", "1e3", "", " ", "NaN"])("GET /api/telemetry?limit=%j -> 400 (not 500)", async (limit) => {
+    const r = await fetch(base2 + "/api/telemetry?limit=" + encodeURIComponent(limit));
+    expect(r.status).toBe(400);
+    await alive2();
+  });
+
+  it("GET /api/telemetry with a numeric limit still works", async () => {
+    const r = await fetch(base2 + "/api/telemetry?limit=5");
+    expect(r.status).toBe(200);
+    expect(Array.isArray(await r.json())).toBe(true);
+  });
+
   it("telemetry over the configured cap -> 413 and server stays alive", async () => {
     const r = await fetch(base2 + "/api/telemetry", { method: "POST", body: JSON.stringify([{ name: "x".repeat(800) }]) });
     expect(r.status).toBe(413);

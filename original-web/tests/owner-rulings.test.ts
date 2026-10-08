@@ -48,8 +48,10 @@ describe("D6 home fit (behaviour)", () => {
 });
 
 describe("D6 labels stay rendered at the fitted home (static)", () => {
-  it("home view is exempt from clash hiding and veryfar hiding", () => {
-    expect(src).toContain("const hit=!(lk<1&&camera.zoom<=HOME.zoom*1.02)&&placed.some(");
+  it("home view is exempt from veryfar and far dimming but keeps clash hiding (A/PO-CLAUDE review fix 2)", () => {
+    expect(src).toContain("const hit=placed.some(");
+    expect(src).not.toContain("const hit=!(lk<1&&camera.zoom<=HOME.zoom*1.02)");
+    expect(src).toContain("far=camera.zoom<0.8&&camera.zoom<HOME.zoom-0.01");
     expect(src).toContain("veryfar=camera.zoom<veryFarZoom(HOME.zoom)");
   });
 });

@@ -10,7 +10,11 @@ const here =dirname(fileURLToPath(import.meta.url));
 const root = join(here, "..");
 
 describe("codebase map", () => {
-  it.skipIf(!hasBun)("examples/codebase.spec.json matches a fresh regeneration byte-for-byte", () => {
+  it("examples/codebase.spec.json matches a fresh regeneration byte-for-byte", () => {
+    /* Never skip: a skipped byte-for-byte check lets a stale map pass CI silently. */
+    if (!hasBun) {
+      throw new Error("bun is required for this test and was not found on PATH. Install it (https://bun.sh, or oven-sh/setup-bun in CI; pinned version in .github/workflows/ci.yml) and run: cd original-web && npm test");
+    }
     const dir = mkdtempSync(join(tmpdir(), "codebase-map-test-"));
     try {
       const out = join(dir, "regen.json");

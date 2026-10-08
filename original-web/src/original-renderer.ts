@@ -422,13 +422,14 @@ let gridOn=true; /* declared before makeGrid runs at setup; the Grid toggle owns
 function makeGrid(){
  grids.forEach(g=>{scene.remove(g);g.geometry.dispose();g.material.dispose();});grids=[];
  const gridC=mix(COL.paper,COL.fg1,0.20);
- /* stacked: three aligned planes — one grid seen from directly above.
-    Off-ground planes are fainter with the barest hue shift (noise discipline). */
- const defs=stacked?[
-  {y:LVL_H,c:mix(gridC,COL.info,0.10),op:0.38},
-  {y:0,c:gridC,op:0.7},
-  {y:-LVL_H,c:mix(gridC,COL.caution,0.10),op:0.38}
- ]:[{y:0,c:gridC,op:0.7}];
+ /* stacked: one grid plane per node level actually present, at the same height
+    the nodes sit at (lvl*LVL_H). The old hardcoded -1/0/+1 planes sat one level
+    below the 0-based node tiers: bottom grid bare, top tier floating. */
+ const defs=stacked?(()=>{
+  const lvls=[...new Set(NODES.map(n=>n._lvl??0))].sort((a,b)=>a-b);
+  const lo=lvls[0]??0;
+  return lvls.map(l=>({y:l*LVL_H,c:l===lo?gridC:mix(gridC,COL.info,0.10),op:l===lo?0.7:0.38}));
+ })():[{y:0,c:gridC,op:0.7}];
  defs.forEach(d=>{
   const g=new THREE.GridHelper(80,40,d.c,d.c);
   g.material.transparent=true;g.material.opacity=d.op;
@@ -3006,7 +3007,7 @@ if(specParam){
 window.__isoRenderTagPills=(container,ids)=>renderTagPills(container,ids);
 window.__isoSwapState=()=>({stacked,pinned,selEdge,ti,flowing,dotSet,lineSet,cordon:[...cordon],
  cam:{p:camera.position.toArray(),t:controls.target.toArray(),zoom:camera.zoom},fly:!!flyGoal,
- center:{...CENTER},bounds:{..._bb},nodes:NODES.map(n=>({id:n.id,anchor:[n._anchor.x,n._ly,n._anchor.z],items:n.items})),
+ center:{...CENTER},bounds:{..._bb},grids:grids.map(g=>g.position.y),nodes:NODES.map(n=>({id:n.id,lvl:n._lvl,anchor:[n._anchor.x,n._ly,n._anchor.z],items:n.items})),
  edges:Object.fromEntries(Object.entries(edgeLinesById).map(([k,o])=>[k,{junctions:o.jn.filter(j=>j.parent===scene).length}])),
  memory:{...renderer.info.memory,programs:renderer.info.programs?.length ?? 0},children:scene.children.length});
 window.dispatchEvent(new Event("isoscope-ready"));

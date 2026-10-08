@@ -5,11 +5,12 @@ import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { spawnSync } from "node:child_process";
 
-const here = dirname(fileURLToPath(import.meta.url));
+const hasBun = spawnSync("bun", ["--version"]).status === 0;
+const here =dirname(fileURLToPath(import.meta.url));
 const root = join(here, "..");
 
 describe("codebase map", () => {
-  it("examples/codebase.spec.json matches a fresh regeneration byte-for-byte", () => {
+  it.skipIf(!hasBun)("examples/codebase.spec.json matches a fresh regeneration byte-for-byte", () => {
     const dir = mkdtempSync(join(tmpdir(), "codebase-map-test-"));
     try {
       const out = join(dir, "regen.json");

@@ -378,6 +378,8 @@ function buildSpec(cli: Cli): { spec: Record<string, unknown>; modules: Map<stri
       occupied.add(`${x},${y}`);
       const lines = agg.files.reduce((n, f) => n + f.lines, 0);
       const exports = [...new Set(agg.files.flatMap((f) => f.exports))].slice(0, 6);
+      // NOTE: module text comes from the first file (sorted by path) whose doc comment is >24 chars,
+      // so adding/renaming files can change it. Always regenerate last: bun run regen:codebase-map
       const does = agg.files.map((f) => f.comment).find((c) => c.length > 24) ?? agg.def.blurb;
       const builtParts = [
         agg.files.length > 0

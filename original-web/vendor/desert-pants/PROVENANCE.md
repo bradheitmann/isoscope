@@ -1,6 +1,6 @@
 # Desert Pants assets used by the Isoscope original-web lane
 
-Canonical source is the `desert-pants-workbench` checkout (sibling of this repo, outside it) at commit `ba99de27974f623c20679962e8e3dc4d74c2a273` (2026-10-01). The copied token sources, all generated theme outputs, font assets, reference component CSS, and selected Lucide icons were verified byte-for-byte against that checkout. `CANONICAL-MANIFEST.sha256` pins every vendored asset used here; `build/web/themes.json` is the complete 18-theme inventory. The switcher presents that inventory in exact reverse order without mutating canonical values.
+Canonical source is the `desert-pants` repository at commit `ba99de27974f623c20679962e8e3dc4d74c2a273` (2026-10-01). The copied token sources, all generated theme outputs, font assets, reference component CSS, and selected Lucide icons were verified byte-for-byte against that checkout. `CANONICAL-MANIFEST.sha256` pins every vendored asset used here; `build/web/themes.json` is the complete 18-theme inventory. The switcher presents that inventory in exact reverse order without mutating canonical values.
 
 Key generated-output SHA-256 values:
 
@@ -22,5 +22,5 @@ Lucide assets used by controls and kept in this tree (all byte-identical to upst
 `tests/vendor-manifest.test.ts` requires every file under this directory to be listed in `CANONICAL-MANIFEST.sha256` with exact case and a matching sha256. The only exceptions are the two meta files `CANONICAL-MANIFEST.sha256` and `PROVENANCE.md`, named explicitly in the test.
 
 - Icons: the 11 files not byte-identical to upstream at the pin moved to `src/icons/` (4 of them — code, menu, volume-2, volume-x — share an upstream name but differ in content). `chevron-down.svg` was verified byte-identical to upstream at the pin and is now in the manifest.
-- Tokens: `tokens/01`-`03` and `05`-`09` were verified byte-identical to `git show ba99de2:tokens/<file>` in `~/open_protocols/desert-pants` and added to the manifest. `tokens/04-layout.tokens.json` differs from the pin (missing the upstream `visualization-workbench` block) so it moved to `src/tokens/`.
+- Tokens: `tokens/01`-`03` and `05`-`09` were verified byte-identical to `git show ba99de2:tokens/<file>` and added to the manifest. `tokens/04-layout.tokens.json` differs from the pin (missing the upstream `visualization-workbench` block) so it moved to `src/tokens/`.
 - Case: upstream's filename is `icons/LICENSE-lucide.txt`; the manifest line was corrected to match (the file and git already used lowercase).

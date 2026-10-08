@@ -1,7 +1,7 @@
 /* isoscope core — SQLite graph store ⇄ spec. Shared by cli.ts and mcp.ts. Zero deps. */
 import { Database } from "bun:sqlite";
 import { readFileSync, writeFileSync } from "fs";
-import { buildHtml } from "./build.mjs";
+import { buildHtml } from "./build.ts";
 
 export const DB_DEFAULT = "isoscope.db";
 export type Spec = Record<string, any>;

@@ -17,7 +17,7 @@
 
    Usage: bun scripts/edge-layout-qc.ts [--seeds N] [--live] [--json]
 */
-import { isoRouteAll } from "../../router.mjs";
+import { isoRouteAll } from "../../router.ts";
 import { checkRoutes, summarize, type EdgeDefect } from "../src/edge-qc";
 import SPEC from "../examples/isoscope.spec.json";
 import { createHash } from "node:crypto";

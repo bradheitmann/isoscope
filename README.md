@@ -101,7 +101,7 @@ To explain a system or a decision to the operator with a static map, follow the 
 
 ```
 template.html   the engine (one file: scene, router, inspector, themes, live client)
-build.mjs       spec + template → self-contained HTML
+build.ts      spec + template → self-contained HTML
 lib.ts          SQLite graph store ⇄ spec (core, shared)
 cli.ts          init · import · export · build · serve
 mcp.ts          MCP server (agents maintain the map)

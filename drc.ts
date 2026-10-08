@@ -6,7 +6,7 @@
    Budget precedence: --budget > spec.drcBudget.maxWeightedCrossings > 0 (strict).
    Weighting: perpendicular crossing = 1 · shared channel = 4 (worse than a cross). */
 import { readFileSync } from "fs";
-import { isoRouteAll } from "./router.mjs";
+import { isoRouteAll } from "./router.ts";
 import { open, exportSpec } from "./lib.ts";
 
 const [target, ...rest] = Bun.argv.slice(2);

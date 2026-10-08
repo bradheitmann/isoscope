@@ -238,8 +238,8 @@
    "w": 1,
    "d": 1,
    "h": 2,
-   "does": "Post-build check: three.js must live in its own chunk in dist/assets, and the entry chunk must",
-   "built": "5 files, ~870 lines",
+   "does": "Post-build check: fails unless three.js lives in exactly one dist/assets three-*.js chunk and no other chunk bundles it; run after `npm run build`. */",
+   "built": "5 files, ~869 lines",
    "refs": "original-web/scripts/check-chunks.ts · original-web/scripts/check-codebase-map.ts · original-web/scripts/codebase-graph.ts · original-web/scripts/edge-layout-qc.ts · original-web/scripts/imagejev-qc.ts",
    "media": [],
    "tags": []
@@ -287,7 +287,7 @@
    "d": 1,
    "h": 4,
    "does": "Pure brush-stroke bookkeeping, extracted from the renderer's brush closure.",
-   "built": "8 files, ~3115 lines · exports: BrushState, clearBrush, isEditableTarget, HomeLabel, HomeBounds, labelScale",
+   "built": "8 files, ~3125 lines · exports: BrushState, clearBrush, isEditableTarget, HomeLabel, HomeBounds, labelScale",
    "refs": "original-web/src/brush-model.ts · original-web/src/editable-target.ts · original-web/src/home-fit.ts · original-web/src/layouts.ts · original-web/src/main.ts · original-web/src/media-src.ts · original-web/src/original-renderer.ts · original-web/src/playlist.ts",
    "media": [],
    "tags": []

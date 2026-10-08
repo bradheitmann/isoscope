@@ -19,7 +19,7 @@ Note: the shell `npm` may be a pnpm wrapper; use `/opt/homebrew/bin/npm`.
 ## Contracts
 | key | checks |
 | --- | --- |
-| typography | static var() resolution (also in `--static`), plus computed style of each role equals the resolved literals |
+| typography | static var() resolution and an independent oracle against the vendored token JSON (both also in `--static`), plus computed style of each role equals the resolved literals |
 | navigation | generated 100-sections (10 groups "Area NN", 99 edges) and 100-groups fixtures: 12-row paging, reach every module, search by id/name/group label (expectations derive from the fixture), select pins |
 | viewport | 8 viewports 390x844, 768x1024, 1024x768, 1280x600, 1280x800, 1440x900, 1920x1080, 2560x1440: applied size, no horizontal overflow, canvas fill, controls reachable; off-canvas labels recorded (D6) |
 | modal | reader sheet at 390x844 and 1024x768: open state, focus entry (D4). Escape and Close are RECORDED, not asserted: status `pending-owner-ruling` (D5) |
@@ -29,6 +29,14 @@ Note: the shell `npm` may be a pnpm wrapper; use `/opt/homebrew/bin/npm`.
 | scene | 100-node scene applies, node/edge counts, labels under the panel and fps recorded |
 
 Statuses: `pass`, `fail`, `observed`, `pending-owner-ruling`, `skipped`. Exit code is 1 if any check is `fail` (product defects included; they carry a drain id such as `[D4]`).
+
+## Typography oracle (static, no browser)
+Besides resolving var() chains, `oracle.ts` reads the canonical role tuples straight from the vendored Desert Pants DTCG JSON (`vendor/desert-pants/tokens/*.tokens.json`). Every file is first verified against its sha256 in `CANONICAL-MANIFEST.sha256`; references (`{font.size.7xl}`, whole-composite refs) are resolved from the JSON only. For every `.dp-type-<role>` the CSS defines that the tokens also define, font-family, font-size, font-weight, line-height, letter-spacing (tracking-em), text-transform and font-variant-numeric are compared with the token web composite. Fluid roles are checked against the token `fluid` block (min-px, vw, offset-px, max-px) and capped sizes against the web size. The report line reads `N roles checked, M tuples, K mismatches`; any mismatch fails. Current result: 96 roles, 672 tuples, 0 mismatches for both vendored tokens.css and the built dist CSS.
+
+## Known results on the b76b003 product
+- The full run (`npm run qa`) exits 1 on the b76b003 product because of a real defect, D4: in the compact layout, opening the reader sheet leaves focus on the btnReadMap button instead of moving it into the sheet (check "open: focus moves into the sheet"). It is fixed by the D4 commit in this PR, after which that check passes.
+- D5 (Escape and Close on the reader sheet) is reported as `pending-owner-ruling`, not pass or fail, until the owner rules on the intended behavior.
+- `npm run qa:static` needs no browser and exits 0.
 
 ## Outputs
 Screenshots go to `tests/qa/out/` (gitignored). Files are in `tests/qa/*.ts`; none are named `*.test.ts`, so vitest ignores them, and `npm run typecheck` covers them via the `tests/**/*.ts` include.

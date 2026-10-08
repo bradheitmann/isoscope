@@ -39,6 +39,7 @@ import iconMenu from "./icons/menu.svg?raw";
 import iconCode from "./icons/code.svg?raw";
 import { isEditableTarget } from "./editable-target";
 import { vetSrc } from "./media-src";
+import { fitHomeZoom, labelScale, veryFarZoom, type HomeLabel } from "./home-fit";
 import { getModule, setNotes, setFace, addInside, removeInside, uploadFile, isRemote, FACES, type FaceKey, type SurfaceKind, type SurfaceRef } from "./annotations";
 
 type Item = { c: "red" | "amber" | "you" | "info" | string; l: string };
@@ -69,7 +70,7 @@ type EdgeRuntime = {
   total: number; jn: Array<THREE.Mesh<THREE.CylinderGeometry, THREE.MeshBasicMaterial>>;
   xmark?: Line2; /* slim red X at a broken edge's midpoint, same line weight as the edge */
 };
-type LabelElement = HTMLElement & { _left?: string; _top?: string; _w?: number; _h?: number };
+type LabelElement = HTMLElement & { _left?: string; _top?: string; _w?: number; _h?: number; _k?: number };
 type LabelEntry = { n: MapNode; lb: LabelElement; lx: number; ly: number; depth: number };
 type LabelRect = { x0: number; x1: number; y0: number; y1: number };
 type Palette = Record<string, THREE.Color>;
@@ -1432,10 +1433,10 @@ placeCamera(HOME.az,HOME.pol,HOME.r,HOME.tx,HOME.ty,HOME.tz,HOME.zoom);
 let flyGoal: { tx: number; ty: number; tz: number; zoom: number; az?: number; pol?: number; faceView?: { id: string; face: FaceKey } } | null = null;
 let faceView: { id: string; face: FaceKey } | null = null; /* active straight-on face viewer */
 controls.addEventListener("start",()=>{flyGoal=null;faceView=null;}); /* user input cancels autopilot + exits the face viewer */
-/* Reset clears camera + ink, but the ink is recoverable: snapshot before clearing
+/* Reset returns the camera to the fitted home and keeps ink (owner ruling D7). Codebase-map swaps still snapshot before clearing
    and hold it so the next Draw-undo (or Ctrl/Cmd+Z) restores the erased strokes. */
 let resetInkBackup: ReturnType<typeof brush.snapshot> | null=null;
-function resetView(){clearEdgeSel();flowing=false;btnFlow.setAttribute("aria-pressed","false");setCanonicalIcon(btnFlow,iconPlay);exitCordon();resetInkBackup=brush.strokeCount()>0?brush.snapshot():null;brush.clear();flyGoal={tx:HOME.tx,ty:HOME.ty,tz:HOME.tz,zoom:HOME.zoom,az:HOME.az,pol:HOME.pol};clearTrace();renderModuleNavigator();}
+function resetView(){clearEdgeSel();flowing=false;btnFlow.setAttribute("aria-pressed","false");setCanonicalIcon(btnFlow,iconPlay);exitCordon();flyGoal={tx:HOME.tx,ty:HOME.ty,tz:HOME.tz,zoom:HOME.zoom,az:HOME.az,pol:HOME.pol};clearTrace();renderModuleNavigator();}
 $("btnReset").addEventListener("click",resetView);
 /* undo-after-reset: if the brush is empty but a reset backup exists, restore it */
 $("btnDrawUndo").addEventListener("click",()=>{ if(brush.strokeCount()===0&&resetInkBackup){brush.restoreAll(resetInkBackup);resetInkBackup=null;} });
@@ -1735,7 +1736,7 @@ btnReadMap.addEventListener("click",()=>{
  if(compactReader.matches)openReadingPanel(true);
  else readingPanel.focus({preventScroll:true});
 });
-/* the tray is non-modal: scrim clicks pass to the art; Escape rests the tray at peek */
+/* the tray is non-modal: scrim clicks pass to the art; Escape closes it fully */
 const FOCUSABLE='button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), a[href], summary, [tabindex]:not([tabindex="-1"])';
 readingPanel.addEventListener("keydown",ev=>{
  if(ev.key!=="Tab"||!readerModalOpen)return;
@@ -1752,8 +1753,8 @@ sheetGrabber.addEventListener("click",()=>{
  if(!compactReader.matches||!readerModalOpen)return;
  setSheetDetent(sheetDetent==="peek"?"medium":sheetDetent==="medium"?"large":"medium");
 });
-/* X and drag-down put the tray away to its resting peek — it never vanishes without a way back */
-$("closeReadingPanel").addEventListener("click",()=>setSheetDetent("peek"));
+/* X and Escape close the reader fully (owner ruling D5); peek is reached only by the drag handle / detent gestures */
+$("closeReadingPanel").addEventListener("click",closeReadingPanel);
 (function sheetDrag(){
  const css=getComputedStyle(readingPanel);
  const num=(name: string,fallback: number): number=>{const v=parseFloat(css.getPropertyValue(name));return Number.isFinite(v)?v:fallback;};
@@ -2242,7 +2243,7 @@ drawer.addEventListener("keydown",ev=>{
 document.addEventListener("keydown",ev=>{
  if(ev.key!=="Escape")return;
  if(drawer.classList.contains("open")){ev.preventDefault();closeSettings();}
- else if(readerModalOpen){ev.preventDefault();setSheetDetent("peek");}
+ else if(readerModalOpen){ev.preventDefault();closeReadingPanel();}
 });
 const themeList=$<HTMLElement>("themeList");
 const modeSelect=$<HTMLSelectElement>("modeSelect");
@@ -2709,6 +2710,29 @@ const brush=(()=>{
  return {setActive,undo,clear,repaint,relift,resizeAll,snapshot,restoreAll,isActive:()=>active,strokeCount:()=>strokes.length};
 })();
 
+/* D6: the settled home frames every label. HOME_ZOOM is the wide-viewport home; narrower canvases only ever zoom out from it. */
+const HOME_ZOOM=1.12;
+const fitCam=new THREE.OrthographicCamera(-1,1,1,-1,-200,500);
+const fitV=new THREE.Vector3();
+function refitHome(): void {
+ const w=wrap.clientWidth,h=wrap.clientHeight;
+ if(!w||!h||!NODES.length)return;
+ const a=w/h;
+ fitCam.left=-VIEW*a/2;fitCam.right=VIEW*a/2;fitCam.top=VIEW/2;fitCam.bottom=-VIEW/2;fitCam.zoom=HOME_ZOOM;
+ fitCam.position.set(HOME.tx+Math.sin(HOME.az)*Math.sin(HOME.pol)*HOME.r,HOME.ty+Math.cos(HOME.pol)*HOME.r,HOME.tz+Math.cos(HOME.az)*Math.sin(HOME.pol)*HOME.r);
+ fitCam.lookAt(HOME.tx,HOME.ty,HOME.tz);fitCam.updateProjectionMatrix();fitCam.updateMatrixWorld(true);
+ const labels: HomeLabel[]=NODES.map(n=>{
+  fitV.copy(n._anchor);fitV.y+=n._ly;fitV.project(fitCam);
+  const lb=$<LabelElement>("lb-"+n.id);
+  return {dx:fitV.x*w/2,dy:-fitV.y*h/2+4,w:lb.offsetWidth||80,h:lb.offsetHeight||30};
+ });
+ const r=wrap.getBoundingClientRect(),cx=r.left+w/2,cy=r.top+h/2;
+ const z=fitHomeZoom(labels,{left:-cx,right:innerWidth-cx,top:-cy,bottom:innerHeight-cy},HOME_ZOOM,0.15,2,0.55);
+ controls.minZoom=Math.min(0.35,z); /* the fitted home is always reachable */
+ const atHome=!flyGoal&&Math.abs(camera.zoom-HOME.zoom)<1e-3&&controls.target.distanceTo(fitV.set(HOME.tx,HOME.ty,HOME.tz))<1e-3;
+ HOME.zoom=z;
+ if(atHome){camera.zoom=z;camera.updateProjectionMatrix();controls.update();}
+}
 /* ————— frame loop ————— */
 function resize(){
  const w=wrap.clientWidth,h=wrap.clientHeight;
@@ -2716,7 +2740,7 @@ function resize(){
  edgeMats.forEach(m=>m.resolution.set(w,h));
  brush.resizeAll(); /* fat-line strokes need the live resolution too */
  const a=w/h;camera.left=-VIEW*a/2;camera.right=VIEW*a/2;camera.top=VIEW/2;camera.bottom=-VIEW/2;
- camera.updateProjectionMatrix();
+ camera.updateProjectionMatrix();refitHome();
 }
 new ResizeObserver(resize).observe(wrap);resize();
 const tmpV=new THREE.Vector3();window.__lblTick=0;
@@ -2779,7 +2803,7 @@ function tick(){
   }
  });
  const rect=canvas.getBoundingClientRect();
- const far=camera.zoom<0.8,veryfar=camera.zoom<0.62;
+ const far=camera.zoom<0.8,veryfar=camera.zoom<veryFarZoom(HOME.zoom),lk=HOME.zoom<HOME_ZOOM-1e-3?labelScale(camera.zoom,HOME_ZOOM):1;
  const ents: LabelEntry[]=[];
  NODES.forEach(n=>{
    tmpV.copy(n._anchor);tmpV.y+=n._ly;tmpV.project(camera);
@@ -2788,7 +2812,7 @@ function tick(){
    if(lb.style.display!=="")lb.style.display="";
    lb.classList.toggle("far",far);
    const vf=veryfar&&!(n.items&&n.items.length);
-   lb.classList.toggle("veryfar",vf);
+   lb.classList.toggle("veryfar",vf);if(lb._k!==lk){lb._k=lk;lb.style.transformOrigin="50% 0";lb.style.transform=lk<1?"translate(-50%,0) scale("+lk.toFixed(3)+")":"";}
    const lx=(tmpV.x*0.5+0.5)*rect.width,ly=(-tmpV.y*0.5+0.5)*rect.height+4;
    const left=lx.toFixed(4)+"px",top=ly.toFixed(4)+"px";
    if(lb._left!==left){lb.style.left=left;lb._left=left;}
@@ -2804,9 +2828,9 @@ function tick(){
  ents.sort((a,b)=>(prio(b)-prio(a))||(a.depth-b.depth));
  const placed: LabelRect[]=[];
  ents.forEach(e=>{
-   const w=e.lb._w||80,h=e.lb._h||30;
+   const w=(e.lb._w||80)*(e.lb._k||1),h=(e.lb._h||30)*(e.lb._k||1);
    const r: LabelRect={x0:e.lx-w/2,x1:e.lx+w/2,y0:e.ly,y1:e.ly+h};
-   const hit=placed.some(p=>r.x0<p.x1&&r.x1>p.x0&&r.y0<p.y1&&r.y1>p.y0);
+   const hit=!(lk<1&&camera.zoom<=HOME.zoom*1.02)&&placed.some(p=>r.x0<p.x1&&r.x1>p.x0&&r.y0<p.y1&&r.y1>p.y0);
    e.lb.classList.toggle("clash",hit);
    if(!hit)placed.push(r);
  });
@@ -2814,7 +2838,7 @@ function tick(){
  syncTick(); /* keep grouped surfaces frame-locked (the theater reads as one image) */
  nowPlayingTick(); /* keep the now-playing plate's progress + play state live */
 }
-document.fonts.ready.then(()=>{window.__lblMeasured=false;});
+document.fonts.ready.then(()=>{window.__lblMeasured=false;refitHome();});
 /* ————— R30 phase 1: restore the view after a live reload; remember theme + weights across sessions ————— */
 window.__isoViewState=()=>({
  theme:document.documentElement.getAttribute("data-dp-theme"),dotSet,lineSet,stacked,pinned,

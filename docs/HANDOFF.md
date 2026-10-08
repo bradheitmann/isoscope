@@ -370,3 +370,18 @@ Run `bun scripts/swap-proof.ts <evidence-directory>` for the live CLI/MCP
 C1–C7 numerical proof, contrast/DRC checks and a live CDP PNG. `--headed`
 opens the proof browser for an independent observer. Results are DEV evidence;
 independent QA and the headed C1/C3 observation remain acceptance gates.
+
+## Media policy
+
+- The ~560 MB of demo videos in `original-web/public/media` are intentional demo
+  content and stay in the tree.
+- The repo stays private while those videos are in history. Copyright: demo use
+  only; never publish the repo or the media publicly.
+- No history rewrite. Every full re-encode of the set permanently adds ~560 MB
+  to git history, so batch media changes and avoid re-encoding all files for
+  small tweaks.
+- `original-web/public/media/uploads/` is a runtime artifact directory written
+  by the dev-server upload endpoint and is now gitignored. Two uploaded personal
+  photos (`*-IMG_9645.jpeg`) were removed from the tree (D34) but remain in git
+  history; the repo is private. Purging them would require an owner-run history
+  rewrite, which has not been done.

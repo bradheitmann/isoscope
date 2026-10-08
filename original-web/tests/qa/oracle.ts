@@ -35,6 +35,9 @@ function loadTokens(root: string): { files: string[]; tree: Obj } {
     const doc = JSON.parse(bytes.toString("utf8")) as Obj;
     for (const [k, v] of Object.entries(doc)) if (!k.startsWith("$")) tree[k] = isObj(tree[k]) && isObj(v) ? { ...(tree[k] as Obj), ...v } : v!;
   }
+  if (files.length === 0) {
+    throw new Error("CANONICAL-MANIFEST.sha256 lists no tokens/*.tokens.json files, so there is no verified token oracle (the D13 manifest change adds them)");
+  }
   return { files, tree };
 }
 

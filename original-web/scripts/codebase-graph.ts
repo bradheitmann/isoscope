@@ -129,10 +129,13 @@ function walk(dir: string, out: string[]): string[] {
 }
 
 /* Only git-tracked files feed the map, so untracked scratch files cannot change it.
-   Returns null when git is unavailable (then every discovered file is used). */
-function trackedFiles(): Set<string> | null {
+   Fails loudly when git is unavailable: falling back to every discovered file
+   would make the map depend on untracked scratch files (non-deterministic). */
+function trackedFiles(): Set<string> {
   const r = spawnSync("git", ["-C", REPO, "ls-files", "-z"], { encoding: "utf8", maxBuffer: 64 * 1024 * 1024 });
-  if (r.status !== 0 || typeof r.stdout !== "string") return null;
+  if (r.status !== 0 || typeof r.stdout !== "string") {
+    throw new Error(`git ls-files failed in ${REPO} (is git installed and is this a git checkout?): ${r.error?.message ?? r.stderr}`);
+  }
   return new Set(r.stdout.split("\0").filter((s) => s.length > 0));
 }
 
@@ -286,7 +289,7 @@ function buildSpec(cli: Cli): { spec: Record<string, unknown>; modules: Map<stri
     }
   }
   const tracked = trackedFiles();
-  const kept = tracked ? files.filter((f) => tracked.has(toRel(f))) : files;
+  const kept = files.filter((f) => tracked.has(toRel(f)));
   files.length = 0;
   files.push(...kept);
   files.sort();

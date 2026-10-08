@@ -9,7 +9,8 @@ import { spawn } from "child_process";
 import { mkdirSync } from "fs";
 
 const CHROME = "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome";
-const PORT = 9333;
+/* 9333 is reserved; default to the 9400-9499 range (as original-web/tests/qa does). Override: RENDER_PROOF_PORT=94xx. */
+const PORT = Number(process.env.RENDER_PROOF_PORT ?? 9437);
 const BASE = "http://127.0.0.1:4180";
 const OUT = "advisory/2026-09-01-odin/screens";
 const VIEWPORTS: Array<[number, number, string]> = [

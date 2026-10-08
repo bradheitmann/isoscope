@@ -1,6 +1,6 @@
 # Isoscope — development handoff
 
-**As of 2026-09-02 · remote: github.com/bradheitmann/isoscope (private) · name "isoscope" is a working title**
+**As of 2026-10-08 (wave-4 drain; sections below dated 2026-09-02 are history) · remote: github.com/bradheitmann/isoscope (private) · name "isoscope" is a working title**
 
 ## Current state: original-web
 
@@ -30,6 +30,10 @@ bun run drc            # collision lint (bun drc.ts <spec>)
 ```
 
 **Known pre-existing issue:** `bun drc.ts examples/isoscope.spec.json` FAILS the weighted-crossing budget (4 > 1 at b76b003; 8 > 1 after the wave-4 D29 self-map sync). Budgets and geometry were deliberately left unchanged; not yet fixed.
+
+**Open item (tracked):** the self-map drc budget failure is NOT gated by CI (the root job does not run `drc`, because it would fail). Fix the budget or the geometry, then add `bun drc.ts examples/isoscope.spec.json` to the root CI job.
+
+**Note on `dsh-plugin/`:** it is an untracked local stub, not part of the repo. Mentions of it below (and the `tsconfig.json` exclude entry, which is harmless when the directory is absent) are historical; keep-or-remove is the operator's call.
 
 ## What this is
 Schematic observability engine: a system rendered as an inspectable isometric

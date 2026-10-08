@@ -6,7 +6,8 @@ import { fileURLToPath } from "node:url";
 import { spawnSync } from "node:child_process";
 
 const hasBun = spawnSync("bun", ["--version"]).status === 0;
-const here =dirname(fileURLToPath(import.meta.url));
+const hasGit = spawnSync("git", ["--version"]).status === 0;
+const here = dirname(fileURLToPath(import.meta.url));
 const root = join(here, "..");
 
 describe("codebase map", () => {
@@ -14,6 +15,9 @@ describe("codebase map", () => {
     /* Never skip: a skipped byte-for-byte check lets a stale map pass CI silently. */
     if (!hasBun) {
       throw new Error("bun is required for this test and was not found on PATH. Install it (https://bun.sh, or oven-sh/setup-bun in CI; pinned version in .github/workflows/ci.yml) and run: cd original-web && npm test");
+    }
+    if (!hasGit) {
+      throw new Error("git is required for this test (the map is built from git ls-files) and was not found on PATH.");
     }
     const dir = mkdtempSync(join(tmpdir(), "codebase-map-test-"));
     try {

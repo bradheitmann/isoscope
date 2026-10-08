@@ -38,7 +38,7 @@ import iconActivity from "./icons/activity.svg?raw";
 import iconMenu from "./icons/menu.svg?raw";
 import iconCode from "./icons/code.svg?raw";
 import { isEditableTarget } from "./editable-target";
-import { vetSrc } from "./media-src";
+import { vetSrc, escapeHtml, safeLinkHref } from "./media-src";
 import { fitHomeZoom, labelScale, veryFarZoom, type HomeLabel } from "./home-fit";
 import { getModule, setNotes, setFace, addInside, removeInside, uploadFile, isRemote, FACES, type FaceKey, type SurfaceKind, type SurfaceRef } from "./annotations";
 
@@ -1167,7 +1167,7 @@ function materialsRender(): void {
   if(!has)continue;
   const li=document.createElement("li");
   const btn=document.createElement("button");btn.type="button";btn.className="material dp-list-row";
-  btn.innerHTML=`<span class="material-face">${face}</span><span class="material-kind dp-list-row__title">${faceMaterialLabel(id,face)}</span>`;
+  btn.innerHTML=`<span class="material-face">${face}</span><span class="material-kind dp-list-row__title">${escapeHtml(faceMaterialLabel(id,face))}</span>`;
   btn.addEventListener("click",()=>{ inspFace=face; renderFaceChips(); flyToFace(byId[id],face); });
   const pl=document.createElement("button");pl.type="button";pl.className="material-pl";pl.title="Add to playlist";pl.textContent="+ playlist";
   pl.addEventListener("click",ev=>{ev.stopPropagation();setAudioFocus(id);mediaControls.solo(id);refreshTransport();});
@@ -1177,7 +1177,7 @@ function materialsRender(): void {
  (getModule(id).inside??[]).forEach((it)=>{
   const li=document.createElement("li");
   const btn=document.createElement("button");btn.type="button";btn.className="material dp-list-row";
-  btn.innerHTML=`<span class="material-face">inside</span><span class="material-kind dp-list-row__title">${it.kind==="note"?"Note":"File"} — ${it.name}</span>`;
+  btn.innerHTML=`<span class="material-face">inside</span><span class="material-kind dp-list-row__title">${it.kind==="note"?"Note":"File"} — ${escapeHtml(it.name)}</span>`;
   btn.addEventListener("click",()=>{ flyToFace(byId[id],inspFace); });
   li.append(btn);materialsList.append(li);
  });
@@ -1189,7 +1189,7 @@ function renderFaceChips(): void {
  for(const face of FACES){
   const b=document.createElement("button");b.type="button";b.className="face-chip"+(face===inspFace?" is-on":"");
   b.setAttribute("role","tab");b.setAttribute("aria-selected",String(face===inspFace));
-  b.innerHTML=`${face}<span class="fk">${kindOf(getModule(id).faces?.[face]??(surfacesById[id]?.[face]?{kind:surfacesById[id][face]!.kind}:null))}</span>`;
+  b.innerHTML=`${face}<span class="fk">${escapeHtml(kindOf(getModule(id).faces?.[face]??(surfacesById[id]?.[face]?{kind:surfacesById[id][face]!.kind}:null)))}</span>`;
   b.addEventListener("click",()=>{ inspFace=face; renderFaceChips(); flyToFace(byId[id],face); });
   faceChips.append(b);
  }
@@ -1199,7 +1199,7 @@ function insideRender(): void {
  insideList.replaceChildren();
  (getModule(id).inside??[]).forEach((it,idx)=>{
   const li=document.createElement("li");li.className="dp-list-row";
-  const label=it.src?`<a class="dp-list-row__title" href="${it.src}" target="_blank" rel="noreferrer">${it.name}</a>`:`<span class="dp-list-row__title">${it.name}</span>`;
+  const href=safeLinkHref(it.src);const label=href?`<a class="dp-list-row__title" href="${escapeHtml(href)}" target="_blank" rel="noreferrer">${escapeHtml(it.name)}</a>`:`<span class="dp-list-row__title">${escapeHtml(it.name)}</span>`;
   li.innerHTML=`${label}`;
   const x=document.createElement("button");x.type="button";x.className="inside-x";x.setAttribute("aria-label","Remove");x.textContent="×";
   x.addEventListener("click",()=>{void removeInside(id,idx).then(()=>{insideRender();materialsRender();});});

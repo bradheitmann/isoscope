@@ -35,3 +35,13 @@ export function vetSrc(raw: unknown, nodeId: string, image = false): string | nu
   }
   return out;
 }
+
+/** Escape text for safe interpolation into HTML text or a double/single-quoted attribute. */
+export function escapeHtml(raw: unknown): string {
+  return String(raw ?? "").replace(/[&<>"'`]/g, (c) => `&#${c.charCodeAt(0)};`);
+}
+
+/** Link-safe href for annotation links: http(s), same-origin relative or blob only (never data:). */
+export function safeLinkHref(raw: unknown): string | null {
+  return safeMediaSrc(raw);
+}

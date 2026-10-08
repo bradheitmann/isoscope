@@ -61,3 +61,21 @@ describe("renderer routes spec src through the helper", () => {
     }
   });
 });
+
+import { escapeHtml, safeLinkHref } from "../src/media-src";
+
+describe("safeLinkHref / escapeHtml", () => {
+  it.each(["https://x/y", "http://x/y", "/a/b.pdf", "./a.pdf", "blob:https://x/1"])("links %s", (s) => expect(safeLinkHref(s)).toBe(s));
+  it.each(["javascript:alert(1)", " JaVaScRiPt:1", "data:text/html,x", "data:image/png;base64,AA", "//evil.com", "file:///etc/passwd", "", undefined, 5])("no link for %j", (s) => expect(safeLinkHref(s)).toBeNull());
+  it("escapes markup and quotes", () => {
+    expect(escapeHtml(`<img src=x onerror="a()">'&\``)).toBe("&#60;img src=x onerror=&#34;a()&#34;&#62;&#39;&#38;&#96;");
+    expect(escapeHtml(undefined)).toBe("");
+  });
+  it("renderer routes annotation links and names through the helpers", () => {
+    const r = readFileSync(resolve(root, "src/original-renderer.ts"), "utf8");
+    expect(r).toContain("safeLinkHref(it.src)");
+    expect(r).not.toMatch(/href="\$\{it\.src\}"/);
+    expect(r).not.toMatch(/\$\{it\.name\}/);
+    expect(r).toMatch(/escapeHtml\(it\.name\)/);
+  });
+});

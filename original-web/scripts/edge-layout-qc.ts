@@ -26,14 +26,22 @@ import { createHash } from "node:crypto";
 type QaDisposition = "issue_candidate" | "insufficient_evidence" | "human_review";
 interface QaResult { disposition: QaDisposition; error?: string }
 interface QaReviewResponse { ok: boolean; qa?: QaResult; error?: { code?: string } }
-type ReviewQA = (packet: unknown, config: unknown) => Promise<QaReviewResponse>;
+type JevConfig = { mode: "fixture" | "live"; enabled: boolean; dataClass: "synthetic" | "public" | "internal"; timeoutMs?: number };
+type JevDeps = { resolveCredential?: (signal?: unknown) => Promise<string>; ledger?: unknown; fixture?: unknown };
+type ReviewQA = (packet: unknown, config: JevConfig, deps?: JevDeps) => Promise<QaReviewResponse>;
 
 /* The Jev semantic layer is optional and advisory. Resolve dsh-jev recipes from the
    environment (JEV_RECIPES_PATH) or a node_modules install; if absent, run
    deterministic-only. No hardcoded machine paths — open-source safe. */
 let reviewQA: ReviewQA | null = null;
+let makeDurableLedger: ((dir: string) => { begin: unknown; dispatchIntent: unknown; complete: unknown }) | null = null;
 const jevPath = process.env.JEV_RECIPES_PATH ?? "dsh-jev/scripts/recipes.js";
+const jevLedgerPath = process.env.JEV_LEDGER_PATH ?? jevPath.replace(/recipes\.js$/, "ledger.js");
 try { reviewQA = (await import(jevPath) as { reviewQA: ReviewQA }).reviewQA; } catch { reviewQA = null; }
+try { makeDurableLedger = (await import(jevLedgerPath) as { makeDurableLedger: (dir: string) => { begin: unknown; dispatchIntent: unknown; complete: unknown } }).makeDurableLedger; } catch { makeDurableLedger = null; }
+/* hash-only durable receipts for live dispatches (gitignored, local). The ledger proves
+   dispatch accounting without storing raw request/response content. */
+const LEDGER_DIR = new URL("../.jev-receipts/", import.meta.url).pathname;
 
 interface NodeSpec { id: string; x: number; y: number; w: number; d: number }
 type EdgeSpec = [string, string, string?];

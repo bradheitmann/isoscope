@@ -30,7 +30,7 @@ import iconMinus from "../vendor/desert-pants/icons/svg/minus.svg?raw";
 import iconChevron from "../vendor/desert-pants/icons/svg/chevron-down.svg?raw";
 import { isoRouteAll } from "../../router.mjs";
 import { checkRoutes } from "./edge-qc";
-import { edgeHealth, onEdgeHealthChange, onWideEvent, recentEvents, emitWide } from "./telemetry";
+import { edgeHealth, onEdgeHealthChange, onWideEvent, recentEvents, emitWide, allEdgeMetrics } from "./telemetry";
 import iconActivity from "../vendor/desert-pants/icons/svg/activity.svg?raw";
 import iconMenu from "../vendor/desert-pants/icons/svg/menu.svg?raw";
 import iconCode from "../vendor/desert-pants/icons/svg/code.svg?raw";
@@ -1727,7 +1727,38 @@ function refreshEdgeHealth(): void {
   o.health=broken?"broken":degraded?"degraded":o.health; /* keep the runtime in step for dots/panels */
  });
 }
-onEdgeHealthChange(()=>{ refreshEdgeHealth(); });
+onEdgeHealthChange(()=>{ refreshEdgeHealth(); if(telemetryOverlay)paintTelemetryOverlay(); });
+
+/* ————— telemetry overlay: the city as a live flow/health map —————
+   A read-view over the wide-event stream, not a restructure. When on: each traced
+   edge's thickness tracks its throughput and its color tracks live health (green →
+   amber → red); untraced edges and quiet modules recede so volume and problems pop.
+   Toggled from the telemetry feed's "On the map" control. */
+let telemetryOverlay=false;
+function paintTelemetryOverlay(): void {
+ const metrics=allEdgeMetrics();
+ const maxRate=Math.max(1,...metrics.map(m=>m.ratePerMin));
+ const byEdge: Record<string,typeof metrics[number]>={}; metrics.forEach(m=>byEdge[m.edge]=m);
+ Object.values(edgeLinesById).forEach(o=>{
+  const m=o.line.material;const mm=byEdge[o.key];
+  if(!mm){ m.opacity=0.12;m.linewidth=LINEW[lineSet].w*0.6; return; } /* untraced recedes */
+  m.opacity=0.95;
+  m.linewidth=LINEW[lineSet].w*(0.8+ (mm.ratePerMin/maxRate)*2.2); /* throughput → weight */
+  m.color.copy(mm.health==="broken"?COL.risk:mm.health==="degraded"?COL.caution:COL.info);
+ });
+ NODES.forEach(n=>{ /* tint module bodies by the worst health of any edge they touch */
+  let worst: string | null=null;
+  Object.values(edgeLinesById).forEach(o=>{ if(o.a!==n.id&&o.b!==n.id)return; const h=byEdge[o.key]?.health; if(h==="broken")worst="broken"; else if(h==="degraded"&&worst!=="broken")worst="degraded"; });
+  meshById[n.id].traverse((ob: THREE.Object3D)=>{ materialsOf(ob).forEach((mm: THREE.Material)=>{ if("opacity" in mm){mm.transparent=true;mm.opacity=worst==="broken"?1:0.85;} }); });
+  const lb=$("lb-"+n.id); if(lb)lb.style.opacity="1";
+ });
+}
+$("tfOverlay").addEventListener("click",()=>{
+ telemetryOverlay=!telemetryOverlay;
+ $("tfOverlay").setAttribute("aria-pressed",String(telemetryOverlay));
+ $("tfOverlay").classList.toggle("is-on",telemetryOverlay);
+ if(telemetryOverlay)paintTelemetryOverlay(); else paintCircuit(); /* restore the normal read */
+});
 function paintCircuit(){
  const allLive=cordon.size===0;
  Object.entries(edgeLinesById).forEach(([k,o])=>{

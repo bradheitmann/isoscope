@@ -169,3 +169,41 @@ export function allEdgeHealth(): Record<string, EdgeHealth> {
 
 /* test hook: reset the stream + windows */
 export function __resetTelemetry(): void { stream.length = 0; windows.clear(); }
+
+/* ————— per-edge metrics for the observability overlay + detail panels ————— */
+export interface EdgeMetrics {
+  edge: string; health: EdgeHealth;
+  total: number;          /* crossings observed this session */
+  errors: number;         /* error crossings */
+  errorRate: number;      /* errors / total */
+  p50: number; p95: number; /* latency percentiles over the recent window (ms) */
+  ratePerMin: number;     /* recent throughput */
+}
+const sessionStart = Date.now();
+export function edgeMetrics(edge: string): EdgeMetrics | null {
+  const w = windows.get(edge);
+  if (!w || w.total === 0) return null;
+  const sorted = w.times.slice().sort((a, b) => a - b);
+  const p50 = sorted[Math.floor(sorted.length * 0.5)] ?? 0;
+  const p95 = sorted[Math.floor(sorted.length * 0.95)] ?? 0;
+  const elapsedMin = Math.max(0.016, (Date.now() - sessionStart) / 60000);
+  return {
+    edge, health: edgeHealth(edge) ?? "ok",
+    total: w.total, errors: w.errors, errorRate: w.total ? w.errors / w.total : 0,
+    p50: Math.round(p50 * 10) / 10, p95: Math.round(p95 * 10) / 10,
+    ratePerMin: Math.round((w.total / elapsedMin) * 10) / 10,
+  };
+}
+/* every traced edge's metrics (drives the overlay + a needs-attention rollup) */
+export function allEdgeMetrics(): EdgeMetrics[] {
+  const out: EdgeMetrics[] = [];
+  windows.forEach((_, k) => { const m = edgeMetrics(k); if (m) out.push(m); });
+  return out;
+}
+/* the current offenders: highest error rate first, then slowest p95 */
+export function attentionEdges(limit = 5): EdgeMetrics[] {
+  return allEdgeMetrics()
+    .filter(m => m.health !== "ok")
+    .sort((a, b) => (b.errorRate - a.errorRate) || (b.p95 - a.p95))
+    .slice(0, limit);
+}

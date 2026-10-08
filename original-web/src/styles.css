@@ -354,3 +354,8 @@ details > summary { cursor: pointer; }
   .controls-float.rail-open{transform:none;opacity:1;pointer-events:auto}
 }
 @media (min-width: 721px){.controls-float{transform:none;opacity:1;pointer-events:auto}}
+
+/* telemetry feed header "On the map" overlay toggle */
+.tf-overlay-btn{margin-inline-start:auto;font-size:11px;padding:4px 10px}
+.tf-overlay-btn.is-on{background:var(--dp-color-accent-default);color:var(--dp-color-accent-contrast);border-color:transparent}
+.tf-head .dp-icon-button{margin-inline-start:0}

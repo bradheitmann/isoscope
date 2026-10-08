@@ -3091,6 +3091,7 @@ window.__isoSwapState=()=>({stacked,pinned,selEdge,ti,flowing,dotSet,lineSet,cor
  cam:{p:camera.position.toArray(),t:controls.target.toArray(),zoom:camera.zoom},fly:!!flyGoal,
  center:{...CENTER},bounds:{..._bb},grids:grids.map(g=>g.position.y),trace:[...TRACE],journey:journeyIds(),nodes:NODES.map(n=>({id:n.id,lvl:n._lvl,anchor:[n._anchor.x,n._ly,n._anchor.z],items:n.items})),
  edges:Object.fromEntries(Object.entries(edgeLinesById).map(([k,o])=>[k,{junctions:o.jn.filter(j=>j.parent===scene).length}])),
- memory:{...renderer.info.memory,programs:renderer.info.programs?.length ?? 0},children:scene.children.length});
+ memory:{...renderer.info.memory,programs:renderer.info.programs?.length ?? 0},children:scene.children.length,
+ videos:{pool:Object.keys(videoPool).length,queued:warmupQueue.length,playing:Object.values(videoPool).filter(p=>!p.video.paused&&!p.video.ended).length,ready:Object.values(videoPool).filter(p=>p.video.readyState>=2).length}});
 window.dispatchEvent(new Event("isoscope-ready"));
 tick();

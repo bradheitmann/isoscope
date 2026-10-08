@@ -15,8 +15,8 @@ function checkSource(rec: Recorder, label: string, css: string, canon: Canon | n
     bad.length === 0 ? `${tuples.length + variantTuples.length} tuples, 0 mismatches` : `${bad.length} unresolved, first: ${bad.slice(0, 3).map(b => `${b.role}/${b.prop}: ${b.error ?? b.value}`).join("; ")}`);
   if (canon) {
     const r = checkAgainstCanon(canon, tuples);
-    rec.check(C, `${label}: roles match vendored token JSON (independent oracle)`, r.mismatches.length === 0 && r.rolesChecked > 0,
-      `${r.rolesChecked} roles checked, ${r.tuplesChecked} tuples, ${r.mismatches.length} mismatches` + (r.mismatches.length ? `, first: ${r.mismatches.slice(0, 3).join("; ")}` : "") + (r.skippedRoles.length ? `; ${r.skippedRoles.length} CSS roles not in tokens` : ""));
+    rec.check(C, `${label}: roles match vendored token JSON (independent oracle)`, r.ok,
+      `${r.rolesChecked} roles checked, ${r.tuplesChecked} tuples, ${r.mismatches.length} mismatches` + (r.mismatches.length ? `, first: ${r.mismatches.slice(0, 3).join("; ")}` : "") + (r.skippedRoles.length ? `; ${r.skippedRoles.length} CSS roles not in tokens (FAIL): ${r.skippedRoles.join(", ")}` : ""));
   }
   return tuples;
 }

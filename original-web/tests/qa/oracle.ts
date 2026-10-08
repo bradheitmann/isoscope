@@ -136,7 +136,9 @@ function baseSize(expr: string): number | null {
 const familyKey = (s: string): string => topLevelArgs(s).map(f => f.replace(/["']/g, "").trim()).join("|");
 const numKey = (s: string): string => { const m = /^(-?[\d.]+)([a-z%]*)$/.exec(s.trim()); return m ? (Number(m[1]) === 0 ? "0" : `${Number(m[1])}${m[2]}`) : s.trim(); };
 
-export interface OracleResult { rolesChecked: number; tuplesChecked: number; mismatches: string[]; skippedRoles: string[]; }
+export interface OracleResult { rolesChecked: number; tuplesChecked: number; mismatches: string[]; skippedRoles: string[];
+  /** false when anything mismatched, any CSS .dp-type-* role is absent from the tokens, or 0 roles were checked */
+  ok: boolean; }
 
 export function checkAgainstCanon(canon: Canon, tuples: RoleTuple[]): OracleResult {
   const mismatches: string[] = [];
@@ -169,5 +171,6 @@ export function checkAgainstCanon(canon: Canon, tuples: RoleTuple[]): OracleResu
     } else ok = numKey(t.value) === numKey(want);
     if (!ok) mismatches.push(`${t.role}/${t.prop}: css=${t.value} tokens=${want}`);
   }
-  return { rolesChecked: seen.size, tuplesChecked: n, mismatches, skippedRoles: [...skipped] };
+  return { rolesChecked: seen.size, tuplesChecked: n, mismatches, skippedRoles: [...skipped],
+    ok: mismatches.length === 0 && skipped.size === 0 && seen.size > 0 };
 }

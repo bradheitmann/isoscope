@@ -188,24 +188,44 @@ details > summary { cursor: pointer; }
   .canvas-wrap { flex: 1 1 auto; }
   .panel { position: relative; inset: auto; flex: 0 0 var(--panel-w, var(--dp-layout-grid-component-visualization-workbench-reading-preferred-width)); block-size: auto; min-inline-size: 0; max-inline-size: none; overflow: hidden; z-index: auto; background: var(--dp-color-bg-surface); border-inline-start: var(--dp-border-width-hair) solid var(--dp-color-border-subtle); border-radius: 0; box-shadow: none; touch-action: auto; }
   .sheet-head { display: none; }
-  .scroll { padding: var(--dp-space-6) var(--dp-space-5); }
+  .panel-context { padding-block-start: var(--dp-space-6); }
+  .scroll { padding: var(--dp-space-4) var(--dp-space-5) var(--dp-space-6); }
   .reading-section { margin-block-start: var(--dp-space-6); }
 }
 
-/* ════════ Module inspector (the storage-box editing surface) ════════ */
-.inspector-scrim{position:fixed;inset:0;z-index:32;background:rgb(10 12 18/0.21);opacity:0;pointer-events:none;transition:opacity .22s ease}
-.inspector-scrim.is-open{opacity:1;pointer-events:auto}
-.inspector{position:fixed;top:0;right:0;bottom:0;width:min(400px,92vw);z-index:33;display:flex;flex-direction:column;
-  background:var(--dp-color-bg-surface);color:var(--dp-color-text-primary);
-  border-inline-start:1px solid var(--dp-color-border-default);box-shadow:-24px 0 60px rgb(0 0 0/0.24);
-  transform:translateX(103%);transition:transform .28s cubic-bezier(.32,.72,.28,1)}
-.inspector.is-open{transform:none}
-.inspector-bar{display:flex;align-items:flex-start;justify-content:space-between;gap:var(--dp-space-4);
-  padding:var(--dp-space-5) var(--dp-space-5) var(--dp-space-3);border-bottom:1px solid var(--dp-color-border-default)}
-.inspector-title{min-width:0}
-.inspector-title .dp-eyebrow{margin:0}
-.inspector-title h2{margin:2px 0 0;font-size:22px;line-height:1.1}
-.inspector-body{flex:1;min-height:0;overflow:auto;padding:var(--dp-space-4) var(--dp-space-5) var(--dp-space-6)}
+/* ════════ the one right panel: context header + health strip + views + live-flow footer ════════
+   One surface, two views: data-view="overview"|"detail" swaps the content
+   containers; the header and health strip persist across both. */
+.panel-context{position:relative;flex:none;padding:var(--dp-space-2) var(--dp-space-5) 0}
+.panel-back{position:absolute;inset-inline-start:var(--dp-space-1);inset-block-start:var(--dp-space-1)}
+.panel-back svg{transform:rotate(180deg)}
+.panel-back[hidden]{display:none}
+.panel[data-view="detail"] .panel-context .inspector-head{padding-inline-start:var(--dp-space-6)}
+.health-strip{flex:none;display:flex;align-items:center;gap:var(--dp-space-2);inline-size:100%;
+  padding:var(--dp-space-2) var(--dp-space-5);border:0;cursor:pointer;text-align:start;
+  background:var(--dp-color-bg-raised);color:var(--dp-color-text-secondary);
+  border-block-start:var(--dp-border-width-hair) solid var(--dp-color-border-subtle);
+  border-block-end:var(--dp-border-width-hair) solid var(--dp-color-border-subtle)}
+.health-strip:hover{background:var(--dp-color-bg-surface)}
+.health-dot{flex:none;inline-size:var(--dp-icon-size-10);block-size:var(--dp-icon-size-10);border-radius:var(--dp-radius-full);
+  background:var(--dp-color-border-subtle)}
+.health-dot[data-state="ok"]{background:var(--dp-color-signal-success-fill)}
+.health-dot[data-state="degraded"]{background:var(--dp-color-signal-warning-fill)}
+.health-dot[data-state="broken"]{background:var(--dp-color-signal-danger-fill)}
+.panel-view{min-height:0}
+.attention-row{inline-size:100%;border:0;color:inherit;font:inherit;text-align:start;cursor:pointer;
+  min-block-size:var(--dp-layout-size-touch-min)}
+.detail-metrics .detail-metric{pointer-events:none}
+/* peek shows only the grabber + title — the strip, views and footer rest */
+.panel.is-peek:not(.free) .health-strip,.panel.is-peek:not(.free) .panel-tf{display:none}
+/* live flow: the collapsible footer section of the panel (never a float) */
+.panel-tf{flex:none;border-block-start:var(--dp-border-width-hair) solid var(--dp-color-border-default);
+  background:var(--dp-color-bg-raised)}
+.tf-summary{display:flex;align-items:baseline;justify-content:space-between;gap:var(--dp-space-3);
+  padding:var(--dp-space-2) var(--dp-space-5);cursor:pointer;list-style:none}
+.tf-summary::-webkit-details-marker{display:none}
+.tf-toolbar{display:flex;justify-content:flex-end;padding:0 var(--dp-space-5) var(--dp-space-1)}
+.panel-tf .tf-body{max-block-size:32vh}
 .insp-section{margin-block-end:var(--dp-space-5)}
 .insp-section h3{margin:0 0 var(--dp-space-2)}
 .insp-hint{margin:0 0 var(--dp-space-3);color:var(--dp-color-text-secondary)}
@@ -243,8 +263,6 @@ details > summary { cursor: pointer; }
   color:var(--dp-color-text-secondary)}
 #inspNotes,#faceDocIn{width:100%;resize:vertical;font-family:inherit}
 .dp-button--sm{padding:5px 10px;font-size:12.5px}
-@media (max-width:720px){.inspector{width:100vw}}
-
 /* every button reads as a filled control — no transparent backgrounds letting the
    scene show through; the fill may simply be the surface/raised background color */
 .dp-button--outline,.dp-icon-button,.face-chip,.tray-handle{
@@ -323,20 +341,19 @@ details > summary { cursor: pointer; }
 .material-pl:hover{background:var(--dp-color-accent-default);color:var(--dp-color-accent-contrast)}
 .material-empty{padding:12px;font-size:12.5px;color:var(--dp-color-text-secondary);border:1px dashed var(--dp-color-border-default);border-radius:10px}
 
-/* ════════ live telemetry feed: the wide-event stream ════════ */
-.telemetry-feed{position:fixed;inset-inline-end:var(--dp-space-4);inset-block-end:var(--dp-space-4);z-index:33;width:min(340px,90vw);max-height:46vh;display:flex;flex-direction:column;
-  background:var(--dp-color-bg-surface);color:var(--dp-color-text-primary);
-  border:1px solid var(--dp-color-border-default);border-radius:12px;box-shadow:0 16px 48px rgb(0 0 0/0.28)}
-.tf-head{display:flex;align-items:center;justify-content:space-between;gap:var(--dp-space-3);padding:10px 12px;border-bottom:1px solid var(--dp-color-border-subtle)}
-.tf-head h2{margin:0;font-size:13px}
-.tf-body{overflow:auto;padding:6px;min-height:0}
-.tf-empty{padding:14px;color:var(--dp-color-text-secondary)}
-.tf-row{display:grid;grid-template-columns:auto 1fr auto;gap:8px;align-items:baseline;padding:6px 8px;font-size:11.5px;font-variant-numeric:tabular-nums}
+/* ════════ live flow rows: the wide-event stream (panel footer) ════════ */
+.tf-body{overflow:auto;padding:var(--dp-space-1);min-height:0}
+.tf-empty{padding:var(--dp-space-3);color:var(--dp-color-text-secondary);margin:0}
+.tf-row{display:grid;grid-template-columns:auto 1fr auto;gap:var(--dp-space-2);align-items:baseline;
+  inline-size:100%;border:0;background:none;color:inherit;font:inherit;text-align:start;cursor:pointer;
+  padding:var(--dp-space-1) var(--dp-space-2);font-variant-numeric:tabular-nums}
+.tf-row:hover{background:var(--dp-color-bg-surface)}
+.tf-row:focus-visible{outline:var(--dp-border-width-focus) solid var(--dp-color-focus-ring);outline-offset:var(--dp-interaction-focus-offset-inset-tight)}
 /* row separators come from .dp-list-row's canonical inset-hairline anatomy */
-.tf-row .tf-edge{font-weight:700;font-family:ui-monospace,monospace}
+.tf-row .tf-edge{font-weight:700;font-family:var(--dp-type-code-font-family)}
 .tf-row .tf-name{color:var(--dp-color-text-secondary);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.tf-row .tf-ms{color:var(--dp-color-text-muted);font-size:10.5px}
-.tf-dot{width:8px;height:8px;border-radius:50%;flex:none;align-self:center}
+.tf-row .tf-ms{color:var(--dp-color-text-muted)}
+.tf-dot{inline-size:var(--dp-icon-size-10);block-size:var(--dp-icon-size-10);border-radius:var(--dp-radius-full);align-self:center}
 .tf-row.ok .tf-dot{background:var(--dp-color-signal-success-fill)}
 .tf-row.error .tf-dot{background:var(--dp-color-signal-danger-fill)}
 .tf-row.error .tf-edge{color:var(--dp-color-signal-danger-text)}
@@ -355,7 +372,5 @@ details > summary { cursor: pointer; }
 }
 @media (min-width: 721px){.controls-float{transform:none;opacity:1;pointer-events:auto}}
 
-/* telemetry feed header "On the map" overlay toggle */
-.tf-overlay-btn{margin-inline-start:auto;font-size:11px;padding:4px 10px}
+/* live-flow footer "On the map" overlay toggle */
 .tf-overlay-btn.is-on{background:var(--dp-color-accent-default);color:var(--dp-color-accent-contrast);border-color:transparent}
-.tf-head .dp-icon-button{margin-inline-start:0}

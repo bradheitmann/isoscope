@@ -44,19 +44,31 @@
   </main>
   <button class="tray-handle" id="trayHandle" type="button" aria-label="Show reading panel" aria-controls="readingPanel" hidden></button>
   <div class="dp-scrim" id="readingScrim" hidden></div>
-  <aside class="panel" id="readingPanel" tabindex="-1" role="complementary" aria-labelledby="pTitle" aria-label="Reading panel" hidden inert>
+  <aside class="panel" id="readingPanel" tabindex="-1" role="complementary" aria-labelledby="pTitle" aria-label="Reading panel" data-view="overview" hidden inert>
     <div class="sheet-head">
       <button class="dp-sheet__grabber" id="sheetGrabber" type="button" aria-label="Expand reading panel"></button>
       <button class="dp-icon-button close-reading" id="closeReadingPanel" type="button" data-dp-close aria-label="Close reading panel"></button>
     </div>
-    <div class="scroll" id="paneBody">
+    <div class="panel-context">
+      <button class="dp-icon-button panel-back" id="panelBack" type="button" aria-label="Back to map overview" hidden></button>
       <header class="inspector-head">
         <p class="dp-eyebrow" id="pEyebrow"></p>
         <h1 class="dp-type-h2" id="pTitle"></h1>
         <p class="sub dp-type-body-sm" id="pSub"></p>
-        <div class="tag-pills" id="panelTagPills" role="list" aria-label="Link tags" hidden></div>
+        <div class="tag-pills" id="panelTagPills" role="list" aria-label="Tags" hidden></div>
       </header>
-      <div id="pProse" class="prose dp-type-body-sm"></div>
+    </div>
+    <button class="health-strip dp-type-body-xs" id="healthStrip" type="button" title="Flows needing attention">
+      <span class="health-dot" id="healthDot" aria-hidden="true"></span>
+      <span id="healthText">No flows traced yet</span>
+    </button>
+    <div class="scroll" id="paneBody">
+     <div id="panelOverview" class="panel-view">
+      <div id="pProseOv" class="prose dp-type-body-sm"></div>
+      <section class="reading-section" id="attentionSection" aria-labelledby="attentionTitle" hidden>
+        <h2 class="dp-type-label-sm" id="attentionTitle">Needs attention</h2>
+        <ul class="dp-list" id="attentionList"></ul>
+      </section>
       <section class="reading-section module-navigator" aria-labelledby="moduleNavigatorTitle">
         <h2 class="dp-type-h3" id="moduleNavigatorTitle">Navigate modules</h2>
         <label class="dp-search">
@@ -103,7 +115,76 @@
         <p class="dp-type-meta" id="wordmark"></p>
         <p class="dp-type-meta" id="asOf"></p>
       </section>
+     </div>
+     <div id="panelDetail" class="panel-view" hidden>
+      <div id="pProse" class="prose dp-type-body-sm"></div>
+      <section class="insp-section" id="detailTelemetrySection" aria-label="Telemetry">
+        <h3 class="dp-type-label-sm">Telemetry</h3>
+        <ul class="dp-list detail-metrics" id="detailTelemetry"></ul>
+        <p class="dp-type-meta" id="detailTelemetryEmpty">No crossings observed yet — interact with the map and this object's flows appear here.</p>
+      </section>
+      <div id="detailEdit" hidden>
+      <section class="insp-section" aria-label="Materials">
+        <h3 class="dp-type-label-sm">Materials</h3>
+        <p class="dp-type-body-xs insp-hint">Everything attached to this module. Select one to open it on a face — that side becomes the screen, reader, or player.</p>
+        <ul class="materials-list dp-list" id="materialsList"></ul>
+      </section>
+      <section class="insp-section" aria-label="Surfaces">
+        <h3 class="dp-type-label-sm">Surfaces</h3>
+        <p class="dp-type-body-xs insp-hint">Pick a face, then choose what lives on it.</p>
+        <div class="face-chips" id="faceChips" role="tablist" aria-label="Faces"></div>
+        <div class="face-editor" id="faceEditor">
+          <div class="dp-segmented" id="kindSeg" role="group" aria-label="Content kind"></div>
+          <div class="face-src" id="faceSrcRow">
+            <div class="dp-field">
+              <select id="faceLibSel" class="dp-field__control" aria-label="From the media bench"></select>
+            </div>
+            <div class="face-src-row">
+              <input id="faceUrlIn" class="dp-field__control" type="url" placeholder="or paste a URL (video, image, stream)" aria-label="Source URL" />
+              <label class="dp-button dp-button--outline face-upload" for="faceFileIn">Upload<input id="faceFileIn" type="file" accept="video/*,image/*,audio/*" hidden /></label>
+            </div>
+            <textarea id="faceDocIn" class="dp-field__control" rows="4" placeholder="Markdown note for this face" aria-label="Document text" hidden></textarea>
+          </div>
+          <div class="face-actions">
+            <button class="dp-button" id="faceApply" type="button">Apply to face</button>
+            <button class="dp-button dp-button--outline" id="faceClear" type="button">Clear face</button>
+          </div>
+          <div class="face-media-ctl" id="faceMediaCtl" hidden>
+            <button class="dp-button dp-button--sm" id="mcPlay" type="button">Play / pause</button>
+            <button class="dp-button dp-button--sm dp-button--outline" id="mcSolo" type="button">Solo audio</button>
+            <span class="dp-type-body-xs" id="mcState"></span>
+          </div>
+        </div>
+      </section>
+      <section class="insp-section" aria-label="Notes">
+        <h3 class="dp-type-label-sm">Notes</h3>
+        <textarea id="inspNotes" class="dp-field__control" rows="4" placeholder="Your notes on this module — saved to its record." aria-label="Module notes"></textarea>
+        <p class="dp-type-meta" id="notesSaved"></p>
+      </section>
+      <section class="insp-section" aria-label="Inside">
+        <h3 class="dp-type-label-sm">Inside</h3>
+        <p class="dp-type-body-xs insp-hint">Files and notes kept inside this box.</p>
+        <ul class="inside-list dp-list" id="insideList"></ul>
+        <div class="inside-add">
+          <input id="insideNoteIn" class="dp-field__control" type="text" placeholder="Add an inside note" aria-label="Inside note" />
+          <button class="dp-button dp-button--sm" id="insideAddNote" type="button">Add</button>
+          <label class="dp-button dp-button--sm dp-button--outline" for="insideFileIn">Add file<input id="insideFileIn" type="file" hidden /></label>
+        </div>
+      </section>
+      <p class="dp-type-meta insp-persist" id="inspPersist"></p>
+      </div>
+     </div>
     </div>
+    <details class="panel-tf" id="telemetrySection">
+      <summary class="tf-summary" id="tfSummary">
+        <span class="dp-type-label-sm" id="tfTitle">Live flow</span>
+        <span class="dp-type-meta" id="tfCount"></span>
+      </summary>
+      <div class="tf-toolbar">
+        <button class="dp-button dp-button--sm tf-overlay-btn" id="tfOverlay" type="button" aria-pressed="false" title="Show flow + health on the map">On the map</button>
+      </div>
+      <div class="tf-body dp-list" id="tfBody"><p class="tf-empty dp-type-meta" id="tfEmpty">No crossings yet — interact with the map and flows will appear here.</p></div>
+    </details>
   </aside>
   </div>
   <div class="dp-scrim settings-scrim" id="settingsBackdrop" hidden aria-hidden="true"></div>
@@ -157,77 +238,6 @@
     </button>
     <span class="me-avatar" id="meAvatar" title="You" aria-label="You">You</span>
   </div>
-  <!-- live telemetry feed: the wide-event stream as edges are traced -->
-  <aside class="telemetry-feed" id="telemetryFeed" hidden aria-label="Live edge telemetry" aria-live="off">
-    <header class="tf-head">
-      <h2 class="dp-type-label" id="tfTitle">Edge flow · live</h2>
-      <button class="dp-button dp-button--sm tf-overlay-btn" id="tfOverlay" type="button" aria-pressed="false" title="Show flow + health on the map">On the map</button>
-      <button class="dp-icon-button" id="tfClose" type="button" aria-label="Close telemetry"></button>
-    </header>
-    <div class="tf-body dp-list" id="tfBody"><p class="tf-empty dp-type-meta" id="tfEmpty">No crossings yet — interact with the map and flows will appear here.</p></div>
-  </aside>
-  <!-- per-module inspect & edit: the "storage box" surface -->
-  <div class="dp-scrim inspector-scrim" id="inspectorScrim" hidden aria-hidden="true"></div>
-  <aside class="inspector" id="inspector" role="dialog" aria-modal="true" aria-labelledby="inspName" hidden inert>
-    <header class="inspector-bar">
-      <div class="inspector-title">
-        <p class="dp-eyebrow" id="inspTag"></p>
-        <h2 class="dp-type-h2" id="inspName"></h2>
-      </div>
-      <button class="dp-icon-button" id="inspectorClose" type="button" aria-label="Close inspector"></button>
-    </header>
-    <div class="inspector-body">
-      <div class="tag-pills" id="tagPills" role="list" aria-label="Module tags" hidden></div>
-      <section class="insp-section" aria-label="Materials">
-        <h3 class="dp-type-label-sm">Materials</h3>
-        <p class="dp-type-body-xs insp-hint">Everything attached to this module. Select one to open it on a face — that side becomes the screen, reader, or player.</p>
-        <ul class="materials-list dp-list" id="materialsList"></ul>
-      </section>
-      <section class="insp-section" aria-label="Surfaces">
-        <h3 class="dp-type-label-sm">Surfaces</h3>
-        <p class="dp-type-body-xs insp-hint">Pick a face, then choose what lives on it.</p>
-        <div class="face-chips" id="faceChips" role="tablist" aria-label="Faces"></div>
-        <div class="face-editor" id="faceEditor">
-          <div class="dp-segmented" id="kindSeg" role="group" aria-label="Content kind"></div>
-          <div class="face-src" id="faceSrcRow">
-            <div class="dp-field">
-              <select id="faceLibSel" class="dp-field__control" aria-label="From the media bench"></select>
-            </div>
-            <div class="face-src-row">
-              <input id="faceUrlIn" class="dp-field__control" type="url" placeholder="or paste a URL (video, image, stream)" aria-label="Source URL" />
-              <label class="dp-button dp-button--outline face-upload" for="faceFileIn">Upload<input id="faceFileIn" type="file" accept="video/*,image/*,audio/*" hidden /></label>
-            </div>
-            <textarea id="faceDocIn" class="dp-field__control" rows="4" placeholder="Markdown note for this face" aria-label="Document text" hidden></textarea>
-          </div>
-          <div class="face-actions">
-            <button class="dp-button" id="faceApply" type="button">Apply to face</button>
-            <button class="dp-button dp-button--outline" id="faceClear" type="button">Clear face</button>
-          </div>
-          <div class="face-media-ctl" id="faceMediaCtl" hidden>
-            <button class="dp-button dp-button--sm" id="mcPlay" type="button">Play / pause</button>
-            <button class="dp-button dp-button--sm dp-button--outline" id="mcSolo" type="button">Solo audio</button>
-            <span class="dp-type-body-xs" id="mcState"></span>
-          </div>
-        </div>
-      </section>
-      <section class="insp-section" aria-label="Notes">
-        <h3 class="dp-type-label-sm">Notes</h3>
-        <textarea id="inspNotes" class="dp-field__control" rows="4" placeholder="Your notes on this module — saved to its record." aria-label="Module notes"></textarea>
-        <p class="dp-type-meta" id="notesSaved"></p>
-      </section>
-      <section class="insp-section" aria-label="Inside">
-        <h3 class="dp-type-label-sm">Inside</h3>
-        <p class="dp-type-body-xs insp-hint">Files and notes kept inside this box.</p>
-        <ul class="inside-list dp-list" id="insideList"></ul>
-        <div class="inside-add">
-          <input id="insideNoteIn" class="dp-field__control" type="text" placeholder="Add an inside note" aria-label="Inside note" />
-          <button class="dp-button dp-button--sm" id="insideAddNote" type="button">Add</button>
-          <label class="dp-button dp-button--sm dp-button--outline" for="insideFileIn">Add file<input id="insideFileIn" type="file" hidden /></label>
-        </div>
-      </section>
-      <p class="dp-type-meta insp-persist" id="inspPersist"></p>
-    </div>
-  </aside>
   <script type="module" src="/src/main.ts"></script>
 </body>
 </html>

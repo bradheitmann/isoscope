@@ -1,12 +1,38 @@
 import { defineConfig, type Plugin } from "vite";
-import { readFileSync, writeFileSync, renameSync, existsSync, mkdirSync, appendFileSync } from "node:fs";
+import { readFileSync, writeFileSync, renameSync, existsSync, mkdirSync } from "node:fs";
+import { DatabaseSync } from "node:sqlite";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const root = dirname(fileURLToPath(import.meta.url));
 const ANNOTATIONS = resolve(root, "examples/annotations.json");
 const UPLOAD_DIR = resolve(root, "public/media/uploads");
-const TELEMETRY_LOG = resolve(root, "examples/telemetry.jsonl");
+const TELEMETRY_DB = resolve(root, "examples/telemetry.db");
+
+/* the local wide-event store: one SQLite db, opened lazily. node:sqlite is built into
+   Node — zero dependencies, no native builds, no Docker. The lumbr wide-event schema
+   is kept byte-for-byte in the `json` column; indexed columns make health/throughput
+   queries cheap. This is the easiest backend to run; a real lumbr backend swaps in
+   behind the same endpoint. */
+let _telemetryDb: DatabaseSync | null = null;
+function telemetryDb(): DatabaseSync {
+  if (_telemetryDb) return _telemetryDb;
+  const db = new DatabaseSync(TELEMETRY_DB);
+  db.exec(`CREATE TABLE IF NOT EXISTS wide_events (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    edge TEXT NOT NULL DEFAULT '',
+    name TEXT NOT NULL DEFAULT '',
+    kind TEXT NOT NULL DEFAULT '',
+    status TEXT NOT NULL DEFAULT '',
+    duration_ms REAL NOT NULL DEFAULT 0,
+    end_ms REAL NOT NULL DEFAULT 0,
+    json TEXT NOT NULL
+  )`);
+  db.exec("CREATE INDEX IF NOT EXISTS idx_wide_events_edge ON wide_events(edge, id)");
+  db.exec("CREATE INDEX IF NOT EXISTS idx_wide_events_status ON wide_events(status, id)");
+  _telemetryDb = db;
+  return db;
+}
 
 /* Per-module annotation write-back. The app is otherwise a static read of the
    spec; this endpoint is the one place a user's own annotations (notes, inside
@@ -75,20 +101,58 @@ function annotationsApi(): Plugin {
         res.end(JSON.stringify({ ok: true, src: "/media/uploads/" + dest.split("/").pop() }));
         return;
       }
-      /* durable wide-event sink: POST /api/telemetry with a JSON array of wide events
-         appends one JSON line per event (lumbr-schema) to telemetry.jsonl. This is the
-         local-first telemetry store; a real lumbr/OTel backend can replace it later. */
-      if (req.method === "POST" && url === "/api/telemetry") {
-        const events = JSON.parse(await readBody(req)) as unknown;
-        const list = Array.isArray(events) ? events : [events];
-        const lines = list.map(e => JSON.stringify(e)).join("\n") + "\n";
-        appendFileSync(TELEMETRY_LOG, lines);
-        res.end(JSON.stringify({ ok: true, count: list.length }));
-        return;
-      }
-      if (req.method === "GET" && url === "/api/telemetry") {
-        res.end(existsSync(TELEMETRY_LOG) ? readFileSync(TELEMETRY_LOG, "utf8") : "");
-        return;
+      /* durable wide-event store: POST /api/telemetry with a JSON array of lumbr-schema
+         wide events inserts one row per event into a local SQLite db (node:sqlite — zero
+         deps, built into Node). Queryable: GET /api/telemetry?edge=&status=&limit= returns
+         recent rows; GET /api/telemetry/health returns per-edge aggregates. A real lumbr
+         backend (SurrealDB/Honeycomb) can replace this store without touching emitters. */
+      if (url === "/api/telemetry" || url.startsWith("/api/telemetry/")) {
+        const db = telemetryDb();
+        if (req.method === "POST" && url === "/api/telemetry") {
+          const events = JSON.parse(await readBody(req)) as unknown;
+          const list = (Array.isArray(events) ? events : [events]) as Record<string, unknown>[];
+          const ins = db.prepare("INSERT INTO wide_events (edge,name,kind,status,duration_ms,end_ms,json) VALUES (?,?,?,?,?,?,?)");
+          db.exec("BEGIN");
+          try { for (const e of list) ins.run(String(e["isoscope.edge"] ?? ""), String(e.name ?? ""), String(e.kind ?? ""), String(e.status ?? ""), Number(e.duration_ms ?? 0), Number((e.end_time_unix_nano ?? 0) as number) / 1e6, JSON.stringify(e)); db.exec("COMMIT"); }
+          catch { db.exec("ROLLBACK"); throw new Error("telemetry insert failed"); }
+          res.end(JSON.stringify({ ok: true, count: list.length }));
+          return;
+        }
+        if (req.method === "GET" && url === "/api/telemetry") {
+          const q = new URL(req.url ?? "", "http://x").searchParams;
+          const edge = q.get("edge"), status = q.get("status"), limit = Math.min(500, Number(q.get("limit") ?? 100));
+          const where = [edge ? "edge=?" : "", status ? "status=?" : ""].filter(Boolean).join(" AND ");
+          const params = [edge, status].filter(Boolean) as string[];
+          const rows = db.prepare(`SELECT json FROM wide_events ${where ? "WHERE " + where : ""} ORDER BY id DESC LIMIT ?`).all(...params, limit).map((r) => JSON.parse((r as { json: string }).json));
+          res.end(JSON.stringify(rows));
+          return;
+        }
+        if (req.method === "GET" && url === "/api/telemetry/health") {
+          const rows = db.prepare("SELECT edge, COUNT(*) total, SUM(status='ERROR') errors, AVG(duration_ms) avg_ms, MAX(end_ms) last_ms FROM wide_events WHERE edge != '' GROUP BY edge ORDER BY errors DESC, avg_ms DESC").all();
+          res.end(JSON.stringify(rows));
+          return;
+        }
+        /* the primary AX hook: current offenders, derived server-side from the
+           durable wide-event store with the same health rules the browser applies
+           (telemetry.ts): errorRate>=0.5 with a recent crossing → broken;
+           errorRate>=0.15 or slow average → degraded. Non-ok edges only, worst first. */
+        if (req.method === "GET" && url === "/api/telemetry/attention") {
+          const SLOW_MS = 120, RECENT_MS = 5 * 60e3;
+          const rows = db.prepare("SELECT edge, COUNT(*) total, SUM(status='ERROR') errors, AVG(duration_ms) avg_ms, MAX(end_ms) last_ms FROM wide_events WHERE edge != '' GROUP BY edge").all() as
+            { edge: string; total: number; errors: number; avg_ms: number; last_ms: number }[];
+          const now = Date.now();
+          const out = rows.map(r => {
+            const errorRate = r.total ? r.errors / r.total : 0;
+            const health = (errorRate >= 0.5 && now - r.last_ms < RECENT_MS) ? "broken"
+              : (errorRate >= 0.15 || r.avg_ms > SLOW_MS) ? "degraded" : "ok";
+            return { edge: r.edge, health, total: r.total, errors: r.errors,
+              errorRate: Math.round(errorRate * 1000) / 1000,
+              avg_ms: Math.round(r.avg_ms * 10) / 10, last_ms: r.last_ms };
+          }).filter(r => r.health !== "ok")
+            .sort((a, b) => (a.health === b.health ? 0 : a.health === "broken" ? -1 : 1) || (b.errorRate - a.errorRate) || (b.avg_ms - a.avg_ms));
+          res.end(JSON.stringify(out));
+          return;
+        }
       }
       res.writeHead(404, { "content-type": "application/json" });
       res.end(JSON.stringify({ ok: false, error: "not found" }));

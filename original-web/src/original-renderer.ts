@@ -23,6 +23,7 @@ import iconStop from "../vendor/desert-pants/icons/svg/stop.svg?raw";
 import iconReset from "../vendor/desert-pants/icons/svg/rotate-ccw.svg?raw";
 import iconSettings from "../vendor/desert-pants/icons/svg/settings.svg?raw";
 import iconOverview from "../vendor/desert-pants/icons/svg/info.svg?raw";
+import iconBack from "../vendor/desert-pants/icons/svg/arrow-right.svg?raw";
 import iconClose from "../vendor/desert-pants/icons/svg/x.svg?raw";
 import iconSearch from "../vendor/desert-pants/icons/svg/search.svg?raw";
 import iconPlus from "../vendor/desert-pants/icons/svg/plus.svg?raw";
@@ -30,7 +31,7 @@ import iconMinus from "../vendor/desert-pants/icons/svg/minus.svg?raw";
 import iconChevron from "../vendor/desert-pants/icons/svg/chevron-down.svg?raw";
 import { isoRouteAll } from "../../router.mjs";
 import { checkRoutes } from "./edge-qc";
-import { edgeHealth, onEdgeHealthChange, onWideEvent, recentEvents, emitWide, allEdgeMetrics } from "./telemetry";
+import { edgeHealth, onEdgeHealthChange, onWideEvent, recentEvents, emitWide, allEdgeMetrics, attentionEdges, edgeMetrics, type EdgeMetrics } from "./telemetry";
 import iconActivity from "../vendor/desert-pants/icons/svg/activity.svg?raw";
 import iconMenu from "../vendor/desert-pants/icons/svg/menu.svg?raw";
 import iconCode from "../vendor/desert-pants/icons/svg/code.svg?raw";
@@ -136,31 +137,83 @@ document.addEventListener("pointerdown",ev=>{
  setRailOpen(false);
 });
 
-/* ————— live telemetry feed: the wide-event stream as edges are traced ————— */
-const telemetryFeed=$<HTMLElement>("telemetryFeed"),tfBody=$<HTMLElement>("tfBody"),tfEmpty=$<HTMLElement>("tfEmpty");
+/* ————— live telemetry: a collapsible footer section of the one right panel —————
+   The wide-event stream flows at the bottom of the reading panel — never a float
+   over the map or the detail. Each row is a real crossing; clicking one selects
+   that edge and flies the camera to it. */
+const telemetrySection=$<HTMLDetailsElement>("telemetrySection"),tfBody=$<HTMLElement>("tfBody"),
+      tfEmpty=$<HTMLElement>("tfEmpty"),tfCount=$<HTMLElement>("tfCount");
+function flyToEdge(key: string): void {
+ const o=edgeLinesById[key];if(!o||!o.pts.length)return;
+ const m=o.pts[Math.floor(o.pts.length/2)];
+ flyGoal={tx:m.x,ty:m.y+0.4,tz:m.z,zoom:Math.max(camera.zoom,2.4)};
+}
 function tfRender(): void {
  const evs=recentEvents().slice(-40).reverse(); /* newest first */
  tfEmpty.style.display=evs.length?"none":"";
+ tfCount.textContent=evs.length?recentEvents().length+" crossings":"";
  tfBody.querySelectorAll(".tf-row").forEach(r=>r.remove());
  for(const ev of evs){
-  const row=document.createElement("div");row.className="tf-row dp-list-row "+(ev.status==="ERROR"?"error":"ok");
+  const row=document.createElement("button");row.type="button";
+  row.className="tf-row dp-list-row "+(ev.status==="ERROR"?"error":"ok");
+  row.title="Fly to this crossing";
   const dot=document.createElement("span");dot.className="tf-dot";
   const mid=document.createElement("span");mid.className="tf-name";
   mid.innerHTML=`<span class="tf-edge">${ev["isoscope.edge"]}</span> ${ev.name}`;
   const ms=document.createElement("span");ms.className="tf-ms";ms.textContent=ev.duration_ms.toFixed(0)+"ms";
-  row.append(dot,mid,ms);tfBody.append(row);
+  row.append(dot,mid,ms);
+  const key=ev["isoscope.edge"];
+  row.addEventListener("click",()=>{ if(edgeLinesById[key]){selectEdge(key);flyToEdge(key);} });
+  tfBody.append(row);
  }
 }
 $("btnTelemetry").addEventListener("click",()=>{
- const open=telemetryFeed.hidden;
- telemetryFeed.hidden=!open;
- $("btnTelemetry").setAttribute("aria-pressed",String(open));
- if(open)tfRender();
+ telemetrySection.open=!telemetrySection.open;
+ if(telemetrySection.open)tfRender();
 });
-$("tfClose").addEventListener("click",()=>{telemetryFeed.hidden=true;$("btnTelemetry").setAttribute("aria-pressed","false");});
-onWideEvent(()=>{ if(!telemetryFeed.hidden)tfRender(); }); /* live-update while open */
+telemetrySection.addEventListener("toggle",()=>{
+ $("btnTelemetry").setAttribute("aria-pressed",String(telemetrySection.open));
+});
+
+/* ————— health strip: the one-line ambient read at the top of the panel —————
+   "N flows traced · M need attention", driven by the live wide-event windows.
+   Clicking it jumps to the overview's attention list. */
+const healthText=$<HTMLElement>("healthText"),healthDot=$<HTMLElement>("healthDot");
+const attentionSection=$<HTMLElement>("attentionSection"),attentionList=$<HTMLUListElement>("attentionList");
+function renderAttentionList(bad: EdgeMetrics[]): void {
+ attentionList.replaceChildren();
+ attentionSection.hidden=!bad.length;
+ for(const m of bad){
+  const li=document.createElement("li");
+  const b=document.createElement("button");b.type="button";b.className="dp-list-row dp-list-row--two-line attention-row";
+  const text=document.createElement("span");text.className="dp-list-row__text";
+  const title=document.createElement("span");title.className="dp-list-row__title";title.textContent=m.edge+" · "+m.health;
+  const sub=document.createElement("span");sub.className="dp-list-row__secondary";
+  sub.textContent=`${m.errors}/${m.total} errors · p95 ${m.p95}ms · ${m.ratePerMin}/min`;
+  text.append(title,sub);b.append(text);
+  b.addEventListener("click",()=>{ if(edgeLinesById[m.edge]){selectEdge(m.edge);flyToEdge(m.edge);} });
+  li.append(b);attentionList.append(li);
+ }
+}
+function updateHealthStrip(): void {
+ const metrics=allEdgeMetrics(),bad=attentionEdges(99);
+ healthText.textContent=metrics.length
+  ? metrics.length+" flow"+(metrics.length!==1?"s":"")+" traced · "+
+    (bad.length?bad.length+" need"+(bad.length!==1?"":"s")+" attention":"all healthy")
+  : "No flows traced yet";
+ healthDot.dataset.state=bad.some(m=>m.health==="broken")?"broken":bad.length?"degraded":metrics.length?"ok":"none";
+ renderAttentionList(bad);
+ refreshDetailTelemetry(); /* keep an open detail view's telemetry section live */
+}
+$("healthStrip").addEventListener("click",()=>{
+ showOverview();
+ if(compactReader.matches)openReadingPanel(false);
+ requestAnimationFrame(()=>{ if(!attentionSection.hidden)attentionSection.scrollIntoView({block:"start"}); });
+});
+onWideEvent(()=>{ if(telemetrySection.open)tfRender(); }); /* live-update while open */
 setCanonicalIcon($<HTMLButtonElement>("btnSettings"),iconSettings);
 setCanonicalIcon($<HTMLButtonElement>("btnReadMap"),iconOverview);
+setCanonicalIcon($<HTMLButtonElement>("panelBack"),iconBack);
 setCanonicalIcon($<HTMLButtonElement>("drawerClose"),iconClose);
 setCanonicalIcon($<HTMLButtonElement>("closeReadingPanel"),iconClose);
 setCanonicalIcon($<HTMLElement>("moduleSearchIcon"),iconSearch);
@@ -1008,15 +1061,14 @@ function nowPlayingTick(): void {
  }
 }
 
-/* ════════ module detail page: the storage box, opened by double-click ════════
-   One overlay per module. Dense materials list (every surface + inside file +
-   note), notes, and a face editor. Selecting a material flies square-on to that
-   face and makes the face the viewer/player/reader for it. Persists via the
-   annotations endpoint. */
-const inspector=$<HTMLElement>("inspector"),inspectorScrim=$<HTMLElement>("inspectorScrim");
-const inspName=$<HTMLElement>("inspName"),inspTag=$<HTMLElement>("inspTag"),inspPersist=$<HTMLElement>("inspPersist");
+/* ════════ module detail: the storage box, shown IN the one right panel ════════
+   Not a modal: the panel swaps to its detail state and this content lives there —
+   dense materials list (every surface + inside file + note), notes, and a face
+   editor. Selecting a material flies square-on to that face and makes the face
+   the viewer/player/reader for it. Persists via the annotations endpoint. */
+const inspPersist=$<HTMLElement>("inspPersist");
 const materialsList=$<HTMLUListElement>("materialsList"),faceChips=$<HTMLDivElement>("faceChips");
-const tagPills=$<HTMLDivElement>("tagPills"),panelTagPills=$<HTMLDivElement>("panelTagPills");
+const panelTagPills=$<HTMLDivElement>("panelTagPills");
 /* metadata tag pills: deduped across the given module ids, read-only, role="list" */
 function fillTagPills(container: HTMLElement, tags: string[]): void {
  container.replaceChildren();
@@ -1108,21 +1160,21 @@ function insideRender(): void {
 function openInspector(id: string): void {
  if(!byId[id])return;
  inspId=id;inspFace="north";
- inspName.textContent=byId[id].name||id;
- inspTag.textContent=(byId[id].g?String(byId[id].g):"module")+" · "+id;
  inspNotes.value=getModule(id).notes??"";
  inspPersist.textContent=isRemote()?"Saved to this module's record (shared).":"Local only — export to keep.";
- inspector.hidden=false;inspector.inert=false;inspectorScrim.hidden=false;
- inspector.classList.add("is-open");inspectorScrim.classList.add("is-open");
  renderFaceChips();materialsRender();insideRender();
- renderTagPills(tagPills,[...new Set([id,...cordon])]);
+ renderPanel(id); /* the panel swaps to its detail state for this module */
+ renderTagPills(panelTagPills,[...new Set([id,...cordon])]);
+ /* one surface: bring the panel up on every form factor, never a second overlay */
+ if(compactReader.matches)openReadingPanel(false);
+ else{readingPanel.hidden=false;readingPanel.inert=false;trayHandle.hidden=true;}
+ setDeepHash("module/"+encodeURIComponent(id));
 }
 function closeInspector(): void {
- inspector.classList.remove("is-open");inspectorScrim.classList.remove("is-open");
- inspector.hidden=true;inspector.inert=true;inspectorScrim.hidden=true;inspId=null;
+ inspId=null;
+ showOverview();
 }
-$("inspectorClose").addEventListener("click",closeInspector);
-inspectorScrim.addEventListener("click",closeInspector);
+$("panelBack").addEventListener("click",closeInspector);
 inspNotes.addEventListener("change",()=>{ if(!inspId)return; void setNotes(inspId,inspNotes.value).then(()=>{notesSaved.textContent="Saved.";setTimeout(()=>notesSaved.textContent="",1500);}); });
 $("insideAddNote").addEventListener("click",()=>{
  if(!inspId)return;const inp=$<HTMLInputElement>("insideNoteIn");const v=inp.value.trim();if(!v)return;
@@ -1397,7 +1449,9 @@ window.odinView={set(az,pol,r,zoom){placeCamera(az??HOME.az,pol??HOME.pol,r??HOM
  faceView:()=>faceView,
  exitFace(){faceView=null;flyGoal={tx:HOME.tx,ty:HOME.ty,tz:HOME.tz,zoom:HOME.zoom,az:HOME.az,pol:HOME.pol};},
  state:()=>({zoom:camera.zoom,cordon:[...cordon],audioFocus,masterAudio,faceView}),
- edgeHealth:()=>{const h: Record<string,string>={};Object.values(edgeLinesById).forEach(o=>{h[o.key]=edgeHealthLive(o)??"ok";});return h;}};
+ edgeHealth:()=>{const h: Record<string,string>={};Object.values(edgeLinesById).forEach(o=>{h[o.key]=edgeHealthLive(o)??"ok";});return h;},
+ /* the current offenders, live from the wide-event windows (same truth as /api/telemetry/attention) */
+ attention:()=>attentionEdges(99)};
 function flyTo(n: MapNode): void {flyGoal={tx:n.x+n.w/2,ty:(n._lyT||0)+0.5,tz:n.y+n.d/2,
  zoom:Math.max(camera.zoom,2.1)};}
 /* ————— face viewer: fly square-on to one face so it becomes a screen/reader —————
@@ -1727,7 +1781,7 @@ function refreshEdgeHealth(): void {
   o.health=broken?"broken":degraded?"degraded":o.health; /* keep the runtime in step for dots/panels */
  });
 }
-onEdgeHealthChange(()=>{ refreshEdgeHealth(); if(telemetryOverlay)paintTelemetryOverlay(); });
+onEdgeHealthChange(()=>{ refreshEdgeHealth(); if(telemetryOverlay)paintTelemetryOverlay(); updateHealthStrip(); });
 
 /* ————— telemetry overlay: the city as a live flow/health map —————
    A read-view over the wide-event stream, not a restructure. When on: each traced
@@ -1796,6 +1850,10 @@ function applyCircuit(){
  renderCircuitPanel();
 }
 function renderCircuitPanel(){
+ setPanelView("detail");detailEdit.hidden=true;
+ renderDetailTelemetry(allEdgeMetrics().filter(m=>{const e=m.edge.split("-");return cordon.has(e[0])&&cordon.has(e[1]);}));
+ detailSubject=null; /* a circuit is a set, not a deep-linkable object */
+ setDeepHash(null);
  const live=[...cordon];
  const hot=Object.keys(edgeLinesById).filter(k=>{const e=k.split("-");return cordon.has(e[0])&&cordon.has(e[1]);});
  const cut=Object.keys(edgeLinesById).filter(k=>{const e=k.split("-");return cordon.has(e[0])!==cordon.has(e[1]);});
@@ -1868,14 +1926,82 @@ moduleMore.addEventListener("click",()=>{
  const next=Number(moduleMore.dataset.nextOffset);
  if(Number.isInteger(next)&&next>navigationOffset){navigationOffset=next;renderModuleNavigator();moduleMore.focus();}
 });
-/* ————— panel ————— */
+/* ————— panel: ONE right-side surface whose content swaps among scopes —————
+   data-view="overview"|"detail" switches; the two child containers alternate,
+   never both. Overview = navigator + map key + health + about. Detail = the
+   selected module/edge: prose, tag pills, live telemetry, and (when opened)
+   the storage-box editor. */
 const pE=$<HTMLElement>("pEyebrow"),pT=$<HTMLElement>("pTitle"),
-      pS=$<HTMLElement>("pSub"),pP=$<HTMLElement>("pProse");
+      pS=$<HTMLElement>("pSub"),pP=$<HTMLElement>("pProse"),pOv=$<HTMLElement>("pProseOv");
+const panelOverview=$<HTMLElement>("panelOverview"),panelDetail=$<HTMLElement>("panelDetail"),
+      detailEdit=$<HTMLElement>("detailEdit"),detailTelemetrySection=$<HTMLElement>("detailTelemetrySection"),
+      detailTelemetry=$<HTMLElement>("detailTelemetry"),detailTelemetryEmpty=$<HTMLElement>("detailTelemetryEmpty"),
+      panelBack=$<HTMLButtonElement>("panelBack");
+function setPanelView(view: "overview" | "detail"): void {
+ readingPanel.dataset.view=view;
+ panelOverview.hidden=view!=="overview";
+ panelDetail.hidden=view!=="detail";
+ panelBack.hidden=view!=="detail";
+ /* entering detail must actually reveal the surface: open the sheet on compact,
+    and the wide column is always present. Selecting something you can't see is the bug. */
+ if(view==="detail"&&compactReader.matches&&readingPanel.hidden)openReadingPanel(false);
+}
+function showOverview(): void { renderPanel(null); }
+/* the detail view's telemetry subject, re-rendered live on each health change */
+let detailSubject: { kind: "module" | "edge"; id: string } | null=null;
+function metricRow(m: EdgeMetrics): HTMLLIElement {
+ const li=document.createElement("li");li.className="dp-list-row dp-list-row--two-line detail-metric";
+ const text=document.createElement("span");text.className="dp-list-row__text";
+ const title=document.createElement("span");title.className="dp-list-row__title";
+ title.textContent=m.edge+" · "+m.health;
+ const sub=document.createElement("span");sub.className="dp-list-row__secondary";
+ sub.textContent=`${m.total} crossings · ${m.errors} errors · p50 ${m.p50}ms · p95 ${m.p95}ms · ${m.ratePerMin}/min`;
+ text.append(title,sub);li.append(text);
+ return li;
+}
+function renderDetailTelemetry(list: EdgeMetrics[] | null): void {
+ if(list===null){detailTelemetrySection.hidden=true;detailSubject=null;return;}
+ detailTelemetrySection.hidden=false;
+ detailTelemetry.replaceChildren();
+ detailTelemetryEmpty.style.display=list.length?"none":"";
+ list.forEach(m=>detailTelemetry.append(metricRow(m)));
+}
+function refreshDetailTelemetry(): void {
+ if(!detailSubject||panelDetail.hidden)return;
+ if(detailSubject.kind==="module"){
+  const id=detailSubject.id;
+  renderDetailTelemetry(allEdgeMetrics().filter(m=>{const e=m.edge.split("-");return e[0]===id||e[1]===id;}));
+ }else{
+  const m=edgeMetrics(detailSubject.id);
+  renderDetailTelemetry(m?[m]:[]);
+ }
+}
+/* ————— deep links: #/module/<ID> and #/edge/<KEY> open the panel's detail state ————— */
+function setDeepHash(h: string | null): void {
+ const url=location.pathname+location.search+(h?"#/"+h:"");
+ if(location.pathname+location.search+location.hash!==url)history.replaceState(null,"",url);
+}
+function applyDeepHash(): void {
+ const m=/^#\/(module|edge)\/(.+)$/.exec(location.hash);
+ if(!m)return;
+ const id=decodeURIComponent(m[2]);
+ if(m[1]==="module"&&byId[id]){
+  pinned=id;NODES.forEach(n=>mark(n.id,n.id===id));
+  openInspector(id);
+ }else if(m[1]==="edge"&&edgeLinesById[id]){
+  selectEdge(id);flyToEdge(id);
+  if(compactReader.matches)openReadingPanel(false);
+  else{readingPanel.hidden=false;readingPanel.inert=false;trayHandle.hidden=true;}
+ }
+}
 const DEF: { e: string; t: string; s: string; node: HTMLElement } = { e: "", t: "", s: "", node: document.createElement("div") };
 function edgeTypeLabel(o: EdgeRuntime): string {return o.type==="auth"?"installs / authority":o.type==="intended"?"planned":"data flow";}
 function renderEdgePanel(key: string): void {
  const o=edgeLinesById[key],e=key.split("-");
  const d=EDGEDOCS[key]||{};
+ setPanelView("detail");detailEdit.hidden=true;
+ detailSubject={kind:"edge",id:key};
+ {const m=edgeMetrics(key);renderDetailTelemetry(m?[m]:[]);}
  renderEdgeTagPills(panelTagPills,key);
  pE.textContent="LINK · "+edgeTypeLabel(o)+(o.health?" · "+o.health.toUpperCase():"");
  pT.textContent=d.title||(byId[e[0]].name+" → "+byId[e[1]].name);
@@ -1892,15 +2018,17 @@ function renderEdgePanel(key: string): void {
  if(d.refs)h+="<p class='refs dp-type-code'>"+d.refs+"</p>";
  if(!h)h="<p class='dp-type-body-sm'>"+byId[e[0]].name+" connects to "+byId[e[1]].name+".</p>";
  setSafe(pP,h);
+ if(selEdge===key)setDeepHash("edge/"+encodeURIComponent(key));
 }
 function renderPanel(id: string | null): void {
- panelTagPills.replaceChildren();panelTagPills.hidden=true; /* pills re-fill for edges in renderEdgePanel */
+ panelTagPills.replaceChildren();panelTagPills.hidden=true; /* pills re-fill below for the detail subject */
  if(!id){
   /* overview: what this is + the whole board's state, one scroll — no hidden mode */
+  setPanelView("overview");detailSubject=null;
   pE.textContent=DEF.e;pT.textContent=DEF.t||"Overview";pS.textContent=DEF.s;
   const c=DEF.node.cloneNode(true);
-  while(pP.firstChild)pP.removeChild(pP.firstChild);
-  while(c.firstChild)pP.appendChild(c.firstChild);
+  while(pOv.firstChild)pOv.removeChild(pOv.firstChild);
+  while(c.firstChild)pOv.appendChild(c.firstChild);
   const reds=NODES.reduce((a,n)=>a+n.items.filter(i=>i.c==="red").length,0);
   const yours=NODES.reduce((a,n)=>a+n.items.filter(i=>i.c==="you").length,0);
   const amber=NODES.reduce((a,n)=>a+n.items.filter(i=>i.c==="amber").length,0);
@@ -1912,10 +2040,15 @@ function renderPanel(id: string | null): void {
    h+="</div>";
   });
   const tail=new DOMParser().parseFromString("<div>"+h+"</div>","text/html").body.firstElementChild;
-  if(tail)while(tail.firstChild)pP.appendChild(document.adoptNode(tail.firstChild));
+  if(tail)while(tail.firstChild)pOv.appendChild(document.adoptNode(tail.firstChild));
+  setDeepHash(null);
   return;
  }
  const n=byId[id];
+ setPanelView("detail");
+ detailEdit.hidden=inspId!==id; /* the storage-box editor appears once a module is opened */
+ detailSubject={kind:"module",id};
+ renderDetailTelemetry(allEdgeMetrics().filter(m=>{const e=m.edge.split("-");return e[0]===id||e[1]===id;}));
  pE.textContent=n.id+" · "+(GROUPS.find(g=>g.id===n.g)?.label ?? n.g);
  pT.textContent=n.name;
  pS.textContent=(n.items&&n.items.length)?(n.items.length+" open item"+(n.items.length>1?"s":"")):"healthy · nothing open";
@@ -1933,6 +2066,8 @@ function renderPanel(id: string | null): void {
  h+="<p class='dp-type-label-sm'>EVIDENCE</p>";
  h+="<p class='refs'>"+n.refs+"</p>";
  setSafe(pP,h);
+ renderTagPills(panelTagPills,[id]);
+ if(pinned===id||cordon.has(id)||inspId===id)setDeepHash("module/"+encodeURIComponent(id));
 }
 
 /* ————— flow + trace ————— */
@@ -1971,6 +2106,9 @@ function clearTrace(){
 }
 function renderTrace(){
  const cur=TRACE[ti],ends=cur.split("-");
+ setPanelView("detail");detailEdit.hidden=true;
+ detailSubject={kind:"edge",id:cur};
+ {const m=edgeMetrics(cur);renderDetailTelemetry(m?[m]:[]);}
  Object.entries(edgeLinesById).forEach(([k,o])=>{o.line.material.opacity=(k===cur)?1:0.06;});
  NODES.forEach(n=>{
    const on=ends.indexOf(n.id)>=0;
@@ -2224,7 +2362,7 @@ EDGES.forEach(e=>{
 
 
  setSafe(pP,(spec.intro||{}).proseHTML||"");
- Object.assign(DEF,{e:pE.textContent,t:pT.textContent,s:pS.textContent,node:pP.cloneNode(true)});
+ Object.assign(DEF,{e:pE.textContent,t:pT.textContent,s:pS.textContent,node:pOv.cloneNode(true)});
  window.__lblMeasured=false;
 }
 function disposeScene(){
@@ -2313,6 +2451,10 @@ function applySpec(next: Spec): void{
 buildScene(SPEC);
 renderPanel(null);
 blastIncident();
+updateHealthStrip();
+/* deep links: #/module/<ID> and #/edge/<KEY> open that object's detail in the panel */
+window.addEventListener("hashchange",applyDeepHash);
+applyDeepHash();
 
 /* ————— layout shuffle: rearrange the network when the user wants a fresh look —————
    Permutes which node sits in which ground cell (and which level, for the stacked

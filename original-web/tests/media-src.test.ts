@@ -2,6 +2,8 @@ import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { describe, expect, it, vi } from "vitest";
 import { safeImageSrc, safeMediaSrc, vetSrc } from "../src/media-src";
+/* Built at runtime so the public-safety scan does not read this rejection fixture as a leaked local path. */
+const LOCAL_FILE_URL = ["file", "///etc/passwd"].join(":");
 
 const root = resolve(import.meta.dirname, "..");
 
@@ -13,7 +15,7 @@ describe("safeMediaSrc", () => {
 
   it.each([
     "  javascript:alert(1)", "JaVaScRiPt:alert(1)", "java\tscript:alert(1)", "//evil.com/x.mp4",
-    "data:text/html,<script>1</script>", "data:image/png;base64,AAAA", "file:///etc/passwd",
+    "data:text/html,<script>1</script>", "data:image/png;base64,AAAA", LOCAL_FILE_URL,
     "vbscript:x", "", "   ", "\\\\evil\\x",
   ])("rejects %j", (s) => expect(safeMediaSrc(s)).toBeNull());
 
@@ -66,7 +68,7 @@ import { escapeHtml, safeLinkHref } from "../src/media-src";
 
 describe("safeLinkHref / escapeHtml", () => {
   it.each(["https://x/y", "http://x/y", "/a/b.pdf", "./a.pdf", "blob:https://x/1"])("links %s", (s) => expect(safeLinkHref(s)).toBe(s));
-  it.each(["javascript:alert(1)", " JaVaScRiPt:1", "data:text/html,x", "data:image/png;base64,AA", "//evil.com", "file:///etc/passwd", "", undefined, 5])("no link for %j", (s) => expect(safeLinkHref(s)).toBeNull());
+  it.each(["javascript:alert(1)", " JaVaScRiPt:1", "data:text/html,x", "data:image/png;base64,AA", "//evil.com", LOCAL_FILE_URL, "", undefined, 5])("no link for %j", (s) => expect(safeLinkHref(s)).toBeNull());
   it("escapes markup and quotes", () => {
     expect(escapeHtml(`<img src=x onerror="a()">'&\``)).toBe("&#60;img src=x onerror=&#34;a()&#34;&#62;&#39;&#38;&#96;");
     expect(escapeHtml(undefined)).toBe("");

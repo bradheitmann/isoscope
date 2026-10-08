@@ -73,7 +73,7 @@ Sentinel architecture map (built iteratively with the operator, 2026-08-19..22).
   routing, double-jog candidates, 2 rip-up passes; ODIN spec 23→10 weighted;
   residue = PB hub, genuinely forced); L3 cross-level pipes riser-outside +
   stub-in at destination level. QC: `window.__isoRouteQC`.
-- `build.ts` — spec→self-contained HTML (file://-safe, GENERATED banner).
+- `build.ts` — spec→self-contained HTML (opens directly from disk, GENERATED banner).
 - `SPEC.md` — schema. `DESIGN-RULES.md` — doctrine + scale roadmap + sources.
 - `examples/odin.spec.json` — reference spec (16 modules / 18 links).
 

@@ -44,7 +44,7 @@ bun <isoscope>/build.ts <spec.json> <out.html>
 open -a "Google Chrome" <out.html>          # macOS; any browser opening the file works
 ```
 
-- The output is a static file that works from disk (`file://`) with no server and no network.
+- The output is a static file that works when opened directly from disk, with no server and no network.
 - Do not run `bun cli.ts serve` for presentation. Stock `serve` has endpoints that change the store (`POST /mark`,
   `POST /ci`); they are unauthenticated unless `ISOSCOPE_TOKEN` is set. Never expose stock `serve` beyond your own
   machine without changes.

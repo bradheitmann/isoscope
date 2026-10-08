@@ -1,5 +1,6 @@
 import { createHash } from "node:crypto";
-import { readdirSync, readFileSync } from "node:fs";
+import { execFileSync } from "node:child_process";
+import { readFileSync, rmSync, writeFileSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { describe, expect, it } from "vitest";
 
@@ -8,16 +9,15 @@ const MANIFEST = "CANONICAL-MANIFEST.sha256";
 // Meta files that describe the vendor tree rather than being pinned upstream bytes.
 const META_FILES = [MANIFEST, "PROVENANCE.md"];
 
-// readdir returns the on-disk spelling, so these comparisons are case-exact even on macOS.
-function walk(dir: string, prefix = ""): string[] {
-  const out: string[] = [];
-  for (const entry of readdirSync(dir, { withFileTypes: true })) {
-    const rel = prefix === "" ? entry.name : `${prefix}/${entry.name}`;
-    if (entry.isDirectory()) out.push(...walk(join(dir, entry.name), rel));
-    else out.push(rel);
-  }
-  return out.sort();
+// The vendor tree is enumerated from git, not the disk: tracked files are the contract, and untracked
+// non-ignored files are strays that must fail. Ignored files (a local .DS_Store) are neither.
+// git prints the index spelling, so comparisons stay case-exact even on macOS.
+function gitList(...args: string[]): string[] {
+  const out = execFileSync("git", ["ls-files", "-z", ...args], { cwd: vendorRoot, encoding: "utf8" });
+  return out.split("\0").filter((p) => p !== "").sort();
 }
+const trackedFiles = (): string[] => gitList();
+const strayFiles = (): string[] => gitList("--others", "--exclude-standard");
 
 function parseManifest(text: string): Map<string, string> {
   const map = new Map<string, string>();
@@ -32,7 +32,7 @@ function parseManifest(text: string): Map<string, string> {
 }
 
 describe("vendor/desert-pants manifest", () => {
-  const files = walk(vendorRoot);
+  const files = trackedFiles();
   const manifest = parseManifest(readFileSync(join(vendorRoot, MANIFEST), "utf8"));
 
   it("lists every vendored file with exact case (meta files named explicitly)", () => {
@@ -52,6 +52,26 @@ describe("vendor/desert-pants manifest", () => {
       .filter(([f, sha]) => createHash("sha256").update(readFileSync(join(vendorRoot, f))).digest("hex") !== sha)
       .map(([f]) => f);
     expect(mismatched).toEqual([]);
+  });
+
+  it("has no untracked, non-ignored stray file under the vendor tree", () => {
+    expect(strayFiles()).toEqual([]);
+  });
+
+  it("negative control: an untracked stray file is reported; an ignored .DS_Store is not", () => {
+    const stray = join(vendorRoot, "STRAY-NEGATIVE-CONTROL.txt");
+    const ds = join(vendorRoot, ".DS_Store");
+    writeFileSync(stray, "x");
+    writeFileSync(ds, "x");
+    try {
+      const found = strayFiles();
+      expect(found).toContain("STRAY-NEGATIVE-CONTROL.txt");
+      expect(found).not.toContain(".DS_Store");
+      expect(trackedFiles()).not.toContain(".DS_Store");
+    } finally {
+      rmSync(stray, { force: true });
+      rmSync(ds, { force: true });
+    }
   });
 
   it("meta files exist", () => {

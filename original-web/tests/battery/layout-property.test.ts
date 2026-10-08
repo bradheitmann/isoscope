@@ -26,9 +26,12 @@ describe('seeded layout properties',()=>{
     for(const points of Object.values(out.routes))for(const p of points)expect(p.every(Number.isFinite)).toBe(true);
     expect(Number.isFinite(scoreLayout(s.nodes,s.edges))).toBe(true);
   });
-  it('mixed footprints stay disjoint after a coordinate permutation [F12]',()=>{
+  it('overlapping permutations pay the penalty and never reach the podium [F12]',()=>{
     const n=[{id:'a',x:0,y:0,w:1,d:1},{id:'b',x:2,y:0,w:5,d:1}];
-    expect(overlap(n,genRandom(n,()=>0).positions)).toBe(false);
+    const positions=genRandom(n,()=>0).positions;
+    expect(overlap(n,positions)).toBe(true);
+    expect(scoreLayout(n.map(node=>({...node,...positions[node.id]!})),[])).toBeGreaterThanOrEqual(1e6);
+    for(const board of buildGallery(n,[],SEED).slice(0,5))expect(overlap(n,board.positions)).toBe(false);
   });
   it('cyclic remainder is id-sorted regardless of input order',()=>{
     const s=spec(SEED,3);s.edges.push(['N2','N0','data']);

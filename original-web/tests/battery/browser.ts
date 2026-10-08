@@ -1,5 +1,5 @@
 /* Private-port CDP battery. Run from original-web: bun tests/battery/browser.ts --out=/absolute/results.json */
-import { readFileSync, writeFileSync, mkdirSync } from 'node:fs';
+import { writeFileSync, mkdirSync } from 'node:fs';
 import { transpileModule, ScriptTarget } from 'typescript';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -7,9 +7,9 @@ import { performance } from 'node:perf_hooks';
 import { Session } from '../qa/cdp';
 import { installCleanupHandlers, killAll, launchChrome, launchVite, ownedPids, saveRuntimeLog } from './runtime';
 import { SEED, spec, type TestSpec } from './seed';
+import { declarations, rendererIcons } from './renderer-declarations';
 const appRoot=resolve(dirname(fileURLToPath(import.meta.url)),'../..');
-const rendererSource=readFileSync(join(appRoot,'src/original-renderer.ts'),'utf8');
-const iconSource=transpileModule(rendererSource.slice(rendererSource.indexOf('function setCanonicalIcon('),rendererSource.indexOf('setCanonicalIcon($')), {compilerOptions:{target:ScriptTarget.ES2022,strict:true}}).outputText;
+const iconSource=transpileModule(declarations('setCanonicalIcon'), {compilerOptions:{target:ScriptTarget.ES2022,strict:true}}).outputText;
 const out=process.argv.find(a=>a.startsWith('--out='))?.slice(6)??join(appRoot,'tests/qa/out/battery-browser.json');
 interface Result { name:string; category:string; status:'pass'|'fail'; detail:string; durationMs:number }
 const results:Result[]=[];
@@ -32,7 +32,9 @@ try{
   await page.send('Network.enable');await page.send('Network.setBlockedURLs',{urls:['*.mp4','*.mp3','*.webm','*.wav','*.m4a','*.mov']});
   await page.setReducedMotion(true);await page.setViewport(1440,900);
   await check('regression','boot and SVG points icon registration',async()=>{await boot();assert(page!.exceptions.length===0,page!.exceptions.join('\n'));assert((await state()).nodes.length>0,'no nodes');assert(await page!.eval('document.querySelectorAll("#mapControls svg").length > 5'),'rail icons missing');});
-  await check('regression','SVG polyline points attribute does not crash registration',async()=>{assert(await page!.eval(`(()=>{${iconSource};const button=document.createElement('button');setCanonicalIcon(button,'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><polyline points="1 2 3 4"/></svg>');return button.querySelector('polyline').getAttribute('points')==='1 2 3 4';})()`),'points lost');});
+  await check('regression','SVG polyline points attribute is rejected explicitly',async()=>{assert(await page!.eval(`(()=>{${iconSource};try{setCanonicalIcon(document.createElement('button'),'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><polyline points="1 2 3 4"/></svg>');return false;}catch(e){return e.message==='Unsupported icon attribute points';}})()`),'points rejection contract changed');});
+  assert(rendererIcons.length>0,'renderer icon corpus is empty');
+  for(const icon of rendererIcons)await check('regression',`renderer icon validates: ${icon.path}`,async()=>{assert(await page!.eval(`(()=>{${iconSource};const button=document.createElement('button');setCanonicalIcon(button,${JSON.stringify(icon.svg)});return !!button.querySelector('svg');})()`),'renderer icon did not register');});
   for(const svg of ['<svg xmlns="http://www.w3.org/2000/svg" onload="window.__batteryXss=4"/>','<svg xmlns="http://www.w3.org/2000/svg"><script>window.__batteryXss=4</script></svg>','<svg xmlns="http://www.w3.org/2000/svg"><image href="javascript:alert(1)"/></svg>'])await check('security',`unsafe SVG refused: ${svg}`,async()=>{assert(await page!.eval(`(()=>{${iconSource};try{setCanonicalIcon(document.createElement('button'),${JSON.stringify(svg)});return false;}catch{return true;}})()`),'unsafe SVG accepted');});
   const original=(await state()).nodes.map(n=>n.id);
   await check('regression','SPEC clone survives three codebase round-trips',async()=>{for(let i=0;i<3;i++){await click('btnCodebase');assert(JSON.stringify((await state()).nodes.map(n=>n.id))!==JSON.stringify(original),'codebase did not change');await click('btnCodebase');assert(JSON.stringify((await state()).nodes.map(n=>n.id))===JSON.stringify(original),'curated spec corrupted');}});

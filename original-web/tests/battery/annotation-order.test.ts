@@ -8,10 +8,15 @@ describe('annotation persistence initialization and ordering',()=>{
  });
  it('later desired state cannot be overwritten by earlier request [F03]',async()=>{
   vi.resetModules();vi.stubGlobal('localStorage',{setItem(){}});let durable='';const pending:Array<()=>void>=[];
-  vi.stubGlobal('fetch',vi.fn((_url:string,opts:RequestInit)=>new Promise(resolve=>pending.push(()=>{durable=String(opts.body);resolve({ok:true});}))));
+  vi.stubGlobal('fetch',vi.fn((url:string,opts?:RequestInit)=>{
+   if(url==='api/annotations'&&!opts?.method)return Promise.resolve({ok:true,json:async()=>({})});
+   if(opts?.method!=='POST'||!url.startsWith('api/annotations/'))return Promise.resolve({ok:true});
+   return new Promise(resolve=>pending.push(()=>{durable=String(opts.body);resolve({ok:true});}));
+  }));
   const a=await import('../../src/annotations');const first=a.setNotes('A','old');const second=a.setNotes('A','new');
   // Flush the newer request first if writes are parallel. A serialized implementation submits only the first.
-  if(pending.length===2){pending[1]!();pending[0]!();}else{pending[0]!();await first;pending[1]!();}
+  await vi.waitFor(()=>expect(pending.length).toBeGreaterThan(0));
+  if(pending.length===2){pending[1]!();pending[0]!();}else{pending[0]!();await first;await vi.waitFor(()=>expect(pending.length).toBe(2));pending[1]!();}
   await Promise.all([first,second]);expect(JSON.parse(durable)).toEqual(a.getModule('A'));
  });
 });

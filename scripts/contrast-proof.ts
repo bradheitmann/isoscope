@@ -5,20 +5,24 @@
    callout surfaces). WCAG AA floors: 4.5 text · 3.0 quiet (label id tier).
    Also collects every uncaught exception / console.error during boot and theme
    switching (the "zero JS errors" gate), and screenshots one theme for eyes.
-   Usage: bun scripts/contrast-proof.ts [built.html] [theme-id-to-screenshot]
-   (defaults: /tmp/iso-check.html · tokyo-night → /tmp/iso-contrast-<theme>.png)
+   Usage: bun scripts/contrast-proof.ts <built.html> [theme-id-to-screenshot] [shot.png]
+   (defaults: theme tokyo-night · shot.png ./iso-contrast-<theme>.png)
    Exit 1 if any theme fails or any JS error fired.                            */
+import { chromeProfileDir, fail, requireFile } from "./cli.ts";
 import { spawn } from "child_process";
 import { resolve } from "path";
 
 const CHROME = "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome";
 const PORT = 9335;
-const FILE = "file://" + resolve(Bun.argv[2] ?? "/tmp/iso-check.html");
+const USAGE = "bun scripts/contrast-proof.ts <built.html> [theme-id-to-screenshot] [shot.png]";
+if (!Bun.argv[2]) fail(USAGE, "<built.html> is required");
+const FILE = "file://" + resolve(requireFile(USAGE, "built html", Bun.argv[2]));
 const SHOT = Bun.argv[3] ?? "tokyo-night";
+const SHOT_OUT = Bun.argv[4];
 const jsErrors: string[] = [];
 
 const chrome = spawn(CHROME, ["--headless=new", `--remote-debugging-port=${PORT}`, "--no-first-run",
-  "--user-data-dir=/tmp/isoscope-chrome-contrast", "--remote-allow-origins=*", "about:blank"], { stdio: "ignore" });
+  `--user-data-dir=${chromeProfileDir("contrast")}`, "--remote-allow-origins=*", "about:blank"], { stdio: "ignore" });
 await new Promise(r => setTimeout(r, 1500));
 let msgId = 0;
 const pending = new Map<number, { resolve: (v: any) => void; reject: (e: any) => void }>();
@@ -69,7 +73,7 @@ if (SHOT) {
   await send("Runtime.evaluate", { expression: `document.querySelector('.trow[data-id="${SHOT}"]')?.click(); document.querySelector('.introveil')?.remove(); document.getElementById('drawer')?.classList.add('open');` });
   await new Promise(r => setTimeout(r, 600));
   const shot = await send("Page.captureScreenshot", { format: "png" });
-  shotPath = `/tmp/iso-contrast-${SHOT}.png`; await Bun.write(shotPath, Buffer.from(shot.data, "base64"));
+  shotPath = SHOT_OUT ?? `iso-contrast-${SHOT}.png`; await Bun.write(shotPath, Buffer.from(shot.data, "base64"));
 }
 chrome.kill();
 if (res.exceptionDetails) { console.error(JSON.stringify(res.exceptionDetails, null, 1)); process.exit(2); }

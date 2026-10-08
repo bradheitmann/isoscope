@@ -66,9 +66,9 @@ bun <isoscope>/scripts/shot.ts <out.html> <out.png> 1440 900
 
 The camera loads the page in headless Chrome, removes the intro veil and saves a screenshot. It exits 1 on any
 uncaught exception or `console.error`. Show the operator a map only after a zero-error shot, and look at the shot
-yourself: labels, groups and metric cells should read as intended. The camera uses a fixed debugging port (9336) and a
-fixed Chrome profile (`/tmp/isoscope-chrome-shot`), so run one shot at a time. If your process rules restrict where
-temporary files may go, run a copy of `shot.ts` with only the `--user-data-dir` path changed.
+yourself: labels, groups and metric cells should read as intended. The camera uses a fixed debugging port (9336) with a
+fresh per-run Chrome profile (a temp dir removed on exit), so run one shot at a time because of the port. If your process rules restrict where
+temporary files may go, set `TMPDIR` to an allowed directory.
 
 ## The ask protocol
 

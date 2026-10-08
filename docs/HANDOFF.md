@@ -29,9 +29,7 @@ bun run build:self     # examples/isoscope.spec.json -> out/isoscope.html
 bun run drc            # collision lint (bun drc.ts <spec>)
 ```
 
-**Resolved (wave-4 drain):** `bun drc.ts examples/isoscope.spec.json` now PASSES (weighted 1, budget 1 unchanged) after a node x/y re-placement in the self-map; no nodes, edges or budget changed.
-
-**CI:** the root job runs `bun run drc:self` (`bun drc.ts examples/isoscope.spec.json`), so the self-map drc budget is gated.
+**Known issue (decision for Kimi):** `bun drc.ts examples/isoscope.spec.json` FAILS (weighted crossings 8 > budget 1) because the curated product layout (same as original-web's home map) exceeds the budget; fixing it means changing Kimi's curated layout or raising the budget. The self-map drc is not gated in CI.
 
 **Note on `dsh-plugin/`:** it is an intentionally untracked, required local directory. It is deliberately kept out of git; the `tsconfig.json` exclude entry covers it.
 

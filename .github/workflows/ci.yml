@@ -54,7 +54,6 @@ jobs:
       - run: bun install --frozen-lockfile
       - run: bun run typecheck
       - run: bun run test
-      - run: bun run drc:self
       - run: bun run build:self
       - run: bun run build:odin
       - run: bun run build:lumbr

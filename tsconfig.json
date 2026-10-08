@@ -1,0 +1,14 @@
+{
+  "compilerOptions": {
+    "strict": true,
+    "noEmit": true,
+    "target": "es2022",
+    "module": "esnext",
+    "moduleResolution": "bundler",
+    "allowImportingTsExtensions": true,
+    "skipLibCheck": true,
+    "types": ["bun"]
+  },
+  "include": ["lib.ts", "cli.ts", "mcp.ts", "drc.ts", "okoa.ts", "scripts/*.ts", "tests/*.ts", "types/*.d.ts"],
+  "exclude": ["original-web", "advisory", "dsh-plugin", "node_modules", "out"]
+}

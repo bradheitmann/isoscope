@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /* isoscope builder — inject a spec into the engine template.
    Importable: buildHtml(spec) → html string.  Runnable: build.mjs <spec.json> <out.html> */
-import { readFileSync, writeFileSync } from "fs";
+import { readFileSync, writeFileSync, mkdirSync } from "fs";
 import { dirname, join } from "path";
 import { fileURLToPath } from "url";
 
@@ -22,6 +22,7 @@ if (invokedDirectly) {
   const [, , specPath, outPath] = process.argv;
   if (!specPath || !outPath) { console.error("usage: build.mjs <spec.json> <out.html>"); process.exit(1); }
   const spec = JSON.parse(readFileSync(specPath, "utf8"));
+  mkdirSync(dirname(outPath), { recursive: true });
   writeFileSync(outPath, buildHtml(spec, { specLabel: specPath }));
   console.log(`isoscope: built ${outPath} from ${specPath} · ${spec.nodes.length} modules · ${spec.edges.length} links`);
 }

@@ -134,8 +134,8 @@ export async function navigationContracts(ctx: Ctx): Promise<void> {
 
 interface ViewportProbe {
   iw: number; ih: number; overflowX: number; canvas: [number, number]; wrap: [number, number];
-  controls: Record<string, [number, number, number, number] | null>; labelsTotal: number; labelsOff: number; labelsUnrendered: number;
-  free: [number, number, number, number]; labelsVisible: number; overlaps: number; offWrap: number; minPx: number; minCap: number; zoom: number; target: number[];
+  controls: Record<string, [number, number, number, number] | null>; labelsTotal: number; labelsOff: number; offDetail: string; labelsUnrendered: number;
+  free: [number, number, number, number]; labelsVisible: number; overlaps: number; offWrap: number; minPx: number; minCap: number; onGeometry: number; zoom: number; target: number[];
 }
 
 export async function viewportMatrix(ctx: Ctx): Promise<void> {
@@ -162,14 +162,16 @@ export async function viewportMatrix(ctx: Ctx): Promise<void> {
           g.font = cs.fontWeight + " " + cs.fontSize + " " + cs.fontFamily;
           return { px: parseFloat(cs.fontSize) * k, cap: g.measureText("H").actualBoundingBoxAscent * k };
         });
+        const nb = window.__isoNodeBoxes();
+        const onGeometry = vis.filter(l => { const b = l.getBoundingClientRect(); return Object.entries(nb).some(([id, q]) => "lb-" + id !== l.id && b.left < q[2] - 1 && b.right > q[0] + 1 && b.top < q[3] - 1 && b.bottom > q[1] + 1); }).length;
         const canvas = document.getElementById("gl"), wrap = document.getElementById("canvasWrap");
         return { iw: innerWidth, ih: innerHeight, overflowX: document.documentElement.scrollWidth - innerWidth,
           canvas: [canvas.getBoundingClientRect().width, canvas.getBoundingClientRect().height],
           wrap: [wrap.getBoundingClientRect().width, wrap.getBoundingClientRect().height],
           controls: { btnReset: r("btnReset"), btnReadMap: r("btnReadMap"), btnSettings: r("btnSettings"), railToggle: r("railToggle") },
-          labelsTotal: labels.length, labelsOff: off.length, labelsUnrendered: labels.length - vis.length,
+          labelsTotal: labels.length, labelsOff: off.length, offDetail: off.map(l => l.id + ":" + JSON.stringify(l.getBoundingClientRect())).join(" ; "), labelsUnrendered: labels.length - vis.length,
           free: [free.left, free.top, free.right, free.bottom], labelsVisible: vis.length, overlaps, offWrap,
-          minPx: sizes.length ? Math.min(...sizes.map(x => x.px)) : 0, minCap: sizes.length ? Math.min(...sizes.map(x => x.cap)) : 0,
+          minPx: sizes.length ? Math.min(...sizes.map(x => x.px)) : 0, minCap: sizes.length ? Math.min(...sizes.map(x => x.cap)) : 0, onGeometry,
           zoom: window.__isoSwapState().cam.zoom, target: window.__isoSwapState().cam.t };
       })()`);
       const tag = `${w}x${h}`;
@@ -184,10 +186,12 @@ export async function viewportMatrix(ctx: Ctx): Promise<void> {
       const freeTxt = p.free.map(Math.round).join(",");
       ctx.rec.observe(C, `${tag} home-view labels off-canvas`, `${p.labelsOff}/${p.labelsVisible} visible labels outside the unobstructed canvas rect [${freeTxt}] (left,top,right,bottom); ${p.labelsUnrendered}/${p.labelsTotal} hidden by declutter (not counted) (drain item D6, ruled: fit)`);
       ctx.rec.observe(C, `${tag} home-view label legibility`, `${p.labelsVisible} visible, ${p.overlaps} overlapping pairs, min rendered font ${p.minPx.toFixed(1)}px, min cap height ${p.minCap.toFixed(1)}px, ${p.labelsUnrendered} of ${p.labelsTotal} hidden by declutter; ${p.offWrap} outside the canvas wrap itself; home zoom ${p.zoom.toFixed(3)}, target ${p.target.map(v => v.toFixed(2)).join("/")}`);
+      ctx.rec.observe(C, `${tag} home labels over other nodes' cubes`, `${p.onGeometry}/${p.labelsVisible} visible labels overlap another node's projected cube (edges are not measured); ${p.labelsUnrendered}/${p.labelsTotal} labels hidden by declutter`);
       if (w <= 768) {
-        ctx.rec.check(C, `${tag} home labels inside the unobstructed canvas`, p.labelsOff === 0, `${p.labelsOff} of ${p.labelsVisible} visible labels outside [${freeTxt}]`, "D6");
+        ctx.rec.check(C, `${tag} home labels inside the unobstructed canvas`, p.labelsOff === 0, `${p.labelsOff} of ${p.labelsVisible} visible labels outside [${freeTxt}] ${p.offDetail}`, "D6");
         ctx.rec.check(C, `${tag} home labels do not overlap`, p.overlaps === 0, `${p.overlaps} overlapping pairs among ${p.labelsVisible} visible labels`, "D6");
         ctx.rec.check(C, `${tag} home label font >= 9px`, p.minPx >= 8.95, `min rendered font ${p.minPx.toFixed(2)}px, min cap height ${p.minCap.toFixed(2)}px`, "D6");
+        ctx.rec.check(C, `${tag} home label cap height >= 9px`, p.minCap >= 8.95, `min cap height ${p.minCap.toFixed(2)}px, min rendered font ${p.minPx.toFixed(2)}px (owner requirement: cap height about 9px; wide viewports keep their long-standing 8px cap and are not asserted)`, "D6");
       }
       ctx.rec.check(C, `${tag} no uncaught exceptions`, s.exceptions.length === 0, s.exceptions.slice(0, 2).join("; ") || "none");
     });

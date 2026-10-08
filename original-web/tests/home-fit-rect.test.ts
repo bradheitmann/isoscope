@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { centerShift, fitHomeZoom, labelScale, legibleFloor, MIN_LABEL_PX, unobstructedRect, type HomeLabel } from "../src/home-fit";
+import { centerShift, fitHomeZoom, labelScale, legibleFloor, legibleScale, MAX_LEGIBLE_SCALE, MIN_CAP_PX, MIN_LABEL_PX, planHomeFit, unobstructedRect, type HomeLabel } from "../src/home-fit";
 
 describe("unobstructedRect", () => {
   const canvas = { left: 0, top: 57, right: 390, bottom: 844 };
@@ -59,5 +59,53 @@ describe("centerShift", () => {
   });
   it("handles an empty scene", () => {
     expect(centerShift([], b, 1, 1)).toEqual({ dx: 0, dy: 0 });
+  });
+});
+
+describe("legibleScale (cap-height floor)", () => {
+  it("enlarges a label whose cap height is under the minimum, never shrinks one above it", () => {
+    const s = legibleScale(11, 0.73);
+    expect(s).toBeGreaterThan(1);
+    expect(11 * s * 0.73).toBeGreaterThanOrEqual(MIN_CAP_PX - 1e-9);
+    expect(legibleScale(20, 0.73) * 20 * 0.73).toBeGreaterThanOrEqual(MIN_CAP_PX - 1e-9);
+  });
+  it("is bounded and tolerates bad input", () => {
+    expect(legibleScale(2, 0.7)).toBe(MAX_LEGIBLE_SCALE);
+    expect(legibleScale(0, 0.7)).toBe(1);
+    expect(legibleScale(11, 0)).toBeCloseTo(MIN_LABEL_PX / 11);
+  });
+  it("labelScale honours a floor above 1 but is unchanged for floors at or under 1", () => {
+    expect(labelScale(0.3, 1.12, 1.2)).toBe(1.2);
+    expect(labelScale(2, 1.12, 0.55)).toBe(1);
+    expect(labelScale(0.1, 1.12, 0.55)).toBe(0.55);
+  });
+});
+
+describe("planHomeFit (the pure core of refitHome)", () => {
+  const canvas = { left: 0, top: 57, right: 390, bottom: 844 };
+  const labels: HomeLabel[] = [{ dx: -260, dy: -150, w: 90, h: 14 }, { dx: 260, dy: 150, w: 90, h: 14 }];
+  it("fits inside the unobstructed rectangle, not the whole canvas", () => {
+    const whole = planHomeFit(labels, canvas, canvas, 1.12, 1);
+    const free = { left: 0, top: 57, right: 390, bottom: 500 };
+    const narrow = planHomeFit(labels, canvas, free, 1.12, 1);
+    expect(narrow.zoom).toBeLessThanOrEqual(whole.zoom);
+    expect(narrow.bounds.bottom).toBeLessThan(whole.bounds.bottom);
+    const x = (l: HomeLabel): number => l.dx * (narrow.zoom / 1.12);
+    for (const l of labels) expect(Math.abs(x(l)) + l.w / 2).toBeLessThanOrEqual(195 + 1e-6);
+  });
+  it("centres the fitted extents in the unobstructed rectangle when it had to zoom out", () => {
+    const free = { left: 60, top: 120, right: 390, bottom: 800 };
+    const p = planHomeFit(labels, canvas, free, 1.12, 1);
+    expect(p.zoom).toBeLessThan(1.12);
+    const s = p.zoom / 1.12;
+    const ys = labels.map(l => l.dy * s + p.shift.dy);
+    const mid = ((Math.min(...ys)) + (Math.max(...ys) + 14)) / 2;
+    expect(mid).toBeCloseTo((p.bounds.top + p.bounds.bottom) / 2, 4);
+  });
+  it("leaves a scene that already fits exactly as it was (wide home)", () => {
+    const wide = { left: 0, top: 0, right: 1440, bottom: 900 };
+    const p = planHomeFit(labels, wide, wide, 1.12, 1);
+    expect(p.zoom).toBe(1.12);
+    expect(p.shift).toEqual({ dx: 0, dy: 0 });
   });
 });

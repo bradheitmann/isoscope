@@ -39,7 +39,7 @@ import iconMenu from "./icons/menu.svg?raw";
 import iconCode from "./icons/code.svg?raw";
 import { isEditableTarget } from "./editable-target";
 import { vetSrc, escapeHtml, safeLinkHref } from "./media-src";
-import { centerShift, fitHomeZoom, labelScale, legibleFloor, unobstructedRect, veryFarZoom, type HomeLabel, type Rect } from "./home-fit";
+import { labelScale, legibleScale, planHomeFit, unobstructedRect, veryFarZoom, type HomeLabel, type Rect } from "./home-fit";
 import { getModule, setNotes, setFace, addInside, removeInside, uploadFile, isRemote, FACES, type FaceKey, type SurfaceKind, type SurfaceRef } from "./annotations";
 
 type Item = { c: "red" | "amber" | "you" | "info" | string; l: string };
@@ -2734,11 +2734,34 @@ function canvasFreeRect(): Rect {
  return unobstructedRect({left:r.left,top:r.top,right:r.right,bottom:r.bottom},obstacles,4);
 }
 window.__isoCanvasRect=canvasFreeRect;
-/* the smallest scale a label may take so its rendered font stays legible (>= MIN_LABEL_PX) */
+/* QA hook: each node's projected cube as a viewport-space box, so the probe can report labels sitting on geometry */
+window.__isoNodeBoxes=()=>{
+ const r=canvas.getBoundingClientRect(),v=new THREE.Vector3(),out: Record<string,[number,number,number,number]>={};
+ NODES.forEach(n=>{
+  let x0=Infinity,y0=Infinity,x1=-Infinity,y1=-Infinity;
+  for(let i=0;i<8;i++){
+   v.set(n.x+(i&1?n.w:0),n._ly+(i&2?n.h:0),n.y+(i&4?n.d:0)).project(camera);
+   const px=r.left+(v.x*0.5+0.5)*r.width,py=r.top+(-v.y*0.5+0.5)*r.height;
+   x0=Math.min(x0,px);x1=Math.max(x1,px);y0=Math.min(y0,py);y1=Math.max(y1,py);
+  }
+  out[n.id]=[x0,y0,x1,y1];
+ });
+ return out;
+};
+/* The label scale floor at the fitted home: labels keep a legible rendered size (font >= MIN_LABEL_PX and cap height >= MIN_CAP_PX),
+   so a narrow home enlarges a label whose natural cap height is under the minimum instead of shrinking it with the scene. */
 let LABEL_FLOOR=0.55;
+let HOME_SCALED=false; /* the fitted home had to zoom out (or re-centre): labels then hold the legible floor instead of following the scene */
+let freeSig="";
 function labelFloor(): number {
  const lb=NODES.length?document.getElementById("lb-"+NODES[0]!.id):null;
- return legibleFloor(lb?parseFloat(getComputedStyle(lb).fontSize):0);
+ if(!lb)return 1;
+ const cs=getComputedStyle(lb),px=parseFloat(cs.fontSize);
+ const g=document.createElement("canvas").getContext("2d");
+ let ratio=0.72;
+ if(g){g.font=cs.fontWeight+" "+cs.fontSize+" "+cs.fontFamily;const m=g.measureText("H").actualBoundingBoxAscent;if(m>0&&px>0)ratio=m/px;}
+ const s=legibleScale(px,ratio);
+ return innerWidth>=WIDE_MIN_PX?Math.min(1,s):s; /* the wide home stays exactly the long-standing framing: never enlarged */
 }
 function refitHome(): void {
  const w=wrap.clientWidth,h=wrap.clientHeight;
@@ -2752,16 +2775,18 @@ function refitHome(): void {
   const lb=$<LabelElement>("lb-"+n.id);
   return {dx:fitV.x*w/2,dy:-fitV.y*h/2+4,w:lb.offsetWidth||80,h:lb.offsetHeight||30};
  });
- const r=wrap.getBoundingClientRect(),cx=r.left+w/2,cy=r.top+h/2,free=canvasFreeRect();
- const fb={left:free.left-cx,right:free.right-cx,top:free.top-cy,bottom:free.bottom-cy},floor=LABEL_FLOOR=labelFloor();
- const z=fitHomeZoom(labels,fb,HOME_ZOOM,0.15,2,floor);
+ const r=wrap.getBoundingClientRect(),free=canvasFreeRect();
+ const floor=LABEL_FLOOR=labelFloor();
+ const plan=planHomeFit(labels,{left:r.left,top:r.top,right:r.right,bottom:r.bottom},free,HOME_ZOOM,floor);
+ const z=plan.zoom;
  controls.minZoom=Math.min(0.35,z); /* the fitted home is always reachable */
  const atHome=!flyGoal&&Math.abs(camera.zoom-HOME.zoom)<1e-3&&controls.target.distanceTo(fitV.set(HOME.tx,HOME.ty,HOME.tz))<1e-3;
  /* a fit that had to zoom out also centres the framed scene in the unobstructed rectangle (the wide home is left exactly as it was) */
  const px=new THREE.Vector3(HOME.tx,HOME.ty,HOME.tz);
  let nx=CENTER.x,ny=1.0,nz=CENTER.z;
- if(z<HOME_ZOOM-1e-3){
-  const sh=centerShift(labels,fb,z/HOME_ZOOM,labelScale(z,HOME_ZOOM,floor)),upp=VIEW/(z*h);
+ HOME_SCALED=plan.scaled;
+ if(plan.scaled){
+  const sh=plan.shift,upp=VIEW/(z*h);
   const e=fitCam.matrixWorld.elements;
   nx+=(-sh.dx*e[0]+sh.dy*e[4])*upp;ny+=(-sh.dx*e[1]+sh.dy*e[5])*upp;nz+=(-sh.dx*e[2]+sh.dy*e[6])*upp;
  }
@@ -2839,7 +2864,7 @@ function tick(){
  });
  const rect=canvas.getBoundingClientRect();
  /* the home view's labels are never dimmed as "far"; only zooming out past the home does that */
- const far=camera.zoom<0.8&&camera.zoom<HOME.zoom-0.01,veryfar=camera.zoom<veryFarZoom(HOME.zoom),lk=HOME.zoom<HOME_ZOOM-1e-3?labelScale(camera.zoom,HOME_ZOOM,LABEL_FLOOR):1;
+ const far=camera.zoom<0.8&&camera.zoom<HOME.zoom-0.01,veryfar=camera.zoom<veryFarZoom(HOME.zoom),lk=HOME_SCALED?labelScale(camera.zoom,HOME_ZOOM,LABEL_FLOOR):1;
  const ents: LabelEntry[]=[];
  NODES.forEach(n=>{
    tmpV.copy(n._anchor);tmpV.y+=n._ly;tmpV.project(camera);
@@ -2848,7 +2873,7 @@ function tick(){
    if(lb.style.display!=="")lb.style.display="";
    lb.classList.toggle("far",far);
    const vf=veryfar&&!(n.items&&n.items.length);
-   lb.classList.toggle("veryfar",vf);if(lb._k!==lk){lb._k=lk;lb.style.transformOrigin="50% 0";lb.style.transform=lk<1?"translate(-50%,0) scale("+lk.toFixed(3)+")":"";}
+   lb.classList.toggle("veryfar",vf);if(lb._k!==lk){lb._k=lk;lb.style.transformOrigin="50% 0";lb.style.transform=lk!==1?"translate(-50%,0) scale("+lk.toFixed(3)+")":"";}
    const lx=(tmpV.x*0.5+0.5)*rect.width,ly=(-tmpV.y*0.5+0.5)*rect.height+4;
    const left=lx.toFixed(4)+"px",top=ly.toFixed(4)+"px";
    if(lb._left!==left){lb.style.left=left;lb._left=left;}
@@ -2856,6 +2881,7 @@ function tick(){
    if(!vf)ents.push({n,lb,lx,ly,depth:tmpV.z});
  });
  /* declutter: place labels by priority; an overlapping lower-priority label recedes */
+ if(window.__lblTick%20===0){const f=canvasFreeRect(),sig=[f.left,f.top,f.right,f.bottom].map(Math.round).join(",")+"|"+NODES.map(n=>$<LabelElement>("lb-"+n.id).offsetWidth).join(",");if(sig!==freeSig){freeSig=sig;refitHome();}} /* an obstacle that faded in or moved, or a label whose text grew, after the last fit */
  if(++window.__lblTick%60===1||!window.__lblMeasured){
    ents.forEach(e=>{e.lb._w=e.lb.offsetWidth||80;e.lb._h=e.lb.offsetHeight||30;});
    window.__lblMeasured=true;
@@ -2875,6 +2901,8 @@ function tick(){
  nowPlayingTick(); /* keep the now-playing plate's progress + play state live */
 }
 document.fonts.ready.then(()=>{window.__lblMeasured=false;refitHome();});
+/* the floating controls settle after the first fit (avatar, rail toggle, panel strip): refit whenever one changes size or position */
+{const refitSoon=()=>requestAnimationFrame(()=>refitHome());const ro=new ResizeObserver(refitSoon);OBSTACLE_IDS.forEach(id=>{const e=document.getElementById(id);if(e)ro.observe(e);});window.addEventListener("load",refitSoon);}
 /* ————— R30 phase 1: restore the view after a live reload; remember theme + weights across sessions ————— */
 window.__isoViewState=()=>({
  theme:document.documentElement.getAttribute("data-dp-theme"),dotSet,lineSet,stacked,pinned,

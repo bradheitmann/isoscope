@@ -12,7 +12,7 @@ export interface HomeBounds { left: number; right: number; top: number; bottom: 
 
 /** Label scale at a zoom relative to the home reference zoom: follows the scene, floored, never above 1. */
 export function labelScale(zoom: number, refZoom: number, floor = 0.55): number {
-  return Math.min(1, Math.max(floor, zoom / refZoom));
+  return Math.max(floor, Math.min(1, zoom / refZoom)); /* a floor above 1 enlarges (legibleScale); a floor at or under 1 behaves as before */
 }
 
 function fits(labels: readonly HomeLabel[], b: HomeBounds, s: number, k: number, pad: number): boolean {
@@ -84,4 +84,53 @@ export function centerShift(labels: readonly HomeLabel[], b: HomeBounds, s: numb
     y0 = Math.min(y0, y); y1 = Math.max(y1, y + l.h * k);
   }
   return { dx: (b.left + b.right) / 2 - (x0 + x1) / 2, dy: (b.top + b.bottom) / 2 - (y0 + y1) / 2 };
+}
+
+/** Smallest rendered label cap height (px) the fitted home may use (D6 owner requirement: about 9 px). */
+export const MIN_CAP_PX = 9;
+/** Largest enlargement a label may take to reach MIN_CAP_PX at a narrow fitted home. */
+export const MAX_LEGIBLE_SCALE = 1.6;
+
+/**
+ * Label scale that keeps both the rendered font (>= MIN_LABEL_PX) and the cap height (>= MIN_CAP_PX) legible.
+ * `capRatio` is cap height / font size of the label face. Unlike legibleFloor this may exceed 1: a label whose
+ * natural cap height is under the minimum is enlarged, never shrunk.
+ */
+export function legibleScale(basePx: number, capRatio: number, minCap = MIN_CAP_PX, minPx = MIN_LABEL_PX): number {
+  if (!(basePx > 0)) return 1;
+  const needPx = Math.max(minPx, capRatio > 0 ? minCap / capRatio : minPx);
+  return Math.min(MAX_LEGIBLE_SCALE, Math.max(0.3, needPx / basePx));
+}
+
+/** Fit bounds in px relative to the canvas centre, taken from the unobstructed rectangle rather than the window. */
+export function boundsFromFree(canvas: Rect, free: Rect): HomeBounds {
+  const cx = (canvas.left + canvas.right) / 2, cy = (canvas.top + canvas.bottom) / 2;
+  return { left: free.left - cx, right: free.right - cx, top: free.top - cy, bottom: free.bottom - cy };
+}
+
+function extentsFit(labels: readonly HomeLabel[], b: HomeBounds, s: number, k: number, pad: number): boolean {
+  let x0 = Infinity, x1 = -Infinity, y0 = Infinity, y1 = -Infinity;
+  for (const l of labels) {
+    const x = l.dx * s, y = l.dy * s, hw = (l.w * k) / 2;
+    x0 = Math.min(x0, x - hw); x1 = Math.max(x1, x + hw);
+    y0 = Math.min(y0, y); y1 = Math.max(y1, y + l.h * k);
+  }
+  return x1 - x0 <= b.right - b.left - 2 * pad && y1 - y0 <= b.bottom - b.top - 2 * pad;
+}
+
+/**
+ * Home zoom and centring shift for a label set inside an unobstructed rectangle (the pure core of refitHome).
+ * When every label already sits inside the bounds at the home zoom nothing changes (the wide home). Otherwise the zoom is the
+ * largest at which the label extents fit the bounds (the scene is then centred in them), with labels held to `scaleFloor`.
+ */
+export function planHomeFit(labels: readonly HomeLabel[], canvas: Rect, free: Rect, homeZoom: number, scaleFloor: number, minZoom = 0.15, pad = 2): { zoom: number; shift: { dx: number; dy: number }; bounds: HomeBounds; scaled: boolean } {
+  const bounds = boundsFromFree(canvas, free);
+  if (fits(labels, bounds, 1, labelScale(homeZoom, homeZoom, Math.min(1, scaleFloor)), pad)) return { zoom: homeZoom, shift: { dx: 0, dy: 0 }, bounds, scaled: false };
+  const ok = (s: number): boolean => extentsFit(labels, bounds, s, labelScale(homeZoom * s, homeZoom, scaleFloor), pad);
+  let lo = 0, hi = 1;
+  if (ok(1)) lo = 1;
+  else for (let i = 0; i < 30; i++) { const m = (lo + hi) / 2; if (ok(m)) lo = m; else hi = m; }
+  const zoom = Math.max(minZoom, homeZoom * lo);
+  const shift = centerShift(labels, bounds, zoom / homeZoom, labelScale(zoom, homeZoom, scaleFloor));
+  return { zoom, shift, bounds, scaled: true };
 }

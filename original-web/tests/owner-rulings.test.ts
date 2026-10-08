@@ -18,7 +18,8 @@ describe("owner rulings (D5/D6/D7), static source", () => {
   });
   it("D6: resize refits the home zoom", () => {
     expect(src).toContain("refitHome()");
-    expect(src).toContain("fitHomeZoom(");
+    expect(src).toContain("planHomeFit("); /* planHomeFit wraps fitHomeZoom + the centring shift */
+    expect(src).toMatch(/planHomeFit\(labels,[^;]*,free,HOME_ZOOM/); /* the fit bounds come from the unobstructed rect, not the window */
   });
 });
 

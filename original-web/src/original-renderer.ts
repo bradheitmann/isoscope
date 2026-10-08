@@ -1243,7 +1243,15 @@ $("insideFileIn").addEventListener("change",ev=>{
 let inspKind: SurfaceKind="video";
 const faceLibSel=$<HTMLSelectElement>("faceLibSel"),faceUrlIn=$<HTMLInputElement>("faceUrlIn"),
       faceDocIn=$<HTMLTextAreaElement>("faceDocIn"),faceFileIn=$<HTMLInputElement>("faceFileIn");
-const MEDIALIB=(SPEC.mediaLibrary??[]) as { id: string; title: string; src: string; kind: string }[];
+/* the media bench follows the CURRENT spec: a map swap (codebase view, ?spec=)
+   brings its own library, so the select is rebuilt on every applySpec (F11) */
+type MediaLibEntry = { id: string; title: string; src: string; kind: string };
+function rebuildMediaLib(): void {
+ const lib=((SPEC as Record<string,unknown>).mediaLibrary??[]) as MediaLibEntry[];
+ faceLibSel.replaceChildren();
+ const blank=document.createElement("option");blank.value="";blank.textContent="From the media bench…";faceLibSel.append(blank);
+ for(const m of lib){const o=document.createElement("option");o.value=m.src;o.textContent=m.title;faceLibSel.append(o);}
+}
 { /* build the kind segmented control + the library select once */
  const seg=$("kindSeg");
  for(const k of ["video","image","doc","slides","ink"] as SurfaceKind[]){
@@ -1253,9 +1261,7 @@ const MEDIALIB=(SPEC.mediaLibrary??[]) as { id: string; title: string; src: stri
     faceDocIn.hidden=k!=="doc"; faceLibSel.parentElement&&(faceLibSel.style.display=(k==="video"||k==="image")?"":"none"); });
   seg.append(b);
  }
- faceLibSel.replaceChildren();
- const blank=document.createElement("option");blank.value="";blank.textContent="From the media bench…";faceLibSel.append(blank);
- for(const m of MEDIALIB){const o=document.createElement("option");o.value=m.src;o.textContent=m.title;faceLibSel.append(o);}
+ rebuildMediaLib();
  faceLibSel.addEventListener("change",()=>{ if(faceLibSel.value)faceUrlIn.value=faceLibSel.value; });
 }
 function applyFace(): void {
@@ -1271,7 +1277,10 @@ function applyFace(): void {
  });
 }
 $("faceApply").addEventListener("click",applyFace);
-$("faceClear").addEventListener("click",()=>{ if(!inspId)return; void setFace(inspId,inspFace,null).then(()=>{const n=byId[inspId!];if(n)refreshSurfaces(n);materialsRender();renderFaceChips();}); });
+/* capture the subject before the async save: by completion time the inspector
+   may be showing a different module, and only the CLEARED module's surfaces
+   should rebuild (F10) */
+$("faceClear").addEventListener("click",()=>{ if(!inspId)return; const id=inspId; void setFace(id,inspFace,null).then(()=>{const n=byId[id];if(n)refreshSurfaces(n);materialsRender();renderFaceChips();}); });
 faceFileIn.addEventListener("change",ev=>{
  const f=(ev.target as HTMLInputElement).files?.[0];if(!f)return;
  void uploadFile(f).then(r=>{ if(r.error){inspPersist.textContent=`Upload refused (${r.error}) — not applied.`;return;} faceUrlIn.value=r.src; inspPersist.textContent=r.durable?"Uploaded.":"Added for this session — export to keep."; });
@@ -1443,8 +1452,9 @@ controls.addEventListener("start",()=>{flyGoal=null;faceView=null;}); /* user in
 let resetInkBackup: ReturnType<typeof brush.snapshot> | null=null;
 function resetView(){clearEdgeSel();flowing=false;btnFlow.setAttribute("aria-pressed","false");setCanonicalIcon(btnFlow,iconPlay);exitCordon();flyGoal={tx:HOME.tx,ty:HOME.ty,tz:HOME.tz,zoom:HOME.zoom,az:HOME.az,pol:HOME.pol};clearTrace();renderModuleNavigator();}
 $("btnReset").addEventListener("click",resetView);
-/* undo-after-reset: if the brush is empty but a reset backup exists, restore it */
-$("btnDrawUndo").addEventListener("click",()=>{ if(brush.strokeCount()===0&&resetInkBackup){brush.restoreAll(resetInkBackup);resetInkBackup=null;} });
+/* undo-after-reset is owned by the single btnDrawUndo handler registered with
+    the brush below (two listeners on one click restored and then immediately
+    un-restored — F19). Cmd-Z keeps its own path. */
 document.addEventListener("keydown",ev=>{ if((ev.metaKey||ev.ctrlKey)&&ev.key.toLowerCase()==="z"&&brush.strokeCount()===0&&resetInkBackup){brush.restoreAll(resetInkBackup);resetInkBackup=null;} });
 /* R/W/Space are global camera/draw/transport commands. They should only yield when
    a true modal owns the keyboard (Settings) or the user is interacting INSIDE the
@@ -2501,7 +2511,10 @@ function applySpec(next: Spec,preserveMedia=false): void{
     snapshots it.) A layout shuffle keeps the
     same nodes, so its ink would ideally ride along; until strokes re-project onto
     moved modules, we snapshot rather than destroy. */
- resetInkBackup=brush.strokeCount()>0?brush.snapshot():null;brush.clear();
+ /* a swap with no new strokes keeps the existing backup: repeated map swaps
+    must not erase the only recoverable copy of the ink (F20) */
+ if(brush.strokeCount()>0)resetInkBackup=brush.snapshot();
+ brush.clear();
  const reds=NODES.filter(n=>n.items.some(i=>i.c==="red"));
  if(reds.some(n=>!oldReds.has(n.id))){blastIncident();return;}
  if(incidentActive&&!reds.length){cordon.clear();incidentActive=false;}
@@ -2514,6 +2527,7 @@ function applySpec(next: Spec,preserveMedia=false): void{
  if(controls.target.x<_bb.x0-1||controls.target.x>_bb.x1+1||controls.target.z<_bb.z0-1||controls.target.z>_bb.z1+1)
   flyGoal={tx:HOME.tx,ty:HOME.ty,tz:HOME.tz,zoom:HOME.zoom,az:HOME.az,pol:HOME.pol};
  updateRailAvailability();
+ rebuildMediaLib();
 }
 buildScene(SPEC);
 /* Hydrate the annotation store, THEN rebuild surfaces: the first scene is built
@@ -2752,7 +2766,9 @@ const brush=(()=>{
   });
  }
  btnDraw.addEventListener("click",()=>setActive(!active));
- $("btnDrawUndo").addEventListener("click",undo);
+ /* one owner for undo: an empty brush with a swap/reset backup restores it;
+    otherwise an ordinary undo. Never both on the same click. */
+ $("btnDrawUndo").addEventListener("click",()=>{ if(brush.strokeCount()===0&&resetInkBackup){brush.restoreAll(resetInkBackup);resetInkBackup=null;} else undo(); });
  $("btnDrawClear").addEventListener("click",clear);
  canvas.addEventListener("pointerdown",ev=>{if(active&&ev.button===0){ev.preventDefault();begin(ev.clientX,ev.clientY);}},true);
  canvas.addEventListener("pointermove",ev=>{if(active)extend(ev.clientX,ev.clientY);},true);

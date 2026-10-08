@@ -4,9 +4,14 @@
      bun cli.ts import <spec.json> [db]        spec → db (replaces graph content)
      bun cli.ts export [db] [--out spec.json]  db → spec
      bun cli.ts build  [db] <out.html>         db → spec → self-contained map      */
-import { readFileSync, writeFileSync } from "fs";
-import { buildHtml } from "./build.mjs";
+import { readFileSync, writeFileSync, mkdirSync, mkdtempSync, rmSync } from "fs";
+import { dirname, join } from "path";
+import { tmpdir } from "os";
+import { buildHtml } from "./build.ts";
 import { DB_DEFAULT, open, importSpec, exportSpec, proposeSensor, setSensor, normalizeCi, applyCi, detectCiProvider, blastRadius, withHistory, markNode, overview } from "./lib.ts";
+
+/* write a file, creating its parent directory first (fresh clones have no out/) */
+const writeOut = (path: string, data: string) => { mkdirSync(dirname(path), { recursive: true }); writeFileSync(path, data); };
 
 const [cmd, ...args] = Bun.argv.slice(2);
 switch (cmd) {
@@ -35,7 +40,7 @@ switch (cmd) {
     const outIdx = args.indexOf("--out");
     const spec = exportSpec(open(dbPath));
     const json = JSON.stringify(spec, null, 1);
-    if (outIdx >= 0) { writeFileSync(args[outIdx + 1], json); console.log(`isoscope: exported ${dbPath} → ${args[outIdx + 1]}`); }
+    if (outIdx >= 0) { writeOut(args[outIdx + 1], json); console.log(`isoscope: exported ${dbPath} → ${args[outIdx + 1]}`); }
     else console.log(json);
     break;
   }
@@ -43,8 +48,27 @@ switch (cmd) {
     const [dbPath = DB_DEFAULT, outPath] = args;
     if (!outPath) { console.error("usage: cli.ts build [db] <out.html>"); process.exit(1); }
     const spec = exportSpec(open(dbPath));
-    writeFileSync(outPath, buildHtml(spec, { specLabel: dbPath }));
+    writeOut(outPath, buildHtml(spec, { specLabel: dbPath }));
     console.log(`isoscope: built ${outPath} from ${dbPath} · ${spec.nodes.length} modules · ${spec.edges.length} links`);
+    break;
+  }
+  case "render": {
+    /* spec → map in one step, through a per-run temporary store that is removed afterwards.
+       bun cli.ts render <spec.json> <out.html> */
+    const [specPath, outPath] = args;
+    if (!specPath || !outPath) { console.error("usage: cli.ts render <spec.json> <out.html>"); process.exit(1); }
+    const dir = mkdtempSync(join(tmpdir(), "isoscope-"));
+    const dbPath = join(dir, "render.db");
+    try {
+      const db = open(dbPath);
+      importSpec(db, JSON.parse(readFileSync(specPath, "utf8")));
+      db.close();
+      const rdb = open(dbPath);
+      const spec = exportSpec(rdb);
+      rdb.close();
+      writeOut(outPath, buildHtml(spec, { specLabel: specPath }));
+      console.log(`isoscope: rendered ${outPath} from ${specPath} · ${spec.nodes.length} modules · ${spec.edges.length} links`);
+    } finally { rmSync(dir, { recursive: true, force: true }); }
     break;
   }
   case "ingest": {
@@ -228,5 +252,5 @@ switch (cmd) {
     break;
   }
   default:
-    console.log("isoscope · graph store CLI\n  init [db] · import <spec.json> [db] · export [db] [--out spec.json] · overview <db> · build [db] <out.html> · serve [db] [--port 4177]\n  incident loop: mark <db> <id> … · ingest <db> <findings.json> [--sarif] · ci <db> <payload.json> --provider github|gitlab|buildkite|signal · blast-radius <db> · sensor <db> <id> --offer|--state\n  install-hook <repo> <db> · lint: bun drc.ts <spec.json|db> [--budget N]");
+    console.log("isoscope · graph store CLI\n  init [db] · import <spec.json> [db] · export [db] [--out spec.json] · overview <db> · build [db] <out.html> · render <spec.json> <out.html> · serve [db] [--port 4177]\n  incident loop: mark <db> <id> … · ingest <db> <findings.json> [--sarif] · ci <db> <payload.json> --provider github|gitlab|buildkite|signal · blast-radius <db> · sensor <db> <id> --offer|--state\n  install-hook <repo> <db> · lint: bun drc.ts <spec.json|db> [--budget N]");
 }

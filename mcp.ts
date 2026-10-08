@@ -4,7 +4,7 @@
    DB path: ISOSCOPE_DB env or first arg (default ./isoscope.db).
    Pair with `bun cli.ts serve` in another pane: every tool call repaints the browser. */
 import { open, importSpec, exportSpec, proposeSensor, setSensor, withHistory, markNode, overview, DB_DEFAULT, type Spec } from "./lib.ts";
-import { buildHtml } from "./build.mjs";
+import { buildHtml } from "./build.ts";
 import { writeFileSync } from "fs";
 
 const DB = Bun.env.ISOSCOPE_DB ?? Bun.argv[2] ?? DB_DEFAULT;

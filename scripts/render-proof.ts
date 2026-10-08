@@ -4,6 +4,7 @@
    intro veil dismissible on maps, focus-ring rule present), screenshot.
    Usage: bun scripts/render-proof.ts
    Output: advisory/2026-09-01-odin/screens/*.png + a PASS/FAIL table.        */
+import { chromeProfileDir } from "./cli.ts";
 import { spawn } from "child_process";
 import { mkdirSync } from "fs";
 
@@ -26,7 +27,7 @@ mkdirSync(OUT, { recursive: true });
 const chrome = spawn(CHROME, [
   "--headless=new", `--remote-debugging-port=${PORT}`,
   "--no-first-run", "--no-default-browser-check",
-  "--user-data-dir=/tmp/isoscope-chrome-profile", "--remote-allow-origins=*",
+  `--user-data-dir=${chromeProfileDir("profile")}`, "--remote-allow-origins=*",
   "about:blank",
 ], { stdio: "ignore" });
 await new Promise(r => setTimeout(r, 1500));

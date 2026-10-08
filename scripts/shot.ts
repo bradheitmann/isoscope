@@ -2,16 +2,19 @@
    headless Chrome over CDP. Optional JS to run first (e.g. zoom, theme, stack).
    Usage: bun scripts/shot.ts <built.html> <out.png> [w] [h] [js-expression]
    Exit 1 on any uncaught exception or console.error during boot.             */
+import { chromeProfileDir, requireFile } from "./cli.ts";
 import { spawn } from "child_process";
 import { resolve } from "path";
 
 const CHROME = "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome";
 const PORT = 9336;
 const [html, out, w = "1440", h = "900", js = ""] = Bun.argv.slice(2);
-if (!html || !out) { console.error("usage: shot.ts <built.html> <out.png> [w] [h] [js]"); process.exit(2); }
+const USAGE = "bun scripts/shot.ts <built.html> <out.png> [w] [h] [js]";
+if (!html || !out) { console.error("usage: " + USAGE); process.exit(2); }
+requireFile(USAGE, "input html", html);
 const errors: string[] = [];
 const chrome = spawn(CHROME, ["--headless=new", `--remote-debugging-port=${PORT}`, "--no-first-run",
-  "--user-data-dir=/tmp/isoscope-chrome-shot", "--remote-allow-origins=*", "about:blank"], { stdio: "ignore" });
+  `--user-data-dir=${chromeProfileDir("shot")}`, "--remote-allow-origins=*", "about:blank"], { stdio: "ignore" });
 await new Promise(r => setTimeout(r, 1500));
 let msgId = 0;
 const pending = new Map<number, { resolve: (v: any) => void; reject: (e: any) => void }>();

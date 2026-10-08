@@ -2,11 +2,18 @@
    from the emitted stylesheet into landing.template.html → index.html.
    Drops @font-face rules (local font stacks with fallbacks are used instead —
    no external font requests, no relative-path 404s).
-   Run: bun scripts/build-landing.ts                                     */
+   Usage: bun scripts/build-landing.ts <okoa-tokens.css> <landing.template.html> <out.html> */
 import { readFileSync, writeFileSync } from "fs";
+import { fail, requireFile } from "./cli.ts";
 
-const canon = readFileSync("/tmp/okoa-tokens.css", "utf8");
-const tpl = readFileSync("advisory/2026-09-01-odin/landing.template.html", "utf8");
+const USAGE = "bun scripts/build-landing.ts <okoa-tokens.css> <landing.template.html> <out.html>";
+const [cssPath, tplPath, outPath] = Bun.argv.slice(2);
+if (!cssPath || !tplPath || !outPath) fail(USAGE, "<okoa-tokens.css>, <landing.template.html> and <out.html> are all required");
+requireFile(USAGE, "tokens css (from okoa_emit_stylesheet)", cssPath);
+requireFile(USAGE, "landing template", tplPath);
+
+const canon = readFileSync(cssPath, "utf8");
+const tpl = readFileSync(tplPath, "utf8");
 
 function extractBlock(openRe: RegExp): string {
   const start = canon.search(openRe);
@@ -26,5 +33,5 @@ const tokens = `/* canonical design tokens — emitted stylesheet v3, embedded (
 
 if (!tpl.includes("/*__OKOA_TOKENS__*/")) throw new Error("marker missing from template");
 const out = tpl.replace("/*__OKOA_TOKENS__*/", tokens);
-writeFileSync("advisory/2026-09-01-odin/index.html", out);
+writeFileSync(outPath, out);
 console.log("landing built:", out.length, "bytes · tokens:", tokens.length, "bytes");

@@ -2,13 +2,29 @@
    1. replace the <style id="ide-themes"> block with a relocation note
    2. inject IDE_PROPS + IDE_THEMES runtime store after the THEMES array
    3. rewrite setTheme() to apply IDE palettes as inline custom properties
-   Values come from /tmp/ide-themes.json (extracted by relocate-ide-themes.ts).
-   Run: bun scripts/apply-theme-relocation.ts */
+   Values come from the ide-themes.json written by relocate-ide-themes.ts.
+   Usage: bun scripts/apply-theme-relocation.ts <template.html> <ide-themes.json> (--out <path> | --in-place) */
 import { readFileSync, writeFileSync } from "fs";
+import { fail, requireFile } from "./cli.ts";
+
+const USAGE = "bun scripts/apply-theme-relocation.ts <template.html> <ide-themes.json> (--out <path> | --in-place)";
+const argv = Bun.argv.slice(2);
+const inPlace = argv.includes("--in-place");
+const oi = argv.indexOf("--out");
+const outArg = oi >= 0 ? argv[oi + 1] : undefined;
+const pos = argv.filter((a, i) => !a.startsWith("--") && !(oi >= 0 && i === oi + 1));
+if (pos.length !== 2) fail(USAGE, "need exactly <template.html> and <ide-themes.json>");
+if (inPlace && oi >= 0) fail(USAGE, "--out and --in-place are mutually exclusive");
+if (oi >= 0 && (!outArg || outArg.startsWith("--"))) fail(USAGE, "--out needs a path");
+if (!inPlace && oi < 0) fail(USAGE, "pass --out <path>, or --in-place to rewrite the template");
+const [tplPath, jsonPath] = pos;
+const outPath = inPlace ? tplPath : outArg!;
+requireFile(USAGE, "template", tplPath);
+requireFile(USAGE, "ide-themes json", jsonPath);
 
 const data: { props: string[]; themes: Record<string, Record<string, string>> } =
-  JSON.parse(readFileSync("/tmp/ide-themes.json", "utf8"));
-let src = readFileSync("template.html", "utf8");
+  JSON.parse(readFileSync(jsonPath, "utf8"));
+let src = readFileSync(tplPath, "utf8");
 
 if (src.includes("IDE_THEMES")) {
   console.log("already applied — nothing to do"); process.exit(0);
@@ -44,7 +60,7 @@ const newFn = `function setTheme(id){
 }`;
 src = src.replace(oldFn, newFn);
 
-writeFileSync("template.html", src);
+writeFileSync(outPath, src);
 console.log("applied: CSS block excised ·",
   "IDE_THEMES injected:", Object.keys(data.themes).length, "themes ·",
   "IDE_PROPS:", data.props.length, "properties · setTheme rewritten");

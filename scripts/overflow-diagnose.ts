@@ -1,6 +1,7 @@
 /* overflow-diagnose.ts — at a given viewport, list the elements that escape
    the horizontal viewport (right edge > innerWidth) or self-scroll.
    Usage: bun scripts/overflow-diagnose.ts <url-path> <width> <height>       */
+import { chromeProfileDir } from "./cli.ts";
 import { spawn } from "child_process";
 
 const CHROME = "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome";
@@ -9,7 +10,7 @@ const [path = "/", w = "768", h = "1024"] = Bun.argv.slice(2);
 
 const chrome = spawn(CHROME, [
   "--headless=new", `--remote-debugging-port=${PORT}`, "--no-first-run",
-  "--user-data-dir=/tmp/isoscope-chrome-diag", "--remote-allow-origins=*", "about:blank",
+  `--user-data-dir=${chromeProfileDir("diag")}`, "--remote-allow-origins=*", "about:blank",
 ], { stdio: "ignore" });
 await new Promise(r => setTimeout(r, 1500));
 

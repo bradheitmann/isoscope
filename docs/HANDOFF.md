@@ -127,8 +127,8 @@ Sentinel architecture map (built iteratively with the operator, 2026-08-19..22).
   variants still switch via `data-style`. `data-style` now names the active
   theme in BOTH cases (regression fixed: drawer highlight + Random broke for
   IDE themes). Transform scripts kept for provenance:
-  `scripts/relocate-ide-themes.ts` → `/tmp/ide-themes.json` →
-  `scripts/apply-theme-relocation.ts` (idempotent, no hand-typed values).
+  `bun scripts/relocate-ide-themes.ts <template.html> <ide-themes.json>` →
+  `bun scripts/apply-theme-relocation.ts <template.html> <ide-themes.json> (--out <path> | --in-place)` (idempotent, no hand-typed values; never rewrites the template unless `--in-place`).
 - **Responsive hardening** (template.html): topbar wraps ≤1280px, sidebar/panel
   hide ≤360px tall, 44px touch targets on coarse pointers, z-index tokens.
 - **Render proof**: `bun scripts/render-proof.ts` = headless Chrome over CDP
@@ -139,8 +139,8 @@ Sentinel architecture map (built iteratively with the operator, 2026-08-19..22).
   (`bun advisory/2026-09-01-odin/serve.ts`).
 - **advisory/2026-09-01-odin/**: ODIN advisory deliverable — two specs
   (visual-a = ODIN codebase map, visual-b = topology lab), their built maps,
-  and an OKOA-token landing page (`scripts/build-landing.ts`, expects
-  `/tmp/okoa-tokens.css` from `okoa_emit_stylesheet`). Committed as the
+  and an OKOA-token landing page (`bun scripts/build-landing.ts <okoa-tokens.css> <landing.template.html> <out.html>`; takes
+  the stylesheet saved from `okoa_emit_stylesheet` as an explicit path and fails if missing). Committed as the
   candidate "second consumer" material; `.db` + screens are gitignored.
 - **OKOA design MCP**: `.mcp.json` registers the hosted server via mcp-remote;
   `okoa.ts` is a one-shot CLI for the same tools (`bun okoa.ts okoa_status`).

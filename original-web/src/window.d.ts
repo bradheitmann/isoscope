@@ -24,6 +24,7 @@ declare global {
     __isoRouteQC: Record<string, unknown>;
     __lblMeasured: boolean;
     __lblTick: number;
+    __isoCanvasRect: () => { left: number; top: number; right: number; bottom: number };
     __isoViewState: () => ViewState;
     __isoApplySpec: (spec: unknown) => void;
     __isoRenderTagPills: (container: HTMLElement, ids: string[]) => void;

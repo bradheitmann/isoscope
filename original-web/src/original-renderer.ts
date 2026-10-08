@@ -39,7 +39,7 @@ import iconMenu from "./icons/menu.svg?raw";
 import iconCode from "./icons/code.svg?raw";
 import { isEditableTarget } from "./editable-target";
 import { vetSrc, escapeHtml, safeLinkHref } from "./media-src";
-import { fitHomeZoom, labelScale, veryFarZoom, type HomeLabel } from "./home-fit";
+import { fitHomeZoom, labelScale, unobstructedRect, veryFarZoom, type HomeLabel, type Rect } from "./home-fit";
 import { getModule, setNotes, setFace, addInside, removeInside, uploadFile, isRemote, FACES, type FaceKey, type SurfaceKind, type SurfaceRef } from "./annotations";
 
 type Item = { c: "red" | "amber" | "you" | "info" | string; l: string };
@@ -2714,6 +2714,25 @@ const brush=(()=>{
 const HOME_ZOOM=1.12;
 const fitCam=new THREE.OrthographicCamera(-1,1,1,-1,-200,500);
 const fitV=new THREE.Vector3();
+/* The part of the canvas no floating control covers (rail / menu toggle, docked panel strip, open sheet, avatar and sound
+   button), in viewport coordinates. The home fit and the QA label probe both read it (window.__isoCanvasRect). */
+const OBSTACLE_IDS=["mapControls","railToggle","trayHandle","readingPanel","meAvatar","npPlay"];
+const WIDE_MIN_PX=1024; /* at and above this width the home stays the long-standing 1.12 framing, bounded by the window as before (kept pixel-identical on purpose) */
+function canvasFreeRect(): Rect {
+ const r=wrap.getBoundingClientRect();
+ const obstacles: Rect[]=[];
+ if(innerWidth>=WIDE_MIN_PX)return {left:0,top:0,right:innerWidth,bottom:innerHeight};
+ OBSTACLE_IDS.forEach(id=>{
+  const e=document.getElementById(id);
+  if(!e||(e as HTMLElement).hidden)return;
+  const cs=getComputedStyle(e);
+  if(cs.display==="none"||cs.visibility==="hidden"||Number(cs.opacity)===0)return;
+  const b=e.getBoundingClientRect();
+  obstacles.push({left:b.left,top:b.top,right:b.right,bottom:b.bottom});
+ });
+ return unobstructedRect({left:r.left,top:r.top,right:r.right,bottom:r.bottom},obstacles,4);
+}
+window.__isoCanvasRect=canvasFreeRect;
 function refitHome(): void {
  const w=wrap.clientWidth,h=wrap.clientHeight;
  if(!w||!h||!NODES.length)return;
@@ -2726,8 +2745,8 @@ function refitHome(): void {
   const lb=$<LabelElement>("lb-"+n.id);
   return {dx:fitV.x*w/2,dy:-fitV.y*h/2+4,w:lb.offsetWidth||80,h:lb.offsetHeight||30};
  });
- const r=wrap.getBoundingClientRect(),cx=r.left+w/2,cy=r.top+h/2;
- const z=fitHomeZoom(labels,{left:-cx,right:innerWidth-cx,top:-cy,bottom:innerHeight-cy},HOME_ZOOM,0.15,2,0.55);
+ const r=wrap.getBoundingClientRect(),cx=r.left+w/2,cy=r.top+h/2,free=canvasFreeRect();
+ const z=fitHomeZoom(labels,{left:free.left-cx,right:free.right-cx,top:free.top-cy,bottom:free.bottom-cy},HOME_ZOOM,0.15,2,0.55);
  controls.minZoom=Math.min(0.35,z); /* the fitted home is always reachable */
  const atHome=!flyGoal&&Math.abs(camera.zoom-HOME.zoom)<1e-3&&controls.target.distanceTo(fitV.set(HOME.tx,HOME.ty,HOME.tz))<1e-3;
  HOME.zoom=z;

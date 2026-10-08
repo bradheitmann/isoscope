@@ -31,7 +31,7 @@ export function vetSrc(raw: unknown, nodeId: string, image = false): string | nu
   const out = image ? safeImageSrc(raw) : safeMediaSrc(raw);
   if (out === null && raw) {
     const key = nodeId + "\0" + String(raw);
-    if (!warned.has(key)) { warned.add(key); console.warn(`[isoscope] rejected unsafe media src on node ${nodeId}`); }
+    if (!warned.has(key) && warned.size < 256) { warned.add(key); console.warn(`[isoscope] rejected unsafe media src on node ${nodeId}`); }
   }
   return out;
 }

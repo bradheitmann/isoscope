@@ -38,6 +38,7 @@ import iconActivity from "./icons/activity.svg?raw";
 import iconMenu from "./icons/menu.svg?raw";
 import iconCode from "./icons/code.svg?raw";
 import { isEditableTarget } from "./editable-target";
+import { vetSrc } from "./media-src";
 import { getModule, setNotes, setFace, addInside, removeInside, uploadFile, isRemote, FACES, type FaceKey, type SurfaceKind, type SurfaceRef } from "./annotations";
 
 type Item = { c: "red" | "amber" | "you" | "info" | string; l: string };
@@ -588,7 +589,7 @@ function releaseVideoTex(src: string,tex: THREE.VideoTexture,shared: boolean): v
  e.refs--;if(e.refs<=0){e.tex.dispose();delete videoTexPool[src];}
 }
 function buildVideo(n: MapNode,face: FaceKey,ref: SurfaceRef): SurfaceEntry | null {
- const src=ref.src;if(!src)return null;
+ const src=vetSrc(ref.src,n.id);if(!src)return null;
  if(isAudioSrc(src))return buildAudioPlate(n,face,ref); /* an audio src renders a player plate, not a video frame */
  const pv=acquireVideo(src,ref);
  const video=pv.video;
@@ -630,7 +631,7 @@ function syncTick(): void {
  });
 }
 function buildImage(n: MapNode,face: FaceKey,ref: SurfaceRef): SurfaceEntry | null {
- const src=ref.src;if(!src)return null;
+ const src=vetSrc(ref.src,n.id,true);if(!src)return null;
  if(isAudioSrc(src))return buildAudioPlate(n,face,ref); /* an audio file on an image ref is a player plate */
  const loader=new THREE.TextureLoader();loader.crossOrigin="anonymous";
  const mat=new THREE.MeshBasicMaterial({transparent:true,toneMapped:false});
@@ -748,7 +749,7 @@ function buildSlides(n: MapNode,face: FaceKey,ref: SurfaceRef): SurfaceEntry {
    pageFoot(g,"1 / "+pages.length,W,H,pal);
    tex.needsUpdate=true;
   };
-  img.src=pages[0];
+  const slide0=vetSrc(pages[0],n.id,true);if(slide0)img.src=slide0;
  }
  draw();
  const {plane,mat}=canvasPlane(n,face,tex,W,H);
@@ -802,7 +803,7 @@ function trackName(src: string): string {
  try{return decodeURIComponent(bare);}catch{return bare;}
 }
 function buildAudioPlate(n: MapNode,face: FaceKey,ref: SurfaceRef): SurfaceEntry | null {
- const src=ref.src;if(!src)return null;
+ const src=vetSrc(ref.src,n.id);if(!src)return null;
  const pv=acquireVideo(src,ref); /* pooled media element carries the audible track */
  const {pw,ph}=faceDims(n,face);
  const H=384,W=Math.max(64,Math.round(H*(pw/ph)));

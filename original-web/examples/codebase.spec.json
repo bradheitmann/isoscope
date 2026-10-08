@@ -287,7 +287,7 @@
    "d": 1,
    "h": 4,
    "does": "Pure brush-stroke bookkeeping, extracted from the renderer's brush closure.",
-   "built": "6 files, ~3013 lines · exports: BrushState, clearBrush, isEditableTarget, LayoutNode, EdgeSpec, Positions",
+   "built": "6 files, ~3014 lines · exports: BrushState, clearBrush, isEditableTarget, LayoutNode, EdgeSpec, Positions",
    "refs": "original-web/src/brush-model.ts · original-web/src/editable-target.ts · original-web/src/layouts.ts · original-web/src/main.ts · original-web/src/original-renderer.ts · original-web/src/playlist.ts",
    "media": [],
    "tags": []

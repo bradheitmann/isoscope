@@ -11,6 +11,13 @@ interface reconstruction of the isometric city) that renders the self-map
 The self-map exists twice (root `examples/` and `original-web/examples/`) and the
 two copies must stay byte-identical (`tests/spec-sync.test.ts` enforces it).
 
+Media sources and HLS: spec-provided media `src` values are validated by
+`original-web/src/media-src.ts` (same-origin relative, http(s) and blob: only;
+javascript:, data:, file: and protocol-relative are rejected and logged once per
+node). HLS is native-only: `.m3u8` plays in Safari and falls back elsewhere as
+before; there is no hls.js dependency, and a remote media host needs CORS. No CSP
+is set (a CSP can break media playback); one remains a documented proposal.
+
 ```bash
 # original-web (live web product; dev server on 127.0.0.1:4182)
 cd original-web

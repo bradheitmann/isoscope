@@ -48,4 +48,12 @@ describe("CI bun pin", () => {
     expect(needing).toBeGreaterThan(0);
     expect(shas.size, "all setup-bun uses must share one SHA").toBe(1);
   });
+
+  it("original-web job runs qa:static; root job sparse-checks-out without public/media; push is limited to main", () => {
+    const ci = readFileSync(join(repo, ".github/workflows/ci.yml"), "utf8");
+    const all = jobs(ci);
+    expect(all["original-web"]).toMatch(/run:\s*bun run qa:static/);
+    expect(all["root"]).toMatch(/sparse-checkout:[\s\S]*!\/original-web\/public\/media\//);
+    expect(ci).toMatch(/push:\n\s+branches:\s*\[main\]/);
+  });
 });

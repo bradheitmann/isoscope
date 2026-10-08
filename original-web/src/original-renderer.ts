@@ -504,7 +504,9 @@ function faceDims(n: MapNode,face: FaceKey): { pw: number; ph: number } {
    the shared element so UVs/letterboxing stay per-face. */
 type PooledVideo={ video: HTMLVideoElement; live: boolean; refs: number; group?: string; src: string; warmed?: boolean; traced?: boolean; started?: boolean;
  disposed?: boolean;  /* released: every async callback must stand down (F05) */
- wantPlay?: boolean;  /* a real play intent exists — warmup never pauses/rewinds it (F07) */ };
+ wantPlay?: boolean;  /* a real play intent exists — warmup never pauses/rewinds it (F07) */
+ blobUrl?: string;    /* object URL once the source is fetched whole (connection-freeing) */
+ loadT0: number };    /* fetch start, for load telemetry on failure */
 const videoPool: Record<string, PooledVideo>={};
 /* ————— progressive background warmup —————
    Sources are queued at acquire time (preload=none, no fetch). An idle loader starts
@@ -517,7 +519,15 @@ const pvByVideo=new Map<HTMLVideoElement,PooledVideo>();
 function startVideo(pv: PooledVideo): void {
  if(pv.started||pv.disposed)return;pv.started=true;
  const video=pv.video;
- video.preload="auto";video.src=pv.src;
+ video.preload="auto";
+ /* fetch the whole file into a blob, THEN attach it. A <video src=url> stream
+    holds its HTTP/1.1 connection open for the LIFE of playback, and Chrome caps
+    an origin at 6 connections — the first 6 videos starved the other 8 (and any
+    later request) forever. A fetch completes and frees its connection; the blob
+    plays from memory. (Measured: all 14 fetch in <1s from the dev server.) */
+ fetch(pv.src).then(r=>{ if(!r.ok)throw new Error("HTTP "+r.status); return r.blob(); })
+ .then(b=>{ if(pv.disposed)return; pv.blobUrl=URL.createObjectURL(b); video.src=pv.blobUrl; })
+ .catch(err=>{ if(!pv.traced){pv.traced=true;emitWide({edge:"OW-SV",from:"OW",to:"SV",name:"media.load",durationMs:performance.now()-pv.loadT0,ok:false,kind:"CLIENT",error:"media fetch failed: "+pv.src+" ("+(err instanceof Error?err.message:"?")+")"});} });
  /* the decoder is primed by the canplay→warm listener (play one frame, hold at 0).
     We don't play here — warming is the listener's job, so a started-but-hidden video
     isn't running. */
@@ -551,15 +561,14 @@ function acquireVideo(src: string,ref: SurfaceRef): PooledVideo {
     few at a time so the map is instant and the videos warm up in the background —
     "lazy load in the background, ready within a couple seconds of activation." */
  video.autoplay=false;video.preload="none";
- const pv: PooledVideo={video,live,refs:1,group:ref.group,src,started:false};
+ const pv: PooledVideo={video,live,refs:1,group:ref.group,src,started:false,loadT0:performance.now()};
  warmupQueue.push(pv);
  pvByVideo.set(video,pv);
  scheduleWarmup(); /* every enqueue keeps a drain outstanding (F04) */
  /* media load crosses the surface→serve seam (the dev server streams the file).
     Trace it so the OW-SV edge reflects real media flow + latency live. */
- const loadT0=performance.now();
- video.addEventListener("canplay",()=>{ if(pv.disposed)return; if(!pv.traced){pv.traced=true;emitWide({edge:"OW-SV",from:"OW",to:"SV",name:"media.load",durationMs:performance.now()-loadT0,ok:true,kind:"CLIENT"});} },{once:true});
- video.addEventListener("error",()=>{ if(pv.disposed)return; if(!pv.traced){pv.traced=true;emitWide({edge:"OW-SV",from:"OW",to:"SV",name:"media.load",durationMs:performance.now()-loadT0,ok:false,kind:"CLIENT",error:"media failed to load: "+src});} },{once:true});
+ video.addEventListener("canplay",()=>{ if(pv.disposed)return; if(!pv.traced){pv.traced=true;emitWide({edge:"OW-SV",from:"OW",to:"SV",name:"media.load",durationMs:performance.now()-pv.loadT0,ok:true,kind:"CLIENT"});} },{once:true});
+ video.addEventListener("error",()=>{ if(pv.disposed)return; if(!pv.traced){pv.traced=true;emitWide({edge:"OW-SV",from:"OW",to:"SV",name:"media.load",durationMs:performance.now()-pv.loadT0,ok:false,kind:"CLIENT",error:"media failed to load: "+src});} },{once:true});
  /* decoder warm-up: preload=auto buffers bytes but leaves the decoder cold, so the
     first play() after media-mode-on stalls on a cold start. Once the element can
     play, prime it — play a frame muted, then hold paused at t=0 — so toggling media
@@ -586,6 +595,7 @@ function releaseVideo(src: string): void {
  if(pv.refs>0)return;
  pv.disposed=true;pv.wantPlay=false;    /* async callbacks (warm, telemetry, staggered plays) check this and stand down (F05) */
  const qi=warmupQueue.indexOf(pv);if(qi>=0)warmupQueue.splice(qi,1); /* a released source is never promoted from the grave */
+ if(pv.blobUrl){URL.revokeObjectURL(pv.blobUrl);pv.blobUrl=undefined;}
  pvByVideo.delete(pv.video);
  pv.video.pause();pv.video.removeAttribute("src");pv.video.load();
  if(pv.group)leaveSyncGroup(pv.group,pv.video);

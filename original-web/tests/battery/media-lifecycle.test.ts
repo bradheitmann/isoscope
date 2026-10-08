@@ -10,7 +10,9 @@ const release=declarations('keepMediaAlive','releaseVideo');
 describe('media queue and shared-source lifecycle contracts',()=>{
  it('warmup can be scheduled again after its queue drains [F04]',()=>{
   const callbacks:Array<()=>void>=[];
-  const result=run(warm+`const a={started:false,video:{},src:'a'};warmupQueue.push(a);scheduleWarmup();callbacks.shift()();const b={started:false,video:{},src:'b'};warmupQueue.push(b);scheduleWarmup();callbacks.length;`,{callbacks,window:{requestIdleCallback:(fn:()=>void)=>callbacks.push(fn)}});
+  /* startVideo now fetches the whole file into a blob before attaching (connection-
+     cap fix); the never-resolving fetch stub keeps this lifecycle probe synchronous */
+  const result=run(warm+`const a={started:false,video:{},src:'a'};warmupQueue.push(a);scheduleWarmup();callbacks.shift()();const b={started:false,video:{},src:'b'};warmupQueue.push(b);scheduleWarmup();callbacks.length;`,{callbacks,window:{requestIdleCallback:(fn:()=>void)=>callbacks.push(fn)},fetch:()=>new Promise(()=>{}),Promise,emitWide(){}});
   expect(result).toBe(1);
  });
  it('released queue entries cannot be resurrected [F05]',()=>{

@@ -9,7 +9,7 @@
     },
     "okoa-design": {
       "command": "npx",
-      "args": ["-y", "mcp-remote", "https://okoa-design-mcp.okoalabs.workers.dev/mcp"]
+      "args": ["-y", "mcp-remote@0.14.3", "https://okoa-design-mcp.okoalabs.workers.dev/mcp"]
     }
   }
 }

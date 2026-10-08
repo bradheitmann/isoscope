@@ -239,7 +239,7 @@
    "d": 1,
    "h": 2,
    "does": "Headless bun harnesses (edge-layout QC, this generator).",
-   "built": "3 files, ~810 lines",
+   "built": "3 files, ~819 lines",
    "refs": "original-web/scripts/codebase-graph.ts · original-web/scripts/edge-layout-qc.ts · original-web/scripts/imagejev-qc.ts",
    "media": [],
    "tags": []
@@ -287,7 +287,7 @@
    "d": 1,
    "h": 4,
    "does": "Keyboard-shortcut guard: global keys must never fire while the user is editing.",
-   "built": "4 files, ~2944 lines · exports: isEditableTarget, LayoutNode, EdgeSpec, Positions, LayoutCandidate, scoreLayout",
+   "built": "4 files, ~2975 lines · exports: isEditableTarget, LayoutNode, EdgeSpec, Positions, LayoutCandidate, scoreLayout",
    "refs": "original-web/src/editable-target.ts · original-web/src/layouts.ts · original-web/src/main.ts · original-web/src/original-renderer.ts",
    "media": [],
    "tags": []
@@ -451,15 +451,15 @@
   "THREE": 0,
   "TYPES": 0,
   "VENDOR": 0,
-  "ANNOT": 0,
-  "BUILD": 0,
-  "QCCLI": 0,
-  "THEME": 0,
-  "LIB": 0,
-  "RENDER": 0,
-  "CLI": 0,
-  "DRC": 0,
-  "MCP": 0
+  "ANNOT": 1,
+  "BUILD": 1,
+  "QCCLI": 1,
+  "THEME": 1,
+  "LIB": 1,
+  "RENDER": 1,
+  "CLI": 2,
+  "DRC": 2,
+  "MCP": 2
  },
  "paths": {},
  "edges": [

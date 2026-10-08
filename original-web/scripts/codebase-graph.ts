@@ -397,8 +397,17 @@ function buildSpec(cli: Cli): { spec: Record<string, unknown>; modules: Map<stri
   const edgeDocs: Record<string, { title?: string; carries?: string; refs?: string }> = {};
   for (const e of edges) edgeDocs[`${e[0]}-${e[1]}`] = { title: "import", carries: "module dependency", refs: "" };
   const short: Record<string, string> = {};
+  /* levels come from dependency depth so the 3-level Stack view separates the tiers:
+     leaf/foundation modules low, mid-tier in the middle, the app's own top last. */
   const levels: Record<string, number> = {};
-  for (const n of nodes) { short[n.id] = n.name; levels[n.id] = 0; }
+  const depthOfNode = new Map<string, number>();
+  for (const [d, ids] of byDepth.entries()) for (const id of ids) depthOfNode.set(id, d);
+  const maxDepth = Math.max(1, ...[...depthOfNode.values()]);
+  for (const n of nodes) {
+    short[n.id] = n.name;
+    const d = depthOfNode.get(n.id) ?? 0;
+    levels[n.id] = Math.min(2, Math.round((d / maxDepth) * 2)); /* collapse depth to 3 tiers */
+  }
   const spec = {
     title: "Isoscope — derived from the actual codebase",
     wordmark: "ISOSCOPE",

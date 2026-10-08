@@ -239,7 +239,7 @@
    "d": 1,
    "h": 2,
    "does": "Fails when examples/codebase.spec.json differs from a fresh regeneration.",
-   "built": "4 files, ~869 lines",
+   "built": "4 files, ~868 lines",
    "refs": "original-web/scripts/check-codebase-map.ts · original-web/scripts/codebase-graph.ts · original-web/scripts/edge-layout-qc.ts · original-web/scripts/imagejev-qc.ts",
    "media": [],
    "tags": []

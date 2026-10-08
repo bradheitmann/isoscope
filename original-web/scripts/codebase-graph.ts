@@ -411,7 +411,6 @@ function buildSpec(cli: Cli): { spec: Record<string, unknown>; modules: Map<stri
   const status: Record<string, { state: string; items: unknown[] }> = {};
   for (const n of nodes) status[n.id] = { state: "ok", items: [] };
 
-
   /* edgeDocs is a Record keyed "A-B" (the renderer reads EDGEDOCS[key].title), and
      the full schema must be present so no renderer read ever hits undefined. */
   const edgeDocs: Record<string, { title?: string; carries?: string; refs?: string }> = {};

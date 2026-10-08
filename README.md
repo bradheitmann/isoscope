@@ -15,7 +15,7 @@ develop — then graduate it to an *observability visualization layer* as you ro
 into production. Same map, same store; only the writers change (you and your
 agents first, then your pipelines and telemetry).
 
-Zero dependencies. TypeScript on [Bun](https://bun.sh) (`bun:sqlite` built in).
+The engine has no runtime dependencies (the app in `original-web/` adds three.js, vite and vitest). TypeScript on [Bun](https://bun.sh) (`bun:sqlite` built in).
 Ships as one self-contained HTML file that works from disk.
 
 ## Quickstart
@@ -97,28 +97,64 @@ scale auto-fit whatever spec is loaded.
 
 To explain a system or a decision to the operator with a static map, follow the agent skill in [skills/isoscope/SKILL.md](skills/isoscope/SKILL.md) and its worked example `skills/isoscope/examples/decision-explainer.spec.json`.
 
+## Current state: original-web
+
+`original-web/` is the live Isoscope web product: a Vite + three.js app (Kimi's
+interface reconstruction of the isometric city) that renders the self-map
+`examples/isoscope.spec.json`. It has its own `package.json` and lockfile
+(npm, `package-lock.json`); the root engine is separate and runs on Bun.
+The self-map exists twice (root `examples/` and `original-web/examples/`) and the
+two copies must stay byte-identical (`tests/spec-sync.test.ts` enforces it).
+
+```bash
+# original-web (live web product; dev server on 127.0.0.1:4182)
+cd original-web
+npm ci
+npm run dev            # vite dev server
+npm run typecheck      # tsc for src + scripts
+npm test               # vitest
+bun run qa:static      # static QA checks
+npm run qa             # browser QA harness (tests/qa/, headless Chrome)
+npm run build          # tsc + vite build -> dist/
+
+# root engine
+bun run typecheck
+bun run test           # bun test ./tests/
+bun run build:self     # examples/isoscope.spec.json -> out/isoscope.html
+bun run drc            # collision lint (bun drc.ts <spec>)
+```
+
 ## Layout
 
 ```
 template.html   the engine (one file: scene, router, inspector, themes, live client)
-build.ts      spec + template → self-contained HTML
+build.ts        spec + template → self-contained HTML
+router.ts       the shared edge router (template build, drc.ts and original-web all use it)
+drc.ts          collision lint: fails when routes cross beyond the spec's budget
+okoa.ts         OKOA design-token integration
 lib.ts          SQLite graph store ⇄ spec (core, shared)
-cli.ts          init · import · export · build · serve
+cli.ts          init · import · export · build · serve · render · ci · mark
 mcp.ts          MCP server (agents maintain the map)
 db/schema.sql   the graph shape: nodes, edges-as-entities, status, trace
 adapters/       contracts for non-MCP harnesses (DeepSeek first)
 examples/       isoscope-by-isoscope (primary) · ODIN Sentinel · lumbr
+scripts/        render/contrast/overflow proofs, screenshots, landing + theme tooling (Bun, TypeScript)
+skills/         agent skills (skills/isoscope: presentation layer)
+tests/          engine tests (bun test)
+advisory/       advisory deliverables (ODIN codebase map + topology lab)
+original-web/   the live web product (Vite + three.js) with its own tests, QA harness and build
 docs/           design rules (routing doctrine + sources) · dev handoff
 ```
 
-Spec schema: [SPEC.md](SPEC.md) · Routing laws & roadmap: [docs/DESIGN-RULES.md](docs/DESIGN-RULES.md)
+Spec schema: [SPEC.md](SPEC.md) · Routing laws: [docs/DESIGN-RULES.md](docs/DESIGN-RULES.md)
 
 ## Roadmap
 
-CI/CD provider integrations (GitHub Actions / GitLab / Buildkite adapters that
-map failing jobs → modules automatically) · test-runner adapters
-(failure→module attribution) · live telemetry streaming into the trace-shaped
-status slots · R30 phase 2: in-place hot-swap for `serve` (shipped) · R10 lane assignment in shared corridors · R12 PathFinder
-negotiation past ~50 links · lumbr bridge (its instrumentation → `mark`).
+Shipped: CI/CD provider integrations (GitHub Actions / GitLab / Buildkite) ·
+R30 phase 2 in-place hot-swap for `serve` · R10 lane assignment in shared corridors.
+
+Open: test-runner adapters (failure→module attribution) · live telemetry
+streaming into the trace-shaped status slots · R12 PathFinder negotiation past
+~50 links · lumbr bridge (its instrumentation → `mark`).
 
 MIT.

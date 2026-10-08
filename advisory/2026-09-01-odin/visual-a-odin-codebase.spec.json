@@ -189,7 +189,7 @@
   {
    "id": "WT1", "tag": "LANE S1", "g": "lanes", "name": "odin-wt-s1 · GOVEDGE-S1",
    "x": 5.5, "y": 12.2, "w": 1.4, "d": 1.2, "h": 1, "stack": 3,
-   "does": "[OBSERVED worktree] /Users/bradleyheitmann/open_protocols/odin-wt-s1 on branch lane/govedge-s1, spawned from verified baseline e431e30. NOTHING here is on baseline HEAD — integration happens only through dual-verdict closure. [REPORTED via A/EXEC-ODIN GO packet] Candidate history: 46dea649&hellip; QA-1 16/16 PASS, QA-2 CLEAN, HLDT FAIL (one bounded duplicate hyphen-fold implementation) &rarr; repair 49a9dedd&hellip;8f39 QA-1 16/16, QA-2 NOT_CLEAN (one LOW stale source-comment name) &rarr; third candidate 0fd70e5c&hellip; currently in QA-1.",
+   "does": "[OBSERVED worktree] odin-wt-s1 (sibling checkout) on branch lane/govedge-s1, spawned from verified baseline e431e30. NOTHING here is on baseline HEAD — integration happens only through dual-verdict closure. [REPORTED via A/EXEC-ODIN GO packet] Candidate history: 46dea649&hellip; QA-1 16/16 PASS, QA-2 CLEAN, HLDT FAIL (one bounded duplicate hyphen-fold implementation) &rarr; repair 49a9dedd&hellip;8f39 QA-1 16/16, QA-2 NOT_CLEAN (one LOW stale source-comment name) &rarr; third candidate 0fd70e5c&hellip; currently in QA-1.",
    "built": "<span class='pip built'></span>ACTIVE LANE — not integrated. Closes H1 at merge.",
    "refs": "git worktree list (observed) · EXEC-ODIN GO packet (timeline)"
   },

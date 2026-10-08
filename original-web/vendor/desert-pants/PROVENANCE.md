@@ -1,6 +1,6 @@
 # Desert Pants assets used by the Isoscope original-web lane
 
-Canonical source is `/Users/bradleyheitmann/open_protocols/desert-pants-workbench` at commit `ba99de27974f623c20679962e8e3dc4d74c2a273` (2026-10-01). The copied token sources, all generated theme outputs, font assets, reference component CSS, and selected Lucide icons were verified byte-for-byte against that checkout. `CANONICAL-MANIFEST.sha256` pins every vendored asset used here; `build/web/themes.json` is the complete 18-theme inventory. The switcher presents that inventory in exact reverse order without mutating canonical values.
+Canonical source is the `desert-pants-workbench` checkout (sibling of this repo, outside it) at commit `ba99de27974f623c20679962e8e3dc4d74c2a273` (2026-10-01). The copied token sources, all generated theme outputs, font assets, reference component CSS, and selected Lucide icons were verified byte-for-byte against that checkout. `CANONICAL-MANIFEST.sha256` pins every vendored asset used here; `build/web/themes.json` is the complete 18-theme inventory. The switcher presents that inventory in exact reverse order without mutating canonical values.
 
 Key generated-output SHA-256 values:
 

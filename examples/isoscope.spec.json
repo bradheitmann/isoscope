@@ -1,7 +1,7 @@
 {
  "title": "Isoscope — the map that maps itself",
  "wordmark": "ISOSCOPE",
- "asOf": "As of 2026-10-06 · rendered by original-web",
+ "asOf": "As of 2026-10-08 · rendered by original-web",
  "brand": {
   "k": "Project",
   "v": "isoscope · schematic observability"
@@ -441,8 +441,8 @@
    "d": 1,
    "h": 1,
    "does": "Injects a spec into the engine template and emits one self-contained HTML file that works from disk — no server, no CORS, nothing to install.",
-   "built": "build.mjs: importable function + runnable command, ~40 lines.",
-   "refs": "build.mjs",
+   "built": "build.ts: importable function + runnable command, ~40 lines.",
+   "refs": "build.ts",
    "media": [
     {
      "src": "/media/quiet-riot-cum-on-feel-the-noize.mp4",
@@ -758,7 +758,7 @@
    "d": 1,
    "h": 1,
    "does": "Keeps the wiring lawful and the render honest. The collision lint scores weighted crossings against the spec's acknowledged budget and fails the build over it; the render proof drives headless Chrome across six viewports; the contrast proof clicks every theme and measures real text/background pairs against WCAG AA, and fails on any JS error.",
-   "built": "drc.ts imports the same router.mjs the template is built from — one router, never two. scripts/render-proof.ts, overflow-diagnose.ts and contrast-proof.ts speak CDP over a Bun WebSocket, zero deps.",
+   "built": "drc.ts imports the same router.ts the template is built from — one router, never two. scripts/render-proof.ts, overflow-diagnose.ts and contrast-proof.ts speak CDP over a Bun WebSocket, zero deps.",
    "refs": "drc.ts · scripts/",
    "media": [
     {
@@ -1071,12 +1071,12 @@
   ],
   "TP": [
    "docs/DESIGN-RULES.md",
-   "router.mjs",
+   "router.ts",
    "template.html",
    "okoa.ts"
   ],
   "BU": [
-   "build.mjs"
+   "build.ts"
   ],
   "SV": [
    "cli.ts:serve"
@@ -1185,6 +1185,11 @@
    "DP",
    "OW",
    "data"
+  ],
+  [
+   "OW",
+   "SV",
+   "data"
   ]
  ],
  "edgeStatus": {
@@ -1230,7 +1235,7 @@
   "BU-AR": {
    "title": "One file out",
    "carries": "The finished map: engine + spec fused into a single self-contained HTML artifact.",
-   "refs": "build.mjs"
+   "refs": "build.ts"
   },
   "DB-SV": {
    "title": "The store is watched",
@@ -1255,7 +1260,7 @@
   "TP-DR": {
    "title": "One router, linted",
    "carries": "The router source itself — injected into the template at build and imported by the lint, so the law the map obeys is the law the lint checks.",
-   "refs": "router.mjs · drc.ts"
+   "refs": "router.ts · drc.ts"
   },
   "SP-OW": {
    "title": "The spec is the scene",
@@ -1264,13 +1269,18 @@
   },
   "TP-OW": {
    "title": "One router, in the browser",
-   "carries": "The shared router.mjs imported straight into the web app — the same laws that route the artifact route the live city, hops and risers included.",
-   "refs": "router.mjs · original-web/src/edge-qc.ts"
+   "carries": "The shared router.ts imported straight into the web app — the same laws that route the artifact route the live city, hops and risers included.",
+   "refs": "router.ts · original-web/src/edge-qc.ts"
   },
   "DP-OW": {
    "title": "Painted by desert-pants",
    "carries": "Tokens, themes, fonts, and icons flowing into every panel and building — with a runtime contrast floor holding the map readable in all 18 themes.",
    "refs": "original-web/vendor/desert-pants/ · original-web/src/theme-order.ts"
+  },
+  "OW-SV": {
+   "title": "surface → serve",
+   "carries": "media + annotation + telemetry requests",
+   "refs": "vite dev server"
   }
  },
  "trace": [
@@ -1450,5 +1460,9 @@
    "src": "/media/u2-i-still-havent-found.mp4",
    "kind": "video"
   }
- ]
+ ],
+ "operator": {
+  "name": "Brad Heitmann",
+  "initials": "BH"
+ }
 }

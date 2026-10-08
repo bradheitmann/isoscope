@@ -1,11 +1,13 @@
 import { readFileSync, writeFileSync, renameSync, existsSync, mkdirSync } from "node:fs";
 import type { IncomingMessage, ServerResponse } from "node:http";
 import { DatabaseSync } from "node:sqlite";
-import { basename, resolve } from "node:path";
+import { basename, dirname, resolve } from "node:path";
 
 export interface ApiOptions {
-  /** annotations JSON file (read/written atomically) */
+  /** tracked, read-only seed/example annotations (never written by the server) */
   annotationsPath: string;
+  /** gitignored runtime store (read first, written atomically); defaults to <seed>.local.json */
+  localAnnotationsPath?: string;
   /** directory that receives binary uploads */
   uploadDir: string;
   /** SQLite file for the wide-event store (opened lazily) */
@@ -64,6 +66,7 @@ function sameOrigin(req: IncomingMessage): boolean {
 
 export function createApiHandler(opts: ApiOptions): ApiHandler {
   const { annotationsPath, uploadDir, telemetryDbPath } = opts;
+  const localPath = opts.localAnnotationsPath ?? annotationsPath.replace(/\.json$/, "") + ".local.json";
 
   let telemetry: DatabaseSync | null = null;
   const telemetryDb = (): DatabaseSync => {
@@ -87,7 +90,7 @@ export function createApiHandler(opts: ApiOptions): ApiHandler {
 
   const readStore = (): { modules: Record<string, unknown> } => {
     try {
-      const raw = JSON.parse(readFileSync(annotationsPath, "utf8")) as { modules?: Record<string, unknown> };
+      const raw = JSON.parse(readFileSync(existsSync(localPath) ? localPath : annotationsPath, "utf8")) as { modules?: Record<string, unknown> };
       return { modules: raw.modules ?? {} };
     } catch {
       return { modules: {} };
@@ -95,9 +98,10 @@ export function createApiHandler(opts: ApiOptions): ApiHandler {
   };
   const writeStore = (store: { modules: Record<string, unknown> }): void => {
     const body = JSON.stringify({ $schema: "per-module annotations", ...store }, null, 1) + "\n";
-    const tmp = annotationsPath + ".tmp";
+    const tmp = localPath + ".tmp";
+    mkdirSync(dirname(localPath), { recursive: true });
     writeFileSync(tmp, body);
-    renameSync(tmp, annotationsPath); /* atomic: readers never see a torn write */
+    renameSync(tmp, localPath); /* atomic: readers never see a torn write */
   };
 
   return async (req, res, next) => {

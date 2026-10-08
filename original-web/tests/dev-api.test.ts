@@ -110,3 +110,32 @@ describe("dev-server api", () => {
     expect(h[0]).toMatchObject({ edge: "a", total: 1 });
   });
 });
+
+describe("annotations seed vs local store", () => {
+  it("reads the seed, writes only the local store, deletes only in the local store", async () => {
+    const { writeFileSync, existsSync } = await import("node:fs");
+    const d = mkdtempSync(join(tmpdir(), "isoscope-seed-"));
+    const seed = join(d, "annotations.json"), local = join(d, "annotations.local.json");
+    const seedBody = JSON.stringify({ modules: { SP: { notes: "seed" }, TP: { notes: "tp" } } }, null, 1) + "\n";
+    writeFileSync(seed, seedBody);
+    const h = createApiHandler({ annotationsPath: seed, localAnnotationsPath: local, uploadDir: join(d, "u"), telemetryDbPath: join(d, "t.db") });
+    const s = createServer((req, res) => { void h(req, res, () => { res.writeHead(404); res.end(); }); });
+    await new Promise<void>(r => s.listen(0, "127.0.0.1", r));
+    const b = `http://127.0.0.1:${(s.address() as AddressInfo).port}`;
+    try {
+      expect(await (await fetch(b + "/api/annotations")).json()).toEqual({ SP: { notes: "seed" }, TP: { notes: "tp" } });
+      expect(existsSync(local)).toBe(false);
+      const p = await fetch(b + "/api/annotations/CL", { method: "POST", body: JSON.stringify({ notes: "new" }) });
+      expect(p.status).toBe(200);
+      expect(readFileSync(seed, "utf8")).toBe(seedBody);
+      expect(existsSync(local)).toBe(true);
+      expect(await (await fetch(b + "/api/annotations")).json()).toEqual({ SP: { notes: "seed" }, TP: { notes: "tp" }, CL: { notes: "new" } });
+      expect((await fetch(b + "/api/annotations/SP", { method: "DELETE" })).status).toBe(200);
+      expect(readFileSync(seed, "utf8")).toBe(seedBody);
+      expect(await (await fetch(b + "/api/annotations")).json()).toEqual({ TP: { notes: "tp" }, CL: { notes: "new" } });
+    } finally {
+      await new Promise<void>(r => { s.closeAllConnections(); s.close(() => r()); });
+      rmSync(d, { recursive: true, force: true });
+    }
+  });
+});

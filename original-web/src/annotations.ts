@@ -1,6 +1,7 @@
 /* Per-module annotation store: notes, an inside drawer of files/notes, and
-   per-face surface assignments. Durable + shared through the write-back endpoint
-   (examples/annotations.json via the Vite middleware); falls back to localStorage
+   per-face surface assignments. Durable through the write-back endpoint
+   (gitignored examples/annotations.local.json via the Vite middleware; the tracked
+   examples/annotations.json is only a read-only seed); falls back to localStorage
    when served fully static, with an explicit export to bake in by hand.
 
    The store is deliberately free of Three.js — pure data + fetch — so it is

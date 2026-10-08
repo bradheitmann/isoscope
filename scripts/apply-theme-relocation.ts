@@ -27,7 +27,8 @@ const data: { props: string[]; themes: Record<string, Record<string, string>> } 
 let src = readFileSync(tplPath, "utf8");
 
 if (src.includes("IDE_THEMES")) {
-  console.log("already applied — nothing to do"); process.exit(0);
+  if (outPath !== tplPath) writeFileSync(outPath, src); /* --out always yields a file */
+  console.log(outPath !== tplPath ? `already applied — wrote unchanged copy to ${outPath}` : "already applied — nothing to do"); process.exit(0);
 }
 
 // 1. excise the static IDE-theme CSS

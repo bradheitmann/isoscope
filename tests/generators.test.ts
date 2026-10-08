@@ -1,5 +1,5 @@
 import { afterAll, describe, expect, test } from "bun:test";
-import { mkdtempSync, rmSync, writeFileSync, existsSync } from "fs";
+import { mkdtempSync, rmSync, writeFileSync, existsSync, readFileSync } from "fs";
 import { tmpdir } from "os";
 import { join, resolve } from "path";
 
@@ -54,5 +54,36 @@ describe("generators fail clearly on missing input", () => {
     const r2 = gen("contrast-proof.ts");
     expect(r2.code).not.toBe(0);
     expect(r2.err).toContain("usage:");
+  });
+});
+
+describe("apply-theme-relocation is idempotent and --out always writes", () => {
+  const tplBody = [
+    `<style id="ide-themes">.x{color:red}</style>`,
+    `<script>const THEMES=[\n {id:"a"}\n];`,
+    `function setTheme(id){`,
+    ` document.documentElement.setAttribute("data-style",id);`,
+    ` refreshTheme();paintThemeRows();`,
+    `}</script>`,
+  ].join("\n");
+  test("second run on an already-relocated template still writes the --out copy", () => {
+    const tpl = join(cwd, "idem-template.html"), json = join(cwd, "idem-themes.json");
+    const out1 = join(cwd, "idem-out1.html"), out2 = join(cwd, "idem-out2.html");
+    writeFileSync(tpl, tplBody);
+    writeFileSync(json, JSON.stringify({ props: ["--a"], themes: { t: { "--a": "#fff" } } }));
+    const first = gen("apply-theme-relocation.ts", tpl, json, "--out", out1);
+    expect(first.code).toBe(0);
+    expect(readFileSync(out1, "utf8")).toContain("IDE_THEMES");
+    const second = gen("apply-theme-relocation.ts", out1, json, "--out", out2);
+    expect(second.code).toBe(0);
+    expect(existsSync(out2)).toBe(true);
+    expect(readFileSync(out2, "utf8")).toBe(readFileSync(out1, "utf8"));
+  });
+  test("--in-place on an already-relocated template leaves it unchanged", () => {
+    const tpl = join(cwd, "idem-inplace.html"), json = join(cwd, "idem-themes.json");
+    writeFileSync(tpl, tplBody + "\n/* IDE_THEMES */");
+    const before = readFileSync(tpl, "utf8");
+    expect(gen("apply-theme-relocation.ts", tpl, json, "--in-place").code).toBe(0);
+    expect(readFileSync(tpl, "utf8")).toBe(before);
   });
 });

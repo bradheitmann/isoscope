@@ -134,7 +134,7 @@ export async function navigationContracts(ctx: Ctx): Promise<void> {
 
 interface ViewportProbe {
   iw: number; ih: number; overflowX: number; canvas: [number, number]; wrap: [number, number];
-  controls: Record<string, [number, number, number, number] | null>; labelsTotal: number; labelsOff: number;
+  controls: Record<string, [number, number, number, number] | null>; labelsTotal: number; labelsOff: number; labelsUnrendered: number;
 }
 
 export async function viewportMatrix(ctx: Ctx): Promise<void> {
@@ -150,7 +150,7 @@ export async function viewportMatrix(ctx: Ctx): Promise<void> {
           canvas: [canvas.getBoundingClientRect().width, canvas.getBoundingClientRect().height],
           wrap: [wrap.getBoundingClientRect().width, wrap.getBoundingClientRect().height],
           controls: { btnReset: r("btnReset"), btnReadMap: r("btnReadMap"), btnSettings: r("btnSettings"), railToggle: r("railToggle") },
-          labelsTotal: labels.length, labelsOff: off.length };
+          labelsTotal: labels.length, labelsOff: off.length, labelsUnrendered: labels.filter(l => l.getBoundingClientRect().width === 0).length };
       })()`);
       const tag = `${w}x${h}`;
       await shot(ctx, s, `viewport-${tag}`);
@@ -161,7 +161,7 @@ export async function viewportMatrix(ctx: Ctx): Promise<void> {
       const inView = (b: [number, number, number, number] | null): boolean => b !== null && b[2] > b[0] && b[0] >= 0 && b[1] >= 0 && b[2] <= p.iw && b[3] <= p.ih;
       const reachable = inView(p.controls["btnReset"] ?? null) || inView(p.controls["railToggle"] ?? null);
       ctx.rec.check(C, `${tag} controls reachable in viewport`, reachable, JSON.stringify(p.controls));
-      ctx.rec.observe(C, `${tag} home-view labels off-canvas`, `${p.labelsOff}/${p.labelsTotal} labels outside the viewport (drain item D6, owner decision pending)`);
+      ctx.rec.observe(C, `${tag} home-view labels off-canvas`, `${p.labelsOff}/${p.labelsTotal} labels outside the viewport, ${p.labelsUnrendered} not rendered (width 0; not counted as off-canvas) (drain item D6, owner decision pending)`);
       ctx.rec.check(C, `${tag} no uncaught exceptions`, s.exceptions.length === 0, s.exceptions.slice(0, 2).join("; ") || "none");
     });
   }

@@ -9,6 +9,8 @@ import { themes as DP_THEMES, setTheme as setDPTheme, setMode as setDPMode, type
 import { tokens, type TokenPath } from "../vendor/desert-pants/build/web/tokens";
 import { presentedThemes } from "./theme-order";
 import { pageNavigation, type NavigationNode } from "./navigation";
+import { energizeTrack } from "./playlist";
+import { clearBrush, type BrushState } from "./brush-model";
 import iconPlay from "../vendor/desert-pants/icons/svg/play.svg?raw";
 import iconPause from "../vendor/desert-pants/icons/svg/pause.svg?raw";
 import iconTrace from "../vendor/desert-pants/icons/svg/arrow-right.svg?raw";
@@ -1051,7 +1053,7 @@ function npPlaylistRender(): void { /* rebuild the playlist rows from the store 
   row.append(name,track);
   row.addEventListener("click",()=>{ /* picking a track selects + energizes its cube and gives it the voice */
    clearEdgeSel();
-   cordon.clear();cordon.add(id);pinned=null;
+   energizeTrack(cordon,id);pinned=null;
    flyTo(byId[id]);
    setAudioFocus(id);mediaControls.solo(id);
    applyCircuit(); /* lights the cube + label, refreshes panel + transport */
@@ -1729,7 +1731,7 @@ syncReaderLayout();
 btnReadMap.addEventListener("click",()=>{
  renderPanel(null);
  readingPanel.scrollTop=0; /* the headline leads; search never hijacks the scroll position */
- if(compactReader.matches)openReadingPanel(false);
+ if(compactReader.matches)openReadingPanel(true);
  else readingPanel.focus({preventScroll:true});
 });
 /* the tray is non-modal: scrim clicks pass to the art; Escape rests the tray at peek */
@@ -2663,7 +2665,12 @@ const brush=(()=>{
   const i=brushMats.indexOf(s.mat);if(i>=0)brushMats.splice(i,1);
  }
  function undo(): void { const s=strokes.pop();if(!s)return;drop(s);syncCount(); }
- function clear(): void { while(strokes.length){const s=strokes.pop();if(!s)break;drop(s);}syncCount(); }
+ function clear(): void {
+  const st: BrushState<Stroke>={strokes,current,drawing};
+  clearBrush(st,drop);
+  current=st.current;drawing=st.drawing;
+  syncCount();
+ }
  function repaint(): void { const c=ink();strokes.forEach(s=>{s.mat.color.copy(c);}); }
  function resizeAll(): void { brushMats.forEach(m=>m.resolution.set(wrap.clientWidth,wrap.clientHeight)); }
  /* strokes bound to a module ride it when Stack lifts the levels */

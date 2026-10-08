@@ -9,3 +9,5 @@ original-web/public/media/_originals/
 original-web/examples/telemetry.jsonl
 original-web/examples/telemetry.db*
 original-web/.jev-receipts/
+# runtime uploads from the dev-server upload API (Kimi ack #4-6056578321); already-tracked files stay tracked
+original-web/public/media/uploads/

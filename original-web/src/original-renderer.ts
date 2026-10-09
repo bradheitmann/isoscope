@@ -1079,7 +1079,9 @@ function playlistSync(): string[] { /* keep the store live: every audible module
 }
 function trackNameOf(id: string): string { /* derive a human track name from the video src filename */
  const e=audibleEntry(id);
- const src=e&&e.video?e.video.currentSrc||e.video.src:"";
+ /* currentSrc is a blob: URL since the connection-cap fix — resolve the REAL
+    source path through the pool, or every label reads "Video — 4801598b…" */
+ const src=e&&e.video?(pvByVideo.get(e.video)?.src ?? ""):"";
  if(!src)return "";
  let file=src.split(/[?#]/)[0].split("/").pop()||"";
  try{file=decodeURIComponent(file);}catch{/* keep raw */}

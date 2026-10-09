@@ -1,10 +1,4 @@
 {
  "$schema": "per-module annotations",
- "modules": {
-  "CL": {},
-  "TP": {},
-  "SP": {
-   "notes": "live health probe 1791341611649"
-  }
- }
+ "modules": {}
 }

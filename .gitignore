@@ -12,3 +12,6 @@ original-web/.jev-receipts/
 # runtime uploads from the dev-server upload API (Kimi ack #4-6056578321); already-tracked files stay tracked
 original-web/public/media/uploads/
 original-web/examples/annotations.local.json*
+
+# demo media: videos are user-supplied, never shipped (open-source clean)
+original-web/public/media/*.mp4

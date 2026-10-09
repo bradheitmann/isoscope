@@ -15,10 +15,10 @@ concurrency:
 jobs:
   original-web:
     name: original-web (typecheck, test, build)
-    # self-hosted: GitHub-hosted minutes are billing-blocked; mbp-isoscope-1 is
-    # registered to this repo with the `isoscope` label and started manually by
-    # the owner. Jobs queue (they never fail on billing) until it is online.
-    runs-on: [self-hosted, isoscope]
+    # runner choice is a repo variable: set USE_SELF_HOSTED=true (repo Settings >
+    # Variables) to route to the owner's mbp-isoscope-1; forks and the public repo
+    # get GitHub-hosted ubuntu-latest (free on public repos) with no edits needed.
+    runs-on: ${{ vars.USE_SELF_HOSTED == 'true' && fromJSON('["self-hosted","isoscope"]') || 'ubuntu-latest' }}
     timeout-minutes: 20
     defaults:
       run:
@@ -46,7 +46,7 @@ jobs:
 
   root:
     name: root (typecheck, test, build)
-    runs-on: [self-hosted, isoscope]
+    runs-on: ${{ vars.USE_SELF_HOSTED == 'true' && fromJSON('["self-hosted","isoscope"]') || 'ubuntu-latest' }}
     timeout-minutes: 20
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1

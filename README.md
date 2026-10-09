@@ -157,4 +157,14 @@ Open: test-runner adapters (failure→module attribution) · live telemetry
 streaming into the trace-shaped status slots · R12 PathFinder negotiation past
 ~50 links · lumbr bridge (its instrumentation → `mark`).
 
+## Media surfaces
+
+The demo map ships with **no bundled videos** — deliberately: you bring your
+own, and nothing copyrighted is redistributed. Any cube face can play a video,
+show an image, render a document, or hold ink. To add your own, double-click a
+cube, pick a face, and either paste any video/image URL or upload a file (the
+dev server stores uploads in `original-web/public/media/uploads/`, which is
+gitignored). Everything you assign persists locally in
+`original-web/examples/annotations.local.json` (also gitignored).
+
 MIT.

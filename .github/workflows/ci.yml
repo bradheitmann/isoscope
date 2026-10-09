@@ -39,7 +39,36 @@ jobs:
           cache-dependency-path: original-web/package-lock.json
       - run: npm ci
       - run: npm run typecheck
-      - run: npm test
+      # OPT-IN Running Man admission candidate: wraps ONLY the existing test
+      # command when the runner provisions RUNNING_MAN_BIN + RUNNING_MAN_URL
+      # (coordinator deployment is a separate, owner-authorized step). Without
+      # them the step runs exactly as before. Spec binds HEAD/base, Node/Bun
+      # versions, worker image, lockfile and this workflow's digest; fast class,
+      # success reuse on (tests are pure - no artifacts). Specs/receipts stay in
+      # runner.temp, never in the checkout.
+      - name: Workspace tests (through Running Man when provisioned)
+        env:
+          RUNNING_MAN_BIN: ~/.local/share/running-man/v0.1.1/running-man
+          RM_SPEC: ${{ runner.temp }}/running-man-web-test.json
+          RM_RECEIPT: ${{ runner.temp }}/running-man-web-test.receipt.json
+          RUNNING_MAN_TOKEN: ${{ secrets.RUNNING_MAN_TOKEN }}
+        run: |
+          set -euo pipefail
+          if [ -z "${RUNNING_MAN_URL:-}" ] || [ ! -x "$RUNNING_MAN_BIN" ]; then
+            echo "Running Man not provisioned; running tests unmanaged"
+            npm --prefix original-web test
+            exit 0
+          fi
+          base=${{ github.event.pull_request.base.sha || github.event.before }}
+          base=${base:-$(git merge-base origin/main HEAD 2>/dev/null || echo "$GITHUB_SHA")}
+          "$RUNNING_MAN_BIN" prepare --project "$GITHUB_REPOSITORY" --scope test \
+            --base "$base" --pool mbp-guest --platform macos-arm64 \
+            --toolchain "node24-bun1.3.9" --key "worker-image=${RUNNING_MAN_IMAGE_ID:-mbp-isoscope-1}" \
+            --class fast --cpu 2 --memory-mb 2048 --timeout-seconds 1200 --reuse-success \
+            --input original-web/package-lock.json --input original-web/package.json \
+            --input .github/workflows/ci.yml \
+            --output "$RM_SPEC" -- npm --prefix original-web test
+          "$RUNNING_MAN_BIN" run --spec "$RM_SPEC" --receipt "$RM_RECEIPT"
       - run: npm run build
       - run: bun run qa:static
       - run: bun run check:chunks

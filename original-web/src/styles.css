@@ -367,12 +367,15 @@ details > summary { cursor: pointer; }
   inline-size:var(--dp-layout-grid-component-visualization-workbench-rail-touch-min);min-block-size:var(--dp-layout-grid-component-visualization-workbench-rail-touch-min);
   display:none;place-items:center;background:var(--dp-color-bg-raised);border:var(--dp-border-width-hair) solid var(--dp-color-border-subtle);
   color:var(--dp-color-text-primary);box-shadow:var(--dp-shadow-sm)}
-@media (max-width: 720px){
+/* collapse to the menu on narrow widths AND on short viewports: the rail is
+   ~720px tall, so below ~800px height it overflows the viewport and lands on
+   the avatar/transport (the 1024x768 overlap) */
+@media (max-width: 720px), (max-height: 800px){
   .rail-toggle{display:grid}
   .controls-float{transition:transform .24s cubic-bezier(.32,.72,.28,1),opacity .24s ease;transform:translateX(-120%);opacity:0;pointer-events:none}
   .controls-float.rail-open{transform:none;opacity:1;pointer-events:auto}
 }
-@media (min-width: 721px){.controls-float{transform:none;opacity:1;pointer-events:auto}}
+@media (min-width: 721px) and (min-height: 801px){.controls-float{transform:none;opacity:1;pointer-events:auto}}
 
 /* live-flow footer "On the map" overlay toggle */
 .tf-overlay-btn.is-on{background:var(--dp-color-accent-default);color:var(--dp-color-accent-contrast);border-color:transparent}

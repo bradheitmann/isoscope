@@ -65,9 +65,19 @@ body { display: grid; grid-template-rows: auto minmax(0, 1fr); background: var(-
 /* ————— reading panel: bottom tray on small screens (canonical .dp-sheet anatomy) ————— */
 /* the whole tray is a column flex box so the grabber stays pinned and the body
    scrolls at ANY height — free drag, not just fixed detents. */
-.panel { position: fixed; inset-inline: 0; inset-block-end: 0; margin-inline: auto; max-inline-size: var(--dp-component-bottom-sheet-max-width); z-index: var(--dp-z-sheet); min-height: 0; display: flex; flex-direction: column; touch-action: none; }
+/* full-bleed on compact: edge to edge, no centered floating card (owner ruling —
+   a tray that centers on an iPad wastes the very space it took) */
+.panel { position: fixed; inset-inline: 0; inset-block-end: 0; z-index: var(--dp-z-sheet); min-height: 0; display: flex; flex-direction: column; touch-action: none; }
+/* the vendored .dp-sheet caps the sheet at 640px and centers it — this tray is
+   full-bleed on purpose (owner ruling: no floating card with dead margins) */
+.panel.dp-sheet { max-width: none; margin-inline: 0; }
 .panel[hidden] { display: none; }
 .panel .scroll { flex: 1 1 auto; min-height: 0; overflow-y: auto; overscroll-behavior: contain; -webkit-overflow-scrolling: touch; touch-action: pan-y; }
+/* thin context strip: appears only when the real title has scrolled away */
+.panel-strip { flex: none; display: flex; align-items: center; gap: var(--dp-space-2); min-height: var(--dp-space-8, 32px); padding: 0 var(--dp-space-5); background: var(--dp-color-bg-raised); border-block-end: var(--dp-border-width-hair) solid var(--dp-color-border-subtle); }
+.panel-strip[hidden] { display: none; }
+.panel-strip-title { flex: 1 1 auto; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; text-align: center; text-transform: uppercase; letter-spacing: 0.12em; color: var(--dp-color-text-secondary); }
+.panel-strip .panel-back { position: static; flex: none; }
 .sheet-head { position: relative; flex: none; z-index: var(--dp-z-raised); display: flex; align-items: center; justify-content: center; padding-block-end: var(--dp-space-2); background: var(--dp-component-bottom-sheet-bg); cursor: grab; touch-action: none; }
 .sheet-head:active { cursor: grabbing; }
 .sheet-head .dp-sheet__grabber { margin: 0; }

@@ -49,6 +49,14 @@
       <button class="dp-sheet__grabber" id="sheetGrabber" type="button" aria-label="Expand reading panel"></button>
       <button class="dp-icon-button close-reading" id="closeReadingPanel" type="button" data-dp-close aria-label="Close reading panel"></button>
     </div>
+    <!-- the only static zone besides the grabber: a thin strip that wakes up
+         when the real title scrolls out of view, so the tray is never a
+         mystery and never wastes its height on a parked header -->
+    <div class="panel-strip" id="panelStrip" hidden>
+      <button class="dp-icon-button panel-back" id="panelStripBack" type="button" aria-label="Back to map overview" hidden></button>
+      <span class="panel-strip-title dp-type-label-sm" id="panelStripTitle"></span>
+    </div>
+    <div class="scroll" id="paneBody">
     <div class="panel-context">
       <button class="dp-icon-button panel-back" id="panelBack" type="button" aria-label="Back to map overview" hidden></button>
       <header class="inspector-head">
@@ -62,7 +70,6 @@
       <span class="health-dot" id="healthDot" aria-hidden="true"></span>
       <span id="healthText">No flows traced yet</span>
     </button>
-    <div class="scroll" id="paneBody">
      <div id="panelOverview" class="panel-view">
       <div id="pProseOv" class="prose dp-type-body-sm"></div>
       <section class="reading-section" id="attentionSection" aria-labelledby="attentionTitle" hidden>

@@ -2156,15 +2156,35 @@ const panelOverview=$<HTMLElement>("panelOverview"),panelDetail=$<HTMLElement>("
       detailEdit=$<HTMLElement>("detailEdit"),detailTelemetrySection=$<HTMLElement>("detailTelemetrySection"),
       detailTelemetry=$<HTMLElement>("detailTelemetry"),detailTelemetryEmpty=$<HTMLElement>("detailTelemetryEmpty"),
       panelBack=$<HTMLButtonElement>("panelBack");
+/* context strip: the header block scrolls with the content (the tray's height
+   belongs to reading, not to a parked title); once the title leaves the
+   viewport a thin strip carries it instead. The strip's back button mirrors
+   the header's so navigation survives the scroll. */
+const panelStrip=$<HTMLElement>("panelStrip"),panelStripTitle=$<HTMLElement>("panelStripTitle"),
+      panelStripBack=$<HTMLButtonElement>("panelStripBack"),panelContext=readingPanel.querySelector<HTMLElement>(".panel-context")!;
+setCanonicalIcon(panelStripBack,iconBack);
+panelStripBack.addEventListener("click",closeInspector);
 function setPanelView(view: "overview" | "detail"): void {
  readingPanel.dataset.view=view;
  panelOverview.hidden=view!=="overview";
  panelDetail.hidden=view!=="detail";
  panelBack.hidden=view!=="detail";
+ panelStripBack.hidden=view!=="detail";
  /* entering detail must actually reveal the surface: open the sheet on compact,
     and the wide column is always present. Selecting something you can't see is the bug. */
  if(view==="detail"&&compactReader.matches&&readingPanel.hidden)openReadingPanel(false);
 }
+const paneBodyEl=$<HTMLElement>("paneBody");
+function syncStripTitle(): void { panelStripTitle.textContent=pT.textContent??""; }
+new MutationObserver(syncStripTitle).observe(pT,{childList:true,characterData:true,subtree:true});
+syncStripTitle();
+/* strip wakes when the header scrolls out of the tray's own scrollport, sleeps
+   when it returns (and at peek, where the scroll region is display:none, the
+   strip is exactly what tells you what the tray holds) */
+new IntersectionObserver((entries)=>{
+ const e=entries[0];if(!e)return;
+ panelStrip.hidden=e.isIntersecting;
+},{root:paneBodyEl,threshold:0}).observe(panelContext);
 function showOverview(): void { renderPanel(null); }
 /* the detail view's telemetry subject, re-rendered live on each health change */
 let detailSubject: { kind: "module" | "edge"; id: string } | null=null;
@@ -3035,7 +3055,10 @@ function refitHome(): void {
   nx+=(-sh.dx*e[0]+sh.dy*e[4])*upp;ny+=(-sh.dx*e[1]+sh.dy*e[5])*upp;nz+=(-sh.dx*e[2]+sh.dy*e[6])*upp;
  }
  Object.assign(HOME,{tx:nx,ty:ny,tz:nz,zoom:z});
- if(atHome){camera.position.add(fitV.set(nx,ny,nz).sub(px));controls.target.set(nx,ny,nz);camera.zoom=z;camera.updateProjectionMatrix();controls.update();}
+ /* a label measuring wider after webfont swap used to yank the camera even
+    mid-rotate (rotation keeps the target at HOME, so atHome stays true) —
+    the gesture owns the camera, the fit waits for it */
+ if(atHome&&!userHolding){camera.position.add(fitV.set(nx,ny,nz).sub(px));controls.target.set(nx,ny,nz);camera.zoom=z;camera.updateProjectionMatrix();controls.update();}
 }
 /* ————— frame loop ————— */
 function resize(){

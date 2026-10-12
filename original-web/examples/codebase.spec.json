@@ -255,7 +255,7 @@
    "d": 1,
    "h": 4,
    "does": "Pure brush-stroke bookkeeping, extracted from the renderer's brush closure.",
-   "built": "10 files, ~3693 lines · exports: BrushState, clearBrush, EdgeHealth, EdgeWindowState, WIN, SLOW_MS",
+   "built": "10 files, ~3716 lines · exports: BrushState, clearBrush, EdgeHealth, EdgeWindowState, WIN, SLOW_MS",
    "refs": "original-web/src/brush-model.ts · original-web/src/edge-health.ts · original-web/src/editable-target.ts · original-web/src/home-fit.ts · original-web/src/layouts.ts · original-web/src/main.ts · original-web/src/media-src.ts · original-web/src/original-renderer.ts · original-web/src/playlist.ts · original-web/src/upload-policy.ts",
    "media": [],
    "tags": []

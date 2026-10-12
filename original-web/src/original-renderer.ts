@@ -71,7 +71,7 @@ type EdgeRuntime = {
   total: number; jn: Array<THREE.Mesh<THREE.CylinderGeometry, THREE.MeshBasicMaterial>>;
   xmark?: Line2; /* slim red X at a broken edge's midpoint, same line weight as the edge */
 };
-type LabelElement = HTMLElement & { _left?: string; _top?: string; _w?: number; _h?: number; _k?: number };
+type LabelElement = HTMLElement & { _left?: string; _top?: string; _w?: number; _h?: number; _k?: number; _sigW?: number };
 type LabelEntry = { n: MapNode; lb: LabelElement; lx: number; ly: number; depth: number };
 type LabelRect = { x0: number; x1: number; y0: number; y1: number };
 type Palette = Record<string, THREE.Color>;
@@ -1598,12 +1598,14 @@ placeCamera(HOME.az,HOME.pol,HOME.r,HOME.tx,HOME.ty,HOME.tz,HOME.zoom);
 let flyGoal: { tx: number; ty: number; tz: number; zoom: number; az?: number; pol?: number; faceView?: { id: string; face: FaceKey } } | null = null;
 let faceView: { id: string; face: FaceKey } | null = null; /* active straight-on face viewer */
 let userHolding=false; /* a live gesture owns the camera: no auto-fit or bounds snap may fight it */
-controls.addEventListener("start",()=>{userHolding=true;flyGoal=null;faceView=null;}); /* user input cancels autopilot + exits the face viewer */
-controls.addEventListener("end",()=>{userHolding=false;});
+let userNavigated=false; /* once the user has orbited/panned/zoomed, the camera is theirs until an explicit Reset — a rotation leaves target+zoom at HOME, so proximity alone must not re-arm the auto-fit (QC RSCH demo-debug) */
+let pendingFit=false;    /* a fit requested mid-gesture is queued, not silently consumed */
+controls.addEventListener("start",()=>{userHolding=true;userNavigated=true;flyGoal=null;faceView=null;}); /* user input cancels autopilot + exits the face viewer */
+controls.addEventListener("end",()=>{userHolding=false;if(pendingFit){pendingFit=false;refitHome();}});
 /* Reset returns the camera to the fitted home and keeps ink (owner ruling D7). Codebase-map swaps still snapshot before clearing
    and hold it so the next Draw-undo (or Ctrl/Cmd+Z) restores the erased strokes. */
 let resetInkBackup: ReturnType<typeof brush.snapshot> | null=null;
-function resetView(){clearEdgeSel();flowing=false;btnFlow.setAttribute("aria-pressed","false");setCanonicalIcon(btnFlow,iconPlay);exitCordon();flyGoal={tx:HOME.tx,ty:HOME.ty,tz:HOME.tz,zoom:HOME.zoom,az:HOME.az,pol:HOME.pol};clearTrace();renderModuleNavigator();}
+function resetView(){clearEdgeSel();flowing=false;btnFlow.setAttribute("aria-pressed","false");setCanonicalIcon(btnFlow,iconPlay);exitCordon();userNavigated=false;flyGoal={tx:HOME.tx,ty:HOME.ty,tz:HOME.tz,zoom:HOME.zoom,az:HOME.az,pol:HOME.pol};clearTrace();renderModuleNavigator();}
 $("btnReset").addEventListener("click",resetView);
 /* undo-after-reset is owned by the single btnDrawUndo handler registered with
     the brush below (two listeners on one click restored and then immediately
@@ -3030,6 +3032,10 @@ function labelFloor(): number {
 function refitHome(): void {
  const w=wrap.clientWidth,h=wrap.clientHeight;
  if(!w||!h||!NODES.length)return;
+ /* never measure or write mid-gesture: declutter hiding labels changes their
+    measured width, which used to re-enter here and fight the finger. Queue the
+    fit for the gesture's end instead of consuming its evidence now. */
+ if(userHolding){pendingFit=true;return;}
  const a=w/h;
  fitCam.left=-VIEW*a/2;fitCam.right=VIEW*a/2;fitCam.top=VIEW/2;fitCam.bottom=-VIEW/2;fitCam.zoom=HOME_ZOOM;
  fitCam.position.set(HOME.tx+Math.sin(HOME.az)*Math.sin(HOME.pol)*HOME.r,HOME.ty+Math.cos(HOME.pol)*HOME.r,HOME.tz+Math.cos(HOME.az)*Math.sin(HOME.pol)*HOME.r);
@@ -3044,7 +3050,10 @@ function refitHome(): void {
  const plan=planHomeFit(labels,{left:r.left,top:r.top,right:r.right,bottom:r.bottom},free,HOME_ZOOM,floor);
  const z=plan.zoom;
  controls.minZoom=Math.min(0.35,z); /* the fitted home is always reachable */
- const atHome=!flyGoal&&Math.abs(camera.zoom-HOME.zoom)<1e-3&&controls.target.distanceTo(fitV.set(HOME.tx,HOME.ty,HOME.tz))<1e-3;
+ /* proximity is not ownership: an orbited camera keeps target+zoom at HOME,
+    so the auto-fit only writes while the camera has never been touched (or
+    after an explicit Reset) */
+ const atHome=!flyGoal&&!userNavigated&&Math.abs(camera.zoom-HOME.zoom)<1e-3&&controls.target.distanceTo(fitV.set(HOME.tx,HOME.ty,HOME.tz))<1e-3;
  /* a fit that had to zoom out also centres the framed scene in the unobstructed rectangle (the wide home is left exactly as it was) */
  const px=new THREE.Vector3(HOME.tx,HOME.ty,HOME.tz);
  let nx=CENTER.x,ny=1.0,nz=CENTER.z;
@@ -3149,9 +3158,12 @@ function tick(){
    if(!vf)ents.push({n,lb,lx,ly,depth:tmpV.z});
  });
  /* declutter: place labels by priority; an overlapping lower-priority label recedes */
- if(window.__lblTick%20===0){const f=canvasFreeRect(),sig=[f.left,f.top,f.right,f.bottom].map(Math.round).join(",")+"|"+NODES.map(n=>$<LabelElement>("lb-"+n.id).offsetWidth).join(",");if(sig!==freeSig){freeSig=sig;refitHome();}} /* an obstacle that faded in or moved, or a label whose text grew, after the last fit */
+ /* the signature reads INTRINSIC label widths, never the displayed ones: a
+    label hidden by declutter reports offsetWidth 0, and that used to fire a
+    refit during the very orbit that hid it (QC RSCH demo-debug) */
+ if(window.__lblTick%20===0){const f=canvasFreeRect(),sig=[f.left,f.top,f.right,f.bottom].map(Math.round).join(",")+"|"+NODES.map(n=>$<LabelElement>("lb-"+n.id)._sigW||0).join(",");if(sig!==freeSig){freeSig=sig;refitHome();}}
  if(++window.__lblTick%60===1||!window.__lblMeasured){
-   ents.forEach(e=>{e.lb._w=e.lb.offsetWidth||80;e.lb._h=e.lb.offsetHeight||30;});
+   ents.forEach(e=>{const w=e.lb.offsetWidth;if(w>0){e.lb._w=w;e.lb._h=e.lb.offsetHeight||30;e.lb._sigW=w;}else{e.lb._w=e.lb._w||80;e.lb._h=e.lb._h||30;}});
    window.__lblMeasured=true;
  }
  const prio=(e: LabelEntry): number=>(e.lb.classList.contains("hot")?8:0)+(cordon.has(e.n.id)?4:0)+((e.n.items&&e.n.items.length)?2:0);

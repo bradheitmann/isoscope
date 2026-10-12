@@ -1364,8 +1364,11 @@ function openInspector(id: string): void {
  renderFaceChips();materialsRender();insideRender();
  renderPanel(id); /* the panel swaps to its detail state for this module */
  renderTagPills(panelTagPills,[...new Set([id,...cordon])]);
- /* one surface: bring the panel up on every form factor, never a second overlay */
- if(compactReader.matches)openReadingPanel(false);
+ /* one surface: bring the panel up on every form factor, never a second overlay.
+    On compact (touch), selecting does NOT open the tray over the map — the tray
+    pokes up in the peek detent so the visitor sees something arrived (owner
+    directive: a 5% poke as the signal, not a screen-swallowing open). */
+ if(compactReader.matches){openReadingPanel(false);setSheetDetent("peek");}
  else{readingPanel.hidden=false;readingPanel.inert=false;trayHandle.hidden=true;}
  setDeepHash("module/"+encodeURIComponent(id));
 }
@@ -1582,6 +1585,9 @@ controls.enableDamping=true;controls.dampingFactor=0.08;
 controls.minZoom=0.35;controls.maxZoom=24; /* punch right in to a single face */
 controls.minPolarAngle=0.05;controls.maxPolarAngle=Math.PI-0.05;
 controls.screenSpacePanning=false;
+/* zoom to the pointer/pinch point, never to a stale map center: on touch the
+   pinch midpoint anchors the zoom so the thing under your fingers is what grows */
+controls.zoomToCursor=true;
 function placeCamera(az: number,pol: number,r: number,tx: number,ty: number,tz: number,zoom: number): void {
  controls.target.set(tx,ty,tz);
  camera.position.set(tx+Math.sin(az)*Math.sin(pol)*r, ty+Math.cos(pol)*r, tz+Math.cos(az)*Math.sin(pol)*r);
@@ -1591,7 +1597,9 @@ function placeCamera(az: number,pol: number,r: number,tx: number,ty: number,tz: 
 placeCamera(HOME.az,HOME.pol,HOME.r,HOME.tx,HOME.ty,HOME.tz,HOME.zoom);
 let flyGoal: { tx: number; ty: number; tz: number; zoom: number; az?: number; pol?: number; faceView?: { id: string; face: FaceKey } } | null = null;
 let faceView: { id: string; face: FaceKey } | null = null; /* active straight-on face viewer */
-controls.addEventListener("start",()=>{flyGoal=null;faceView=null;}); /* user input cancels autopilot + exits the face viewer */
+let userHolding=false; /* a live gesture owns the camera: no auto-fit or bounds snap may fight it */
+controls.addEventListener("start",()=>{userHolding=true;flyGoal=null;faceView=null;}); /* user input cancels autopilot + exits the face viewer */
+controls.addEventListener("end",()=>{userHolding=false;});
 /* Reset returns the camera to the fitted home and keeps ink (owner ruling D7). Codebase-map swaps still snapshot before clearing
    and hold it so the next Draw-undo (or Ctrl/Cmd+Z) restores the erased strokes. */
 let resetInkBackup: ReturnType<typeof brush.snapshot> | null=null;
@@ -2679,7 +2687,7 @@ function applySpec(next: Spec,preserveMedia=false): void{
  else if(cordon.size)renderCircuitPanel();
  else if(ti>=0)renderTrace();
  else renderPanel(null);
- if(controls.target.x<_bb.x0-1||controls.target.x>_bb.x1+1||controls.target.z<_bb.z0-1||controls.target.z>_bb.z1+1)
+ if(!userHolding&&(controls.target.x<_bb.x0-1||controls.target.x>_bb.x1+1||controls.target.z<_bb.z0-1||controls.target.z>_bb.z1+1))
   flyGoal={tx:HOME.tx,ty:HOME.ty,tz:HOME.tz,zoom:HOME.zoom,az:HOME.az,pol:HOME.pol};
  updateRailAvailability();
  rebuildMediaLib();

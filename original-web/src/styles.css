@@ -374,6 +374,11 @@ details > summary { cursor: pointer; }
   .rail-toggle{display:grid}
   .controls-float{transition:transform .24s cubic-bezier(.32,.72,.28,1),opacity .24s ease;transform:translateX(-120%);opacity:0;pointer-events:none}
   .controls-float.rail-open{transform:none;opacity:1;pointer-events:auto}
+  /* an open rail on a short screen is a scrollable sheet that stops ABOVE the
+     bottom-left cluster (avatar/sound) — buttons never stack onto each other.
+     It opens BELOW the ☰ toggle, which never covers Reset (Grok mobile audit) */
+  .controls-float.rail-open{max-block-size:calc(100dvh - 148px);overflow-y:auto;overscroll-behavior:contain;
+    inset-block-start:calc(var(--dp-space-3) + var(--dp-layout-grid-component-visualization-workbench-rail-touch-min) + var(--dp-space-2))}
 }
 @media (min-width: 721px) and (min-height: 801px){.controls-float{transform:none;opacity:1;pointer-events:auto}}
 

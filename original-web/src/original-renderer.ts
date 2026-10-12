@@ -1581,7 +1581,7 @@ function rebuildAllEdges(){Object.values(edgeLinesById).forEach(o=>{rebuildEdge(
    Touch: one finger = orbit · pinch = zoom · two-finger drag = pan */
 const HOME={tx:CENTER.x,ty:1.0,tz:CENTER.z,r:40,az:-Math.PI/4,pol:0.9553,zoom:1.12};
 const controls=new OrbitControls(camera,canvas);
-controls.enableDamping=true;controls.dampingFactor=0.08;
+controls.enableDamping=true;controls.dampingFactor=0.16; /* a quarter-second coast read as the camera fighting the finger (QC R2); 0.16 halves the tail and keeps the glide */
 controls.minZoom=0.35;controls.maxZoom=24; /* punch right in to a single face */
 controls.minPolarAngle=0.05;controls.maxPolarAngle=Math.PI-0.05;
 controls.screenSpacePanning=false;

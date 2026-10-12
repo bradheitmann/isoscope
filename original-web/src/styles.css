@@ -379,3 +379,6 @@ details > summary { cursor: pointer; }
 
 /* live-flow footer "On the map" overlay toggle */
 .tf-overlay-btn.is-on{background:var(--dp-color-accent-default);color:var(--dp-color-accent-contrast);border-color:transparent}
+
+/* YouTube embeds riding their face plane (projected per frame in JS) */
+.yt-embed{position:fixed;border:0;z-index:5;background:#111;display:none}

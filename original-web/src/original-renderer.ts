@@ -267,7 +267,21 @@ try {
  if(savedTheme&&DP_THEMES.some(t=>t.id===savedTheme))activeTheme=savedTheme as ThemeId;
  if(savedMode==="light"||savedMode==="dark"||savedMode==="system")activeMode=savedMode;
 } catch { /* first launch stays canonical Desert light */ }
+/* embed bridge: ?theme=<id> (+ optional &mode=light|dark) selects the boot
+   theme for embedded hosts (bradheitmann.ai passes its own theme through);
+   a postMessage channel lets the host re-theme the live map in place */
+const embedParams=new URLSearchParams(location.search);
+const themeParam=embedParams.get("theme");
+if(themeParam&&DP_THEMES.some(t=>t.id===themeParam))activeTheme=themeParam as ThemeId;
+const modeParam=embedParams.get("mode");
+if(modeParam==="light"||modeParam==="dark")activeMode=modeParam;
 setDPTheme(activeTheme);setDPMode(activeMode);
+window.addEventListener("message",(ev: MessageEvent)=>{
+ const d=ev.data as {type?:string;theme?:string;mode?:Mode}|null;
+ if(d&&d.type==="isoscope:theme"&&typeof d.theme==="string"&&DP_THEMES.some(t=>t.id===d.theme)){
+  setTheme(d.theme as ThemeId,(d.mode==="light"||d.mode==="dark")?d.mode:activeMode);
+ }
+});
 
 /* ————— data (identical content to the 2D edition) ————— */
 /* ————— Isoscope spec: everything project-specific lives in this JSON ————— */
@@ -622,8 +636,82 @@ function releaseVideoTex(src: string,tex: THREE.VideoTexture,shared: boolean): v
  const e=videoTexPool[src];if(!e)return;
  e.refs--;if(e.refs<=0){e.tex.dispose();delete videoTexPool[src];}
 }
+/* YouTube surfaces: a youtube.com/watch, youtu.be, or shorts URL pasted as a
+   face's video source plays as an embedded player projected onto that face.
+   The plane carries the poster; the iframe rides it exactly, updated with the
+   camera. No data leaves the page until the user presses play (nocookie, and
+   the embed only mounts when media mode is on). */
+function youTubeId(src: string): string | null {
+ const m=src.match(/(?:youtube\.com\/(?:watch\?[^#]*v=|shorts\/|embed\/)|youtu\.be\/)([\w-]{6,20})/);
+ return m?m[1]!:null;
+}
+interface YtOverlay { vid: string; iframe: HTMLIFrameElement; plane: THREE.Mesh<THREE.PlaneGeometry, THREE.Material>; mounted: boolean }
+const ytOverlays: YtOverlay[]=[];
+function buildYouTube(n: MapNode,face: FaceKey,ref: SurfaceRef,id: string): SurfaceEntry {
+ const mat=new THREE.MeshBasicMaterial({color:new THREE.Color(COL.fg1),transparent:true,toneMapped:false});
+ const plane=facePlane(n,face,mat);
+ /* poster: dark tile with the YouTube play triangle drawn via canvas texture */
+ const cv=document.createElement("canvas");cv.width=320;cv.height=200;
+ const g=cv.getContext("2d")!;
+ g.fillStyle="#111";g.fillRect(0,0,320,200);
+ g.fillStyle="#d83a00";g.beginPath();g.moveTo(140,70);g.lineTo(140,130);g.lineTo(195,100);g.closePath();g.fill();
+ g.fillStyle="#eee";g.font="13px monospace";g.fillText("youtube · click through or press play",56,176);
+ const poster=new THREE.CanvasTexture(cv);poster.colorSpace=THREE.SRGBColorSpace;
+ mat.map=poster;mat.needsUpdate=true;
+ meshById[n.id].add(plane);
+ const iframe=document.createElement("iframe");
+ iframe.className="yt-embed";
+ iframe.allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share";
+ iframe.allowFullscreen=true;
+ iframe.setAttribute("referrerpolicy","strict-origin-when-cross-origin");
+ const overlay: YtOverlay={vid:id,iframe,plane,mounted:false};
+ ytOverlays.push(overlay);
+ return {plane,kind:"video",moduleId:n.id,group:ref.group,audio:ref.audio,dispose(){
+  const i=ytOverlays.indexOf(overlay);if(i>=0)ytOverlays.splice(i,1);
+  iframe.remove();poster.dispose();
+  const par=plane.parent;if(par)par.remove(plane);plane.geometry.dispose();mat.dispose();
+ }};
+}
+function mountYouTubeEmbeds(): void {
+ for(const o of ytOverlays){
+  if(!o.mounted){
+   o.iframe.src=`https://www.youtube-nocookie.com/embed/${o.vid}?rel=0`;
+   document.body.appendChild(o.iframe);
+   o.mounted=true;
+  }
+ }
+}
+function unmountYouTubeEmbeds(): void {
+ for(const o of ytOverlays){ o.iframe.removeAttribute("src"); o.iframe.style.display="none"; o.mounted=false; }
+}
+const _ytA=new THREE.Vector3(),_ytB=new THREE.Vector3(),_ytC=new THREE.Vector3(),_ytD=new THREE.Vector3();
+function updateYouTubeOverlays(): void {
+ const r=canvas.getBoundingClientRect();
+ for(const o of ytOverlays){
+  const show=mediaMode&&o.plane.visible;
+  if(!show){if(o.iframe.style.display!=="none")o.iframe.style.display="none";continue;}
+  const p=o.plane.geometry.parameters as {width:number;height:number};
+  const hw=p.width/2,hh=p.height/2;
+  _ytA.set(-hw,-hh,0);_ytB.set(hw,-hh,0);_ytC.set(hw,hh,0);_ytD.set(-hw,hh,0);
+  o.plane.updateWorldMatrix(true,false);
+  _ytA.applyMatrix4(o.plane.matrixWorld).project(camera);
+  _ytB.applyMatrix4(o.plane.matrixWorld).project(camera);
+  _ytC.applyMatrix4(o.plane.matrixWorld).project(camera);
+  _ytD.applyMatrix4(o.plane.matrixWorld).project(camera);
+  if(_ytA.z>1&&_ytB.z>1&&_ytC.z>1&&_ytD.z>1){o.iframe.style.display="none";continue;}
+  const xs=[_ytA.x,_ytB.x,_ytC.x,_ytD.x],ys=[_ytA.y,_ytB.y,_ytC.y,_ytD.y];
+  const x0=Math.min(...xs),x1=Math.max(...xs),y0=Math.min(...ys),y1=Math.max(...ys);
+  const w=(x1-x0)*0.5*r.width,h=(y1-y0)*0.5*r.height;
+  if(w<24||h<24){o.iframe.style.display="none";continue;}
+  o.iframe.style.display="block";
+  o.iframe.style.left=(r.left+(x0*0.5+0.5)*r.width)+"px";
+  o.iframe.style.top=(r.top+(-y1*0.5+0.5)*r.height)+"px";
+  o.iframe.style.width=w+"px";o.iframe.style.height=h+"px";
+ }
+}
 function buildVideo(n: MapNode,face: FaceKey,ref: SurfaceRef): SurfaceEntry | null {
  const src=vetSrc(ref.src,n.id);if(!src)return null;
+ const yt=youTubeId(src);if(yt)return buildYouTube(n,face,ref,yt);
  if(isAudioSrc(src))return buildAudioPlate(n,face,ref); /* an audio src renders a player plate, not a video frame */
  const pv=acquireVideo(src,ref);
  const video=pv.video;
@@ -924,6 +1012,7 @@ function applyMediaMode(): void {
  if(mediaMode){ /* promote any not-yet-loaded sources immediately, then play. Decoders
     are pre-warmed by the idle loader, so this is a resume, not a cold start; stagger
     the plays ~40ms so a weak CPU isn't hit with a 12-way decode spike in one frame. */
+  mountYouTubeEmbeds();
   promoteAllNow();
   let i=0;
   Object.values(videoPool).forEach(pv=>{
@@ -939,6 +1028,7 @@ function applyMediaMode(): void {
   applyAudio(); /* re-evaluate the (still-muted-until-armed) voice + EQ motion */
  } else {
   Object.values(videoPool).forEach(pv=>{ pv.wantPlay=false; });
+  unmountYouTubeEmbeds(); /* media off = embeds stop, not just hide */
  }
  refreshTransport();
 }
@@ -3009,6 +3099,7 @@ function tick(){
   }
  });
  const rect=canvas.getBoundingClientRect();
+ updateYouTubeOverlays();
  /* the home view's labels are never dimmed as "far"; only zooming out past the home does that */
  const far=camera.zoom<0.8&&camera.zoom<HOME.zoom-0.01,veryfar=camera.zoom<veryFarZoom(HOME.zoom),lk=HOME_SCALED?labelScale(camera.zoom,HOME_ZOOM,LABEL_FLOOR):1;
  const ents: LabelEntry[]=[];

@@ -21,7 +21,7 @@ describe('media queue and shared-source lifecycle contracts',()=>{
  });
  it('delayed media-on cannot override later off [F06]',()=>{
   const q:Array<()=>void>=[];const body=declarations('mediaGen','applyMediaMode');
-  const result=run(`let mediaMode=true;const v={paused:true,currentTime:0,play(){this.paused=false;return Promise.resolve();}};const videoPool={a:{video:v,live:false}};`+body+`applyMediaMode();mediaMode=false;v.paused=true;q.shift()();v.paused;`,{q,setTimeout:(fn:()=>void)=>q.push(fn),applySurfaceVisibility(){},promoteAllNow(){},applyAudio(){},refreshTransport(){},RM:false,Promise});
+  const result=run(`let mediaMode=true;const v={paused:true,currentTime:0,play(){this.paused=false;return Promise.resolve();}};const videoPool={a:{video:v,live:false}};`+body+`applyMediaMode();mediaMode=false;v.paused=true;q.shift()();v.paused;`,{q,setTimeout:(fn:()=>void)=>q.push(fn),applySurfaceVisibility(){},promoteAllNow(){},applyAudio(){},refreshTransport(){},mountYouTubeEmbeds(){},unmountYouTubeEmbeds(){},RM:false,Promise});
   expect(result).toBe(true);
  });
  it.each([1,2,3,4,6])('%i faces toggle one pooled source only once [F08]',count=>{

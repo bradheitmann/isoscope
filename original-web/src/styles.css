@@ -72,7 +72,10 @@ body { display: grid; grid-template-rows: auto minmax(0, 1fr); background: var(-
    full-bleed on purpose (owner ruling: no floating card with dead margins) */
 .panel.dp-sheet { max-width: none; margin-inline: 0; }
 .panel[hidden] { display: none; }
-.panel .scroll { flex: 1 1 auto; min-height: 0; overflow-y: auto; overscroll-behavior: contain; -webkit-overflow-scrolling: touch; touch-action: pan-y; }
+/* one padding owner: the scrollport. Sections inside get margin rhythm only —
+   the context block and health strip scroll with the content, so any padding
+   of their own would double the gutter (desert-pants sheet anatomy) */
+.panel .scroll { flex: 1 1 auto; min-height: 0; overflow-y: auto; overscroll-behavior: contain; -webkit-overflow-scrolling: touch; touch-action: pan-y; padding: var(--dp-space-4) var(--dp-space-5) calc(var(--dp-space-6) + env(safe-area-inset-bottom)); }
 /* thin context strip: appears only when the real title has scrolled away */
 .panel-strip { flex: none; display: flex; align-items: center; gap: var(--dp-space-2); min-height: var(--dp-space-8, 32px); padding: 0 var(--dp-space-5); background: var(--dp-color-bg-raised); border-block-end: var(--dp-border-width-hair) solid var(--dp-color-border-subtle); }
 .panel-strip[hidden] { display: none; }
@@ -198,22 +201,21 @@ details > summary { cursor: pointer; }
   .canvas-wrap { flex: 1 1 auto; }
   .panel { position: relative; inset: auto; flex: 0 0 var(--panel-w, var(--dp-layout-grid-component-visualization-workbench-reading-preferred-width)); block-size: auto; min-inline-size: 0; max-inline-size: none; overflow: hidden; z-index: auto; background: var(--dp-color-bg-surface); border-inline-start: var(--dp-border-width-hair) solid var(--dp-color-border-subtle); border-radius: 0; box-shadow: none; touch-action: auto; }
   .sheet-head { display: none; }
-  .panel-context { padding-block-start: var(--dp-space-6); }
-  .scroll { padding: var(--dp-space-4) var(--dp-space-5) var(--dp-space-6); }
+  .panel .scroll { padding-block-start: var(--dp-space-6); }
   .reading-section { margin-block-start: var(--dp-space-6); }
 }
 
 /* ════════ the one right panel: context header + health strip + views + live-flow footer ════════
    One surface, two views: data-view="overview"|"detail" swaps the content
    containers; the header and health strip persist across both. */
-.panel-context{position:relative;flex:none;padding:var(--dp-space-2) var(--dp-space-5) 0}
+.panel-context{position:relative;padding:0}
 .panel-back{position:absolute;inset-inline-start:var(--dp-space-1);inset-block-start:var(--dp-space-1)}
 .panel-back svg{transform:rotate(180deg)}
 .panel-back[hidden]{display:none}
 /* the back button occupies the header's top-start corner: reserve its full
    footprint (offset + icon button + gap) so it never sits on the title text */
 .panel[data-view="detail"] .panel-context .inspector-head{padding-inline-start:calc(var(--dp-space-1) + var(--dp-space-8,32px) + var(--dp-space-2))}
-.health-strip{flex:none;display:flex;align-items:center;gap:var(--dp-space-2);inline-size:100%;
+.health-strip{display:flex;align-items:center;gap:var(--dp-space-2);inline-size:auto;margin:var(--dp-space-2) calc(-1 * var(--dp-space-5)) 0;
   padding:var(--dp-space-2) var(--dp-space-5);border:0;cursor:pointer;text-align:start;
   background:var(--dp-color-bg-raised);color:var(--dp-color-text-secondary);
   border-block-start:var(--dp-border-width-hair) solid var(--dp-color-border-subtle);

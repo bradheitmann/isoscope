@@ -2,6 +2,16 @@
 
 **As of 2026-10-08 (wave-4 drain; sections below dated 2026-09-02 are history) · remote: github.com/bradheitmann/isoscope (private) · name "isoscope" is a working title**
 
+## 2026-10-13 · wording changes from the site copy review (by the bradheitmann-web PM)
+
+What changed (commits `ed3570c`, `eb7d2ee`, pushed): the inspector hints in `original-web/index.html` ("Zoom in to see counts on the labels", "choose a building to see its details; choose a pipe to see what flows through it", "Files attached to this module. Select one to show it on a face of the building") and four self-map descriptions in both copies of `examples/isoscope.spec.json` (the words "honest", "lawful" and "living documentation" are gone; `tests/spec-sync.test.ts` still holds because both copies were edited). The root `template.html` hint matches. No behaviour changed.
+
+Why: the owner read the Isoscope demo embedded in bradheitmann.ai and rejected that wording under his copy rules (plain sentences that say what a thing does; no personification, no "honest"/"real" claims, no sentence-opening Every). The rules are in `bradheitmann-web/scripts/copy-rules.ts`; apply them to any text a visitor can read in this product, including spec descriptions, hints and the README.
+
+How the site consumes this repo: bradheitmann.ai embeds `original-web`'s Vite build at `/demo/isoscope/`. Reship = `cd original-web && npm run build`, then copy only `dist/index.html` and `dist/assets/` into `bradheitmann-web/public/demo/isoscope/` (and its `design/incoming/astro-build/public/demo/isoscope` mirror). Never copy `dist/media/`: `original-web/public/media` holds ~550 MB of music-video fixtures that Vite copies into `dist`, and Cloudflare Pages refuses files over 25 MiB (this broke a deploy on 2026-10-13 and had to be amended out of a pushed commit).
+
+Open for this repo's PM (judgement): move the media fixtures out of `original-web/public` (or exclude them from `vite build` with `publicDir` handling) so a plain `dist` is shippable; the site PM's handoff is at `bradheitmann-web/docs/handoffs/2026-10-13-pm-handoff.md`.
+
 ## Current state: original-web
 
 `original-web/` is the live Isoscope web product: a Vite + three.js app (Kimi's

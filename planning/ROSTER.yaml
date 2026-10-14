@@ -1,0 +1,33 @@
+schema: isoscope-seat-roster-v1
+note: Requested settings and observed runtime receipts are separate. Unknown means not verified.
+seats:
+  - id: iso-plan01
+    role: planning DEV
+    requested: { harness: Codex Desktop, model: gpt-6-luna, reasoning: high, provider: OpenAI }
+    observed: { runtime_model: unknown, provider: unknown, session: unknown, tokens: unknown }
+    issue: https://github.com/bradheitmann/isoscope/issues/3
+  - id: iso-web
+    role: original web candidate DEV
+    requested: { harness: Codex, model: gpt-6-luna, reasoning: high, provider: OpenAI }
+    observed: { model: unknown, provider: unknown, tokens: unknown }
+    frozen_head: a48b67be53a10ff1ef062a066ad8082e2a7c93c8
+    manifest: 3017ea2f8796b54007f4e8a8d3b6516f63241b3e082e6fdcf95568a7ef208bc5
+  - id: iso-kimi
+    role: design reconstruction and review
+    requested: { harness: Factory Droid, model: Kimi K3, reasoning: max, provider: unknown }
+    observed: { model: kimi-k3, reasoning: max, provider: unknown, session: e2b52248-2ab1-410a-8b12-9a3d54eecc77, tokens: unknown }
+    enrollment_comment: 5928324563
+    pm_ack_comment: 5928332364
+    issue: https://github.com/bradheitmann/isoscope/issues/4
+  - id: iso-enforce01
+    role: enforcement DEV
+    requested: { harness: Codex, model: gpt-6-luna, reasoning: high, provider: OpenAI }
+    observed: { model: unknown, provider: unknown, tokens: unknown }
+    claim_comment: 5928361982
+    pm_ack_comment: 5928370017
+    issue: https://github.com/bradheitmann/isoscope/issues/5
+  - id: iso-backend
+    role: backend PR #1 DEV
+    requested: { harness: Codex, model: gpt-6.1-sol, reasoning: medium, provider: OpenAI }
+    observed: { model: unknown, provider: unknown, tokens: unknown }
+    head: 6d99b3d3f9a3fa0b7d5fccecd5e44c5dec06736a

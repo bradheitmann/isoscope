@@ -1,5 +1,9 @@
 # Isoscope
 
+## Coordinated development
+
+Current agent claims, task assignments, freezes, reviews, and merge authority live in the [control issue](https://github.com/bradheitmann/isoscope/issues/2). The repository's manual planning protocol is in [`planning/PLAYBOOK.md`](planning/PLAYBOOK.md); it documents process and evidence expectations, not executable CI gates.
+
 **So you always know what your codebase does, how it is architected, and if
 something is broken and what you need to work on next.**
 

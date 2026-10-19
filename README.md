@@ -8,7 +8,9 @@ buildings, connections are pipes that know *what flows* through them, and
 status is painted on the architecture itself. Open the map in a browser on day
 one of a project; as the codebase grows, your agents mirror every module,
 link, and blocker into a graph store — and the map repaints live with every
-change. The map never trails reality.
+store change. Freshness depends on the writers: Isoscope displays recorded state,
+not an independent proof of the running system. The spec’s `asOf` value is
+writer-supplied context, not a verified observation timestamp.
 
 **The lifecycle**: use it as an *understandability layer* while you build and
 develop — then graduate it to an *observability visualization layer* as you roll
@@ -21,10 +23,16 @@ Ships as one self-contained HTML file that works from disk.
 ## Quickstart
 
 ```bash
+bun install --frozen-lockfile                         # Bun 1.3.9
 bun cli.ts import examples/isoscope.spec.json my.db   # seed a graph store
 bun cli.ts serve my.db                                # live map at :4177
 bun cli.ts build my.db out/map.html                   # shippable artifact
 ```
+
+Open the one-use browser handoff URL printed by `serve`. Full deployment is the
+default: existing CLI, MCP, viewer and mutation capabilities remain available.
+See [capability deployments](docs/CAPABILITIES.md) for headless consumers, static
+rendering and an authenticated read-only live viewer.
 
 The primary example is isoscope describing itself (`examples/isoscope.spec.json`);
 `examples/odin.spec.json` is the first real consumer (ODIN Sentinel, 16 modules) and

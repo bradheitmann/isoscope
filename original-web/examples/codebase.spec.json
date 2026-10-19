@@ -213,34 +213,34 @@
    "tags": []
   },
   {
+   "id": "LIB",
+   "tag": "STORE",
+   "g": "tools",
+   "name": "Graph store lib",
+   "x": 3,
+   "y": 2,
+   "w": 1,
+   "d": 1,
+   "h": 1,
+   "does": "isoscope core — SQLite graph store ⇄ spec. Shared by cli.ts and mcp.ts. Zero deps. */",
+   "built": "1 file, ~413 lines · exports: DB_DEFAULT, Spec, open, withHistory, overview, markNode",
+   "refs": "lib.ts",
+   "media": [],
+   "tags": []
+  },
+  {
    "id": "MHOOKSTS",
    "tag": "SRC",
    "g": "surface",
    "name": "hooks.ts",
    "x": 3,
-   "y": 2,
+   "y": 4,
    "w": 1,
    "d": 1,
    "h": 1,
    "does": "Sources under hooks.ts.",
    "built": "1 file, ~19 lines · exports: installHook",
    "refs": "hooks.ts",
-   "media": [],
-   "tags": []
-  },
-  {
-   "id": "MLIVESECU",
-   "tag": "SRC",
-   "g": "surface",
-   "name": "live-security.ts",
-   "x": 3,
-   "y": 4,
-   "w": 1,
-   "d": 1,
-   "h": 1,
-   "does": "Sources under live-security.ts.",
-   "built": "1 file, ~93 lines · exports: secureLiveFetch, listenLive",
-   "refs": "live-security.ts",
    "media": [],
    "tags": []
   },
@@ -277,60 +277,12 @@
    "tags": []
   },
   {
-   "id": "LIB",
-   "tag": "STORE",
-   "g": "tools",
-   "name": "Graph store lib",
-   "x": 6,
-   "y": 0,
-   "w": 1,
-   "d": 1,
-   "h": 1,
-   "does": "isoscope core — SQLite graph store ⇄ spec. Shared by cli.ts and mcp.ts. Zero deps. */",
-   "built": "1 file, ~414 lines · exports: DB_DEFAULT, Spec, open, withHistory, overview, markNode",
-   "refs": "lib.ts",
-   "media": [],
-   "tags": []
-  },
-  {
-   "id": "RENDER",
-   "tag": "UI",
-   "g": "surface",
-   "name": "Renderer",
-   "x": 6,
-   "y": 2,
-   "w": 1,
-   "d": 1,
-   "h": 4,
-   "does": "Pure brush-stroke bookkeeping, extracted from the renderer's brush closure.",
-   "built": "10 files, ~3704 lines · exports: BrushState, clearBrush, EdgeHealth, EdgeWindowState, WIN, SLOW_MS",
-   "refs": "original-web/src/brush-model.ts · original-web/src/edge-health.ts · original-web/src/editable-target.ts · original-web/src/home-fit.ts · original-web/src/layouts.ts · original-web/src/main.ts · original-web/src/media-src.ts · original-web/src/original-renderer.ts · original-web/src/playlist.ts · original-web/src/upload-policy.ts",
-   "media": [],
-   "tags": []
-  },
-  {
-   "id": "CLI",
-   "tag": "CLI",
-   "g": "tools",
-   "name": "CLI",
-   "x": 9,
-   "y": 0,
-   "w": 1,
-   "d": 1,
-   "h": 1,
-   "does": "Command-line front end to the graph store.",
-   "built": "1 file, ~256 lines",
-   "refs": "cli.ts",
-   "media": [],
-   "tags": []
-  },
-  {
    "id": "DRC",
    "tag": "DRC",
    "g": "tools",
    "name": "DRC",
-   "x": 9,
-   "y": 2,
+   "x": 6,
+   "y": 0,
    "w": 1,
    "d": 1,
    "h": 1,
@@ -345,8 +297,8 @@
    "tag": "MCP",
    "g": "tools",
    "name": "MCP server",
-   "x": 9,
-   "y": 4,
+   "x": 6,
+   "y": 2,
    "w": 1,
    "d": 1,
    "h": 1,
@@ -357,12 +309,76 @@
    "tags": []
   },
   {
+   "id": "MDEPLOYME",
+   "tag": "SRC",
+   "g": "surface",
+   "name": "deployment.ts",
+   "x": 6,
+   "y": 4,
+   "w": 1,
+   "d": 1,
+   "h": 1,
+   "does": "Sources under deployment.ts.",
+   "built": "1 file, ~39 lines · exports: DeploymentProfile, deploymentProfile, parseServeOptions",
+   "refs": "deployment.ts",
+   "media": [],
+   "tags": []
+  },
+  {
+   "id": "MINDEXTS",
+   "tag": "SRC",
+   "g": "surface",
+   "name": "index.ts",
+   "x": 6,
+   "y": 6,
+   "w": 1,
+   "d": 1,
+   "h": 1,
+   "does": "Headless default: graph storage and analysis. Rendering and serving are opt-in imports. */",
+   "built": "1 file, ~3 lines",
+   "refs": "index.ts",
+   "media": [],
+   "tags": []
+  },
+  {
+   "id": "RENDER",
+   "tag": "UI",
+   "g": "surface",
+   "name": "Renderer",
+   "x": 6,
+   "y": 8,
+   "w": 1,
+   "d": 1,
+   "h": 4,
+   "does": "Pure brush-stroke bookkeeping, extracted from the renderer's brush closure.",
+   "built": "10 files, ~3704 lines · exports: BrushState, clearBrush, EdgeHealth, EdgeWindowState, WIN, SLOW_MS",
+   "refs": "original-web/src/brush-model.ts · original-web/src/edge-health.ts · original-web/src/editable-target.ts · original-web/src/home-fit.ts · original-web/src/layouts.ts · original-web/src/main.ts · original-web/src/media-src.ts · original-web/src/original-renderer.ts · original-web/src/playlist.ts · original-web/src/upload-policy.ts",
+   "media": [],
+   "tags": []
+  },
+  {
+   "id": "MLIVESECU",
+   "tag": "SRC",
+   "g": "surface",
+   "name": "live-security.ts",
+   "x": 9,
+   "y": 0,
+   "w": 1,
+   "d": 1,
+   "h": 1,
+   "does": "Sources under live-security.ts.",
+   "built": "1 file, ~103 lines · exports: secureLiveFetch, listenLive, listenSecuredLive",
+   "refs": "live-security.ts",
+   "media": [],
+   "tags": []
+  },
+  {
    "id": "TELEM",
    "tag": "WIDE",
    "g": "surface",
    "name": "Telemetry",
    "x": 9,
-   "y": 6,
+   "y": 2,
    "w": 1,
    "d": 1,
    "h": 1,
@@ -387,6 +403,38 @@
    "refs": "original-web/src/annotations.ts",
    "media": [],
    "tags": []
+  },
+  {
+   "id": "MLIVETS",
+   "tag": "SRC",
+   "g": "surface",
+   "name": "live.ts",
+   "x": 12,
+   "y": 2,
+   "w": 1,
+   "d": 1,
+   "h": 1,
+   "does": "Optional live HTTP application. Importing this module starts no listener or watcher. */",
+   "built": "1 file, ~75 lines · exports: createLiveApplication",
+   "refs": "live.ts",
+   "media": [],
+   "tags": []
+  },
+  {
+   "id": "CLI",
+   "tag": "CLI",
+   "g": "tools",
+   "name": "CLI",
+   "x": 15,
+   "y": 0,
+   "w": 1,
+   "d": 1,
+   "h": 1,
+   "does": "Command-line front end to the graph store.",
+   "built": "1 file, ~211 lines",
+   "refs": "cli.ts",
+   "media": [],
+   "tags": []
   }
  ],
  "short": {
@@ -401,17 +449,20 @@
   "TYPES": "Ambient types",
   "VENDOR": "desert-pants (vendored)",
   "BUILD": "Build",
+  "LIB": "Graph store lib",
   "MHOOKSTS": "hooks.ts",
-  "MLIVESECU": "live-security.ts",
   "QCCLI": "QC harness",
   "THEME": "Theme order",
-  "LIB": "Graph store lib",
-  "RENDER": "Renderer",
-  "CLI": "CLI",
   "DRC": "DRC",
   "MCP": "MCP server",
+  "MDEPLOYME": "deployment.ts",
+  "MINDEXTS": "index.ts",
+  "RENDER": "Renderer",
+  "MLIVESECU": "live-security.ts",
   "TELEM": "Telemetry",
-  "ANNOT": "Annotations"
+  "ANNOT": "Annotations",
+  "MLIVETS": "live.ts",
+  "CLI": "CLI"
  },
  "status": {
   "DATA": {
@@ -458,11 +509,11 @@
    "state": "ok",
    "items": []
   },
-  "MHOOKSTS": {
+  "LIB": {
    "state": "ok",
    "items": []
   },
-  "MLIVESECU": {
+  "MHOOKSTS": {
    "state": "ok",
    "items": []
   },
@@ -474,18 +525,6 @@
    "state": "ok",
    "items": []
   },
-  "LIB": {
-   "state": "ok",
-   "items": []
-  },
-  "RENDER": {
-   "state": "ok",
-   "items": []
-  },
-  "CLI": {
-   "state": "ok",
-   "items": []
-  },
   "DRC": {
    "state": "ok",
    "items": []
@@ -494,11 +533,35 @@
    "state": "ok",
    "items": []
   },
+  "MDEPLOYME": {
+   "state": "ok",
+   "items": []
+  },
+  "MINDEXTS": {
+   "state": "ok",
+   "items": []
+  },
+  "RENDER": {
+   "state": "ok",
+   "items": []
+  },
+  "MLIVESECU": {
+   "state": "ok",
+   "items": []
+  },
   "TELEM": {
    "state": "ok",
    "items": []
   },
   "ANNOT": {
+   "state": "ok",
+   "items": []
+  },
+  "MLIVETS": {
+   "state": "ok",
+   "items": []
+  },
+  "CLI": {
    "state": "ok",
    "items": []
   }
@@ -514,18 +577,21 @@
   "THREE": 0,
   "TYPES": 0,
   "VENDOR": 0,
-  "BUILD": 1,
-  "MHOOKSTS": 1,
-  "MLIVESECU": 1,
-  "QCCLI": 1,
-  "THEME": 1,
-  "LIB": 1,
+  "BUILD": 0,
+  "LIB": 0,
+  "MHOOKSTS": 0,
+  "QCCLI": 0,
+  "THEME": 0,
+  "DRC": 1,
+  "MCP": 1,
+  "MDEPLOYME": 1,
+  "MINDEXTS": 1,
   "RENDER": 1,
-  "CLI": 2,
-  "DRC": 2,
-  "MCP": 2,
-  "TELEM": 2,
-  "ANNOT": 2
+  "MLIVESECU": 1,
+  "TELEM": 1,
+  "ANNOT": 2,
+  "MLIVETS": 2,
+  "CLI": 2
  },
  "paths": {},
  "edges": [
@@ -561,7 +627,7 @@
   ],
   [
    "CLI",
-   "MLIVESECU",
+   "MLIVETS",
    "data"
   ],
   [
@@ -586,11 +652,6 @@
   ],
   [
    "LIB",
-   "BUILD",
-   "data"
-  ],
-  [
-   "LIB",
    "PLAT",
    "data"
   ],
@@ -607,6 +668,11 @@
   [
    "MCP",
    "PLAT",
+   "data"
+  ],
+  [
+   "MDEPLOYME",
+   "LIB",
    "data"
   ],
   [
@@ -615,8 +681,38 @@
    "data"
   ],
   [
+   "MINDEXTS",
+   "LIB",
+   "data"
+  ],
+  [
+   "MLIVESECU",
+   "MDEPLOYME",
+   "data"
+  ],
+  [
    "MLIVESECU",
    "PLAT",
+   "data"
+  ],
+  [
+   "MLIVETS",
+   "BUILD",
+   "data"
+  ],
+  [
+   "MLIVETS",
+   "LIB",
+   "data"
+  ],
+  [
+   "MLIVETS",
+   "MDEPLOYME",
+   "data"
+  ],
+  [
+   "MLIVETS",
+   "MLIVESECU",
    "data"
   ],
   [
@@ -732,7 +828,7 @@
    "carries": "module dependency",
    "refs": ""
   },
-  "CLI-MLIVESECU": {
+  "CLI-MLIVETS": {
    "title": "import",
    "carries": "module dependency",
    "refs": ""
@@ -757,11 +853,6 @@
    "carries": "module dependency",
    "refs": ""
   },
-  "LIB-BUILD": {
-   "title": "import",
-   "carries": "module dependency",
-   "refs": ""
-  },
   "LIB-PLAT": {
    "title": "import",
    "carries": "module dependency",
@@ -782,12 +873,47 @@
    "carries": "module dependency",
    "refs": ""
   },
+  "MDEPLOYME-LIB": {
+   "title": "import",
+   "carries": "module dependency",
+   "refs": ""
+  },
   "MHOOKSTS-PLAT": {
    "title": "import",
    "carries": "module dependency",
    "refs": ""
   },
+  "MINDEXTS-LIB": {
+   "title": "import",
+   "carries": "module dependency",
+   "refs": ""
+  },
+  "MLIVESECU-MDEPLOYME": {
+   "title": "import",
+   "carries": "module dependency",
+   "refs": ""
+  },
   "MLIVESECU-PLAT": {
+   "title": "import",
+   "carries": "module dependency",
+   "refs": ""
+  },
+  "MLIVETS-BUILD": {
+   "title": "import",
+   "carries": "module dependency",
+   "refs": ""
+  },
+  "MLIVETS-LIB": {
+   "title": "import",
+   "carries": "module dependency",
+   "refs": ""
+  },
+  "MLIVETS-MDEPLOYME": {
+   "title": "import",
+   "carries": "module dependency",
+   "refs": ""
+  },
+  "MLIVETS-MLIVESECU": {
    "title": "import",
    "carries": "module dependency",
    "refs": ""

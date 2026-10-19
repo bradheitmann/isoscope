@@ -9,7 +9,7 @@ import { dirname, join } from "path";
 import { tmpdir } from "os";
 import { buildHtml } from "./build.ts";
 import { installHook } from "./hooks.ts";
-import { listenLive } from "./live-security.ts";
+import { createLiveApplication, parseServeOptions } from "./live.ts";
 import { DB_DEFAULT, open, importSpec, exportSpec, proposeSensor, setSensor, normalizeCi, applyCi, detectCiProvider, blastRadius, withHistory, markNode, overview } from "./lib.ts";
 
 /* write a file, creating its parent directory first (fresh clones have no out/) */
@@ -188,68 +188,23 @@ switch (cmd) {
     break;
   }
   case "serve": {
-    const dbPath = args.find(a => !a.startsWith("--")) ?? DB_DEFAULT;
-    const portIdx = args.indexOf("--port");
-    const port = portIdx >= 0 ? Number(args[portIdx + 1]) : 4177;
-    open(dbPath).close(); // ensure store exists
-    const readSpec = () => { const db = open(dbPath); try { return exportSpec(db); } finally { db.close(); } };
-    const clients = new Set<ReadableStreamDefaultController>();
-    const { watch } = await import("fs");
-    let debounce: ReturnType<typeof setTimeout> | null = null;
-    watch(dbPath, () => {
-      if (debounce) clearTimeout(debounce);
-      debounce = setTimeout(() => {
-        for (const c of clients) { try { c.enqueue("event: update\ndata: {}\n\n"); } catch {} }
-      }, 150);
-    });
-    const { server, bootstrapCode } = listenLive(async (req: Request) => {
-        const url = new URL(req.url);
-        if (url.pathname === "/spec.json")
-          return Response.json(readSpec());
-        if (url.pathname === "/blast-radius") { const d = open(dbPath); const r = blastRadius(d); d.close(); return Response.json(r); }
-        if (url.pathname === "/mark" && req.method === "POST") {
-          /* Authenticated local adapter: POST {id,state?,items?:[{c,l}]} */
-          return req.json().then((b: any) => {
-            if (!b || typeof b.id !== "string" || (b.state !== undefined && typeof b.state !== "string") ||
-                (b.items !== undefined && (!Array.isArray(b.items) || b.items.length > 1000 ||
-                  b.items.some((item: unknown) => !item || typeof item !== "object" ||
-                    typeof (item as { c?: unknown }).c !== "string" || typeof (item as { l?: unknown }).l !== "string"))))
-              return new Response("invalid mark payload", { status: 400 });
-            const d = open(dbPath);
-            if (!d.query("SELECT 1 FROM nodes WHERE id=?").get(b.id)) { d.close(); return new Response("no such module", { status: 404 }); }
-            try { markNode(d,{ id: b.id, state: b.state, items: Array.isArray(b.items) ? b.items : undefined }); }
-            finally { d.close(); }
-            return Response.json({ marked: b.id });
-          });
-        }
-        if (url.pathname === "/ci" && req.method === "POST") {
-          /* Normalized events from a trusted bearer-authenticated adapter, not a public webhook receiver. */
-          if (req.headers.has("x-github-event") || req.headers.has("x-gitlab-event") || req.headers.has("x-buildkite-event"))
-            return new Response("direct provider webhooks are not supported; verify signatures in an authenticated adapter", { status: 400 });
-          const provider = url.searchParams.get("provider") ?? detectCiProvider(req.headers);
-          if (!provider) return new Response("provider? (?provider=github|gitlab|buildkite|signal or provider event header)", { status: 400 });
-          return req.json().then((b: any) => {
-            let events; try { events = normalizeCi(provider, b); } catch (e: any) { return new Response(e.message, { status: 400 }); }
-            const d = open(dbPath); const r = applyCi(d, events); d.close();
-            return Response.json({ provider, events: events.length, ...r });
-          });
-        }
-        if (url.pathname === "/events") {
-          let ctrl: ReadableStreamDefaultController;
-          const stream = new ReadableStream({
-            start(c) { ctrl = c; clients.add(c); c.enqueue("event: hello\ndata: {}\n\n"); },
-            cancel() { clients.delete(ctrl); },
-          });
-          return new Response(stream, { headers: { "Content-Type": "text/event-stream", "Cache-Control": "no-cache" } });
-        }
-        const html = buildHtml(readSpec(), { specLabel: dbPath })
-          .replace("<head>", "<head>\n<script>window.__ISOSCOPE_LIVE=1<\/script>");
-        return new Response(html, { headers: { "Content-Type": "text/html" } });
-    }, port, Bun.env.ISOSCOPE_TOKEN);
+    const { dbPath, port, profile } = parseServeOptions(args);
+    const application = createLiveApplication(dbPath, { token: Bun.env.ISOSCOPE_TOKEN, profile });
+    // Validate listener options (including token) before touching the store.
+    const { server, bootstrapCode } = application.listen(port);
+    try {
+      open(dbPath).close(); // ensure store exists
+      const { watch } = await import("fs");
+      let debounce: ReturnType<typeof setTimeout> | null = null;
+      watch(dbPath, () => {
+        if (debounce) clearTimeout(debounce);
+        debounce = setTimeout(() => application.notify(), 150);
+      });
+    } catch (error) { application.close(); await server.stop(true); throw error; }
     console.log(`isoscope: open http://127.0.0.1:${server.port}/session?code=${bootstrapCode} (one-use browser handoff)`);
-    console.log(`isoscope: watching ${dbPath}; API clients require ISOSCOPE_TOKEN (at least 32 characters)`);
+    console.log(`isoscope: ${profile} deployment; watching ${dbPath}; API clients require ISOSCOPE_TOKEN (at least 32 characters)`);
     break;
   }
   default:
-    console.log("isoscope · graph store CLI\n  init [db] · import <spec.json> [db] · export [db] [--out spec.json] · overview <db> · build [db] <out.html> · render <spec.json> <out.html> · serve [db] [--port 4177]\n  incident loop: mark <db> <id> … · ingest <db> <findings.json> [--sarif] · ci <db> <payload.json> --provider github|gitlab|buildkite|signal · blast-radius <db> · sensor <db> <id> --offer|--state\n  install-hook <repo> <db> · lint: bun drc.ts <spec.json|db> [--budget N]");
+    console.log("isoscope · graph store CLI\n  init [db] · import <spec.json> [db] · export [db] [--out spec.json] · overview <db> · build [db] <out.html> · render <spec.json> <out.html> · serve [db] [--port 4177] [--profile full|read-only]\n  incident loop: mark <db> <id> … · ingest <db> <findings.json> [--sarif] · ci <db> <payload.json> --provider github|gitlab|buildkite|signal · blast-radius <db> · sensor <db> <id> --offer|--state\n  install-hook <repo> <db> · lint: bun drc.ts <spec.json|db> [--budget N]");
 }

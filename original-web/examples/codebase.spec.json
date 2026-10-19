@@ -69,50 +69,18 @@
    "tags": []
   },
   {
-   "id": "MHOOKSTS",
-   "tag": "SRC",
-   "g": "surface",
-   "name": "hooks.ts",
-   "x": 0,
-   "y": 4,
-   "w": 1,
-   "d": 1,
-   "h": 1,
-   "does": "Sources under hooks.ts.",
-   "built": "external / not scanned",
-   "refs": "(external)",
-   "media": [],
-   "tags": []
-  },
-  {
-   "id": "MLIVESECU",
-   "tag": "SRC",
-   "g": "surface",
-   "name": "live-security.ts",
-   "x": 0,
-   "y": 6,
-   "w": 1,
-   "d": 1,
-   "h": 1,
-   "does": "Sources under live-security.ts.",
-   "built": "external / not scanned",
-   "refs": "(external)",
-   "media": [],
-   "tags": []
-  },
-  {
    "id": "MSAFEHTML",
    "tag": "SRC",
    "g": "surface",
    "name": "safe-html.ts",
    "x": 0,
-   "y": 8,
+   "y": 4,
    "w": 1,
    "d": 1,
    "h": 1,
-   "does": "Sources under safe-html.ts.",
-   "built": "external / not scanned",
-   "refs": "(external)",
+   "does": "Shared allowlist for graph-supplied prose in both viewer entry points. */",
+   "built": "1 file, ~38 lines",
+   "refs": "safe-html.ts",
    "media": [],
    "tags": []
   },
@@ -122,7 +90,7 @@
    "g": "surface",
    "name": "Navigation",
    "x": 0,
-   "y": 10,
+   "y": 6,
    "w": 1,
    "d": 1,
    "h": 1,
@@ -138,7 +106,7 @@
    "g": "tools",
    "name": "Okoa",
    "x": 0,
-   "y": 12,
+   "y": 8,
    "w": 1,
    "d": 1,
    "h": 1,
@@ -154,7 +122,7 @@
    "g": "platform",
    "name": "Runtime builtins",
    "x": 0,
-   "y": 14,
+   "y": 10,
    "w": 1,
    "d": 1,
    "h": 1,
@@ -170,7 +138,7 @@
    "g": "tools",
    "name": "Iso router",
    "x": 0,
-   "y": 16,
+   "y": 12,
    "w": 1,
    "d": 1,
    "h": 1,
@@ -186,7 +154,7 @@
    "g": "vendor",
    "name": "three.js",
    "x": 0,
-   "y": 18,
+   "y": 14,
    "w": 1,
    "d": 1,
    "h": 1,
@@ -202,7 +170,7 @@
    "g": "surface",
    "name": "Ambient types",
    "x": 0,
-   "y": 20,
+   "y": 16,
    "w": 1,
    "d": 1,
    "h": 1,
@@ -218,7 +186,7 @@
    "g": "vendor",
    "name": "desert-pants (vendored)",
    "x": 0,
-   "y": 22,
+   "y": 18,
    "w": 1,
    "d": 1,
    "h": 1,
@@ -245,12 +213,44 @@
    "tags": []
   },
   {
+   "id": "MHOOKSTS",
+   "tag": "SRC",
+   "g": "surface",
+   "name": "hooks.ts",
+   "x": 3,
+   "y": 2,
+   "w": 1,
+   "d": 1,
+   "h": 1,
+   "does": "Sources under hooks.ts.",
+   "built": "1 file, ~19 lines · exports: installHook",
+   "refs": "hooks.ts",
+   "media": [],
+   "tags": []
+  },
+  {
+   "id": "MLIVESECU",
+   "tag": "SRC",
+   "g": "surface",
+   "name": "live-security.ts",
+   "x": 3,
+   "y": 4,
+   "w": 1,
+   "d": 1,
+   "h": 1,
+   "does": "Sources under live-security.ts.",
+   "built": "1 file, ~93 lines · exports: secureLiveFetch, listenLive",
+   "refs": "live-security.ts",
+   "media": [],
+   "tags": []
+  },
+  {
    "id": "QCCLI",
    "tag": "QC",
    "g": "surface",
    "name": "QC harness",
    "x": 3,
-   "y": 2,
+   "y": 6,
    "w": 1,
    "d": 1,
    "h": 2,
@@ -266,7 +266,7 @@
    "g": "surface",
    "name": "Theme order",
    "x": 3,
-   "y": 4,
+   "y": 8,
    "w": 1,
    "d": 1,
    "h": 1,
@@ -392,8 +392,6 @@
  "short": {
   "DATA": "Example data",
   "EQC": "Edge QC",
-  "MHOOKSTS": "hooks.ts",
-  "MLIVESECU": "live-security.ts",
   "MSAFEHTML": "safe-html.ts",
   "NAV": "Navigation",
   "OKOA": "Okoa",
@@ -403,6 +401,8 @@
   "TYPES": "Ambient types",
   "VENDOR": "desert-pants (vendored)",
   "BUILD": "Build",
+  "MHOOKSTS": "hooks.ts",
+  "MLIVESECU": "live-security.ts",
   "QCCLI": "QC harness",
   "THEME": "Theme order",
   "LIB": "Graph store lib",
@@ -419,14 +419,6 @@
    "items": []
   },
   "EQC": {
-   "state": "ok",
-   "items": []
-  },
-  "MHOOKSTS": {
-   "state": "ok",
-   "items": []
-  },
-  "MLIVESECU": {
    "state": "ok",
    "items": []
   },
@@ -463,6 +455,14 @@
    "items": []
   },
   "BUILD": {
+   "state": "ok",
+   "items": []
+  },
+  "MHOOKSTS": {
+   "state": "ok",
+   "items": []
+  },
+  "MLIVESECU": {
    "state": "ok",
    "items": []
   },
@@ -506,8 +506,6 @@
  "levels": {
   "DATA": 0,
   "EQC": 0,
-  "MHOOKSTS": 0,
-  "MLIVESECU": 0,
   "MSAFEHTML": 0,
   "NAV": 0,
   "OKOA": 0,
@@ -517,6 +515,8 @@
   "TYPES": 0,
   "VENDOR": 0,
   "BUILD": 1,
+  "MHOOKSTS": 1,
+  "MLIVESECU": 1,
   "QCCLI": 1,
   "THEME": 1,
   "LIB": 1,
@@ -606,6 +606,16 @@
   ],
   [
    "MCP",
+   "PLAT",
+   "data"
+  ],
+  [
+   "MHOOKSTS",
+   "PLAT",
+   "data"
+  ],
+  [
+   "MLIVESECU",
    "PLAT",
    "data"
   ],
@@ -768,6 +778,16 @@
    "refs": ""
   },
   "MCP-PLAT": {
+   "title": "import",
+   "carries": "module dependency",
+   "refs": ""
+  },
+  "MHOOKSTS-PLAT": {
+   "title": "import",
+   "carries": "module dependency",
+   "refs": ""
+  },
+  "MLIVESECU-PLAT": {
    "title": "import",
    "carries": "module dependency",
    "refs": ""

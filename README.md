@@ -40,26 +40,35 @@ The primary example is isoscope describing itself (`examples/isoscope.spec.json`
    ```bash
    bun cli.ts install-hook /path/to/your/repo /path/to/my.db
    ```
-   (any store write rebuilds the live scene in place via SSE, without reloading;
+   (installation preserves existing hooks by refusing to replace them; linked
+   worktrees are supported. Any store write rebuilds the live scene in place via SSE, without reloading;
    camera, stack, theme, inspector and circuit survive — a *new* red module
    still takes the camera).
-3b. **When CI breaks, the map turns red where it broke** — point the provider's
-   webhook at `serve` and it attributes the job itself:
+3b. **When CI breaks, the map turns red where it broke.** Import a provider
+   payload locally, or send normalized events through a trusted authenticated
+   adapter. The live server is not a public provider-webhook receiver:
    ```bash
-   # GitHub Actions · GitLab · Buildkite: webhook URL = $MAP_HOST/ci
-   # (provider read from X-GitHub-Event / X-Gitlab-Event / X-Buildkite-Event, or ?provider=)
-   # failing job → red on its module · passing job → the building heals
-   # review bots (Greptile, CodeRabbit) arrive as PR review comments → attributed by file path
-   bun cli.ts ci my.db payload.json --provider github     # same thing from a runner
+   bun cli.ts ci my.db payload.json --provider github
+   # Start serve with ISOSCOPE_TOKEN set to a strong value of at least 32 characters.
+   curl -X POST http://127.0.0.1:4177/mark \
+     -H "Authorization: Bearer $ISOSCOPE_TOKEN" -H 'content-type: application/json' \
+     -d '{"id":"API","state":"attn","items":[{"c":"red","l":"CI: tests failing"}]}'
    ```
-   Job → module mapping lives in the spec (`ci.jobs`, `ci.default`; falls back to
-   node id / short / tag). Hand-marking still works:
-   ```bash
-   curl -X POST $MAP_HOST/mark -H 'content-type: application/json' \
-     -d '{"id":"API","state":"attn","items":[{"c":"red","l":"CI: tests failing on main (#123)"}]}'
-   bun cli.ts mark my.db API --red "CI: tests failing on main (#123)"
-   ```
-   Optional `ISOSCOPE_TOKEN` env guards both endpoints (Bearer auth).
+   A webhook adapter must verify the provider signature and replay policy before
+   forwarding a payload to `/ci?provider=github` (or `gitlab`, `buildkite`, `signal`).
+   Direct provider-event headers are rejected. Job-to-module mapping remains in
+   the spec (`ci.jobs`, `ci.default`; falls back to node id / short / tag).
+
+   **Live-server access:** `serve` binds only `127.0.0.1`. Open the one-use browser
+   handoff URL it prints; it creates an HttpOnly, SameSite=Strict session cookie
+   and redirects to the viewer. All graph reads, SSE and writes require that
+   cookie or bearer authentication. For API clients, set `ISOSCOPE_TOKEN` before
+   starting the server. Tokens shorter than 32 characters are rejected. Requests
+   from other origins/hosts and writes without JSON are rejected; bodies are
+   limited to 64 KiB. Do not expose this local service through a public proxy.
+   To reopen the viewer without its session cookie, restart `serve` for a new
+   handoff URL. No API bearer token is embedded in exported HTML.
+
 3c. **Keep the wiring lawful**: the collision lint fails your build when routes
    cross beyond the acknowledged budget —
    ```bash

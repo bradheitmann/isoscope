@@ -1,3 +1,4 @@
+import { setSafe } from "../../safe-html.ts";
 import * as THREE from "three";
 import {OrbitControls} from "three/addons/controls/OrbitControls.js";
 import {Line2} from "three/addons/lines/Line2.js";
@@ -233,31 +234,6 @@ setCanonicalIcon($<HTMLElement>("modeChevron"),iconChevron,false);
 setCanonicalIcon($<HTMLButtonElement>("zin"),iconPlus);
 setCanonicalIcon($<HTMLButtonElement>("zout"),iconMinus);
 
-/* Render a small, explicit subset of graph-supplied prose; style and active content never cross this boundary. */
-function setSafe(elm: Element, html: string): void {
-  const allowedTags = new Set(["A","B","BR","CODE","DD","DIV","DL","DT","EM","H2","H3","LI","OL","P","SPAN","STRONG","UL"]);
-  const allowedClasses = new Set(["dp-type-body-sm","dp-type-body-xs","dp-type-label","dp-type-label-sm","dp-type-code","refs","cond","good","pip","red","amber","you","info","risk","sensor"]);
-  const parsed = new DOMParser().parseFromString(`<div>${html}</div>`,"text/html");
-  const root=parsed.body.firstElementChild;
-  if (!root) return;
-  const copy=(source: Node): Node => {
-    if(source.nodeType===Node.TEXT_NODE)return document.createTextNode(source.textContent ?? "");
-    if(!(source instanceof Element))return document.createDocumentFragment();
-    if(!allowedTags.has(source.tagName))return document.createTextNode(source.textContent ?? "");
-    const target=document.createElement(source.tagName.toLowerCase());
-    const classes=[...source.classList].filter(name=>allowedClasses.has(name));
-    if(classes.length)target.className=classes.join(" ");
-    if(source.tagName==="A"){
-      const raw=source.getAttribute("href");
-      if(raw){try{const url=new URL(raw,location.href);if(url.protocol==="https:"||url.protocol==="http:"){target.setAttribute("href",url.href);target.setAttribute("rel","noreferrer");}}catch{}}
-    }
-    for(const child of [...source.childNodes])target.append(copy(child));
-    return target;
-  };
-  const fragment=document.createDocumentFragment();
-  for(const child of [...root.childNodes])fragment.append(copy(child));
-  elm.replaceChildren(fragment);
-}
 const RM=window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 let activeTheme: ThemeId="dracula"; /* curated default: fun + strong contrast in both modes */
 let activeMode: Mode="light";

@@ -1600,13 +1600,7 @@ import {Line2} from "three/addons/lines/Line2.js";
 import {LineMaterial} from "three/addons/lines/LineMaterial.js";
 import {LineGeometry} from "three/addons/lines/LineGeometry.js";
 
-/* Safe renderer for AUTHORED LOCAL CONSTANTS only (no external/user input). */
-function setSafe(elm,html){
-  var doc=new DOMParser().parseFromString("<div>"+html+"</div>","text/html");
-  var root=doc.body.firstChild;
-  while(elm.firstChild)elm.removeChild(elm.firstChild);
-  while(root.firstChild)elm.appendChild(document.adoptNode(root.firstChild));
-}
+/*__ISOSCOPE_SAFE_HTML__*/
 const RM=window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
 /* ————— data (identical content to the 2D edition) ————— */
@@ -2092,8 +2086,8 @@ function renderPanel(id){
    n.items.forEach(it=>{h+="<span class='pip "+(it.c==="you"?"you":it.c)+"'></span>"+(it.c==="you"?"YOUR CALL &mdash; ":"")+it.l+"<br>";});
    h+="</div>";
   });
-  const tail=new DOMParser().parseFromString("<div>"+h+"</div>","text/html").body.firstChild;
-  while(tail.firstChild)pP.appendChild(document.adoptNode(tail.firstChild));
+  const tail=document.createElement("div");setSafe(tail,h);
+  while(tail.firstChild)pP.appendChild(tail.firstChild);
   return;
  }
  const n=byId[id];

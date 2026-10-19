@@ -8,6 +8,8 @@ import { readFileSync, writeFileSync, mkdirSync, mkdtempSync, rmSync } from "fs"
 import { dirname, join } from "path";
 import { tmpdir } from "os";
 import { buildHtml } from "./build.ts";
+import { installHook } from "./hooks.ts";
+import { listenLive } from "./live-security.ts";
 import { DB_DEFAULT, open, importSpec, exportSpec, proposeSensor, setSensor, normalizeCi, applyCi, detectCiProvider, blastRadius, withHistory, markNode, overview } from "./lib.ts";
 
 /* write a file, creating its parent directory first (fresh clones have no out/) */
@@ -180,11 +182,8 @@ switch (cmd) {
     const [repo, dbPath] = args;
     if (!repo || !dbPath) { console.error("usage: cli.ts install-hook <target-repo> <db-path> [--spec-out path]"); process.exit(2); }
     const specIdx = args.indexOf("--spec-out");
-    const here = new URL(".", import.meta.url).pathname;
-    const specLine = specIdx >= 0 ? `bun ${here}cli.ts export ${dbPath} --out ${args[specIdx+1]}\n` : "";
-    const hook = `#!/bin/sh\n# isoscope post-commit — the map never trails reality\n${specLine}touch ${dbPath}\n`;
-    const path = `${repo}/.git/hooks/post-commit`;
-    writeFileSync(path, hook, { mode: 0o755 });
+    if (specIdx >= 0 && !args[specIdx + 1]) throw new Error("--spec-out requires a path");
+    const path = installHook(repo, dbPath, specIdx >= 0 ? args[specIdx + 1] : undefined);
     console.log(`isoscope: hook installed at ${path}`);
     break;
   }
@@ -193,6 +192,7 @@ switch (cmd) {
     const portIdx = args.indexOf("--port");
     const port = portIdx >= 0 ? Number(args[portIdx + 1]) : 4177;
     open(dbPath).close(); // ensure store exists
+    const readSpec = () => { const db = open(dbPath); try { return exportSpec(db); } finally { db.close(); } };
     const clients = new Set<ReadableStreamDefaultController>();
     const { watch } = await import("fs");
     let debounce: ReturnType<typeof setTimeout> | null = null;
@@ -202,19 +202,19 @@ switch (cmd) {
         for (const c of clients) { try { c.enqueue("event: update\ndata: {}\n\n"); } catch {} }
       }, 150);
     });
-    Bun.serve({
-      port,
-      fetch(req) {
+    const { server, bootstrapCode } = listenLive(async (req: Request) => {
         const url = new URL(req.url);
         if (url.pathname === "/spec.json")
-          return Response.json(exportSpec(open(dbPath)));
+          return Response.json(readSpec());
         if (url.pathname === "/blast-radius") { const d = open(dbPath); const r = blastRadius(d); d.close(); return Response.json(r); }
         if (url.pathname === "/mark" && req.method === "POST") {
-          /* CI/CD → red building: POST {id,state?,items?:[{c,l}]}; optional ISOSCOPE_TOKEN auth */
-          const token = Bun.env.ISOSCOPE_TOKEN;
-          if (token && req.headers.get("authorization") !== `Bearer ${token}`)
-            return new Response("unauthorized", { status: 401 });
+          /* Authenticated local adapter: POST {id,state?,items?:[{c,l}]} */
           return req.json().then((b: any) => {
+            if (!b || typeof b.id !== "string" || (b.state !== undefined && typeof b.state !== "string") ||
+                (b.items !== undefined && (!Array.isArray(b.items) || b.items.length > 1000 ||
+                  b.items.some((item: unknown) => !item || typeof item !== "object" ||
+                    typeof (item as { c?: unknown }).c !== "string" || typeof (item as { l?: unknown }).l !== "string"))))
+              return new Response("invalid mark payload", { status: 400 });
             const d = open(dbPath);
             if (!d.query("SELECT 1 FROM nodes WHERE id=?").get(b.id)) { d.close(); return new Response("no such module", { status: 404 }); }
             try { markNode(d,{ id: b.id, state: b.state, items: Array.isArray(b.items) ? b.items : undefined }); }
@@ -223,10 +223,9 @@ switch (cmd) {
           });
         }
         if (url.pathname === "/ci" && req.method === "POST") {
-          /* CI/CD webhooks straight in: provider from ?provider= or the X-GitHub-Event / X-Gitlab-Event / X-Buildkite-Event header */
-          const token = Bun.env.ISOSCOPE_TOKEN;
-          if (token && req.headers.get("authorization") !== `Bearer ${token}`)
-            return new Response("unauthorized", { status: 401 });
+          /* Normalized events from a trusted bearer-authenticated adapter, not a public webhook receiver. */
+          if (req.headers.has("x-github-event") || req.headers.has("x-gitlab-event") || req.headers.has("x-buildkite-event"))
+            return new Response("direct provider webhooks are not supported; verify signatures in an authenticated adapter", { status: 400 });
           const provider = url.searchParams.get("provider") ?? detectCiProvider(req.headers);
           if (!provider) return new Response("provider? (?provider=github|gitlab|buildkite|signal or provider event header)", { status: 400 });
           return req.json().then((b: any) => {
@@ -243,12 +242,12 @@ switch (cmd) {
           });
           return new Response(stream, { headers: { "Content-Type": "text/event-stream", "Cache-Control": "no-cache" } });
         }
-        const html = buildHtml(exportSpec(open(dbPath)), { specLabel: dbPath })
+        const html = buildHtml(readSpec(), { specLabel: dbPath })
           .replace("<head>", "<head>\n<script>window.__ISOSCOPE_LIVE=1<\/script>");
         return new Response(html, { headers: { "Content-Type": "text/html" } });
-      },
-    });
-    console.log(`isoscope: live at http://localhost:${port} · watching ${dbPath} — every store change repaints the map`);
+    }, port, Bun.env.ISOSCOPE_TOKEN);
+    console.log(`isoscope: open http://127.0.0.1:${server.port}/session?code=${bootstrapCode} (one-use browser handoff)`);
+    console.log(`isoscope: watching ${dbPath}; API clients require ISOSCOPE_TOKEN (at least 32 characters)`);
     break;
   }
   default:

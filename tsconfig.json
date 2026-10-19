@@ -9,6 +9,6 @@
     "skipLibCheck": true,
     "types": ["bun"]
   },
-  "include": ["lib.ts", "build.ts", "router.ts", "cli.ts", "mcp.ts", "drc.ts", "okoa.ts", "scripts/*.ts", "tests/*.ts"],
+  "include": ["safe-html.ts", "live-security.ts", "hooks.ts", "lib.ts", "build.ts", "router.ts", "cli.ts", "mcp.ts", "drc.ts", "okoa.ts", "scripts/*.ts", "tests/*.ts"],
   "exclude": ["original-web", "advisory", "dsh-plugin", "node_modules", "out"]
 }

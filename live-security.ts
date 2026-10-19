@@ -1,5 +1,7 @@
 import { createHash, randomBytes, timingSafeEqual } from "node:crypto";
 
+import { deploymentProfile, type DeploymentProfile } from "./deployment.ts";
+
 const MAX_BODY_BYTES = 64 * 1024;
 const COOKIE = "isoscope_session";
 const digest = (value: string) => createHash("sha256").update(value).digest();
@@ -9,7 +11,9 @@ const equal = (a: string, b: string) => timingSafeEqual(digest(a), digest(b));
 export function secureLiveFetch(
   route: (request: Request) => Response | Promise<Response>,
   configuredToken?: string,
+  options: { profile?: DeploymentProfile } = {},
 ) {
+  const profile = deploymentProfile(options.profile);
   if (configuredToken !== undefined && configuredToken.length < 32)
     throw new Error("ISOSCOPE_TOKEN must contain at least 32 characters");
   const token = configuredToken ?? randomBytes(32).toString("hex");
@@ -48,6 +52,8 @@ export function secureLiveFetch(
         ? equal(authorization, `Bearer ${token}`)
         : sessionCookies.length === 1 && equal(sessionCookies[0].slice(COOKIE.length + 1), cookieToken);
       if (!authenticated) return respond("authentication required; open the browser handoff URL printed by the CLI", 401);
+      if (profile === "read-only" && request.method !== "GET" && request.method !== "HEAD")
+        return respond("this live deployment is read-only", 403);
       if (request.method !== "GET" && request.method !== "HEAD") {
         if (request.headers.get("content-type")?.split(";")[0].trim().toLowerCase() !== "application/json")
           return respond("application/json required", 415);
@@ -83,8 +89,12 @@ export function secureLiveFetch(
   };
 }
 
-export function listenLive(route: (request: Request) => Response | Promise<Response>, port: number, token?: string) {
-  const secured = secureLiveFetch(route, token);
+export function listenLive(route: (request: Request) => Response | Promise<Response>, port: number, token?: string, options: { profile?: DeploymentProfile } = {}) {
+  return listenSecuredLive(secureLiveFetch(route, token, options), port);
+}
+
+/** Bind an already-guarded application without introducing a second policy or session. */
+export function listenSecuredLive(secured: ReturnType<typeof secureLiveFetch>, port: number) {
   const server = Bun.serve({ hostname: "127.0.0.1", port, maxRequestBodySize: MAX_BODY_BYTES,
     fetch: (request, instance) => secured.fetch(request, instance.port!),
   });

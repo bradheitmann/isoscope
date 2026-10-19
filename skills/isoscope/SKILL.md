@@ -45,9 +45,13 @@ open -a "Google Chrome" <out.html>          # macOS; any browser opening the fil
 ```
 
 - The output is a static file that works when opened directly from disk, with no server and no network.
-- Do not run `bun cli.ts serve` for presentation. Stock `serve` has endpoints that change the store (`POST /mark`,
-  `POST /ci`); they are unauthenticated unless `ISOSCOPE_TOKEN` is set. Never expose stock `serve` beyond your own
-  machine without changes.
+- Prefer the static artifact for presentation. For live viewing, `bun cli.ts serve my.db --profile read-only`
+  retains authenticated graph reads and SSE while rejecting every HTTP mutation. Full mode remains the default
+  and supports authenticated `POST /mark` and `POST /ci`. Both profiles bind only `127.0.0.1` and always require
+  the one-use browser handoff cookie or bearer authentication. Set `ISOSCOPE_TOKEN` (at least 32 characters)
+  for API clients; leaving it unset does not disable authentication. Never publicly proxy the local service.
+- Headless Bun consumers can import `isoscope/graph` or `isoscope/render` without starting services.
+  See `docs/CAPABILITIES.md` for capability boundaries and embedded live lifecycle ownership.
 - Build with the template on Isoscope's main branch. The paused redesign template (branch
   `codex/isoscope-ui-redesign-v1`) crashes on specs that are not PlanGraph specs (`ReferenceError` on `COPY_RULES`).
 

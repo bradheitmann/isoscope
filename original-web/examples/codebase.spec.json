@@ -69,12 +69,28 @@
    "tags": []
   },
   {
+   "id": "MSAFEHTML",
+   "tag": "SRC",
+   "g": "surface",
+   "name": "safe-html.ts",
+   "x": 0,
+   "y": 4,
+   "w": 1,
+   "d": 1,
+   "h": 1,
+   "does": "Shared allowlist for graph-supplied prose in both viewer entry points. */",
+   "built": "1 file, ~38 lines",
+   "refs": "safe-html.ts",
+   "media": [],
+   "tags": []
+  },
+  {
    "id": "NAV",
    "tag": "NAV",
    "g": "surface",
    "name": "Navigation",
    "x": 0,
-   "y": 4,
+   "y": 6,
    "w": 1,
    "d": 1,
    "h": 1,
@@ -90,7 +106,7 @@
    "g": "tools",
    "name": "Okoa",
    "x": 0,
-   "y": 6,
+   "y": 8,
    "w": 1,
    "d": 1,
    "h": 1,
@@ -106,7 +122,7 @@
    "g": "platform",
    "name": "Runtime builtins",
    "x": 0,
-   "y": 8,
+   "y": 10,
    "w": 1,
    "d": 1,
    "h": 1,
@@ -122,7 +138,7 @@
    "g": "tools",
    "name": "Iso router",
    "x": 0,
-   "y": 10,
+   "y": 12,
    "w": 1,
    "d": 1,
    "h": 1,
@@ -138,7 +154,7 @@
    "g": "vendor",
    "name": "three.js",
    "x": 0,
-   "y": 12,
+   "y": 14,
    "w": 1,
    "d": 1,
    "h": 1,
@@ -154,7 +170,7 @@
    "g": "surface",
    "name": "Ambient types",
    "x": 0,
-   "y": 14,
+   "y": 16,
    "w": 1,
    "d": 1,
    "h": 1,
@@ -170,7 +186,7 @@
    "g": "vendor",
    "name": "desert-pants (vendored)",
    "x": 0,
-   "y": 16,
+   "y": 18,
    "w": 1,
    "d": 1,
    "h": 1,
@@ -191,8 +207,40 @@
    "d": 1,
    "h": 1,
    "does": "Self-contained HTML build pipeline.",
-   "built": "1 file, ~38 lines · exports: buildHtml",
+   "built": "1 file, ~40 lines · exports: buildHtml",
    "refs": "build.ts",
+   "media": [],
+   "tags": []
+  },
+  {
+   "id": "MHOOKSTS",
+   "tag": "SRC",
+   "g": "surface",
+   "name": "hooks.ts",
+   "x": 3,
+   "y": 2,
+   "w": 1,
+   "d": 1,
+   "h": 1,
+   "does": "Sources under hooks.ts.",
+   "built": "1 file, ~19 lines · exports: installHook",
+   "refs": "hooks.ts",
+   "media": [],
+   "tags": []
+  },
+  {
+   "id": "MLIVESECU",
+   "tag": "SRC",
+   "g": "surface",
+   "name": "live-security.ts",
+   "x": 3,
+   "y": 4,
+   "w": 1,
+   "d": 1,
+   "h": 1,
+   "does": "Sources under live-security.ts.",
+   "built": "1 file, ~93 lines · exports: secureLiveFetch, listenLive",
+   "refs": "live-security.ts",
    "media": [],
    "tags": []
   },
@@ -202,7 +250,7 @@
    "g": "surface",
    "name": "QC harness",
    "x": 3,
-   "y": 2,
+   "y": 6,
    "w": 1,
    "d": 1,
    "h": 2,
@@ -218,7 +266,7 @@
    "g": "surface",
    "name": "Theme order",
    "x": 3,
-   "y": 4,
+   "y": 8,
    "w": 1,
    "d": 1,
    "h": 1,
@@ -255,7 +303,7 @@
    "d": 1,
    "h": 4,
    "does": "Pure brush-stroke bookkeeping, extracted from the renderer's brush closure.",
-   "built": "10 files, ~3728 lines · exports: BrushState, clearBrush, EdgeHealth, EdgeWindowState, WIN, SLOW_MS",
+   "built": "10 files, ~3704 lines · exports: BrushState, clearBrush, EdgeHealth, EdgeWindowState, WIN, SLOW_MS",
    "refs": "original-web/src/brush-model.ts · original-web/src/edge-health.ts · original-web/src/editable-target.ts · original-web/src/home-fit.ts · original-web/src/layouts.ts · original-web/src/main.ts · original-web/src/media-src.ts · original-web/src/original-renderer.ts · original-web/src/playlist.ts · original-web/src/upload-policy.ts",
    "media": [],
    "tags": []
@@ -271,7 +319,7 @@
    "d": 1,
    "h": 1,
    "does": "Command-line front end to the graph store.",
-   "built": "1 file, ~257 lines",
+   "built": "1 file, ~256 lines",
    "refs": "cli.ts",
    "media": [],
    "tags": []
@@ -344,6 +392,7 @@
  "short": {
   "DATA": "Example data",
   "EQC": "Edge QC",
+  "MSAFEHTML": "safe-html.ts",
   "NAV": "Navigation",
   "OKOA": "Okoa",
   "PLAT": "Runtime builtins",
@@ -352,6 +401,8 @@
   "TYPES": "Ambient types",
   "VENDOR": "desert-pants (vendored)",
   "BUILD": "Build",
+  "MHOOKSTS": "hooks.ts",
+  "MLIVESECU": "live-security.ts",
   "QCCLI": "QC harness",
   "THEME": "Theme order",
   "LIB": "Graph store lib",
@@ -368,6 +419,10 @@
    "items": []
   },
   "EQC": {
+   "state": "ok",
+   "items": []
+  },
+  "MSAFEHTML": {
    "state": "ok",
    "items": []
   },
@@ -400,6 +455,14 @@
    "items": []
   },
   "BUILD": {
+   "state": "ok",
+   "items": []
+  },
+  "MHOOKSTS": {
+   "state": "ok",
+   "items": []
+  },
+  "MLIVESECU": {
    "state": "ok",
    "items": []
   },
@@ -443,6 +506,7 @@
  "levels": {
   "DATA": 0,
   "EQC": 0,
+  "MSAFEHTML": 0,
   "NAV": 0,
   "OKOA": 0,
   "PLAT": 0,
@@ -451,6 +515,8 @@
   "TYPES": 0,
   "VENDOR": 0,
   "BUILD": 1,
+  "MHOOKSTS": 1,
+  "MLIVESECU": 1,
   "QCCLI": 1,
   "THEME": 1,
   "LIB": 1,
@@ -490,6 +556,16 @@
   ],
   [
    "CLI",
+   "MHOOKSTS",
+   "data"
+  ],
+  [
+   "CLI",
+   "MLIVESECU",
+   "data"
+  ],
+  [
+   "CLI",
    "PLAT",
    "data"
   ],
@@ -530,6 +606,16 @@
   ],
   [
    "MCP",
+   "PLAT",
+   "data"
+  ],
+  [
+   "MHOOKSTS",
+   "PLAT",
+   "data"
+  ],
+  [
+   "MLIVESECU",
    "PLAT",
    "data"
   ],
@@ -566,6 +652,11 @@
   [
    "RENDER",
    "EQC",
+   "data"
+  ],
+  [
+   "RENDER",
+   "MSAFEHTML",
    "data"
   ],
   [
@@ -636,6 +727,16 @@
    "carries": "module dependency",
    "refs": ""
   },
+  "CLI-MHOOKSTS": {
+   "title": "import",
+   "carries": "module dependency",
+   "refs": ""
+  },
+  "CLI-MLIVESECU": {
+   "title": "import",
+   "carries": "module dependency",
+   "refs": ""
+  },
   "CLI-PLAT": {
    "title": "import",
    "carries": "module dependency",
@@ -681,6 +782,16 @@
    "carries": "module dependency",
    "refs": ""
   },
+  "MHOOKSTS-PLAT": {
+   "title": "import",
+   "carries": "module dependency",
+   "refs": ""
+  },
+  "MLIVESECU-PLAT": {
+   "title": "import",
+   "carries": "module dependency",
+   "refs": ""
+  },
   "QCCLI-DATA": {
    "title": "import",
    "carries": "module dependency",
@@ -712,6 +823,11 @@
    "refs": ""
   },
   "RENDER-EQC": {
+   "title": "import",
+   "carries": "module dependency",
+   "refs": ""
+  },
+  "RENDER-MSAFEHTML": {
    "title": "import",
    "carries": "module dependency",
    "refs": ""
